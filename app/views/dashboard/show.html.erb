@@ -1,0 +1,77 @@
+<% content_for :title, "Dashboard - Nodl" %>
+<% content_for :head do %>
+  <meta name="description" content="Your workspace dashboard." />
+<% end %>
+
+<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
+  <div class="container mx-auto px-4 max-w-6xl space-y-8">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div data-testid="welcome-message">
+          <h1 class="card-title text-3xl">Welcome to your dashboard</h1>
+          <p class="text-base-content/70">Manage your account, workspace, and billing foundation.</p>
+        </div>
+        <div class="text-sm" data-testid="user-info">
+          <p class="text-base-content/60">Logged in as</p>
+          <p class="font-semibold text-base-content"><%= current_user.email %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <section class="lg:col-span-2 card bg-base-100 shadow-xl">
+        <div class="card-body space-y-6">
+          <div class="space-y-2">
+            <h2 class="card-title text-2xl">Current workspace</h2>
+            <% if @workspace %>
+              <p class="text-base-content/70"><strong><%= @workspace.name %></strong> (<%= @workspace.slug %>)</p>
+              <div class="text-sm text-base-content/70">Plan: <%= @workspace.subscription_plan.capitalize %> · Billing: <%= @workspace.subscription_billing_cycle.capitalize %></div>
+            <% else %>
+              <p class="text-base-content/70">No workspace assigned.</p>
+            <% end %>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <article class="card bg-primary text-primary-content">
+              <div class="card-body space-y-2">
+                <h3 class="card-title">Usage at a glance</h3>
+                <p>Scans: <%= @workspace&.usage_consumed_for(:scans) || 0 %> / <%= @workspace&.usage_limit_for(:scans, 0) || 0 %></p>
+                <p>Storage: <%= @workspace&.usage_consumed_for(:storage_mb) || 0 %>MB / <%= @workspace&.usage_limit_for(:storage_mb, 0) || 0 %>MB</p>
+              </div>
+            </article>
+            <article class="card bg-secondary text-secondary-content">
+              <div class="card-body space-y-2">
+                <h3 class="card-title">Quick links</h3>
+                <p>Use this space for product onboarding and module status.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="card bg-base-100 shadow-xl">
+        <div class="card-body space-y-4">
+          <h3 class="card-title">Workspace switcher</h3>
+          <% @memberships.each do |membership| %>
+            <% workspace = membership.workspace %>
+            <%= button_to workspace.name,
+                          switch_workspace_path(workspace),
+                          method: :post,
+                          class: ["btn justify-start", (workspace == @workspace ? "btn-primary" : "btn-outline")].join(" ") %>
+          <% end %>
+        </div>
+      </section>
+    </div>
+
+    <section class="card bg-base-100 shadow-xl">
+      <div class="card-body space-y-4">
+        <h3 class="card-title">Account management</h3>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <%= button_to "Logout", logout_path, method: :post, class: "btn btn-error" %>
+          <%= link_to "Upgrade plan", payments_path, class: "btn btn-success" %>
+          <%= link_to "Back to home", root_path, class: "btn btn-outline" %>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

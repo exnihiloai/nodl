@@ -1,0 +1,78 @@
+<% content_for :title, "Admin - Users" %>
+
+<section class="container mx-auto px-4 py-10">
+  <div class="breadcrumbs text-sm mb-4">
+    <ul>
+      <li><%= link_to "Dashboard", dashboard_path, class: "link" %></li>
+      <li>Admin</li>
+      <li>Users</li>
+    </ul>
+  </div>
+
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold mb-1">User roster</h1>
+      <p class="text-base-content/70">Overview of accounts, roles, and workspace limits.</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "Create User", new_admin_user_path, class: "btn btn-primary btn-sm" %>
+    </div>
+  </div>
+
+  <div class="mt-6 card bg-base-100 shadow-sm">
+    <div class="card-body p-0">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Last login</th>
+              <th>Workspace</th>
+              <th>Plan</th>
+              <th>Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <% workspace = user.workspaces.order("memberships.created_at ASC").first %>
+              <tr class="align-top">
+                <td>
+                  <div class="flex flex-col">
+                    <span class="font-medium"><%= link_to user.email, admin_user_path(user), class: "link" %></span>
+                    <span class="text-xs text-base-content/70">ID <%= user.id %></span>
+                  </div>
+                </td>
+                <td>
+                  <% if user.admin? %>
+                    <span class="badge badge-warning badge-outline">Admin</span>
+                  <% else %>
+                    <span class="badge badge-outline">User</span>
+                  <% end %>
+                  <% unless user.active? %>
+                    <span class="badge badge-error badge-sm ml-1">Inactive</span>
+                  <% end %>
+                </td>
+                <td><%= user.created_at&.strftime("%Y-%m-%d %H:%M") || "-" %></td>
+                <td><%= user.last_login_at&.strftime("%Y-%m-%d %H:%M") || "Never" %></td>
+                <td><%= workspace&.name || "-" %></td>
+                <td><%= workspace&.subscription_plan&.capitalize || "Free" %></td>
+                <td>
+                  <% if workspace.present? %>
+                    <div class="text-xs space-y-1">
+                      <div>Scans: <%= workspace.usage_consumed_for(:scans) %> / <%= workspace.usage_limit_for(:scans, 0) %></div>
+                      <div>Storage: <%= workspace.usage_consumed_for(:storage_mb) %>MB / <%= workspace.usage_limit_for(:storage_mb, 0) %>MB</div>
+                    </div>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+<header class="border-b border-base-300 bg-base-100/90 backdrop-blur sticky top-0 z-40">
+  <div class="container mx-auto px-4">
+    <div class="navbar px-0">
+      <div class="navbar-start">
+        <%= link_to "Nodl", root_path, class: "btn btn-ghost normal-case text-xl font-semibold", data: { testid: "nav-logo" } %>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><%= link_to "Services", root_path(anchor: "services"), class: "rounded-btn" %></li>
+          <li><%= link_to "How it works", root_path(anchor: "how-it-works"), class: "rounded-btn" %></li>
+          <li><%= link_to "Pricing", root_path(anchor: "pricing"), class: "rounded-btn" %></li>
+          <li><%= link_to "FAQ", root_path(anchor: "faq"), class: "rounded-btn" %></li>
+        </ul>
+      </div>
+      <div class="navbar-end flex items-center gap-2">
+        <%= render "shared/theme_toggle" %>
+        <div class="hidden lg:flex items-center gap-2">
+          <%= link_to "Login", login_path, class: "btn btn-ghost" %>
+          <%= link_to "Register", register_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

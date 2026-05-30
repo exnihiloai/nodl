@@ -1,0 +1,45 @@
+<% content_for :title, "Admin - Create User" %>
+
+<section class="container mx-auto px-4 py-10">
+  <div class="breadcrumbs text-sm mb-4">
+    <ul>
+      <li><%= link_to "Dashboard", dashboard_path, class: "link" %></li>
+      <li><%= link_to "Users", admin_users_path, class: "link" %></li>
+      <li>Create User</li>
+    </ul>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm mt-6 max-w-2xl">
+    <div class="card-body">
+      <%= form_with url: admin_users_path, method: :post, class: "space-y-4" do |f| %>
+        <div class="form-control">
+          <%= f.label :email, class: "label" do %>
+            <span class="label-text">Email</span>
+          <% end %>
+          <%= f.email_field :email, required: true, class: "input input-bordered w-full", placeholder: "user@example.com" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :role, class: "label" do %>
+            <span class="label-text">Role</span>
+          <% end %>
+          <%= f.select :role, options_for_select([["User", "user"], ["Admin", "admin"]]), {}, class: "select select-bordered w-full" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password, class: "label" do %>
+            <span class="label-text">Password</span>
+            <span class="label-text-alt text-base-content/70">Optional</span>
+          <% end %>
+          <%= f.password_field :password, minlength: 8, class: "input input-bordered w-full", placeholder: "Leave blank to auto-generate" %>
+        </div>
+
+        <div class="form-control mt-6">
+          <%= f.submit "Create User", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <%= turbo_frame_tag "create_result", class: "mt-4" %>
+    </div>
+  </div>
+</section>

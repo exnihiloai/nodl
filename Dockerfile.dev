@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+
+# Development Dockerfile for docker-compose.
+# Keeps build tools installed so native gems (debug, bindex, pg, …) compile.
+
+ARG RUBY_VERSION=3.3.10
+FROM docker.io/library/ruby:${RUBY_VERSION}-slim
+
+WORKDIR /rails
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      git \
+      curl \
+      libyaml-dev \
+      pkg-config \
+      libpq-dev \
+      libvips \
+      postgresql-client && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="" \
+    BUNDLE_DEPLOYMENT="0"
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["bash", "-lc", "bin/rails tailwindcss:build && bin/rails db:prepare && bin/rails s -b 0.0.0.0 -p 3000"]

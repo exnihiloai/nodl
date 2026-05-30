@@ -1,0 +1,131 @@
+<% content_for :title, "Nodl - Rails SaaS Boilerplate" %>
+<% content_for :head do %>
+  <meta name="description" content="Production-ready SaaS boilerplate built with Rails, Turbo, Tailwind, and DaisyUI." />
+<% end %>
+
+<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-300 py-20">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="hero rounded-3xl bg-base-200 shadow-2xl">
+      <div class="hero-content flex-col lg:flex-row gap-12 p-12">
+        <div class="max-w-xl space-y-6">
+          <span class="badge badge-info badge-lg gap-2 uppercase tracking-wide">Powered by Rails + Turbo</span>
+          <h1 class="text-4xl sm:text-5xl font-bold leading-tight">Ship production-ready SaaS without a heavy SPA.</h1>
+          <p class="text-lg text-base-content/70">
+            Server-rendered pages with Turbo interactions, Tailwind utilities, and DaisyUI components keep the stack lean and fast.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <%= link_to "Get Started", register_path, class: "btn btn-primary btn-lg" %>
+            <%= link_to "Live Demo", try_now_path, class: "btn btn-secondary btn-lg" %>
+            <%= link_to "Check Status", readyz_path(format: :html), class: "btn btn-outline btn-lg", data: { turbo_frame: "status_check" } %>
+          </div>
+          <%= turbo_frame_tag "status_check", class: "text-sm text-base-content/60" do %>
+            Service status has not been checked yet.
+          <% end %>
+        </div>
+        <div class="grid gap-4 w-full lg:w-5/12">
+          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
+            <div class="card-body space-y-2">
+              <div class="flex items-center gap-2">
+                <%= icon("activity", class: "size-5 text-primary", label: "Observability") %>
+                <h2 class="card-title text-lg">Observability baked in</h2>
+              </div>
+              <p class="text-base-content/70 text-sm">Health endpoints, structured logs, and clear extension points for production telemetry.</p>
+            </div>
+          </article>
+          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
+            <div class="card-body space-y-2">
+              <div class="flex items-center gap-2">
+                <%= icon("shield-check", class: "size-5 text-success", label: "Security") %>
+                <h2 class="card-title text-lg">Secure by default</h2>
+              </div>
+              <p class="text-base-content/70 text-sm">CSRF protection, password hashing, and role-aware admin tools ship out of the box.</p>
+            </div>
+          </article>
+          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
+            <div class="card-body space-y-2">
+              <div class="flex items-center gap-2">
+                <%= icon("rocket", class: "size-5 text-accent", label: "Developer velocity") %>
+                <h2 class="card-title text-lg">Developer velocity</h2>
+              </div>
+              <p class="text-base-content/70 text-sm">Containerized local setup, Postgres, Turbo streams, and ergonomic Rails conventions.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services" class="py-20 bg-base-100">
+  <div class="container mx-auto px-4 max-w-6xl space-y-10">
+    <div class="text-center space-y-3 max-w-2xl mx-auto">
+      <span class="badge badge-outline badge-lg">Real-world fits</span>
+      <h2 class="text-3xl font-semibold">Built to stay close to your data model.</h2>
+      <p class="text-base-content/70">Use it for customer SaaS, internal tooling, or agency client platforms.</p>
+    </div>
+    <div role="tablist" class="tabs tabs-boxed flex-nowrap overflow-x-auto">
+      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="Seed-stage SaaS" checked />
+      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
+        <h3 class="text-xl font-semibold">Seed-stage SaaS</h3>
+        <ul class="list-disc list-inside text-base-content/70 space-y-1">
+          <li>Multi-tenant workspace model from day one</li>
+          <li>Email/password auth with secure sessions</li>
+          <li>Stripe checkout placeholder and webhook endpoint</li>
+        </ul>
+      </div>
+
+      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="Internal platforms" />
+      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
+        <h3 class="text-xl font-semibold">Internal platforms</h3>
+        <ul class="list-disc list-inside text-base-content/70 space-y-1">
+          <li>Admin user lifecycle controls</li>
+          <li>Audit trail for sensitive user updates</li>
+          <li>Server-driven UI updates through Turbo Frames/Streams</li>
+        </ul>
+      </div>
+
+      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="Agencies and studios" />
+      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
+        <h3 class="text-xl font-semibold">Agencies and studios</h3>
+        <ul class="list-disc list-inside text-base-content/70 space-y-1">
+          <li>DaisyUI design system primitives</li>
+          <li>Easy deploy path with Rails Docker setup</li>
+          <li>Clear Rails conventions for fast onboarding</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="py-20 bg-base-100">
+  <div class="container mx-auto px-4 max-w-4xl space-y-8">
+    <div class="text-center space-y-3">
+      <span class="badge badge-outline badge-lg">Questions</span>
+      <h2 class="text-3xl font-semibold">What teams ask most often</h2>
+      <p class="text-base-content/70">Quick answers as you evaluate the stack.</p>
+    </div>
+    <div class="space-y-4">
+      <div class="collapse collapse-arrow bg-base-200 shadow">
+        <input type="radio" name="faq" checked />
+        <div class="collapse-title text-lg font-semibold">Is everything server rendered?</div>
+        <div class="collapse-content text-base-content/70">
+          <p>Yes. Rails ERB templates render all views and Turbo adds selective HTML swaps where needed.</p>
+        </div>
+      </div>
+      <div class="collapse collapse-arrow bg-base-200 shadow">
+        <input type="radio" name="faq" />
+        <div class="collapse-title text-lg font-semibold">Can I use PostgreSQL and multi-tenancy immediately?</div>
+        <div class="collapse-content text-base-content/70">
+          <p>Yes. This boilerplate starts with Postgres, workspaces, memberships, and tenant context switching.</p>
+        </div>
+      </div>
+      <div class="collapse collapse-arrow bg-base-200 shadow">
+        <input type="radio" name="faq" />
+        <div class="collapse-title text-lg font-semibold">Does it include billing scaffolding?</div>
+        <div class="collapse-content text-base-content/70">
+          <p>Yes. Stripe Checkout and webhook placeholders are wired so you can plug in real products quickly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

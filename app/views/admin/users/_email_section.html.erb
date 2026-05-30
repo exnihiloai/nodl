@@ -1,0 +1,15 @@
+<div id="email_section" class="mt-2">
+  <label class="label">Email</label>
+  <div class="font-medium"><%= managed_user.email %></div>
+
+  <% if notice.present? %>
+    <div class="alert alert-success mt-2"><span><%= notice %></span></div>
+  <% elsif error.present? %>
+    <div class="alert alert-error mt-2"><span><%= error %></span></div>
+  <% end %>
+
+  <%= form_with url: update_email_admin_user_path(managed_user), method: :patch, class: "mt-2" do |f| %>
+    <%= f.email_field :email, value: managed_user.email, class: "input input-bordered w-full", required: true %>
+    <%= f.submit "Update Email", class: "btn btn-sm mt-2" %>
+  <% end %>
+</div>

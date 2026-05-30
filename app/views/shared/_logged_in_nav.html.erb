@@ -1,0 +1,22 @@
+<header class="border-b border-base-300 bg-base-100/90 backdrop-blur sticky top-0 z-40">
+  <div class="container mx-auto px-4">
+    <div class="navbar px-0">
+      <div class="navbar-start">
+        <%= link_to "Nodl", dashboard_path, class: "btn btn-ghost normal-case text-xl font-semibold", data: { testid: "nav-logo" } %>
+      </div>
+      <div class="navbar-end flex items-center gap-2">
+        <%= render "shared/theme_toggle" %>
+        <div class="hidden lg:flex items-center gap-4">
+          <ul class="menu menu-horizontal px-1">
+            <li><%= link_to "Dashboard", dashboard_path, class: "rounded-btn", data: { testid: "nav-dashboard" } %></li>
+            <% if current_user&.admin? %>
+              <li><%= link_to "Admin", admin_users_path, class: "rounded-btn" %></li>
+            <% end %>
+            <li><%= link_to "Payments", payments_path, class: "rounded-btn" %></li>
+          </ul>
+          <%= button_to "Logout", logout_path, method: :post, class: "btn btn-ghost", data: { testid: "logout-btn-desktop" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

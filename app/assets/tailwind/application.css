@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* Custom DaisyUI light theme tokens */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(98% 0 0);
+  --color-base-300: oklch(95% 0 0);
+  --color-base-content: oklch(21% 0.006 285.885);
+
+  --color-primary: oklch(58% 0.150 260.000);
+  --color-primary-content: oklch(98% 0.010 260.000);
+
+  --color-secondary: oklch(88% 0.030 80.000);
+  --color-secondary-content: oklch(30% 0.020 80.000);
+
+  --color-accent: oklch(60% 0.120 185.000);
+  --color-accent-content: oklch(98% 0.010 185.000);
+
+  /* Schatten für Light Mode: Dezent & Weich */
+  --glow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+  --color-neutral: oklch(20% 0.010 285.000);
+  --color-neutral-content: oklch(95% 0.004 286.000);
+
+  --color-info: oklch(50% 0.050 255.000);
+  --color-info-content: oklch(96% 0.010 255.000);
+
+  --color-success: oklch(65% 0.140 145.000);
+  --color-success-content: oklch(98% 0.010 145.000);
+
+  --color-warning: oklch(78% 0.140 75.000);
+  --color-warning-content: oklch(25% 0.040 75.000);
+
+  --color-error: oklch(62% 0.180 25.000);
+  --color-error-content: oklch(98% 0.010 25.000);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1.5px;
+  --depth: 2;
+  --noise: 0;
+}
+
+/* Custom DaisyUI dark theme tokens */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Hintergrund etwas dunkler für mehr Kontrast zur Karte */
+  --color-base-100: oklch(14% 0.015 260.000);
+  /* Karte wird auf base-200 leicht aufgehellt */
+  --color-base-200: oklch(19% 0.015 260.000);
+  --color-base-300: oklch(24% 0.015 260.000);
+  --color-base-content: oklch(92% 0.010 260.000);
+
+  --color-primary: oklch(65% 0.140 260.000);
+  --color-primary-content: oklch(15% 0.015 260.000);
+
+  --color-secondary: oklch(75% 0.040 85.000);
+  --color-secondary-content: oklch(15% 0.010 85.000);
+
+  --color-accent: oklch(70% 0.100 185.000);
+  --color-accent-content: oklch(15% 0.015 185.000);
+
+  /* Der Glow-Effekt: Ein sanfter Schein in der Primary-Farbe */
+  --glow: 0 0 20px -5px oklch(65% 0.14 260 / 0.15);
+
+  --color-neutral: oklch(28% 0.020 260.000);
+  --color-neutral-content: oklch(95% 0.005 260.000);
+
+  --color-info: oklch(60% 0.060 250.000);
+  --color-info-content: oklch(15% 0.010 250.000);
+
+  --color-success: oklch(72% 0.130 145.000);
+  --color-success-content: oklch(15% 0.020 145.000);
+
+  --color-warning: oklch(82% 0.130 75.000);
+  --color-warning-content: oklch(15% 0.020 75.000);
+
+  --color-error: oklch(68% 0.160 25.000);
+  --color-error-content: oklch(15% 0.020 25.000);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1.5px;
+  --depth: 2;
+  --noise: 0;
+}
+
+/* Keep tabs rounded while overriding default Daisy focus visuals */
+:root {
+  --tab-radius: 0.5rem;
+}
+
+/* Global keyboard focus ring: single, direct ring without offset */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+}
+
+/* Controls: stronger consistent focus with subtle glow */
+.input:focus,
+.input:focus-within,
+.btn:focus-visible,
+.select:focus,
+.select:focus-within,
+.textarea:focus,
+.textarea:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+}

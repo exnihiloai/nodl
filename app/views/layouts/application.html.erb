@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Nodl" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Nodl">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "daisyui", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-base-200 text-base-content min-h-screen flex flex-col" data-controller="theme">
+    <%= user_signed_in? ? render("shared/logged_in_nav") : render("shared/logged_out_nav") %>
+
+    <main class="flex-1">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+
+    <footer class="border-t border-base-300 bg-base-100/90 backdrop-blur">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-base-content/70">
+          <div>&copy; <%= Time.current.year %> Nodl. All rights reserved.</div>
+          <div class="flex gap-4">
+            <%= link_to "About", about_path, class: "link link-hover" %>
+            <%= link_to "Pricing", payments_path, class: "link link-hover" %>
+            <%= link_to "Demo", try_now_path, class: "link link-hover" %>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

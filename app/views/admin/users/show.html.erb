@@ -1,0 +1,98 @@
+<% content_for :title, "Admin - User Detail" %>
+
+<section class="container mx-auto px-4 py-10">
+  <div class="breadcrumbs text-sm mb-4">
+    <ul>
+      <li><%= link_to "Dashboard", dashboard_path, class: "link" %></li>
+      <li><%= link_to "Users", admin_users_path, class: "link" %></li>
+      <li><%= @managed_user.email %></li>
+    </ul>
+  </div>
+
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold mb-1">User Detail: <%= @managed_user.email %></h1>
+      <p class="text-base-content/70">ID: <%= @managed_user.id %></p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    <div class="card bg-base-100 shadow-sm lg:col-span-1">
+      <div class="card-body">
+        <h2 class="card-title">Account Information</h2>
+
+        <%= render "admin/users/email_section", managed_user: @managed_user, notice: nil, error: nil %>
+        <%= render "admin/users/role_section", managed_user: @managed_user, notice: nil, error: nil %>
+        <%= render "admin/users/password_section", managed_user: @managed_user, notice: nil, error: nil, generated_password: nil %>
+
+        <div class="mt-4 space-y-2 text-sm">
+          <p><strong>Created:</strong> <%= @managed_user.created_at&.strftime("%Y-%m-%d %H:%M") || "-" %></p>
+          <p><strong>Last login:</strong> <%= @managed_user.last_login_at&.strftime("%Y-%m-%d %H:%M") || "Never" %></p>
+        </div>
+
+        <%= render "admin/users/lifecycle_section", managed_user: @managed_user, notice: nil, error: nil %>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-sm lg:col-span-2">
+      <div class="card-body">
+        <h2 class="card-title">Subscription and Usage</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="font-semibold">Subscription Status</h3>
+            <% if @workspace.present? %>
+              <p class="capitalize"><%= @workspace.subscription_status %></p>
+              <p>Plan: <span class="capitalize"><%= @workspace.subscription_plan %></span></p>
+              <p>Billing Cycle: <span class="capitalize"><%= @workspace.subscription_billing_cycle %></span></p>
+            <% else %>
+              <p>No workspace assigned.</p>
+            <% end %>
+          </div>
+
+          <%= render "admin/users/usage_section", managed_user: @managed_user, workspace: @workspace, notice: nil, error: nil %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm mt-6">
+    <div class="card-body">
+      <h2 class="card-title">Recent Audit Events</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Timestamp</th>
+              <th>Changes</th>
+              <th>Admin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @audit_events.each do |audit| %>
+              <tr>
+                <td><%= audit.action.humanize %></td>
+                <td><%= audit.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+                <td>
+                  <% if audit.before_state.present? || audit.after_state.present? %>
+                    <details>
+                      <summary>Before/After</summary>
+                      <pre class="text-xs"><%= JSON.pretty_generate(audit.before_state || {}) %></pre>
+                      <pre class="text-xs"><%= JSON.pretty_generate(audit.after_state || {}) %></pre>
+                    </details>
+                  <% end %>
+                </td>
+                <td>ID <%= audit.acting_admin_id %></td>
+              </tr>
+            <% end %>
+            <% if @audit_events.empty? %>
+              <tr>
+                <td colspan="4" class="text-center">No audit events yet.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

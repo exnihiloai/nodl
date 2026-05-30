@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nodl}
+      POSTGRES_DB: ${POSTGRES_DB:-nodl_development}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nodl_local_dev_change_me}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\" -h 127.0.0.1 -p 5432"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -lc "rm -f tmp/pids/server.pid && bin/rails db:prepare && (bin/rails tailwindcss:watch[always] & bin/rails server -b 0.0.0.0 -p 3000)"
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-nodl}:${POSTGRES_PASSWORD:-nodl_local_dev_change_me}@db:5432/${POSTGRES_DB:-nodl_development}
+      DATABASE_URL_TEST: postgresql://${POSTGRES_USER:-nodl}:${POSTGRES_PASSWORD:-nodl_local_dev_change_me}@db:5432/${POSTGRES_DB_TEST:-nodl_test}
+      OTEL_INGEST_TOKEN: ${OTEL_INGEST_TOKEN:-}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: ${OTEL_EXPORTER_OTLP_LOGS_ENDPOINT:-}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-}
+    volumes:
+      - .:/rails
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

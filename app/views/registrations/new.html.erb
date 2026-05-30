@@ -1,0 +1,56 @@
+<% content_for :title, "Register - Nodl" %>
+<% content_for :head do %>
+  <meta name="description" content="Create your account and launch quickly." />
+<% end %>
+
+<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
+  <div class="container mx-auto px-4 max-w-5xl flex flex-col lg:flex-row items-center gap-10">
+    <aside class="w-full lg:w-5/12 space-y-6 text-center lg:text-left">
+      <span class="badge badge-primary badge-lg gap-2">Welcome</span>
+      <h1 class="text-3xl font-semibold">Create your account</h1>
+      <p class="text-base-content/70">
+        Nodl ships with production-ready auth, multi-tenancy, billing placeholders, and a modern UI baseline.
+      </p>
+      <ul class="space-y-3 text-sm text-base-content/70">
+        <li>Email authentication with secure password hashing</li>
+        <li>Workspace created automatically on signup</li>
+        <li>Turbo-ready server-rendered interactions</li>
+      </ul>
+    </aside>
+
+    <div class="card bg-base-100 shadow-2xl w-full lg:w-7/12">
+      <div class="card-body space-y-6">
+        <div class="text-center">
+          <p class="text-base-content/70">Join teams launching faster on Rails.</p>
+        </div>
+
+        <%= form_with url: register_path, class: "space-y-8" do |f| %>
+          <div class="space-y-1">
+            <%= f.email_field :email, id: "email", class: "input input-bordered w-full h-12", required: true, placeholder: "your@email.com", value: @form["email"] %>
+          </div>
+
+          <div class="space-y-1">
+            <%= f.email_field :email_confirm, id: "email_confirm", class: "input input-bordered w-full h-12", required: true, placeholder: "Confirm your email", value: @form["email_confirm"] %>
+          </div>
+
+          <div class="space-y-1">
+            <%= f.password_field :password, id: "password", class: "input input-bordered w-full h-12", required: true, minlength: 8, placeholder: "Create a strong password" %>
+          </div>
+
+          <div class="space-y-1">
+            <%= f.password_field :password_confirm, id: "password_confirm", class: "input input-bordered w-full h-12", required: true, minlength: 8, placeholder: "Confirm your password" %>
+          </div>
+
+          <div class="pt-2">
+            <%= f.submit "Create account", class: "btn btn-primary w-full h-12 text-base font-semibold", data: { testid: "register-btn" } %>
+          </div>
+        <% end %>
+
+        <div class="text-center text-sm">
+          Already have an account?
+          <%= link_to "Sign in", login_path, class: "link link-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
