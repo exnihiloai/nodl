@@ -14,7 +14,7 @@ All 16 modified files on this branch:
 - `.claude/agents/documentation_architect.md`
 - `.claude/agents/documentation_auditor.md`
 - `AGENTS.md`, `CLAUDE.md`
-- `doc/adr/001-session-auth.md`, `doc/adr/002-solid-stack.md`
+- `doc/design-output/adr/001-session-auth.md`, `doc/design-output/adr/002-solid-stack.md`
 - `doc/api.md`, `doc/architecture.md`, `doc/data-models.md`, `doc/index.md`
 - `doc/modules/admin.md`, `doc/modules/auth.md`, `doc/modules/frontend.md`
 - `doc/modules/payments.md`, `doc/modules/tenancy.md`, `doc/modules/testing.md`

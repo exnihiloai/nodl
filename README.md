@@ -156,11 +156,10 @@ Optional JavaScript-specific system tests are guarded by environment flags where
 Project documentation lives under `doc/`:
 
 - `doc/index.md`
-- `doc/architecture.md`
-- `doc/data-models.md`
-- `doc/api.md`
-- `doc/modules/`
-- `doc/adr/`
+- `doc/design-input/` for user stories, domain notes, and exploratory design material.
+- `doc/design-output/` for accepted architecture, API, data model, module, security, and ADR documentation.
+- `doc/design-output/adr/`
+- `doc/third-party/` for copied or curated third-party reference material.
 
 ## Security
 

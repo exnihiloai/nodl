@@ -1,45 +1,71 @@
 # Nodl Documentation
 
-Nodl is a Rails 8 SSR SaaS boilerplate providing authentication, multi-tenant workspaces, admin management, and Stripe payment scaffolding.
+Nodl is a Rails 8 SSR SaaS application with authentication, workspace tenancy, admin management, Stripe payment scaffolding, and an emerging audio-to-document pipeline.
 
-## Table of Contents
+This documentation is organized by document purpose:
+
+- `design-input/` contains requirements, user stories, domain notes, and exploratory design material.
+- `design-output/` contains accepted architecture, API, data model, module, security, and ADR documentation.
+- `third-party/` contains copied or curated reference material for external libraries and tools.
+
+## Design Input
+
+Design input documents describe what should be built, why it matters, and what constraints or domain rules shape the work.
 
 | Document | Description |
 |---|---|
-| [architecture.md](architecture.md) | System overview, stack, request lifecycle, deployment |
-| [data-models.md](data-models.md) | Database schema, ActiveRecord models, relationships |
-| [api.md](api.md) | All HTTP routes, controllers, request/response contracts |
-| [modules/auth.md](modules/auth.md) | Session-based authentication and login throttling |
-| [modules/tenancy.md](modules/tenancy.md) | Workspace multi-tenancy and membership model |
-| [modules/admin.md](modules/admin.md) | Admin namespace, user management, audit events |
-| [modules/payments.md](modules/payments.md) | Stripe Checkout integration and webhook handling |
-| [modules/frontend.md](modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
-| [modules/testing.md](modules/testing.md) | Test structure, CI pipeline, conventions |
-| [adr/001-session-auth.md](adr/001-session-auth.md) | ADR: session-based auth over token-based |
-| [adr/002-solid-stack.md](adr/002-solid-stack.md) | ADR: Solid Cache / Queue / Cable over Redis |
+| [design-input/architecture.md](design-input/architecture.md) | Architecture notes and design input |
+| [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
+| [design-input/user-stories/2026-05-30-audio-to-document-prototype.md](design-input/user-stories/2026-05-30-audio-to-document-prototype.md) | User story for the audio-to-document prototype |
+| [design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md](<design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md>) | User story for OpenTelemetry export to self-hosted SigNoz |
+| [design-input/user-stories/YYYY-MM-DD example-user-story.md](<design-input/user-stories/YYYY-MM-DD example-user-story.md>) | User story template/example |
 
-## Audit Archive
+## Design Output
 
-Completed audit reports are moved to `doc/done/` to keep active docs clean:
+Design output documents describe accepted or currently implemented system structure.
 
-| Report | Status |
+| Document | Description |
 |---|---|
-| [done/audit-report-2026-02-21.md](done/audit-report-2026-02-21.md) | Closed (all findings fixed) |
+| [design-output/data-models.md](design-output/data-models.md) | Database schema, Active Record models, relationships |
+| [design-output/api.md](design-output/api.md) | HTTP routes, controllers, request/response contracts |
+| [design-output/modules/auth.md](design-output/modules/auth.md) | Session-based authentication and login throttling |
+| [design-output/modules/tenancy.md](design-output/modules/tenancy.md) | Workspace multi-tenancy and membership model |
+| [design-output/modules/admin.md](design-output/modules/admin.md) | Admin namespace, user management, audit events |
+| [design-output/modules/payments.md](design-output/modules/payments.md) | Stripe Checkout integration and webhook handling |
+| [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
+| [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 
-## DaisyUI Reference
+## Architecture Decision Records
 
-Maintained in [`doc/daisy-ui/`](daisy-ui/) (reference materials):
+ADRs record accepted architecture decisions, including context, decision, rationale, and consequences.
 
-| File | Topic |
+| Document | Description |
 |---|---|
-| [daisy-ui.md](daisy-ui/daisy-ui.md) | General DaisyUI overview |
-| [daisy-ui-colors.md](daisy-ui/daisy-ui-colors.md) | Color tokens |
-| [daisy-ui-fieldset.md](daisy-ui/daisy-ui-fieldset.md) | Fieldset component |
-| [daisy-ui-modal.md](daisy-ui/daisy-ui-modal.md) | Modal component |
-| [daisy-ui-tabs.md](daisy-ui/daisy-ui-tabs.md) | Tabs component |
-| [daisy-ui-themes.md](daisy-ui/daisy-ui-themes.md) | Theme configuration |
-| [daisy-ui-tooltips.md](daisy-ui/daisy-ui-tooltips.md) | Tooltips component |
-| [daisy-ui-utility-css.md](daisy-ui/daisy-ui-utility-css.md) | Utility CSS helpers |
+| [design-output/adr/001-session-auth.md](design-output/adr/001-session-auth.md) | ADR: session-based authentication over token-based auth |
+| [design-output/adr/002-solid-stack.md](design-output/adr/002-solid-stack.md) | ADR: Solid Cache / Queue / Cable over Redis |
+
+## Security
+
+| Document | Description |
+|---|---|
+| [design-output/security/security-audit-report.md](design-output/security/security-audit-report.md) | Current security audit report |
+| [design-output/security/done/audit-report-2026-02-21.md](design-output/security/done/audit-report-2026-02-21.md) | Closed audit report |
+| [design-output/security/done/security-review-add-claude-support-2026-02-21.md](design-output/security/done/security-review-add-claude-support-2026-02-21.md) | Closed security review |
+
+## Third-Party Reference
+
+Maintained in [`third-party/daisy-ui/`](third-party/daisy-ui/) as local reference material.
+
+| Document | Topic |
+|---|---|
+| [third-party/daisy-ui/daisy-ui.md](third-party/daisy-ui/daisy-ui.md) | General DaisyUI overview |
+| [third-party/daisy-ui/daisy-ui-colors.md](third-party/daisy-ui/daisy-ui-colors.md) | Color tokens |
+| [third-party/daisy-ui/daisy-ui-fieldset.md](third-party/daisy-ui/daisy-ui-fieldset.md) | Fieldset component |
+| [third-party/daisy-ui/daisy-ui-modal.md](third-party/daisy-ui/daisy-ui-modal.md) | Modal component |
+| [third-party/daisy-ui/daisy-ui-tabs.md](third-party/daisy-ui/daisy-ui-tabs.md) | Tabs component |
+| [third-party/daisy-ui/daisy-ui-themes.md](third-party/daisy-ui/daisy-ui-themes.md) | Theme configuration |
+| [third-party/daisy-ui/daisy-ui-tooltips.md](third-party/daisy-ui/daisy-ui-tooltips.md) | Tooltips component |
+| [third-party/daisy-ui/daisy-ui-utility-css.md](third-party/daisy-ui/daisy-ui-utility-css.md) | Utility CSS helpers |
 
 ## Quick Start
 
