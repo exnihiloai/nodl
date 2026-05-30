@@ -171,7 +171,13 @@ See `SECURITY.md` for vulnerability reporting guidance and `CONTRIBUTING.md` for
 
 ## License
 
-No open-source license has been selected yet. Add a `LICENSE` file before publishing the repository publicly.
+Copyright (c) 2026 ex-nihilo GmbH.
+
+Nodl is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`). See `LICENSE`.
+
+Commercial or proprietary licenses may be granted separately by ex-nihilo GmbH. Contact ex-nihilo GmbH for dual licensing terms.
+
+The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo GmbH and are not licensed under the AGPL. See `TRADEMARKS.md`.
 
 <!-- BEGIN AGENT INSTRUCTIONS -->
 
