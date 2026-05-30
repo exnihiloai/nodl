@@ -31,6 +31,8 @@ config/credentials/*.key
 /public/packs
 /public/packs-test
 /public/vite
+/app/assets/builds/*
+!/app/assets/builds/.keep
 
 # Test and coverage output
 /coverage
