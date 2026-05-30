@@ -1,0 +1,52 @@
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+config/master.key
+config/credentials/*.key
+
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Rails runtime files
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/storage/*
+!/storage/.keep
+
+# Uploaded/generated files
+/public/assets
+/public/packs
+/public/packs-test
+/public/vite
+
+# Test and coverage output
+/coverage
+/test/reports
+/.playwright-mcp
+
+# Local database files
+*.sqlite3
+*.sqlite3-*
+
+# Generated skill outputs
+/.claude/agents
+/.codex/skills
+/CLAUDE.md
+/SKILL.md
+
+# Ignore local vendored artifacts, but keep the placeholder.
+/vendor/*
+!/vendor/.keep

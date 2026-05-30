@@ -1,0 +1,19 @@
+id: documentation_auditor
+name: "Documentation Auditor"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Audit doc/ claims against source code and write a risk-rated audit report."
+  steps:
+    - "Extract concrete claims from doc/ files."
+    - "Verify each claim against source files with exact file/line evidence."
+    - "Write findings, confidence, and coverage summary to doc/audit-report.md."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

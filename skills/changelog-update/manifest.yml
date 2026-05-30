@@ -1,0 +1,22 @@
+id: changelog-update
+name: "Changelog Update"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Inspect the current feature branch, identify undocumented changes, and write a user-friendly changelog entry following Keep a Changelog / semver conventions."
+  steps:
+    - "Run git log main..HEAD to list commits not yet in main; stop if none or already on main."
+    - "Read only the top of CHANGELOG.md up to the first versioned section heading to understand what is already documented."
+    - "Diff the branch (git diff main..HEAD --stat and commit messages) and read only user-visible changed files to categorise changes into Added/Changed/Fixed/Removed/Technical/Security."
+    - "Draft changelog bullets in plain, non-technical language (product owner to end user voice); Technical and Security sections may be more specific."
+    - "Determine the correct semver bump (or ask the user), then insert the new entry into CHANGELOG.md — supplement [Unreleased] if it exists, otherwise create a new versioned block."
+    - "Show the user the updated CHANGELOG section and a summary of what was documented."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

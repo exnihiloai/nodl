@@ -1,0 +1,21 @@
+id: security-auditor
+name: "Security Auditor"
+version: "1.0.0"
+
+entrypoints:
+  - type: "script"
+    path: "scripts/security_audit.sh"
+
+instructions:
+  summary: "Agentic security audit of the Rails codebase plus dependency scanners; produces a prioritized report."
+  steps:
+    - "Run static scanners for Rails and dependencies (Brakeman, bundler-audit, importmap audit)."
+    - "Manually review the codebase for common web app vulnerabilities and Rails-specific footguns."
+    - "Write doc/security-audit-report.md with findings categorized as CRITICAL/HIGH/MEDIUM/LOW and concrete remediation."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

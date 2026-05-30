@@ -1,0 +1,21 @@
+id: user-story-creator
+name: "User Story Creator"
+version: "2.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Create compact, implementation-agnostic user stories as dated markdown files in doc/user-stories with a strict <=3000 character limit."
+  steps:
+    - "Collect a clear user-story title from the request."
+    - "Run scripts/new_user_story.sh to create a dated markdown file under doc/user-stories."
+    - "Write markdown-formatted content into the created file using the required sections."
+    - "Keep the story body <=3000 characters and avoid implementation guidance."
+    - "Skip tech-stack details unless explicitly requested and state assumptions for ambiguous requirements."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

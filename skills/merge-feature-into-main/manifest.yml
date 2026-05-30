@@ -1,0 +1,23 @@
+id: merge-feature-into-main
+name: "Merge Feature Branch Into Main"
+version: "1.0.0"
+
+entrypoints:
+  - type: "script"
+    path: "scripts/merge_feature_into_main.sh"
+
+instructions:
+  summary: "Merge the current feature branch into main safely with a forced merge commit and optional push."
+  steps:
+    - "Verify the working tree is fully clean with no staged, unstaged, or untracked files."
+    - "Capture current branch as feature branch, switch to main, and pull the latest main from origin."
+    - "Merge feature branch into main using --no-ff to force a merge commit."
+    - "Prompt whether to push main to origin, then push only on explicit confirmation."
+    - "Stop immediately on any issue and print concrete remediation guidance."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

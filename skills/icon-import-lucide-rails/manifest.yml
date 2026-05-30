@@ -1,0 +1,21 @@
+id: icon-import-lucide-rails
+name: "Lucide Icon Importer"
+version: "1.0.0"
+
+entrypoints:
+  - type: "script"
+    path: "scripts/import_lucide_icon.sh"
+
+instructions:
+  summary: "Import Lucide SVG icons into a Rails app locally (no CDN/Node runtime dependency)."
+  steps:
+    - "Resolve the requested icon name and map concept names to Lucide equivalents when needed."
+    - "Run scripts/import_lucide_icon.sh to fetch the icon into app/assets/icons."
+    - "Render the icon through the Rails helper and verify theme-aware visibility."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

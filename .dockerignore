@@ -1,0 +1,39 @@
+# Keep Docker build context small and prevent local-only files from entering images.
+
+.git
+.gitignore
+.dockerignore
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Environment and local secrets
+.env
+.env.*
+config/master.key
+config/credentials/*.key
+
+# Runtime output
+log/*
+tmp/*
+storage/*
+coverage
+test/reports
+.playwright-mcp
+
+# Local dependency caches
+.bundle
+vendor/bundle
+
+# Generated assets and local skill outputs
+public/assets
+public/packs
+public/packs-test
+.claude/agents
+.codex/skills
+CLAUDE.md
+SKILL.md

@@ -1,0 +1,19 @@
+id: security-hardener
+name: "Security Hardener"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Implement and verify security fixes for the Rails app based on an audit report."
+  steps:
+    - "Start from doc/security-audit-report.md and fix issues in severity order: CRITICAL, HIGH, MEDIUM, LOW."
+    - "Prefer Rails best practices; avoid breaking changes and stop to ask before risky auth/tenancy/session modifications."
+    - "After each fix, run make lint, make test, and re-run scanners to confirm posture improved."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -q '^skills/'; then
+  echo "skills/ changed; regenerating local skill outputs..."
+  make skills
+fi

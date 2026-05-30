@@ -1,0 +1,19 @@
+id: documentation_architect
+name: "Documentation Architect"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Scan the repository and produce structured technical documentation under doc/."
+  steps:
+    - "Inspect repository structure and identify modules, APIs, data models, and infrastructure configuration."
+    - "Generate concise, source-linked documentation files under doc/."
+    - "Mark unclear areas explicitly instead of guessing."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

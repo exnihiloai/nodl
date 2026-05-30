@@ -1,0 +1,19 @@
+id: skill-creator
+name: "Skill Creator"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Create or update canonical repository skills under skills/ and regenerate derived outputs."
+  steps:
+    - "Define concrete trigger examples and expected outcomes for the skill."
+    - "Create or update canonical source files in skills/<id>/manifest.yml and skills/<id>/skill.md."
+    - "Use make skill-new for new skills, add scripts only when determinism is required, then run make skills and make skills-check."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true
