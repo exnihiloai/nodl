@@ -20,3 +20,102 @@
 html {
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+
+/* Tactile spotlight button (/button page).
+   Selectors are element-qualified (button.btn-bouncy) so they outrank
+   DaisyUI's single-class .btn rules. */
+button.btn-bouncy {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transform-origin: center center;
+  /* translate handles the gentle hover raise; scale handles the press weight;
+     transform carries the 3D tilt (driven by --rx/--ry from JS) plus the
+     baseline Z-sink (--tz). Keeping them on separate properties lets the slow
+     raise, the press weight, and the spatial tilt coexist without clobbering
+     one another. perspective() on the element itself supplies foreshortening. */
+  translate: 0 0;
+  scale: 1;
+  transform:
+    perspective(640px)
+    rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg))
+    translateZ(var(--tz, 0px));
+  /* Default: significantly elevated off the canvas. */
+  box-shadow:
+    0 12px 24px -6px oklch(0% 0 0 / 0.35),
+    0 6px 10px -4px oklch(0% 0 0 / 0.25);
+  transition:
+    /* slow, gentle raise/settle */
+    translate 0.54s cubic-bezier(0.22, 1, 0.36, 1),
+    /* elastic spring-back on release */
+    scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    /* kinematic snap-back with a touch of overcorrection */
+    transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.45s ease;
+}
+
+/* Hover: slowly lift the button and deepen its shadow, inviting a press. */
+button.btn-bouncy:hover {
+  translate: 0 -1px;
+  box-shadow:
+    0 14px 26px -6px oklch(0% 0 0 / 0.36),
+    0 7px 11px -5px oklch(0% 0 0 / 0.26);
+}
+
+/* Cursor-tracking glow. Position follows --x/--y instantly (no transition);
+   only opacity fades in and out. */
+button.btn-bouncy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Negative z-index keeps the glow above the button's background but below
+     its label, so no wrapper element is needed around the text. */
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  /* Boost saturation under the cursor: the `saturation` blend mode keeps the
+     button's own hue and lightness but takes its saturation from this vivid
+     overlay, so the primary color reads richer right where the pointer is. */
+  mix-blend-mode: saturation;
+  background: radial-gradient(
+    circle 90px at var(--x, 50%) var(--y, 50%),
+    oklch(70% 0.26 25 / 0.56),
+    oklch(70% 0.26 25 / 0) 70%
+  );
+}
+
+button.btn-bouncy:hover::before {
+  opacity: 1;
+}
+
+/* Press: fast, snappy depress. Scale down and tighten the shadow so the
+   button reads as pushed into the surface. */
+button.btn-bouncy:active {
+  scale: 0.97;
+  /* Baseline global depression: the whole board sinks into the canvas; the
+     JS-driven rotateX/rotateY then bias the depth toward the contact point. */
+  --tz: -16px;
+  box-shadow:
+    0 2px 4px -2px oklch(0% 0 0 / 0.4),
+    inset 0 2px 6px oklch(0% 0 0 / 0.25);
+  /* Press: fast and snappy into the tilt. */
+  transition:
+    scale 0.09s ease-out,
+    transform 0.09s ease-out,
+    box-shadow 0.09s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.btn-bouncy,
+  button.btn-bouncy:active,
+  button.btn-bouncy::before {
+    transition: none;
+  }
+  /* Drop the 3D tilt entirely for reduced-motion users. */
+  button.btn-bouncy,
+  button.btn-bouncy:active {
+    transform: none;
+  }
+}

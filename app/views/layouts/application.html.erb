@@ -20,7 +20,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-base-200 text-base-content min-h-screen flex flex-col" data-controller="theme">
+  <body class="bg-base-200 text-base-content min-h-screen flex flex-col" data-controller="theme bouncy">
     <%= user_signed_in? ? render("shared/logged_in_nav") : render("shared/logged_out_nav") %>
 
     <main class="flex-1">
