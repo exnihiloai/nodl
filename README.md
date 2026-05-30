@@ -166,6 +166,8 @@ Project documentation lives under `doc/`:
 
 Do not commit secrets. Local secrets such as `config/master.key`, `.env`, logs, temp files, and generated skill outputs are ignored by git.
 
+The optional `private/` directory is ignored by git and reserved for a local/private companion repository.
+
 See `SECURITY.md` for vulnerability reporting guidance and `CONTRIBUTING.md` for contribution expectations.
 
 ## License
@@ -241,6 +243,7 @@ No open-source license has been selected yet. Add a `LICENSE` file before publis
 - Do not commit secrets. Use environment variables.
 - Required/optional Stripe env vars are documented in `README.md`.
 - Preserve CSRF/session behavior unless there is a clear, reviewed reason to modify it.
+- The optional `private/` directory is ignored and reserved for a local/private companion repo; do not inspect, copy, modify, stage, or commit anything under it unless explicitly instructed by the user.
 
 ## Testing Guidance
 - Add or update tests for behavior changes, especially in auth, tenancy, admin, and payments.
@@ -254,6 +257,7 @@ No open-source license has been selected yet. Add a `LICENSE` file before publis
 
 ## Repository Hygiene
 - Keep OS/editor artifacts out of git (`.DS_Store`, temp files, local caches).
+- Keep `private/` out of the public repository. It may contain private test data, local deploy config, notes, or secrets managed outside the open-source repo.
 
 
 ## Quick Pointers
@@ -262,3 +266,4 @@ No open-source license has been selected yet. Add a `LICENSE` file before publis
 - Tailwind/DaisyUI theme config: `app/assets/tailwind/application.css`
 - Tests: `test/`
 - Dev commands: `Makefile`
+<!-- END AGENT INSTRUCTIONS -->

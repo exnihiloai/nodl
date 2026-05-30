@@ -13,6 +13,7 @@ Thumbs.db
 !.env.example
 config/master.key
 config/credentials/*.key
+/private/
 
 # Bundler
 /.bundle
