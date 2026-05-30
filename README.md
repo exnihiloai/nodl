@@ -177,6 +177,8 @@ Nodl is licensed under the GNU Affero General Public License v3.0 or later (`AGP
 
 Commercial or proprietary licenses may be granted separately by ex-nihilo GmbH. Contact ex-nihilo GmbH for dual licensing terms.
 
+Some non-code material may use separate terms or be reserved. See `LICENSES.md` for repository licensing boundaries.
+
 The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo GmbH and are not licensed under the AGPL. See `TRADEMARKS.md`.
 
 <!-- BEGIN AGENT INSTRUCTIONS -->
