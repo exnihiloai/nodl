@@ -265,15 +265,14 @@ No open-source license has been selected yet. Add a `LICENSE` file before publis
 
 ## AI Collaboration Workflow
 
-- **Rule 1 – Plan before coding:** Before writing any code, state the planned approach in 2–5 bullet points. Do not proceed until the user explicitly approves. If the requirement is ambiguous, ask one focused clarifying question.
-- **Rule 2 – Scope gate:** If a task touches more than 3 files, stop. List the affected files, propose atomic sub-steps, and ask which step to start with.
-- **Rule 3 – Impact summary:** After completing a task, output a brief "What could break" list and specify which `make test` / `bin/rails test` commands cover those areas.
-- **Rule 4 – Red-Green bug fixing:** For any bug: (1) write a failing test that reproduces it, (2) confirm it fails with `make test`, (3) fix the code, (4) confirm it passes. Never skip to step 3.
-- **Rule 5 – Self-updating rules:** After any user correction, add a new, specific rule to `README.md` under `## AI Collaboration Workflow` between the marker for begin and end of the `AGENTS INSTRUCTIONS` section. The rule must name the exact mistake class, not just repeat general advice.
-- **Rule 6 – Critical architecture stop:** If a change touches authentication flow, `current_workspace` resolution, session handling, billing logic, role/permission logic, or data-impacting migrations: stop after planning, list risks, and wait for explicit user approval before coding.
-- **Rule 7 – No opportunistic refactors:** Do not refactor unrelated code, rename unrelated methods, or move files unless explicitly requested. Change only what the task requires.
-- **Rule 8 – Security integrity:** Never disable CSRF, skip authentication/authorization filters, permit-all params, or bypass authorization unless explicitly instructed by the user.
-- **Rule 9 – Migration safety:** Do not remove columns without a deprecation step, do not perform non-reversible data-impacting migration changes, always plan backfills when needed, and confirm `db/schema.rb` is updated.
-- **Rule 10 – Agent permissions:** When spawning the `documentation_architect` or `documentation_auditor` agent (or any agent that must write files to the repo), always use `mode: "bypassPermissions"` or `dangerouslySkipPermissions` in the Task tool call. Without this, the agent will stall waiting for Write/Bash permission and produce no output.
-- **Rule 11 – Compact story outputs:** If the user requests concise user stories, enforce a hard `<= 3000` character limit and exclude implementation and tech-stack guidance unless explicitly requested.
+- **Rule Plan before coding:** Before writing any code, state the planned approach in 2–5 bullet points. Do not proceed until the user explicitly approves. If the requirement is ambiguous, ask one focused clarifying question.
+- **Rule Impact summary:** After completing a task, output a brief "What could break" list and specify which `make test` / `bin/rails test` commands cover those areas.
+- **Rule Red-Green bug fixing:** For any bug: (1) write a failing test that reproduces it, (2) confirm it fails with `make test`, (3) fix the code, (4) confirm it passes. Never skip to step 3.
+- **Rule Self-updating rules:** After any user correction, add a new, specific rule to `README.md` under `## AI Collaboration Workflow` between the marker for begin and end of the `AGENTS INSTRUCTIONS` section. The rule must name the exact mistake class, not just repeat general advice.
+- **Rule Critical architecture stop:** If a change touches authentication flow, `current_workspace` resolution, session handling, billing logic, role/permission logic, or data-impacting migrations: stop after planning, list risks, and wait for explicit user approval before coding.
+- **Rule No opportunistic refactors:** Do not refactor unrelated code, rename unrelated methods, or move files unless explicitly requested. Change only what the task requires.
+- **Rule Security integrity:** Never disable CSRF, skip authentication/authorization filters, permit-all params, or bypass authorization unless explicitly instructed by the user.
+- **Rule Migration safety:** Do not remove columns without a deprecation step, do not perform non-reversible data-impacting migration changes, always plan backfills when needed, and confirm `db/schema.rb` is updated.
+- **Rule Agent permissions:** When spawning the `documentation_architect` or `documentation_auditor` agent (or any agent that must write files to the repo), always use `mode: "bypassPermissions"` or `dangerouslySkipPermissions` in the Task tool call. Without this, the agent will stall waiting for Write/Bash permission and produce no output.
+- **Rule Compact story outputs:** If the user requests concise user stories, enforce a hard `<= 3000` character limit and exclude implementation and tech-stack guidance unless explicitly requested.
 <!-- END AGENT INSTRUCTIONS -->
