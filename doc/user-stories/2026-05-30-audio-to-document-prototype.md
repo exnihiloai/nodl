@@ -15,6 +15,7 @@ As an engineer, bootstrapping this project, I want a simple and basic first impl
 ## Additional Information
 
 - A successfull outcome of this user story would be if a fullstack engineer, tasked with creating a user interface for an MVP around the main flow of the application sees the code of the prototype, nodds with the head and thinks this can quite easilly be used.
+- For testing the audio file in private/test-data can be used. It might be wise to cut the long audio file to just 30 seconds for a fast and cost efficient iteration and feedback loop.
 
 ## Out of Scope
 
