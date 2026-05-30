@@ -134,6 +134,7 @@ Guidelines:
 
 - Never commit secrets.
 - Use environment variables for sensitive config (especially Stripe keys/secrets).
+- For git operations treat `private/` as ignored local/private companion-repo. Never commit anything in that folder.
 - Keep CSRF protections enabled except for explicit endpoints that require exclusion (e.g. webhook endpoint with signature validation).
 - Respect secure defaults in Rails and avoid weakening session/cookie protections.
 
@@ -204,6 +205,7 @@ Use these Make targets instead of ad-hoc command variants whenever possible.
 
 - Keep OS/editor artifacts out of version control (`.DS_Store`, temp files, local caches).
 - Keep generated or machine-specific files out of commits unless intentionally required.
+- Keep `private/` out of the public repository. It is reserved for private test data, local deployment config, notes, or other non-public companion files.
 - Preserve a clean, reproducible developer workflow for new contributors.
 
 ---

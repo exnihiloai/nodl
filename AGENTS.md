@@ -187,6 +187,7 @@ Final handoff must include:
 - Do not commit secrets. Use environment variables.
 - Required and optional Stripe env vars are documented in `README.md`.
 - Preserve CSRF/session behavior unless there is a clear, reviewed reason to modify it.
+- For git operations treat `private/` as ignored local/private companion-repo. Never commit anything in that folder.
 - Never disable CSRF, authentication, authorization, tenant scoping, or strong params protections unless explicitly instructed by the user and the risk is documented.
 - Never permit all params or bypass authorization as a shortcut.
 
@@ -217,6 +218,7 @@ Final handoff must include:
 ## Repository Hygiene
 
 - Keep OS/editor artifacts out of git, including `.DS_Store`, temp files, and local caches.
+- Keep `private/` out of the public repository. It is reserved for private test data, local deployment config, notes, or other non-public companion files.
 - Remove unused code and artifacts introduced by the task.
 - Do not add dependencies unless they are necessary and justified.
 
