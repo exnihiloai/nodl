@@ -33,7 +33,12 @@ Entry point: [`app/javascript/application.js`](../../app/javascript/application.
 
 ## Turbo
 
-Turbo Drive is active globally. Turbo Frames and Turbo Streams are used for partial page updates, notably in the admin user management panel (each section — email, role, password, lifecycle, usage — is independently replaced via `turbo_stream.replace`).
+Turbo Drive is active globally. Turbo Frames and Turbo Streams are used for partial page updates.
+
+Implemented stream surfaces:
+
+- Admin user management panel: each section — email, role, password, lifecycle, usage — is independently replaced via `turbo_stream.replace`.
+- Dashboard activity feed: `RecordingSession` broadcasts replace the `dashboard_activity` target on the `[workspace, :dashboard]` stream.
 
 ## Stimulus Controllers
 
@@ -42,9 +47,12 @@ Located in [`app/javascript/controllers/`](../../app/javascript/controllers/).
 | Controller | File | Purpose |
 |---|---|---|
 | `theme` | `theme_controller.js` | Dark/light mode toggle; persists preference to `localStorage`; respects `prefers-color-scheme` |
+| `audio-recorder` | `audio_recorder_controller.js` | Dashboard microphone recording/upload submit flow; chooses compact `MediaRecorder` MIME types; drives non-essential voice aura visualization |
 | `hello` | `hello_controller.js` | Scaffold placeholder |
 
 `theme_controller.js` targets: `toggle`, `lightIcon`, `darkIcon`. Applies `data-theme` attribute to `<html>`. Mounted on `<body>` in the main layout.
+
+`audio_recorder_controller.js` targets live in the dashboard recording form. It auto-submits after upload selection or microphone stop, sets `source_kind`, and uses Web Audio analyzer data only for visual feedback. Recording must keep working if visualization is unavailable.
 
 ## Icons
 

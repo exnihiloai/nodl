@@ -32,7 +32,8 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/modules/tenancy.md](design-output/modules/tenancy.md) | Workspace multi-tenancy and membership model |
 | [design-output/modules/admin.md](design-output/modules/admin.md) | Admin namespace, user management, audit events |
 | [design-output/modules/payments.md](design-output/modules/payments.md) | Stripe Checkout integration and webhook handling |
-| [design-output/modules/audio-pipeline.md](design-output/modules/audio-pipeline.md) | Console audio-to-Markdown prototype pipeline |
+| [design-output/modules/dashboard.md](design-output/modules/dashboard.md) | Authenticated audio-to-document dashboard, recording UX, live activity feed |
+| [design-output/modules/audio-pipeline.md](design-output/modules/audio-pipeline.md) | Audio-to-Markdown pipeline used by CLI and dashboard processing |
 | [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
 | [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 
