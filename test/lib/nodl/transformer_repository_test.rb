@@ -1,5 +1,6 @@
 require "test_helper"
 require "tmpdir"
+require "nodl/transformation/transformer_repository"
 
 class NodlTransformerRepositoryTest < ActiveSupport::TestCase
   test "loads transformer instructions and templates in name order" do

@@ -7,8 +7,9 @@ class AudioRecorderJsTest < ApplicationJsSystemTestCase
 
     login_via_ui(email: email, password: "Valid123")
 
-    assert_selector "[data-controller~='audio-recorder']"
-    assert_button "Start recording"
-    assert_button "Stop", disabled: true
+    assert_selector "[data-testid='recording-form'][data-controller~='audio-recorder']"
+    assert_selector "[data-testid='record-button']", text: "Record"
+    assert_selector "[data-testid='recording-aura']", visible: :hidden
+    assert_button "Stop", disabled: true, visible: :hidden
   end
 end

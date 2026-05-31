@@ -1,5 +1,6 @@
 require "test_helper"
 require "stringio"
+require "nodl/cli"
 
 class NodlCliTest < ActiveSupport::TestCase
   test "prints a useful error when command is missing" do

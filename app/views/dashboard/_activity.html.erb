@@ -1,4 +1,4 @@
-<section id="dashboard_activity" class="space-y-3">
+<section id="dashboard_activity" class="space-y-3" data-testid="dashboard-activity">
   <div class="flex items-baseline justify-between">
     <h2 class="text-lg font-semibold">Recent</h2>
     <% if recording_sessions.any? %>
@@ -9,7 +9,7 @@
   <% if recording_sessions.any? %>
     <ul class="rounded-box border border-base-300 bg-base-100">
       <% recording_sessions.each do |session| %>
-        <li id="<%= dom_id(session, :dashboard_row) %>" class="flex flex-col gap-2 border-t border-base-300 p-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between">
+        <li id="<%= dom_id(session, :dashboard_row) %>" class="flex flex-col gap-2 border-t border-base-300 p-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between" data-testid="dashboard-activity-item" data-status="<%= session.status %>">
           <div class="flex min-w-0 items-start gap-3">
             <% if session.completed? %>
               <span class="mt-1 text-success" title="Ready" aria-hidden="true">●</span>
