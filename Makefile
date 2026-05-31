@@ -1,8 +1,13 @@
 SHELL := /bin/bash
 COMPOSE ?= docker compose
 WEB ?= web
+NOTIFY_ENV ?= private/notify.env
 
-.PHONY: help build up dev test down logs shell lint seed skill skills skills-check skills-clean skill-new setup
+# Allow both: make notify MSG="Hello" and make notify Hello world
+MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
+
+.PHONY: help notify build up dev test down logs shell lint seed skill skills skills-check skills-clean skill-new setup
 
 help:
 	@echo "Available targets:"
@@ -18,6 +23,7 @@ help:
 	@echo "  make skills-clean # Remove generated skill outputs"
 	@echo "  make skill-new ID=<id> NAME=\"<Skill Name>\" # Create canonical skill scaffold"
 	@echo "  make setup  # Configure git hooks (run once after cloning)"
+	@echo "  make notify MSG=\"Hello\"  # Send a Telegram message (uses local private/notify.env)"
 	@echo "  make logs   # Follow logs"
 	@echo "  make shell  # Open bash in web container"
 	@echo "  make down   # Stop and remove stack"
@@ -71,3 +77,20 @@ logs:
 
 shell:
 	$(COMPOSE) exec $(WEB) bash
+
+notify:
+	@MSG_TEXT='$(MSG)'; \
+	if [ -f "$(NOTIFY_ENV)" ]; then \
+		set -a; . "$(NOTIFY_ENV)"; set +a; \
+	fi; \
+	: $${TELEGRAM_BOT_TOKEN:?set TELEGRAM_BOT_TOKEN or create $(NOTIFY_ENV)}; \
+	: $${TELEGRAM_CHAT_ID:?set TELEGRAM_CHAT_ID or create $(NOTIFY_ENV)}; \
+	PAYLOAD=$$(python3 -c 'import json, sys; print(json.dumps({"chat_id": sys.argv[1], "text": sys.argv[2], "disable_web_page_preview": True}))' "$$TELEGRAM_CHAT_ID" "$$MSG_TEXT"); \
+	curl -sS -X POST "https://api.telegram.org/bot$${TELEGRAM_BOT_TOKEN}/sendMessage" \
+		-H "Content-Type: application/json" \
+		--data "$$PAYLOAD" \
+		>/dev/null && echo Sent.
+
+# Dummy rule so extra words in `make notify hello world` are not treated as errors.
+%:
+	@:
