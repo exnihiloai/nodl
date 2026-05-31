@@ -114,6 +114,47 @@ STRIPE_CURRENCY=usd
 
 `STRIPE_PRICE_ID` is optional. Without it, the checkout flow creates inline `price_data` from `STRIPE_PRODUCT_NAME`, `STRIPE_DEFAULT_AMOUNT`, and `STRIPE_CURRENCY`.
 
+## Audio-To-Markdown Prototype
+
+The repository includes a console-only prototype for turning an `.mp3` file into a Markdown document through Gemini. It is intentionally filesystem-based and does not use the database or a UI yet.
+
+Run the full pipeline inside the Docker web container:
+
+```sh
+GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl run path/to/audio.mp3 --transformer default
+```
+
+`transcribe` is accepted as an alias for the same happy-path run:
+
+```sh
+GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl transcribe path/to/audio.mp3 --transformer default
+```
+
+Required environment:
+
+```sh
+GEMINI_API_KEY=...
+```
+
+Optional model overrides:
+
+```sh
+NODL_GEMINI_TRANSCRIBER_MODEL=gemini-3.1-flash-lite
+NODL_GEMINI_TRANSFORMER_MODEL=gemini-3.1-flash-lite
+```
+
+Transformers are local folders:
+
+```text
+transformers/
+  default/
+    instructions.md
+    templates/
+      example.md
+```
+
+Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `document.md`, and `metadata.json`. The generated `work/` directory is ignored by git.
+
 ## Observability
 
 OpenTelemetry export can be enabled with environment variables:
