@@ -77,6 +77,7 @@ A task is not done until all applicable items below are complete:
   - data-impacting migrations;
   - production deployment;
   - irreversible or destructive operations.
+- When designing a user experience, read and respect `doc/design-input/ux/ux-guidelines.md`
 
 ### Implementation Rules
 
