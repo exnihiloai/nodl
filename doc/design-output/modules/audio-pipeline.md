@@ -2,13 +2,15 @@
 
 ## Purpose
 
-The audio pipeline is a console-only prototype for turning an `.mp3` audio file into a Markdown document. It exists to validate the core flow before adding a user interface, database-backed persistence, document identity, versioning, or snapshotting.
+The audio pipeline turns audio into a Markdown document. It began as a console prototype and is now also used by the authenticated dashboard through a database-backed recording-session flow.
 
 The implemented flow is:
 
 ```text
 audio.mp3 -> Gemini transcription -> transcript.md -> filesystem transformer -> Gemini document transformation -> document.md
 ```
+
+Dashboard processing stores the original uploaded or recorded audio in Active Storage, normalizes non-MP3 inputs to MP3 with `ffmpeg`, runs this pipeline in an Active Job, and saves transcript/document content back to database records.
 
 ## Entry Point
 
@@ -17,6 +19,8 @@ The CLI entry point is:
 ```text
 bin/nodl
 ```
+
+The browser entry point is `GET /dashboard`, where an authenticated user can upload audio or record from the microphone.
 
 It is Rails-aware and loads the application environment before running. The main command is:
 
@@ -128,6 +132,16 @@ The files mean:
 
 The generated `work/` directory is ignored by git.
 
+## Dashboard Persistence
+
+The UI flow adds database records around the pipeline:
+
+- `RecordingSession` belongs to a workspace and creator, stores status, source kind, transformer handle, transcript text, error message, and processing timestamps.
+- `Document` belongs to a workspace and recording session, and stores generated Markdown content.
+- `TransformerProfile` belongs to a workspace and points at filesystem transformer folders. Each workspace gets one default profile for `transformers/default`.
+
+`RecordingSession` attaches the original audio through Active Storage and attaches a normalized MP3 only when `ffmpeg` conversion is required.
+
 ## Prompting
 
 The transcription prompt asks Gemini to produce a faithful transcript, preserve the speaker language, add speaker tags when multiple speakers are present, add punctuation and paragraphs where helpful, avoid summarization, and return only transcript text.
@@ -176,12 +190,8 @@ docker compose exec -e GEMINI_API_KEY web bin/nodl run private/test-data/intervi
 
 ## Current Boundaries
 
-The prototype intentionally does not include:
+The current implementation intentionally does not include:
 
-- UI
-- database tables or migrations
-- background jobs
-- authentication or tenant-aware ownership
 - document identity
 - document versioning
 - transformer snapshotting

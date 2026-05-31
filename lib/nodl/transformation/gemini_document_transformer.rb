@@ -1,4 +1,5 @@
 require_relative "../providers/gemini_client"
+require_relative "transformer_repository"
 
 module Nodl
   module Transformation

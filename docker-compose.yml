@@ -21,6 +21,11 @@ services:
     command: bash -lc "rm -f tmp/pids/server.pid && bin/rails db:prepare && (bin/rails tailwindcss:watch[always] & bin/rails server -b 0.0.0.0 -p 3000)"
     ports:
       - "3000:3000"
+    env_file:
+      - path: .env
+        required: false
+      - path: private/.env
+        required: false
     environment:
       RAILS_ENV: development
       DATABASE_URL: postgresql://${POSTGRES_USER:-nodl}:${POSTGRES_PASSWORD:-nodl_local_dev_change_me}@db:5432/${POSTGRES_DB:-nodl_development}

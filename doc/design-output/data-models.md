@@ -1,6 +1,6 @@
 # Data Models
 
-Source of truth: [`db/schema.rb`](../db/schema.rb) (ActiveRecord 8.1, schema version `2026_02_21_130252`).
+Source of truth: [`db/schema.rb`](../db/schema.rb) (ActiveRecord 8.1, schema version `2026_05_31_090100`).
 
 ## Entity Relationship Summary
 
@@ -8,6 +8,8 @@ Source of truth: [`db/schema.rb`](../db/schema.rb) (ActiveRecord 8.1, schema ver
 User ──< Membership >── Workspace
 User ──< AdminAuditEvent
 User (acting_admin) ──< AdminAuditEvent
+Workspace ──< RecordingSession ── Document
+Workspace ──< TransformerProfile
 ```
 
 ## users
@@ -55,7 +57,7 @@ Model: [`app/models/workspace.rb`](../app/models/workspace.rb)
 | usage_consumption | jsonb | NOT NULL, default {} | arbitrary key/value counters |
 | created_at / updated_at | datetime | NOT NULL | |
 
-Associations: `has_many :memberships, dependent: :destroy`, `has_many :users, through: :memberships`
+Associations: `has_many :memberships, dependent: :destroy`, `has_many :users, through: :memberships`, `has_many :recording_sessions`, `has_many :documents`, `has_many :transformer_profiles`
 
 Before validation: `ensure_slug` — generates `"<name-slug>-<6-char-random>"` if blank.
 
@@ -100,3 +102,11 @@ Scope: `recent_first` — `order(created_at: :desc)`.
 ## Migrations
 
 All migrations are in [`db/migrate/`](../db/migrate/). Prefer reversible migrations. Never edit historical migrations. Run `bin/rails db:migrate` and commit the updated `db/schema.rb`.
+
+## Audio Dashboard Models
+
+`transformer_profiles` stores workspace-local transformer catalog entries. Each workspace has one default profile for the filesystem transformer handle `default`.
+
+`recording_sessions` stores tenant-scoped dashboard processing state, including creator, status, source kind, transformer handle, transcript text, failure message, and processing timestamps. Original and normalized audio files are attached through Active Storage.
+
+`documents` stores generated Markdown output for a completed recording session. Document versioning and editing are not implemented yet.

@@ -1,77 +1,142 @@
 <% content_for :title, "Dashboard - Nodl" %>
 <% content_for :head do %>
-  <meta name="description" content="Your workspace dashboard." />
+  <meta name="description" content="Record audio, run transformers, and review generated documents." />
 <% end %>
 
-<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
-  <div class="container mx-auto px-4 max-w-6xl space-y-8">
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div data-testid="welcome-message">
-          <h1 class="card-title text-3xl">Welcome to your dashboard</h1>
-          <p class="text-base-content/70">Manage your account, workspace, and billing foundation.</p>
-        </div>
-        <div class="text-sm" data-testid="user-info">
-          <p class="text-base-content/60">Logged in as</p>
-          <p class="font-semibold text-base-content"><%= current_user.email %></p>
-        </div>
-      </div>
-    </div>
+<section class="bg-base-200 py-10">
+  <% if @workspace %>
+    <%= turbo_stream_from @workspace, :dashboard %>
+  <% end %>
 
-    <div class="grid lg:grid-cols-3 gap-6">
-      <section class="lg:col-span-2 card bg-base-100 shadow-xl">
-        <div class="card-body space-y-6">
-          <div class="space-y-2">
-            <h2 class="card-title text-2xl">Current workspace</h2>
-            <% if @workspace %>
-              <p class="text-base-content/70"><strong><%= @workspace.name %></strong> (<%= @workspace.slug %>)</p>
-              <div class="text-sm text-base-content/70">Plan: <%= @workspace.subscription_plan.capitalize %> · Billing: <%= @workspace.subscription_billing_cycle.capitalize %></div>
-            <% else %>
-              <p class="text-base-content/70">No workspace assigned.</p>
+  <div class="container mx-auto px-4 max-w-7xl space-y-8">
+    <header class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div data-testid="welcome-message">
+        <p class="text-sm font-semibold text-primary">Dashboard</p>
+        <h1 class="text-3xl font-bold text-base-content">Record, transcribe, transform</h1>
+        <p class="mt-2 max-w-2xl text-base-content/70">
+          Start a recording session, choose a transformer, and review generated Markdown documents in your workspace.
+        </p>
+      </div>
+      <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3 text-sm" data-testid="user-info">
+        <p class="text-base-content/60">Logged in as</p>
+        <p class="mb-3 font-semibold"><%= current_user.email %></p>
+        <p class="text-base-content/60">Current workspace</p>
+        <p class="font-semibold"><%= @workspace&.name || "No workspace assigned" %></p>
+      </div>
+    </header>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+        <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-semibold">New recording session</h2>
+            <p class="text-sm text-base-content/70">Upload an audio file or record from your microphone.</p>
+          </div>
+          <span class="badge badge-outline">MP3, WebM, MP4, OGG, AAC, FLAC, WAV</span>
+        </div>
+
+        <%= form_with model: @recording_session,
+                      url: recording_sessions_path,
+                      local: true,
+                      multipart: true,
+                      class: "space-y-5",
+                      data: { controller: "audio-recorder" } do |form| %>
+          <div class="grid gap-4 md:grid-cols-2">
+            <label class="form-control w-full">
+              <span class="label-text">Session title</span>
+              <%= form.text_field :title, class: "input input-bordered w-full", placeholder: "Team meeting, client call, voice note" %>
+            </label>
+
+            <label class="form-control w-full">
+              <span class="label-text">Transformer</span>
+              <%= form.select :transformer_handle,
+                              @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                              {},
+                              class: "select select-bordered w-full" %>
+            </label>
+          </div>
+
+          <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
+
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-box border border-base-300 p-4">
+              <h3 class="font-semibold">Upload audio</h3>
+              <p class="mt-1 text-sm text-base-content/70">Choose an existing recording. MP3 files skip normalization.</p>
+              <%= form.file_field :original_audio,
+                                  accept: "audio/*,video/webm,video/mp4",
+                                  class: "file-input file-input-bordered mt-4 w-full",
+                                  data: {
+                                    "audio-recorder-target": "uploadInput",
+                                    action: "change->audio-recorder#useUpload"
+                                  } %>
+            </div>
+
+            <div class="rounded-box border border-base-300 p-4">
+              <h3 class="font-semibold">Record microphone</h3>
+              <p class="mt-1 text-sm text-base-content/70">Records compact browser audio and normalizes it for processing.</p>
+              <input type="file"
+                     name="recording_session[original_audio]"
+                     class="hidden"
+                     data-audio-recorder-target="recordInput">
+              <div class="mt-4 flex flex-wrap items-center gap-3">
+                <button type="button" class="btn btn-primary" data-audio-recorder-target="recordButton" data-action="audio-recorder#start">Start recording</button>
+                <button type="button" class="btn btn-outline" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" disabled>Stop</button>
+                <span class="font-mono text-sm" data-audio-recorder-target="timer">00:00</span>
+              </div>
+              <p class="mt-3 text-sm text-base-content/70" data-audio-recorder-target="status">Microphone is ready when your browser allows recording.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-base-content/60">Processing runs in the background. Status and finished documents update automatically.</p>
+            <%= form.submit "Create session", class: "btn btn-success", data: { "audio-recorder-target": "submitButton" } %>
+          </div>
+        <% end %>
+      </section>
+
+      <aside class="space-y-6">
+        <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+          <h2 class="text-lg font-semibold">Transformers</h2>
+          <div class="mt-4 space-y-3">
+            <% @transformer_profiles.each do |profile| %>
+              <article class="rounded-box border border-base-300 p-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="font-medium"><%= profile.name %></h3>
+                    <p class="text-sm text-base-content/60"><%= profile.handle %></p>
+                  </div>
+                  <% if profile.default? %>
+                    <span class="badge badge-primary">Default</span>
+                  <% end %>
+                </div>
+              </article>
             <% end %>
           </div>
+        </section>
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <article class="card bg-primary text-primary-content">
-              <div class="card-body space-y-2">
-                <h3 class="card-title">Usage at a glance</h3>
-                <p>Scans: <%= @workspace&.usage_consumed_for(:scans) || 0 %> / <%= @workspace&.usage_limit_for(:scans, 0) || 0 %></p>
-                <p>Storage: <%= @workspace&.usage_consumed_for(:storage_mb) || 0 %>MB / <%= @workspace&.usage_limit_for(:storage_mb, 0) || 0 %>MB</p>
-              </div>
-            </article>
-            <article class="card bg-secondary text-secondary-content">
-              <div class="card-body space-y-2">
-                <h3 class="card-title">Quick links</h3>
-                <p>Use this space for product onboarding and module status.</p>
-              </div>
-            </article>
+        <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+          <h2 class="text-lg font-semibold">Workspace</h2>
+          <div class="mt-4 space-y-2">
+            <% @memberships.each do |membership| %>
+              <% workspace = membership.workspace %>
+              <%= button_to workspace.name,
+                            switch_workspace_path(workspace),
+                            method: :post,
+                            class: ["btn w-full justify-start", (workspace == @workspace ? "btn-primary" : "btn-outline")].join(" ") %>
+            <% end %>
           </div>
-        </div>
-      </section>
-
-      <section class="card bg-base-100 shadow-xl">
-        <div class="card-body space-y-4">
-          <h3 class="card-title">Workspace switcher</h3>
-          <% @memberships.each do |membership| %>
-            <% workspace = membership.workspace %>
-            <%= button_to workspace.name,
-                          switch_workspace_path(workspace),
-                          method: :post,
-                          class: ["btn justify-start", (workspace == @workspace ? "btn-primary" : "btn-outline")].join(" ") %>
-          <% end %>
-        </div>
-      </section>
+          <div class="divider"></div>
+          <div class="flex flex-col gap-2">
+            <%= link_to "Upgrade plan", payments_path, class: "btn btn-outline" %>
+            <%= button_to "Logout", logout_path, method: :post, class: "btn btn-error w-full" %>
+          </div>
+        </section>
+      </aside>
     </div>
 
-    <section class="card bg-base-100 shadow-xl">
-      <div class="card-body space-y-4">
-        <h3 class="card-title">Account management</h3>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <%= button_to "Logout", logout_path, method: :post, class: "btn btn-error" %>
-          <%= link_to "Upgrade plan", payments_path, class: "btn btn-success" %>
-          <%= link_to "Back to home", root_path, class: "btn btn-outline" %>
-        </div>
-      </div>
-    </section>
+    <div class="grid gap-6 xl:grid-cols-2">
+      <%= render "recording_sessions", recording_sessions: @recording_sessions %>
+      <%= render "finished_documents", documents: @documents %>
+    </div>
   </div>
 </section>

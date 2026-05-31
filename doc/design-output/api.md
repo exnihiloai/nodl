@@ -23,6 +23,9 @@ All routes are defined in [`config/routes.rb`](../config/routes.rb). The applica
 | Method | Path | Controller#Action | Notes |
 |---|---|---|---|
 | GET | `/dashboard` | `dashboard#show` | Requires login |
+| POST | `/recording_sessions` | `recording_sessions#create` | Creates tenant-scoped audio session, enqueues processing |
+| GET | `/recording_sessions/:id` | `recording_sessions#show` | Shows tenant-scoped session status, transcript, document link |
+| GET | `/documents/:id` | `documents#show` | Shows tenant-scoped generated Markdown document |
 | POST | `/workspaces/:id/switch` | `workspaces#switch` | Switch active workspace |
 | GET | `/payments` | `payments#show` | Pricing/checkout page (public but reads auth state) |
 | POST | `/payments/checkout` | `payments#checkout` | Requires login; redirects to Stripe |

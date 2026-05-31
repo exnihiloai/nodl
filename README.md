@@ -20,6 +20,8 @@ The local development workflow is Docker-only. You should not need a local Ruby,
 - Docker Compose v2
 - Make
 
+The application image includes `ffmpeg`, which is required to normalize browser microphone recordings and non-MP3 uploads before Gemini processing.
+
 ## Setup
 
 Build the development image:
@@ -57,6 +59,8 @@ For local environment overrides:
 ```sh
 cp .env.example .env
 ```
+
+The Docker `web` service loads `.env` and `private/.env` when present. Keep real secrets such as `GEMINI_API_KEY` in one of those local files, preferably `private/.env` for repo-private values.
 
 ## Daily Commands
 
@@ -114,9 +118,27 @@ STRIPE_CURRENCY=usd
 
 `STRIPE_PRICE_ID` is optional. Without it, the checkout flow creates inline `price_data` from `STRIPE_PRODUCT_NAME`, `STRIPE_DEFAULT_AMOUNT`, and `STRIPE_CURRENCY`.
 
-## Audio-To-Markdown Prototype
+## Audio Dashboard And Pipeline
 
-The repository includes a console-only prototype for turning an `.mp3` file into a Markdown document through Gemini. It is intentionally filesystem-based and does not use the database or a UI yet.
+Authenticated users can use `/dashboard` to create audio recording sessions, either by uploading an audio file or recording from the browser microphone. Browser recordings are stored as compact browser-native audio and normalized server-side with `ffmpeg` to MP3 for processing.
+
+Each dashboard session stores:
+
+- the original uploaded or recorded audio via Active Storage;
+- a normalized MP3 copy when conversion is required;
+- the generated transcript;
+- the generated Markdown document;
+- the selected transformer handle.
+
+Processing runs asynchronously through Active Job. The current implementation uses the existing Gemini-backed pipeline and filesystem transformer folders.
+
+Dashboard processing requires `GEMINI_API_KEY` in the Rails container environment. For local Docker development, set it in `.env` or `private/.env`, then restart the stack with `make down && make up`.
+
+Supported upload/recording inputs include MP3 plus common browser/audio formats that `ffmpeg` can decode, such as WebM/Opus, MP4/AAC, OGG, AAC, FLAC, and WAV.
+
+## Audio-To-Markdown CLI
+
+The repository also includes a console entry point for turning an `.mp3` file into a Markdown document through Gemini.
 
 Run the full pipeline inside the Docker web container:
 
@@ -153,7 +175,7 @@ transformers/
       example.md
 ```
 
-Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `document.md`, and `metadata.json`. The generated `work/` directory is ignored by git.
+Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `document.md`, and `metadata.json`. Dashboard processing stores the database records separately and keeps the generated `work/` directory ignored by git.
 
 ## Observability
 

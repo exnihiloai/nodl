@@ -2,31 +2,9 @@ require "test_helper"
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :rack_test
+  include ActiveJob::TestHelper
 
   private
-
-  def unique_email(prefix = "user")
-    "#{prefix}-#{SecureRandom.hex(4)}@example.test"
-  end
-
-  def create_user_with_workspace(email:, password: "Valid123", role: :user, active: true, workspace_name: nil)
-    user = User.create!(
-      email: email,
-      password: password,
-      password_confirmation: password,
-      role: role,
-      active: active
-    )
-
-    workspace = Workspace.create!(
-      name: workspace_name || "#{email.split("@").first.titleize} Workspace",
-      usage_limits: { scans: 1000, storage_mb: 1024 },
-      usage_consumption: { scans: 0, storage_mb: 0 }
-    )
-
-    Membership.create!(user: user, workspace: workspace, role: :owner)
-    user
-  end
 
   def register_via_ui(email:, password:)
     visit register_path
