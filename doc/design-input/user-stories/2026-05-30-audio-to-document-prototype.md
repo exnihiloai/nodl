@@ -19,6 +19,11 @@ As an engineer, bootstrapping this project, I want a simple and basic first impl
 - Use the existing tech stack and docker container for implementation.
 - A research spike helps with technology and model vendor selection: doc/design-input/spikes/spike-pipeline-prototype.md
 
+## Design Decisions 
+
+- The Gemini API shall be used for both text transformation LLM (transformer) and for speech to text (STT).
+- We want to use a version of Gemini 3.1 Flash.
+- The GEMINI_API_KEY, the GEMINI_PROJECT_NAME, and GEMINI_PROJECT_NUMBER are available in the .env file in folder ./private. A first test already worked and confirmed the gemini API can be invoked.
 
 ## Out of Scope
 
