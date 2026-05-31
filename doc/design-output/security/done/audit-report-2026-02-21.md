@@ -187,5 +187,5 @@ Resolved:
 | `docs/modules/payments.md` | F-008 (fixed), F-009 (fixed) |
 | `docs/modules/frontend.md` | F-010 (fixed via `docs/index.md` inclusion) |
 | `docs/modules/testing.md` | No findings |
-| `docs/adr/001-session-auth.md` | No findings |
-| `docs/adr/002-solid-stack.md` | No findings |
+| `doc/design-output/adr/001-session-auth.md` | No findings |
+| `doc/design-output/adr/002-solid-stack.md` | No findings |

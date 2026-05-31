@@ -114,6 +114,47 @@ STRIPE_CURRENCY=usd
 
 `STRIPE_PRICE_ID` is optional. Without it, the checkout flow creates inline `price_data` from `STRIPE_PRODUCT_NAME`, `STRIPE_DEFAULT_AMOUNT`, and `STRIPE_CURRENCY`.
 
+## Audio-To-Markdown Prototype
+
+The repository includes a console-only prototype for turning an `.mp3` file into a Markdown document through Gemini. It is intentionally filesystem-based and does not use the database or a UI yet.
+
+Run the full pipeline inside the Docker web container:
+
+```sh
+GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl run path/to/audio.mp3 --transformer default
+```
+
+`transcribe` is accepted as an alias for the same happy-path run:
+
+```sh
+GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl transcribe path/to/audio.mp3 --transformer default
+```
+
+Required environment:
+
+```sh
+GEMINI_API_KEY=...
+```
+
+Optional model overrides:
+
+```sh
+NODL_GEMINI_TRANSCRIBER_MODEL=gemini-3.1-flash-lite
+NODL_GEMINI_TRANSFORMER_MODEL=gemini-3.1-flash-lite
+```
+
+Transformers are local folders:
+
+```text
+transformers/
+  default/
+    instructions.md
+    templates/
+      example.md
+```
+
+Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `document.md`, and `metadata.json`. The generated `work/` directory is ignored by git.
+
 ## Observability
 
 OpenTelemetry export can be enabled with environment variables:
@@ -156,11 +197,10 @@ Optional JavaScript-specific system tests are guarded by environment flags where
 Project documentation lives under `doc/`:
 
 - `doc/index.md`
-- `doc/architecture.md`
-- `doc/data-models.md`
-- `doc/api.md`
-- `doc/modules/`
-- `doc/adr/`
+- `doc/design-input/` for user stories, domain notes, and exploratory design material.
+- `doc/design-output/` for accepted architecture, API, data model, module, security, and ADR documentation.
+- `doc/design-output/adr/`
+- `doc/third-party/` for copied or curated third-party reference material.
 
 ## Security
 
@@ -172,7 +212,15 @@ See `SECURITY.md` for vulnerability reporting guidance and `CONTRIBUTING.md` for
 
 ## License
 
-No open-source license has been selected yet. Add a `LICENSE` file before publishing the repository publicly.
+Copyright (c) 2026 ex-nihilo GmbH.
+
+Nodl is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`). See `LICENSE`.
+
+Commercial or proprietary licenses may be granted separately by ex-nihilo GmbH. Contact ex-nihilo GmbH for dual licensing terms.
+
+Some non-code material may use separate terms or be reserved. See `LICENSES.md` for repository licensing boundaries.
+
+The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo GmbH and are not licensed under the AGPL. See `TRADEMARKS.md`.
 
 <!-- BEGIN AGENT INSTRUCTIONS -->
 

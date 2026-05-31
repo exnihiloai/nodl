@@ -34,6 +34,12 @@ config/credentials/*.key
 /public/vite
 /app/assets/builds/*
 !/app/assets/builds/.keep
+/work/
+
+# Local transformer experiments; keep the default prototype transformer tracked.
+/transformers/*
+!/transformers/default/
+!/transformers/default/**
 
 # Test and coverage output
 /coverage
