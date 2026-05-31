@@ -33,7 +33,8 @@
                       data: { controller: "audio-recorder" } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
-          <div class="flex flex-wrap items-center justify-center gap-3">
+          <div class="relative isolate flex flex-wrap items-center justify-center gap-3">
+            <span data-audio-recorder-target="aura" class="voice-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-44 w-44" aria-hidden="true"></span>
             <%= form.button type: "button",
                             class: "btn btn-bouncy btn-primary btn-lg gap-2",
                             data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start" } do %>

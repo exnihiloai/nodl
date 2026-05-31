@@ -16,12 +16,15 @@ export default class extends Controller {
     "recordInput",
     "uploadInput",
     "sourceKind",
-    "submitButton"
+    "submitButton",
+    "aura"
   ]
 
   connect() {
     this.chunks = []
     this.seconds = 0
+    this.smoothedLevel = 0
+    this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
       this.recordButtonTarget.disabled = true
@@ -31,6 +34,7 @@ export default class extends Controller {
 
   disconnect() {
     this.stopTimer()
+    this.stopVisualizer()
     this.stopStream()
   }
 
@@ -56,6 +60,7 @@ export default class extends Controller {
       this.timerTarget.classList.remove("hidden")
       this.submitButtonTarget.disabled = true
       this.startTimer()
+      this.startVisualizer()
       this.updateStatus("Recording… speak naturally, then press Stop.")
     } catch (_error) {
       this.updateStatus("We couldn't access your microphone. Check your browser permissions and try again.")
@@ -68,6 +73,7 @@ export default class extends Controller {
 
     this.recorder.stop()
     this.stopTimer()
+    this.stopVisualizer()
     this.stopStream()
     this.stopButtonTarget.disabled = true
   }
@@ -134,6 +140,81 @@ export default class extends Controller {
 
     this.stream.getTracks().forEach((track) => track.stop())
     this.stream = null
+  }
+
+  startVisualizer() {
+    if (!this.hasAuraTarget || !this.stream) return
+
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      this.audioContext = new AudioContextClass()
+      if (this.audioContext.state === "suspended") this.audioContext.resume()
+
+      this.analyser = this.audioContext.createAnalyser()
+      this.analyser.fftSize = 1024
+      this.analyser.smoothingTimeConstant = 0.85
+      this.sourceNode = this.audioContext.createMediaStreamSource(this.stream)
+      this.sourceNode.connect(this.analyser)
+      this.levelData = new Uint8Array(this.analyser.fftSize)
+      this.smoothedLevel = 0
+
+      this.auraTarget.classList.remove("hidden")
+      this.auraTarget.classList.add("is-active")
+      this.renderAura()
+    } catch (_error) {
+      // Visualization is non-essential; recording continues without it.
+      this.stopVisualizer()
+    }
+  }
+
+  renderAura() {
+    if (!this.analyser) return
+
+    this.analyser.getByteTimeDomainData(this.levelData)
+    let sumSquares = 0
+    for (let i = 0; i < this.levelData.length; i += 1) {
+      const sample = (this.levelData[i] - 128) / 128
+      sumSquares += sample * sample
+    }
+    const rms = Math.sqrt(sumSquares / this.levelData.length)
+    const target = Math.min(1, rms * 4)
+
+    // Heavy exponential smoothing: gentle, breathing response — no nervous motion.
+    this.smoothedLevel += (target - this.smoothedLevel) * 0.08
+
+    if (this.reduceMotion) {
+      this.auraTarget.style.setProperty("--aura-scale", "1")
+      this.auraTarget.style.setProperty("--aura-opacity", (0.18 + this.smoothedLevel * 0.3).toFixed(3))
+    } else {
+      this.auraTarget.style.setProperty("--aura-scale", (0.85 + this.smoothedLevel * 0.5).toFixed(3))
+      this.auraTarget.style.setProperty("--aura-opacity", (0.25 + this.smoothedLevel * 0.5).toFixed(3))
+    }
+
+    this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
+  }
+
+  stopVisualizer() {
+    if (this.auraFrameId) {
+      window.cancelAnimationFrame(this.auraFrameId)
+      this.auraFrameId = null
+    }
+    if (this.sourceNode) {
+      this.sourceNode.disconnect()
+      this.sourceNode = null
+    }
+    if (this.analyser) {
+      this.analyser.disconnect()
+      this.analyser = null
+    }
+    if (this.audioContext) {
+      this.audioContext.close()
+      this.audioContext = null
+    }
+    if (this.hasAuraTarget) {
+      this.auraTarget.classList.add("hidden")
+      this.auraTarget.classList.remove("is-active")
+      this.auraTarget.style.setProperty("--aura-opacity", "0")
+    }
   }
 
   updateStatus(message) {

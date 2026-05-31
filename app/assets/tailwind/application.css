@@ -117,3 +117,37 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 0;
 }
+
+/* Voice-reactive recording aura: a soft, blurred blob behind the record button.
+   --aura-scale and --aura-opacity are driven (heavily smoothed) by the audio-recorder
+   Stimulus controller; the slow morph keeps it feeling alive without nervous motion. */
+.voice-aura {
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 68%);
+  filter: blur(22px);
+  opacity: var(--aura-opacity, 0);
+  border-radius: 42% 58% 55% 45% / 50% 45% 55% 50%;
+  transform: translate(-50%, -50%) scale(var(--aura-scale, 0.85));
+}
+
+.voice-aura.is-active {
+  animation: voice-aura-morph 9s ease-in-out infinite;
+}
+
+@keyframes voice-aura-morph {
+  0%,
+  100% {
+    border-radius: 42% 58% 55% 45% / 50% 45% 55% 50%;
+  }
+  33% {
+    border-radius: 58% 42% 48% 52% / 45% 55% 50% 50%;
+  }
+  66% {
+    border-radius: 50% 50% 58% 42% / 55% 42% 48% 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-aura.is-active {
+    animation: none;
+  }
+}
