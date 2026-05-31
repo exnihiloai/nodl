@@ -16,7 +16,7 @@ Design input documents describe what should be built, why it matters, and what c
 |---|---|
 | [design-input/architecture.md](design-input/architecture.md) | Architecture notes and design input |
 | [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
-| [design-input/user-stories/2026-05-30-audio-to-document-prototype.md](design-input/user-stories/2026-05-30-audio-to-document-prototype.md) | User story for the audio-to-document prototype |
+| [design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md](<design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md>) | User story for the audio-to-document prototype |
 | [design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md](<design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md>) | User story for OpenTelemetry export to self-hosted SigNoz |
 | [design-input/user-stories/YYYY-MM-DD example-user-story.md](<design-input/user-stories/YYYY-MM-DD example-user-story.md>) | User story template/example |
 
@@ -32,6 +32,7 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/modules/tenancy.md](design-output/modules/tenancy.md) | Workspace multi-tenancy and membership model |
 | [design-output/modules/admin.md](design-output/modules/admin.md) | Admin namespace, user management, audit events |
 | [design-output/modules/payments.md](design-output/modules/payments.md) | Stripe Checkout integration and webhook handling |
+| [design-output/modules/audio-pipeline.md](design-output/modules/audio-pipeline.md) | Console audio-to-Markdown prototype pipeline |
 | [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
 | [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 
