@@ -1,6 +1,6 @@
 <% content_for :title, "Dashboard - Nodl" %>
 <% content_for :head do %>
-  <meta name="description" content="Record audio, run transformers, and review generated documents." />
+  <meta name="description" content="Speak a thought and get a clean, structured document back." />
 <% end %>
 
 <section class="bg-base-200 py-10">
@@ -8,135 +8,92 @@
     <%= turbo_stream_from @workspace, :dashboard %>
   <% end %>
 
-  <div class="container mx-auto px-4 max-w-7xl space-y-8">
-    <header class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div data-testid="welcome-message">
-        <p class="text-sm font-semibold text-primary">Dashboard</p>
-        <h1 class="text-3xl font-bold text-base-content">Record, transcribe, transform</h1>
-        <p class="mt-2 max-w-2xl text-base-content/70">
-          Start a recording session, choose a transformer, and review generated Markdown documents in your workspace.
-        </p>
+  <div class="container mx-auto max-w-5xl px-4 space-y-10">
+    <% unless @workspace %>
+      <div class="rounded-box border border-base-300 bg-base-100 p-8 text-center">
+        <h1 class="text-2xl font-bold">No workspace assigned</h1>
+        <p class="mt-2 text-base-content/70">Ask an administrator to add you to a workspace to start recording.</p>
       </div>
-      <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3 text-sm" data-testid="user-info">
-        <p class="text-base-content/60">Logged in as</p>
-        <p class="mb-3 font-semibold"><%= current_user.email %></p>
-        <p class="text-base-content/60">Current workspace</p>
-        <p class="font-semibold"><%= @workspace&.name || "No workspace assigned" %></p>
-      </div>
-    </header>
+    <% else %>
+      <% first_run = @recording_sessions.none? %>
 
-    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
-        <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-xl font-semibold">New recording session</h2>
-            <p class="text-sm text-base-content/70">Upload an audio file or record from your microphone.</p>
-          </div>
-          <span class="badge badge-outline">MP3, WebM, MP4, OGG, AAC, FLAC, WAV</span>
-        </div>
+      <div class="rounded-box border border-base-300 bg-base-100 px-6 py-10 text-center shadow-sm" data-testid="record-hero">
+        <% if first_run %>
+          <h1 class="text-3xl font-bold">Speak. We'll structure it.</h1>
+          <p class="mx-auto mt-2 max-w-md text-base-content/70">Capture a thought out loud and get a clean document back.</p>
+        <% else %>
+          <h1 class="text-xl font-semibold">Capture a thought</h1>
+        <% end %>
 
         <%= form_with model: @recording_session,
                       url: recording_sessions_path,
                       local: true,
                       multipart: true,
-                      class: "space-y-5",
+                      class: "mt-6 flex flex-col items-center gap-4",
                       data: { controller: "audio-recorder" } do |form| %>
-          <div class="grid gap-4 md:grid-cols-2">
-            <label class="form-control w-full">
-              <span class="label-text">Session title</span>
-              <%= form.text_field :title, class: "input input-bordered w-full", placeholder: "Team meeting, client call, voice note" %>
-            </label>
-
-            <label class="form-control w-full">
-              <span class="label-text">Transformer</span>
-              <%= form.select :transformer_handle,
-                              @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
-                              {},
-                              class: "select select-bordered w-full" %>
-            </label>
-          </div>
-
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
-          <div class="grid gap-4 lg:grid-cols-2">
-            <div class="rounded-box border border-base-300 p-4">
-              <h3 class="font-semibold">Upload audio</h3>
-              <p class="mt-1 text-sm text-base-content/70">Choose an existing recording. MP3 files skip normalization.</p>
-              <%= form.file_field :original_audio,
-                                  accept: "audio/*,video/webm,video/mp4",
-                                  class: "file-input file-input-bordered mt-4 w-full",
-                                  data: {
-                                    "audio-recorder-target": "uploadInput",
-                                    action: "change->audio-recorder#useUpload"
-                                  } %>
-            </div>
-
-            <div class="rounded-box border border-base-300 p-4">
-              <h3 class="font-semibold">Record microphone</h3>
-              <p class="mt-1 text-sm text-base-content/70">Records compact browser audio and normalizes it for processing.</p>
-              <input type="file"
-                     name="recording_session[original_audio]"
-                     class="hidden"
-                     data-audio-recorder-target="recordInput">
-              <div class="mt-4 flex flex-wrap items-center gap-3">
-                <button type="button" class="btn btn-primary" data-audio-recorder-target="recordButton" data-action="audio-recorder#start">Start recording</button>
-                <button type="button" class="btn btn-outline" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" disabled>Stop</button>
-                <span class="font-mono text-sm" data-audio-recorder-target="timer">00:00</span>
-              </div>
-              <p class="mt-3 text-sm text-base-content/70" data-audio-recorder-target="status">Microphone is ready when your browser allows recording.</p>
-            </div>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <%= form.button type: "button",
+                            class: "btn btn-bouncy btn-primary btn-lg gap-2",
+                            data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start" } do %>
+              <span class="text-lg" aria-hidden="true">●</span> Record
+            <% end %>
+            <button type="button" class="btn btn-outline hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" disabled>Stop</button>
+            <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer">00:00</span>
           </div>
 
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-base-content/60">Processing runs in the background. Status and finished documents update automatically.</p>
-            <%= form.submit "Create session", class: "btn btn-success", data: { "audio-recorder-target": "submitButton" } %>
+          <label class="cursor-pointer text-sm text-base-content/60 hover:text-base-content hover:underline">
+            or upload audio
+            <%= form.file_field :original_audio,
+                                accept: "audio/*,video/webm,video/mp4",
+                                class: "hidden",
+                                data: {
+                                  "audio-recorder-target": "uploadInput",
+                                  action: "change->audio-recorder#useUpload"
+                                } %>
+          </label>
+
+          <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+            <span class="text-base-content/60">Output:</span>
+            <%= form.select :transformer_handle,
+                            @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                            {},
+                            class: "select select-sm select-bordered",
+                            data: { testid: "output-type-select" } %>
           </div>
+
+          <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
+
+          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
+
+          <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton" } %>
+
+          <input type="file"
+                 name="recording_session[original_audio]"
+                 class="hidden"
+                 data-audio-recorder-target="recordInput">
         <% end %>
-      </section>
+      </div>
 
-      <aside class="space-y-6">
-        <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
-          <h2 class="text-lg font-semibold">Transformers</h2>
-          <div class="mt-4 space-y-3">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <%= render "activity", recording_sessions: @recording_sessions %>
+
+        <aside class="space-y-3">
+          <h2 class="text-lg font-semibold">Output types</h2>
+          <ul class="rounded-box border border-base-300 bg-base-100">
             <% @transformer_profiles.each do |profile| %>
-              <article class="rounded-box border border-base-300 p-3">
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 class="font-medium"><%= profile.name %></h3>
-                    <p class="text-sm text-base-content/60"><%= profile.handle %></p>
-                  </div>
-                  <% if profile.default? %>
-                    <span class="badge badge-primary">Default</span>
-                  <% end %>
-                </div>
-              </article>
+              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0">
+                <span class="truncate text-sm font-medium"><%= profile.name %></span>
+                <% if profile.default? %>
+                  <span class="shrink-0 text-xs text-base-content/50">★ Default</span>
+                <% end %>
+              </li>
             <% end %>
-          </div>
-        </section>
-
-        <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
-          <h2 class="text-lg font-semibold">Workspace</h2>
-          <div class="mt-4 space-y-2">
-            <% @memberships.each do |membership| %>
-              <% workspace = membership.workspace %>
-              <%= button_to workspace.name,
-                            switch_workspace_path(workspace),
-                            method: :post,
-                            class: ["btn w-full justify-start", (workspace == @workspace ? "btn-primary" : "btn-outline")].join(" ") %>
-            <% end %>
-          </div>
-          <div class="divider"></div>
-          <div class="flex flex-col gap-2">
-            <%= link_to "Upgrade plan", payments_path, class: "btn btn-outline" %>
-            <%= button_to "Logout", logout_path, method: :post, class: "btn btn-error w-full" %>
-          </div>
-        </section>
-      </aside>
-    </div>
-
-    <div class="grid gap-6 xl:grid-cols-2">
-      <%= render "recording_sessions", recording_sessions: @recording_sessions %>
-      <%= render "finished_documents", documents: @documents %>
-    </div>
+          </ul>
+          <p class="text-xs text-base-content/50">Output types decide how your recording is turned into a document.</p>
+        </aside>
+      </div>
+    <% end %>
   </div>
 </section>

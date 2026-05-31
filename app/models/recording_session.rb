@@ -41,7 +41,7 @@ class RecordingSession < ApplicationRecord
       processing_started_at: Time.current,
       processing_completed_at: nil
     )
-    broadcast_dashboard_recording_sessions
+    broadcast_dashboard_activity
   end
 
   def mark_completed!(transcript_text:, document_content:, work_path:, generated_at: Time.current)
@@ -62,7 +62,7 @@ class RecordingSession < ApplicationRecord
         generated_at: generated_at
       )
     end
-    broadcast_dashboard
+    broadcast_dashboard_activity
   end
 
   def mark_failed!(message)
@@ -71,31 +71,17 @@ class RecordingSession < ApplicationRecord
       error_message: message.to_s.truncate(500),
       processing_completed_at: Time.current
     )
-    broadcast_dashboard_recording_sessions
+    broadcast_dashboard_activity
   end
 
   private
 
-  def broadcast_dashboard
-    broadcast_dashboard_recording_sessions
-    broadcast_dashboard_documents
-  end
-
-  def broadcast_dashboard_recording_sessions
+  def broadcast_dashboard_activity
     Turbo::StreamsChannel.broadcast_replace_to(
       dashboard_stream,
-      target: "dashboard_recording_sessions",
-      partial: "dashboard/recording_sessions",
+      target: "dashboard_activity",
+      partial: "dashboard/activity",
       locals: { recording_sessions: dashboard_recording_sessions }
-    )
-  end
-
-  def broadcast_dashboard_documents
-    Turbo::StreamsChannel.broadcast_replace_to(
-      dashboard_stream,
-      target: "dashboard_finished_documents",
-      partial: "dashboard/finished_documents",
-      locals: { documents: dashboard_documents }
     )
   end
 
@@ -105,10 +91,6 @@ class RecordingSession < ApplicationRecord
 
   def dashboard_recording_sessions
     workspace.recording_sessions.includes(:document, original_audio_attachment: :blob).recent_first.limit(DASHBOARD_RECENT_LIMIT)
-  end
-
-  def dashboard_documents
-    workspace.documents.includes(:recording_session).recent_first.limit(DASHBOARD_RECENT_LIMIT)
   end
 
   def assign_default_title

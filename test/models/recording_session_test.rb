@@ -55,7 +55,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
     assert_equal workspace, recording_session.document.workspace
   end
 
-  test "processing status broadcasts dashboard session replacement" do
+  test "processing status broadcasts dashboard activity replacement" do
     user = create_user_with_workspace
     workspace = user.workspaces.first
     recording_session = workspace.recording_sessions.create!(
@@ -66,15 +66,15 @@ class RecordingSessionTest < ActiveSupport::TestCase
 
     Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
       [ workspace, :dashboard ],
-      target: "dashboard_recording_sessions",
-      partial: "dashboard/recording_sessions",
+      target: "dashboard_activity",
+      partial: "dashboard/activity",
       locals: has_key(:recording_sessions)
     )
 
     recording_session.mark_processing!
   end
 
-  test "completed status broadcasts dashboard sessions and documents replacements" do
+  test "completed status broadcasts dashboard activity replacement" do
     user = create_user_with_workspace
     workspace = user.workspaces.first
     recording_session = workspace.recording_sessions.create!(
@@ -85,15 +85,9 @@ class RecordingSessionTest < ActiveSupport::TestCase
 
     Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
       [ workspace, :dashboard ],
-      target: "dashboard_recording_sessions",
-      partial: "dashboard/recording_sessions",
+      target: "dashboard_activity",
+      partial: "dashboard/activity",
       locals: has_key(:recording_sessions)
-    )
-    Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
-      [ workspace, :dashboard ],
-      target: "dashboard_finished_documents",
-      partial: "dashboard/finished_documents",
-      locals: has_key(:documents)
     )
 
     recording_session.mark_completed!(

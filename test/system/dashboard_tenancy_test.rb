@@ -36,12 +36,12 @@ class DashboardTenancyTest < ApplicationSystemTestCase
 
     login_via_ui(email: email, password: "Valid123")
 
-    assert_text "Record, transcribe, transform"
-    assert_text "New recording session"
+    assert_text "Speak. We'll structure it."
+    assert_text "Record"
     assert_text "Default Transformer"
-    assert_text "Recording sessions"
-    assert_text "Finished documents"
-    assert_text "No recording sessions yet."
+    assert_text "Recent"
+    assert_text "Output types"
+    assert_text "No recordings yet"
     assert_selector "turbo-cable-stream-source"
   end
 
@@ -50,16 +50,15 @@ class DashboardTenancyTest < ApplicationSystemTestCase
     user = create_user_with_workspace(email: email, password: "Valid123")
 
     login_via_ui(email: email, password: "Valid123")
-    fill_in "Session title", with: "Uploaded interview"
     attach_file "recording_session_original_audio", Rails.root.join("test", "fixtures", "files", "sample.mp3")
 
     assert_enqueued_with(job: ProcessRecordingSessionJob) do
-      click_button "Create session"
+      click_button "Create document"
     end
 
     assert_current_path dashboard_path, ignore_query: true
     assert_text "Recording session created. Processing has started."
-    assert_text "Uploaded interview"
-    assert_equal "Uploaded interview", user.workspaces.first.recording_sessions.first.title
+    assert_text "Untitled recording"
+    assert_equal "Untitled recording", user.workspaces.first.recording_sessions.first.title
   end
 end

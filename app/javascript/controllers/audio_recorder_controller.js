@@ -23,8 +23,10 @@ export default class extends Controller {
     this.chunks = []
     this.seconds = 0
     this.mimeOption = this.supportedMimeOption()
-    this.updateStatus(this.mimeOption ? "Microphone is ready when your browser allows recording." : "Microphone recording is not supported by this browser.")
-    if (!this.mimeOption) this.recordButtonTarget.disabled = true
+    if (!this.mimeOption) {
+      this.recordButtonTarget.disabled = true
+      this.updateStatus("Recording isn't supported in this browser — use “or upload audio” instead.")
+    }
   }
 
   disconnect() {
@@ -48,13 +50,15 @@ export default class extends Controller {
       this.recorder.addEventListener("stop", () => this.finishRecording())
       this.recorder.start()
       this.sourceKindTarget.value = "microphone"
-      this.recordButtonTarget.disabled = true
+      this.recordButtonTarget.classList.add("hidden")
+      this.stopButtonTarget.classList.remove("hidden")
       this.stopButtonTarget.disabled = false
+      this.timerTarget.classList.remove("hidden")
       this.submitButtonTarget.disabled = true
       this.startTimer()
-      this.updateStatus("Recording...")
+      this.updateStatus("Recording… speak naturally, then press Stop.")
     } catch (_error) {
-      this.updateStatus("Microphone access was not allowed.")
+      this.updateStatus("We couldn't access your microphone. Check your browser permissions and try again.")
       this.stopStream()
     }
   }
@@ -73,7 +77,8 @@ export default class extends Controller {
 
     this.recordInputTarget.value = ""
     this.sourceKindTarget.value = "upload"
-    this.updateStatus("Upload selected. Microphone recording will not be submitted.")
+    this.updateStatus("Uploading your audio…")
+    this.submit()
   }
 
   finishRecording() {
@@ -84,9 +89,16 @@ export default class extends Controller {
     transfer.items.add(file)
     this.recordInputTarget.files = transfer.files
     this.uploadInputTarget.value = ""
-    this.recordButtonTarget.disabled = false
-    this.submitButtonTarget.disabled = false
-    this.updateStatus(`Recording ready: ${filename}`)
+    this.updateStatus("Got it — structuring your notes…")
+    this.submit()
+  }
+
+  submit() {
+    if (this.submitting) return
+
+    this.submitting = true
+    this.submitButtonTarget.disabled = true
+    this.element.requestSubmit()
   }
 
   supportedMimeOption() {

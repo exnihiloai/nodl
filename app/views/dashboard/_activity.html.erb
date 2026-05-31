@@ -1,0 +1,50 @@
+<section id="dashboard_activity" class="space-y-3">
+  <div class="flex items-baseline justify-between">
+    <h2 class="text-lg font-semibold">Recent</h2>
+    <% if recording_sessions.any? %>
+      <span class="text-xs text-base-content/50"><%= pluralize(recording_sessions.size, "recording") %></span>
+    <% end %>
+  </div>
+
+  <% if recording_sessions.any? %>
+    <ul class="rounded-box border border-base-300 bg-base-100">
+      <% recording_sessions.each do |session| %>
+        <li id="<%= dom_id(session, :dashboard_row) %>" class="flex flex-col gap-2 border-t border-base-300 p-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex min-w-0 items-start gap-3">
+            <% if session.completed? %>
+              <span class="mt-1 text-success" title="Ready" aria-hidden="true">●</span>
+            <% elsif session.failed? %>
+              <span class="mt-1 text-error" title="Failed" aria-hidden="true">⚠</span>
+            <% else %>
+              <span class="mt-1 text-warning motion-safe:animate-pulse" title="Processing" aria-hidden="true">◐</span>
+            <% end %>
+            <div class="min-w-0">
+              <%= link_to session.title, recording_session_path(session), class: "block truncate font-medium hover:underline" %>
+              <p class="mt-0.5 text-xs text-base-content/50">
+                <%= time_ago_in_words(session.created_at) %> ago
+                <% if session.completed? && session.document %>
+                  · <%= session.document.transformer_handle.humanize %>
+                <% end %>
+              </p>
+            </div>
+          </div>
+
+          <div class="shrink-0 pl-7 sm:pl-0">
+            <% if session.completed? && session.document %>
+              <%= link_to "Open document", document_path(session.document), class: "btn btn-sm" %>
+            <% elsif session.failed? %>
+              <span class="text-sm text-base-content/60">Couldn't process — <%= link_to "view", recording_session_path(session), class: "link" %></span>
+            <% else %>
+              <span class="text-sm text-base-content/60">Structuring your notes…</span>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="rounded-box border border-dashed border-base-300 bg-base-100 p-8 text-center">
+      <p class="font-medium">No recordings yet</p>
+      <p class="mt-1 text-sm text-base-content/60">Press Record above to capture your first thought.</p>
+    </div>
+  <% end %>
+</section>
