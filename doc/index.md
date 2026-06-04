@@ -19,6 +19,7 @@ Design input documents describe what should be built, why it matters, and what c
 | [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | Suggested phased plan to build live transcription |
 | [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
 | [design-input/testing/testing-guidelines.md](design-input/testing/testing-guidelines.md) | Testing philosophy and coverage guidance for trusted product behavior |
+| [design-input/user-stories/2026-06-04-live-transcription.md](design-input/user-stories/2026-06-04-live-transcription.md) | User story for live transcription with speaker attribution |
 | [design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md](<design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md>) | User story for the audio-to-document prototype |
 | [design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md](<design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md>) | User story for OpenTelemetry export to self-hosted SigNoz |
 | [design-input/user-stories/YYYY-MM-DD example-user-story.md](<design-input/user-stories/YYYY-MM-DD example-user-story.md>) | User story template/example |
