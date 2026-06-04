@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   has_many :memberships, dependent: :destroy
   has_many :workspaces, through: :memberships
+  has_many :created_recording_sessions, class_name: "RecordingSession", foreign_key: :creator_id, inverse_of: :creator, dependent: :restrict_with_exception
   has_many :admin_audit_events, dependent: :destroy
   has_many :acting_admin_audit_events, class_name: "AdminAuditEvent", foreign_key: :acting_admin_id, inverse_of: :acting_admin, dependent: :destroy
 

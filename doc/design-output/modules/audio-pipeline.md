@@ -1,14 +1,16 @@
-# Audio-To-Markdown Prototype Pipeline
+# Audio-To-Markdown Pipeline
 
 ## Purpose
 
-The audio pipeline is a console-only prototype for turning an `.mp3` audio file into a Markdown document. It exists to validate the core flow before adding a user interface, database-backed persistence, document identity, versioning, or snapshotting.
+The audio pipeline turns audio into a Markdown document. It began as a console prototype and is now also used by the authenticated dashboard through a database-backed recording-session flow.
 
 The implemented flow is:
 
 ```text
 audio.mp3 -> Gemini transcription -> transcript.md -> filesystem transformer -> Gemini document transformation -> document.md
 ```
+
+Dashboard processing stores the original uploaded or recorded audio in Active Storage, normalizes non-MP3 inputs to MP3 with `ffmpeg`, runs this pipeline in an Active Job, and saves transcript/document content back to database records.
 
 ## Entry Point
 
@@ -17,6 +19,8 @@ The CLI entry point is:
 ```text
 bin/nodl
 ```
+
+The browser entry point is `GET /dashboard`, where an authenticated user can upload audio or record from the microphone.
 
 It is Rails-aware and loads the application environment before running. The main command is:
 
@@ -50,7 +54,7 @@ If the environment variables are absent, the CLI defaults both steps to `gemini-
 
 ## Implementation Shape
 
-The prototype lives under `lib/nodl/`:
+The reusable library code lives under `lib/nodl/`:
 
 ```text
 lib/nodl/
@@ -75,7 +79,9 @@ The important responsibilities are:
 - `Nodl::Transformation::GeminiDocumentTransformer` combines default instructions, transformer instructions, templates, and transcript into the document prompt.
 - `Nodl::Providers::GeminiClient` wraps Gemini REST calls with Ruby standard library HTTP and JSON APIs.
 
-## Filesystem Transformers
+`lib/nodl` is manually required library code. It is excluded from Rails Zeitwerk autoloading in [`config/application.rb`](../../../config/application.rb), along with `lib/observability`, because these libraries define their own require graph and do not follow Rails' one-constant-per-file convention.
+
+## Filesystem Transformers And Output Types
 
 Transformers are local folders. The folder name is the transformer handle:
 
@@ -96,6 +102,8 @@ transformers/
 ```
 
 The committed prototype includes only `transformers/default`. Other transformer folders are treated as local experiments and ignored by git.
+
+The dashboard presents transformer profiles as "Output types" in user-facing copy. Backend model names and columns still use `TransformerProfile` and `transformer_handle`.
 
 To create and use a local transformer:
 
@@ -127,6 +135,18 @@ The files mean:
 - `metadata.json`: source path, output paths, transformer handle, model names, Gemini file URI, and timestamps.
 
 The generated `work/` directory is ignored by git.
+
+## Dashboard Persistence And Live Updates
+
+The UI flow adds database records around the pipeline:
+
+- `RecordingSession` belongs to a workspace and creator, stores status, source kind, transformer handle, transcript text, error message, and processing timestamps.
+- `Document` belongs to a workspace and recording session, and stores generated Markdown content.
+- `TransformerProfile` belongs to a workspace and points at filesystem transformer folders. Each workspace gets one default profile for `transformers/default`.
+
+`RecordingSession` attaches the original audio through Active Storage and attaches a normalized MP3 only when `ffmpeg` conversion is required.
+
+`RecordingSession` also owns the dashboard live-update contract. Its status transition helpers broadcast one Turbo Stream replacement for `dashboard_activity` on `[workspace, :dashboard]`. The activity feed renders recent sessions and links to a generated document when a completed session has one.
 
 ## Prompting
 
@@ -176,14 +196,12 @@ docker compose exec -e GEMINI_API_KEY web bin/nodl run private/test-data/intervi
 
 ## Current Boundaries
 
-The prototype intentionally does not include:
+The current implementation intentionally does not include:
 
-- UI
-- database tables or migrations
-- background jobs
-- authentication or tenant-aware ownership
-- document identity
+- multiple documents per recording session
 - document versioning
+- output-type CRUD
+- re-transforming a recording as another output type
 - transformer snapshotting
 - PDF or Word template parsing
 

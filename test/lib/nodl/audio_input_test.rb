@@ -1,4 +1,5 @@
 require "test_helper"
+require "nodl/audio_input"
 
 class NodlAudioInputTest < ActiveSupport::TestCase
   test "accepts readable mp3 files" do

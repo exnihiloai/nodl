@@ -1,5 +1,7 @@
 require "test_helper"
 require "tmpdir"
+require "nodl/audio_input"
+require "nodl/working_directory"
 
 class NodlWorkingDirectoryTest < ActiveSupport::TestCase
   test "creates a timestamped session directory with expected paths" do

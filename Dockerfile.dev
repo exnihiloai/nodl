@@ -13,6 +13,7 @@ RUN apt-get update -qq && \
       build-essential \
       git \
       curl \
+      ffmpeg \
       libyaml-dev \
       pkg-config \
       libpq-dev \

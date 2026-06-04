@@ -6,15 +6,53 @@
       </div>
       <div class="navbar-end flex items-center gap-2">
         <%= render "shared/theme_toggle" %>
-        <div class="hidden lg:flex items-center gap-4">
-          <ul class="menu menu-horizontal px-1">
-            <li><%= link_to "Dashboard", dashboard_path, class: "rounded-btn", data: { testid: "nav-dashboard" } %></li>
-            <% if current_user&.admin? %>
-              <li><%= link_to "Admin", admin_users_path, class: "rounded-btn" %></li>
+
+        <ul class="menu menu-horizontal hidden px-1 lg:flex">
+          <li><%= link_to "Dashboard", dashboard_path, class: "rounded-btn", data: { testid: "nav-dashboard" } %></li>
+          <% if current_user&.admin? %>
+            <li><%= link_to "Admin", admin_users_path, class: "rounded-btn" %></li>
+          <% end %>
+        </ul>
+
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost gap-2" data-testid="account-menu">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+              <%= current_user.email.to_s[0]&.upcase %>
+            </span>
+            <span class="hidden max-w-[12rem] truncate text-sm sm:inline"><%= current_user.email %></span>
+          </div>
+          <div tabindex="0" class="dropdown-content z-50 mt-2 w-72 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+            <div class="px-3 py-2">
+              <p class="text-xs text-base-content/50">Signed in as</p>
+              <p class="truncate text-sm font-medium"><%= current_user.email %></p>
+            </div>
+
+            <% account_workspaces = current_user.memberships.includes(:workspace).order(:created_at).map(&:workspace) %>
+            <% if account_workspaces.any? %>
+              <div class="divider my-1"></div>
+              <p class="px-3 py-1 text-xs text-base-content/50">Workspace</p>
+              <ul class="menu menu-sm w-full">
+                <% account_workspaces.each do |workspace| %>
+                  <li>
+                    <%= button_to switch_workspace_path(workspace),
+                                  method: :post,
+                                  class: ["flex w-full items-center justify-between", (workspace == current_workspace ? "active" : "")].join(" ") do %>
+                      <span class="truncate"><%= workspace.name %></span>
+                      <% if workspace == current_workspace %>
+                        <span class="text-xs text-primary">Current</span>
+                      <% end %>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
             <% end %>
-            <li><%= link_to "Payments", payments_path, class: "rounded-btn" %></li>
-          </ul>
-          <%= button_to "Logout", logout_path, method: :post, class: "btn btn-ghost", data: { testid: "logout-btn-desktop" } %>
+
+            <div class="divider my-1"></div>
+            <ul class="menu menu-sm w-full">
+              <li><%= link_to "Upgrade plan", payments_path %></li>
+              <li><%= button_to "Log out", logout_path, method: :post, class: "w-full justify-start", data: { testid: "logout-btn-desktop" } %></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

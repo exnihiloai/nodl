@@ -1,77 +1,102 @@
 <% content_for :title, "Dashboard - Nodl" %>
 <% content_for :head do %>
-  <meta name="description" content="Your workspace dashboard." />
+  <meta name="description" content="Speak a thought and get a clean, structured document back." />
 <% end %>
 
-<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
-  <div class="container mx-auto px-4 max-w-6xl space-y-8">
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div data-testid="welcome-message">
-          <h1 class="card-title text-3xl">Welcome to your dashboard</h1>
-          <p class="text-base-content/70">Manage your account, workspace, and billing foundation.</p>
-        </div>
-        <div class="text-sm" data-testid="user-info">
-          <p class="text-base-content/60">Logged in as</p>
-          <p class="font-semibold text-base-content"><%= current_user.email %></p>
-        </div>
-      </div>
-    </div>
+<section class="bg-base-200 py-10">
+  <% if @workspace %>
+    <%= turbo_stream_from @workspace, :dashboard %>
+  <% end %>
 
-    <div class="grid lg:grid-cols-3 gap-6">
-      <section class="lg:col-span-2 card bg-base-100 shadow-xl">
-        <div class="card-body space-y-6">
-          <div class="space-y-2">
-            <h2 class="card-title text-2xl">Current workspace</h2>
-            <% if @workspace %>
-              <p class="text-base-content/70"><strong><%= @workspace.name %></strong> (<%= @workspace.slug %>)</p>
-              <div class="text-sm text-base-content/70">Plan: <%= @workspace.subscription_plan.capitalize %> · Billing: <%= @workspace.subscription_billing_cycle.capitalize %></div>
-            <% else %>
-              <p class="text-base-content/70">No workspace assigned.</p>
+  <div class="container mx-auto max-w-5xl px-4 space-y-10">
+    <% unless @workspace %>
+      <div class="rounded-box border border-base-300 bg-base-100 p-8 text-center">
+        <h1 class="text-2xl font-bold">No workspace assigned</h1>
+        <p class="mt-2 text-base-content/70">Ask an administrator to add you to a workspace to start recording.</p>
+      </div>
+    <% else %>
+      <% first_run = @recording_sessions.none? %>
+
+      <div class="rounded-box border border-base-300 bg-base-100 px-6 py-10 text-center shadow-sm" data-testid="record-hero">
+        <% if first_run %>
+          <h1 class="text-3xl font-bold">Speak. We'll structure it.</h1>
+          <p class="mx-auto mt-2 max-w-md text-base-content/70">Capture a thought out loud and get a clean document back.</p>
+        <% else %>
+          <h1 class="text-xl font-semibold">Capture a thought</h1>
+        <% end %>
+
+        <%= form_with model: @recording_session,
+                      url: recording_sessions_path,
+                      local: true,
+                      multipart: true,
+                      class: "mt-6 flex flex-col items-center gap-4",
+                      data: { controller: "audio-recorder", testid: "recording-form" } do |form| %>
+          <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
+
+          <div class="relative isolate flex flex-wrap items-center justify-center gap-3">
+            <span data-audio-recorder-target="aura" data-testid="recording-aura" class="voice-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-44 w-44" aria-hidden="true"></span>
+            <%= form.button type: "button",
+                            class: "btn btn-bouncy btn-primary btn-lg gap-2",
+                            data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start", testid: "record-button" } do %>
+              <span class="text-lg" aria-hidden="true">●</span> Record
             <% end %>
+            <button type="button" class="btn btn-outline hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" data-testid="stop-recording-button" disabled>Stop</button>
+            <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer" data-testid="recording-timer">00:00</span>
           </div>
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <article class="card bg-primary text-primary-content">
-              <div class="card-body space-y-2">
-                <h3 class="card-title">Usage at a glance</h3>
-                <p>Scans: <%= @workspace&.usage_consumed_for(:scans) || 0 %> / <%= @workspace&.usage_limit_for(:scans, 0) || 0 %></p>
-                <p>Storage: <%= @workspace&.usage_consumed_for(:storage_mb) || 0 %>MB / <%= @workspace&.usage_limit_for(:storage_mb, 0) || 0 %>MB</p>
-              </div>
-            </article>
-            <article class="card bg-secondary text-secondary-content">
-              <div class="card-body space-y-2">
-                <h3 class="card-title">Quick links</h3>
-                <p>Use this space for product onboarding and module status.</p>
-              </div>
-            </article>
+          <label class="cursor-pointer text-sm text-base-content/60 hover:text-base-content hover:underline">
+            or upload audio
+            <%= form.file_field :original_audio,
+                                accept: "audio/*,video/webm,video/mp4",
+                                class: "hidden",
+                                data: {
+                                  "audio-recorder-target": "uploadInput",
+                                  action: "change->audio-recorder#useUpload",
+                                  testid: "audio-upload-input"
+                                } %>
+          </label>
+
+          <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+            <span class="text-base-content/60">Output:</span>
+            <%= form.select :transformer_handle,
+                            @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                            {},
+                            class: "select select-sm select-bordered",
+                            data: { testid: "output-type-select" } %>
           </div>
-        </div>
-      </section>
 
-      <section class="card bg-base-100 shadow-xl">
-        <div class="card-body space-y-4">
-          <h3 class="card-title">Workspace switcher</h3>
-          <% @memberships.each do |membership| %>
-            <% workspace = membership.workspace %>
-            <%= button_to workspace.name,
-                          switch_workspace_path(workspace),
-                          method: :post,
-                          class: ["btn justify-start", (workspace == @workspace ? "btn-primary" : "btn-outline")].join(" ") %>
-          <% end %>
-        </div>
-      </section>
-    </div>
+          <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
 
-    <section class="card bg-base-100 shadow-xl">
-      <div class="card-body space-y-4">
-        <h3 class="card-title">Account management</h3>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <%= button_to "Logout", logout_path, method: :post, class: "btn btn-error" %>
-          <%= link_to "Upgrade plan", payments_path, class: "btn btn-success" %>
-          <%= link_to "Back to home", root_path, class: "btn btn-outline" %>
-        </div>
+          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
+
+          <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
+
+          <input type="file"
+                 name="recording_session[original_audio]"
+                 class="hidden"
+                 data-audio-recorder-target="recordInput"
+                 data-testid="recorded-audio-input">
+        <% end %>
       </div>
-    </section>
+
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <%= render "activity", recording_sessions: @recording_sessions %>
+
+        <aside class="space-y-3" data-testid="output-types-panel">
+          <h2 class="text-lg font-semibold">Output types</h2>
+          <ul class="rounded-box border border-base-300 bg-base-100">
+            <% @transformer_profiles.each do |profile| %>
+              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0">
+                <span class="truncate text-sm font-medium"><%= profile.name %></span>
+                <% if profile.default? %>
+                  <span class="shrink-0 text-xs text-base-content/50">★ Default</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+          <p class="text-xs text-base-content/50">Output types decide how your recording is turned into a document.</p>
+        </aside>
+      </div>
+    <% end %>
   </div>
 </section>

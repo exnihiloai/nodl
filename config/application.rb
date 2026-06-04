@@ -14,7 +14,10 @@ module Nodl
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    # nodl and observability are self-contained libraries wired with manual
+    # require/require_relative (and define multiple constants per file), so they
+    # must stay out of Zeitwerk to avoid double-loading/superclass-mismatch.
+    config.autoload_lib(ignore: %w[assets tasks nodl observability])
 
     # Configuration for the application, engines, and railties goes here.
     #

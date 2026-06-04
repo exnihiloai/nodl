@@ -26,6 +26,8 @@ def ensure_user_with_workspace!(email:, password:, role:)
   Membership.find_or_create_by!(user:, workspace:) do |membership|
     membership.role = :owner
   end
+
+  TransformerProfile.ensure_default_for!(workspace)
 end
 
 admin_password = SecureRandom.hex(12)

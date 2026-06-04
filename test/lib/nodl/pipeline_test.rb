@@ -1,5 +1,6 @@
 require "test_helper"
 require "tmpdir"
+require "nodl/pipeline"
 
 class NodlPipelineTest < ActiveSupport::TestCase
   FakeTranscription = Struct.new(:text, :file_uri, keyword_init: true)

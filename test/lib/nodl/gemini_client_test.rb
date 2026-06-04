@@ -1,5 +1,6 @@
 require "test_helper"
 require "tmpdir"
+require "nodl/providers/gemini_client"
 
 class NodlGeminiClientTest < ActiveSupport::TestCase
   FakeResponse = Struct.new(:code, :body, :headers, keyword_init: true) do

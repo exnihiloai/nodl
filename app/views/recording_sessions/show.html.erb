@@ -1,0 +1,41 @@
+<% content_for :title, "#{@recording_session.title} - Nodl" %>
+
+<section class="bg-base-200 py-10">
+  <div class="container mx-auto px-4 max-w-5xl space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <%= link_to "Back to dashboard", dashboard_path, class: "link link-hover text-sm" %>
+        <h1 class="mt-2 text-3xl font-bold"><%= @recording_session.title %></h1>
+        <p class="text-base-content/70">Transformer: <%= @recording_session.transformer_handle %></p>
+      </div>
+      <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= @recording_session.status.humanize %></span>
+    </div>
+
+    <% if @recording_session.failed? %>
+      <div class="alert alert-error">
+        <span><%= @recording_session.error_message %></span>
+      </div>
+    <% end %>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+        <h2 class="text-xl font-semibold">Transcript</h2>
+        <% if @recording_session.transcript_text.present? %>
+          <pre class="mt-4 whitespace-pre-wrap rounded-box bg-base-200 p-4 text-sm"><%= @recording_session.transcript_text %></pre>
+        <% else %>
+          <p class="mt-4 text-base-content/70">Transcript is not available yet.</p>
+        <% end %>
+      </section>
+
+      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+        <h2 class="text-xl font-semibold">Document</h2>
+        <% if @document %>
+          <p class="mt-2 text-sm text-base-content/70">Generated <%= l(@document.generated_at, format: :short) %></p>
+          <%= link_to "Open document", document_path(@document), class: "btn btn-primary mt-4" %>
+        <% else %>
+          <p class="mt-4 text-base-content/70">Document generation is not finished yet.</p>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</section>

@@ -7,7 +7,7 @@ class AuthenticationFlowTest < ApplicationSystemTestCase
     register_via_ui(email: email, password: "Valid123")
 
     assert_current_path dashboard_path, ignore_query: true
-    assert_selector "[data-testid='welcome-message']"
+    assert_selector "[data-testid='account-menu']"
     assert_text email
   end
 
@@ -18,7 +18,7 @@ class AuthenticationFlowTest < ApplicationSystemTestCase
     login_via_ui(email: email, password: "Valid123")
 
     assert_current_path dashboard_path, ignore_query: true
-    assert_selector "[data-testid='welcome-message']"
+    assert_selector "[data-testid='account-menu']"
 
     find("[data-testid='logout-btn-desktop']").click
 

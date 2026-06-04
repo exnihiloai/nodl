@@ -1,11 +1,10 @@
 require "pathname"
 require_relative "../error"
+require_relative "template"
+require_relative "transformer"
 
 module Nodl
   module Transformation
-    Template = Struct.new(:name, :path, :content, keyword_init: true)
-    Transformer = Struct.new(:handle, :path, :instructions, :templates, keyword_init: true)
-
     class TransformerRepository
       TEMPLATE_EXTENSIONS = %w[.md .markdown .txt].freeze
 

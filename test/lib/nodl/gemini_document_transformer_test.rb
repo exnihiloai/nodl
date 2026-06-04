@@ -1,4 +1,5 @@
 require "test_helper"
+require "nodl/transformation/gemini_document_transformer"
 
 class NodlGeminiDocumentTransformerTest < ActiveSupport::TestCase
   FakeClient = Struct.new(:captured, keyword_init: true) do
