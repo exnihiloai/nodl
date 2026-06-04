@@ -146,4 +146,32 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     get document_path(document)
     assert_response :not_found
   end
+
+  test "renders markdown document correctly as HTML" do
+    user = create_user_with_workspace(email: "document-render@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Completed session",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    document = user.workspaces.first.documents.create!(
+      recording_session: recording_session,
+      transformer_handle: "default",
+      title: "Beautiful doc",
+      content: "# Title Header\n\n- Item 1\n- Item 2\n\nThis is **bold** text.",
+      generated_at: Time.current
+    )
+
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    get document_path(document)
+    assert_response :success
+    assert_select "article.prose"
+    assert_select "h1", text: "Title Header"
+    assert_select "ul" do
+      assert_select "li", text: "Item 1"
+      assert_select "li", text: "Item 2"
+    end
+    assert_select "strong", text: "bold"
+  end
 end
