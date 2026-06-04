@@ -5,7 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+
+## [0.2.0] - 2026-06-05
+
+### Added
+
+- **Central Dashboard & Audio Recording Area:**
+  - Redesigned the dashboard into a unified "Record-to-Document" hub for seamless microphone voice recording and audio file uploads within the current workspace context.
+  - Added a voice-reactive aura in the recording area to provide instant visual feedback on audio level/voice activity during microphone recording.
+  - Added automatic generation of descriptive, timestamp-based titles for new recording sessions.
+- **Live Transcription with Mistral Voxtral:**
+  - Added live transcription directly in the browser during microphone recording via ActionCable and WebSockets, powered by Mistral Voxtral (leveraging dual streams for a low-latency fast preview and an authoritative slow stream).
+  - Implemented a robust fallback system: if live streaming fails, the final authoritative transcript and document are still seamlessly processed upon completion.
+- **Interactive Audio Player & Bi-directional Sync (Audio-Accessible):**
+  - Added a custom-built audio player with full controls (play/pause, seeking, volume adjustment) and speaker-colored waveform visualization.
+  - **Text-to-Audio Sync:** Clicking any word or cue in the transcript seeks the audio player to that precise timestamp.
+  - **Audio-to-Text Sync:** Playing or seeking audio highlights the corresponding word/segment in the transcript in real-time, scrolling the active cue into view.
+  - **Speaker Color-Coding (Diarization):** Assigned distinct colors to speakers in multi-speaker recordings. Speaker segments in both the transcript and the player waveform are tinted/underlined in their respective colors without relying on intrusive text labels. Single-speaker recordings remain clean and color-neutral.
+- **Safe & Elegant Document Rendering:**
+  - Added secure, typographically-optimized rendering of Markdown documents using `Kramdown` and `@tailwindcss/typography` to format headings, lists, links, emphasis, and paragraphs. Includes HTML sanitization and a safe plain-text fallback.
+- **Custom Transformers:**
+  - Added support for custom transformation profiles (templates) to flexibly convert generated transcripts into targeted Markdown formats (summaries, action items, meeting notes, etc.).
+
+### Changed
+
+- **Migration to Mistral Voxtral for Transcription:**
+  - Migrated the audio transcription pipeline from Google Gemini to Mistral Voxtral for superior diarization, segmentation, and word-level timestamp synchronicity. Gemini continues to be utilized for the subsequent document transformation phase.
+- **System and Integration Testing:**
+  - Added `chromium` and `chromium-driver` to the development Docker image (`Dockerfile.dev`) to support full end-to-end automated system tests.
+  - Added Minitest smoke/integration test coverage for the audio dashboard.
+- **Developer Guidelines & Repository Hygiene:**
+  - Clarified and updated agent instructions regarding the `private/` directory, treating it as a local, ignored companion repository.
+
+### Fixed
+
+- **Resolved Live Transcription Latency:** Fixed a multi-second delay in real-time Voxtral transcription to ensure rapid preview updates.
+- **Fixed Live Preview Text Collapse:** Resolved a visual issue where the live preview text color collapsed or flickered from orange to black.
+- **Zeitwerk Autoloading Compatibility:** Fixed a `superclass-mismatch` error by excluding manual libraries from Zeitwerk's autoloader in `config/application.rb`.
+
+
+## [0.1.1] - 2026-05-30
+
+### Changed
+
+- Renamed repository to `nodl`after copying from hotstone boiler plate project.
 
 ### Security
 
