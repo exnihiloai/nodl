@@ -12,22 +12,22 @@ class NodlVoxtralTranscriberTest < ActiveSupport::TestCase
       @diarize = diarize
       @timestamp_granularities = timestamp_granularities
       {
-        "text" => "Welcome. Thanks.",
+        "text" => "speaker_1: Welcome.\nspeaker_2: Thanks.",
         "language" => "en",
         "usage" => { "prompt_audio_seconds" => 12.5 },
         "segments" => [
           {
             "start" => 0.0,
             "end" => 1.2,
-            "speaker" => "Speaker 1",
-            "text" => "Welcome.",
+            "speaker" => "speaker_1",
+            "text" => "speaker_1: Welcome.",
             "words" => [ { "start" => 0.0, "end" => 0.8, "word" => "Welcome" } ]
           },
           {
             "start" => 1.3,
             "end" => 2.0,
-            "speaker" => "Speaker 2",
-            "text" => "Thanks.",
+            "speaker" => "speaker_2",
+            "text" => "speaker_2: Thanks.",
             "words" => [ { "start" => 1.3, "end" => 1.9, "word" => "Thanks" } ]
           }
         ]
@@ -43,10 +43,10 @@ class NodlVoxtralTranscriberTest < ActiveSupport::TestCase
 
     assert_equal true, client.diarize
     assert_equal %w[segment], client.timestamp_granularities
-    assert_equal "Speaker 1: Welcome.\nSpeaker 2: Thanks.", result.text
+    assert_equal "Welcome. Thanks.", result.text
     assert_equal "en", result.language
     assert_equal 12.5, result.audio_seconds
-    assert_equal "Speaker 1", result.segments.first.fetch("speaker")
+    assert_equal "speaker_1", result.segments.first.fetch("speaker")
     assert_equal "Welcome", result.segments.first.fetch("words").first.fetch("word")
     assert_equal 0.0, result.segments.first.fetch("words").first.fetch("start")
   end

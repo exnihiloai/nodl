@@ -87,8 +87,8 @@ class RecordingSessionTest < ActiveSupport::TestCase
     )
     Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
       recording_session.live_stream,
-      target: "live_transcript_panel",
-      partial: "recording_sessions/live_transcript_panel",
+      target: "live_transcript_status",
+      partial: "recording_sessions/live_transcript_status",
       locals: has_entries(recording_session: recording_session)
     )
 

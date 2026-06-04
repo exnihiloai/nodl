@@ -28,7 +28,7 @@
                        recording_session: @recording_session %>
           </div>
         <% elsif @recording_session.transcript_text.present? %>
-          <pre class="mt-4 whitespace-pre-wrap rounded-box bg-base-200 p-4 text-sm"><%= @recording_session.transcript_text %></pre>
+          <div class="mt-4 whitespace-pre-wrap rounded-box bg-base-200 p-4 text-sm leading-6 text-base-content"><%= @recording_session.transcript_text %></div>
         <% else %>
           <p class="mt-4 text-base-content/70">Transcript is not available yet.</p>
         <% end %>

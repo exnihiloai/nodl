@@ -43,7 +43,7 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: nil
     )
     broadcast_dashboard_activity
-    broadcast_live_transcript_panel
+    broadcast_live_transcript_status
   end
 
   def mark_completed!(transcript_text:, document_content:, work_path:, transcript_segments: nil, generated_title: nil, generated_at: Time.current)
@@ -79,7 +79,7 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: Time.current
     )
     broadcast_dashboard_activity
-    broadcast_live_transcript_panel
+    broadcast_live_transcript_status
   end
 
   def live_stream
@@ -132,6 +132,19 @@ class RecordingSession < ApplicationRecord
       live_stream,
       target: "live_transcript_panel",
       partial: "recording_sessions/live_transcript_panel",
+      locals: { recording_session: self }
+    )
+  end
+
+  # Updates only the status header (badge + helper text), leaving the live
+  # preview text in #live_transcript_segments untouched. Used while finalizing
+  # and on failure so the user keeps seeing what they just dictated instead of
+  # the panel blanking out.
+  def broadcast_live_transcript_status
+    Turbo::StreamsChannel.broadcast_replace_to(
+      live_stream,
+      target: "live_transcript_status",
+      partial: "recording_sessions/live_transcript_status",
       locals: { recording_session: self }
     )
   end

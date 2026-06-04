@@ -78,11 +78,13 @@
 
           <div class="hidden w-full max-w-2xl" data-audio-recorder-target="livePanelSlot">
             <section id="live_transcript_panel" class="rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
-              <div class="flex items-center justify-between gap-3">
-                <h2 class="text-sm font-semibold">Transcript</h2>
-                <span class="badge badge-warning badge-sm">Preview</span>
+              <div id="live_transcript_status">
+                <div class="flex items-center justify-between gap-3">
+                  <h2 class="text-sm font-semibold">Transcript</h2>
+                  <span class="badge badge-warning badge-sm">Preview</span>
+                </div>
+                <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
               </div>
-              <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
               <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
                 <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
               </div>

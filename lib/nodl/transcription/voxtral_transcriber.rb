@@ -55,16 +55,25 @@ module Nodl
         end
       end
 
+      # Leading "speaker_1:" / "Speaker 1:" label that Voxtral prepends to each
+      # diarized segment (and to each line of the top-level text).
+      SPEAKER_PREFIX = /\Aspeaker[\s_-]*\d+\s*:\s*/i
+
+      # The displayed/document transcript is clean flowing prose: no speaker
+      # labels and no per-segment line breaks (those read as choppy and
+      # confusing for single-speaker dictation). With diarization on, Voxtral
+      # puts "speaker_N:" labels into both the segment text and the top-level
+      # text, so we strip them and join with spaces. Speaker attribution and
+      # timestamps are preserved in the structured `segments` for later use.
       def transcript_text(raw_text, segments)
-        return raw_text.to_s.strip if segments.blank? || segments.none? { |segment| segment["speaker"].present? }
+        from_segments = segments.filter_map { |segment| strip_speaker_label(segment["text"]) }.join(" ")
+        return from_segments if from_segments.present?
 
-        segments.filter_map do |segment|
-          text = segment["text"].to_s.strip
-          next if text.blank?
+        raw_text.to_s.split("\n").filter_map { |line| strip_speaker_label(line) }.join(" ")
+      end
 
-          speaker = segment["speaker"].presence || "Speaker"
-          "#{speaker}: #{text}"
-        end.join("\n").strip.presence || raw_text.to_s.strip
+      def strip_speaker_label(text)
+        text.to_s.strip.sub(SPEAKER_PREFIX, "").strip.presence
       end
     end
   end
