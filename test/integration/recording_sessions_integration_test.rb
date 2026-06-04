@@ -25,6 +25,176 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_predicate recording_session.original_audio, :attached?
   end
 
+  test "authenticated user starts a microphone recording session without audio" do
+    user = create_user_with_workspace(email: "recording-live@example.test")
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert_no_enqueued_jobs do
+      post recording_sessions_path,
+           params: {
+             recording_session: {
+               source_kind: "microphone",
+               transformer_handle: "default"
+             }
+           },
+           as: :json
+    end
+
+    assert_response :created
+    payload = JSON.parse(response.body)
+    recording_session = user.workspaces.first.recording_sessions.find(payload.fetch("id"))
+    assert_predicate recording_session, :recording?
+    assert_equal recording_session_segments_path(recording_session), payload.fetch("segments_url")
+    assert_equal finalize_recording_session_path(recording_session), payload.fetch("finalize_url")
+    assert payload.fetch("live_stream_name").present?
+  end
+
+  test "finalizes microphone recording by attaching audio and enqueueing processing" do
+    user = create_user_with_workspace(email: "recording-finalize@example.test")
+    workspace = user.workspaces.first
+    recording_session = workspace.recording_sessions.create!(
+      creator: user,
+      title: "Live call",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert_enqueued_with(job: ProcessRecordingSessionJob, args: [ recording_session.id ]) do
+      post finalize_recording_session_path(recording_session),
+           params: {
+             recording_session: {
+               source_kind: "microphone",
+               original_audio: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+             }
+           },
+           headers: { "ACCEPT" => "application/json" }
+    end
+
+    assert_response :accepted
+    assert_predicate recording_session.reload, :processing?
+    assert_predicate recording_session.original_audio, :attached?
+  end
+
+  test "finalize works when no live segments were posted" do
+    user = create_user_with_workspace(email: "recording-finalize-no-segments@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Final only",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert_empty recording_session.live_transcript_segments
+    assert_enqueued_with(job: ProcessRecordingSessionJob, args: [ recording_session.id ]) do
+      post finalize_recording_session_path(recording_session),
+           params: {
+             recording_session: {
+               source_kind: "microphone",
+               original_audio: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+             }
+           },
+           headers: { "ACCEPT" => "application/json" }
+    end
+
+    assert_response :accepted
+    assert_predicate recording_session.reload, :processing?
+  end
+
+  test "accepts live segments for recording sessions" do
+    user = create_user_with_workspace(email: "recording-segment@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Live segment",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert_enqueued_with(job: TranscribeSegmentJob) do
+      post recording_session_segments_path(recording_session),
+           params: {
+             index: 2,
+             segment: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+           },
+           headers: { "ACCEPT" => "application/json" }
+    end
+
+    assert_response :accepted
+  end
+
+  test "live segments require authentication" do
+    user = create_user_with_workspace(email: "recording-segment-auth@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Auth segment",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+
+    assert_no_enqueued_jobs do
+      post recording_session_segments_path(recording_session),
+           params: {
+             index: 1,
+             segment: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+           }
+    end
+
+    assert_redirected_to login_path
+  end
+
+  test "live segments are workspace scoped" do
+    user = create_user_with_workspace(email: "recording-segment-owner@example.test")
+    other_user = create_user_with_workspace(email: "recording-segment-other@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Private segment",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+    post login_path, params: { email: other_user.email, password: "Valid123" }
+
+    assert_no_enqueued_jobs do
+      post recording_session_segments_path(recording_session),
+           params: {
+             index: 1,
+             segment: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+           },
+           headers: { "ACCEPT" => "application/json" }
+    end
+
+    assert_response :not_found
+  end
+
+  test "rejects live segments once a recording is no longer active" do
+    user = create_user_with_workspace(email: "recording-segment-closed@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Closed segment",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :processing
+    ) { |session| attach_sample_audio(session) }
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert_no_enqueued_jobs do
+      post recording_session_segments_path(recording_session),
+           params: {
+             index: 1,
+             segment: Rack::Test::UploadedFile.new(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "audio/mpeg")
+           },
+           headers: { "ACCEPT" => "application/json" }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "rejects unsupported uploads" do
     user = create_user_with_workspace(email: "recording-invalid@example.test")
     post login_path, params: { email: user.email, password: "Valid123" }

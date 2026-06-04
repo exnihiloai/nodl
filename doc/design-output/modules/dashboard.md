@@ -23,10 +23,10 @@ Implemented paths:
 2. Dashboard resolves the current workspace and ensures a default `TransformerProfile`.
 3. User records microphone audio or uploads an audio file.
 4. User chooses an output type.
-5. Form posts to `POST /recording_sessions`.
-6. A `RecordingSession` is created and `ProcessRecordingSessionJob` is enqueued.
-7. The job normalizes audio when required, runs the Gemini-backed pipeline, and marks the session completed or failed.
-8. The dashboard activity feed updates through Turbo Streams.
+5. Uploads post to `POST /recording_sessions`, create a `RecordingSession`, and enqueue `ProcessRecordingSessionJob`.
+6. Microphone recordings create a `recording` session immediately, stream live preview segments while recording, then finalize the full clip on Stop.
+7. The job normalizes audio when required, runs the Gemini-backed authoritative pipeline, and marks the session completed or failed.
+8. The live preview and dashboard activity feed update through Turbo Streams.
 
 The UI should continue to use "Output type" for users. "Transformer" remains an internal implementation term because `TransformerProfile`, `transformer_handle`, and filesystem transformer folders already exist.
 
@@ -74,9 +74,11 @@ Microphone mode:
 
 - Uses `MediaRecorder` in [`audio_recorder_controller.js`](../../../app/javascript/controllers/audio_recorder_controller.js).
 - Chooses the first supported compact MIME type from WebM/Opus, OGG/Opus, MP4, or AAC.
-- Uses a hidden file input to attach the recorded blob to `recording_session[original_audio]`.
-- Sets `recording_session[source_kind]` to `microphone`.
-- Auto-submits after recording stops.
+- Creates a `recording` session with `POST /recording_sessions` when Record is pressed.
+- Runs one continuous recorder for the uninterrupted final clip.
+- Runs a second recorder for silence-gated live preview segments when browser support allows it.
+- Posts preview segments to `POST /recording_sessions/:recording_session_id/segments`.
+- Posts the continuous clip to `POST /recording_sessions/:id/finalize` after recording stops.
 
 The browser should not create WAV audio by default. The backend keeps WAV support as an accepted fallback, but `ffmpeg` normalizes non-MP3 inputs to MP3 for pipeline processing.
 

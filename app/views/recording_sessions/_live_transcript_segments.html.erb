@@ -1,0 +1,11 @@
+<div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+  <% if segments.present? %>
+    <div class="space-y-2">
+      <% segments.each do |segment| %>
+        <p class="whitespace-pre-wrap text-sm leading-6 text-base-content"><%= segment %></p>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-base-content/60">Your live transcript will appear here a few seconds after you speak.</p>
+  <% end %>
+</div>

@@ -1,6 +1,7 @@
 class RecordingSession < ApplicationRecord
   MAX_AUDIO_SIZE = 100.megabytes
   DASHBOARD_RECENT_LIMIT = 8
+  LIVE_SEGMENT_CACHE = ActiveSupport::Cache::MemoryStore.new
   ALLOWED_AUDIO_CONTENT_TYPES = %w[
     audio/aac
     audio/flac
@@ -20,7 +21,7 @@ class RecordingSession < ApplicationRecord
   has_one_attached :original_audio
   has_one_attached :normalized_audio
 
-  enum :status, { pending: 0, processing: 1, completed: 2, failed: 3 }, default: :pending
+  enum :status, { pending: 0, processing: 1, completed: 2, failed: 3, recording: 4 }, default: :pending
   enum :source_kind, { upload: 0, microphone: 1 }, default: :upload
 
   normalizes :title, with: ->(title) { title.to_s.strip }
@@ -42,6 +43,7 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: nil
     )
     broadcast_dashboard_activity
+    broadcast_live_transcript_panel
   end
 
   def mark_completed!(transcript_text:, document_content:, work_path:, generated_at: Time.current)
@@ -62,7 +64,9 @@ class RecordingSession < ApplicationRecord
         generated_at: generated_at
       )
     end
+    clear_live_transcript_preview
     broadcast_dashboard_activity
+    broadcast_live_transcript_panel
   end
 
   def mark_failed!(message)
@@ -72,6 +76,29 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: Time.current
     )
     broadcast_dashboard_activity
+    broadcast_live_transcript_panel
+  end
+
+  def live_stream
+    [ self, :live ]
+  end
+
+  def live_segments_cache_key
+    "recording_sessions/#{id}/live_segments"
+  end
+
+  def live_transcript_segments
+    LIVE_SEGMENT_CACHE.fetch(live_segments_cache_key) { {} }.sort_by { |index, _text| index.to_i }.map(&:second)
+  end
+
+  def store_live_segment_text(index, text)
+    segments = LIVE_SEGMENT_CACHE.fetch(live_segments_cache_key) { {} }
+    segments[index.to_i] = text.to_s.strip
+    LIVE_SEGMENT_CACHE.write(live_segments_cache_key, segments, expires_in: 2.hours)
+  end
+
+  def clear_live_transcript_preview
+    LIVE_SEGMENT_CACHE.delete(live_segments_cache_key)
   end
 
   private
@@ -99,6 +126,8 @@ class RecordingSession < ApplicationRecord
 
   def original_audio_is_supported
     unless original_audio.attached?
+      return if recording?
+
       errors.add(:original_audio, "is required")
       return
     end
@@ -107,5 +136,14 @@ class RecordingSession < ApplicationRecord
     content_type = blob.content_type.to_s.split(";").first
     errors.add(:original_audio, "must be an audio file") unless ALLOWED_AUDIO_CONTENT_TYPES.include?(content_type)
     errors.add(:original_audio, "must be smaller than 100 MB") if blob.byte_size > MAX_AUDIO_SIZE
+  end
+
+  def broadcast_live_transcript_panel
+    Turbo::StreamsChannel.broadcast_replace_to(
+      live_stream,
+      target: "live_transcript_panel",
+      partial: "recording_sessions/live_transcript_panel",
+      locals: { recording_session: self, segments: live_transcript_segments }
+    )
   end
 end

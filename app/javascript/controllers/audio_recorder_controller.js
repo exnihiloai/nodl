@@ -7,6 +7,11 @@ const MIME_OPTIONS = [
   { mimeType: "audio/aac", extension: "aac" }
 ]
 
+const SEGMENT_MIN_MS = 800
+const SEGMENT_MAX_MS = 7000
+const SEGMENT_SILENCE_HANGOVER_MS = 350
+const SEGMENT_SPEECH_LEVEL = 0.06
+
 export default class extends Controller {
   static targets = [
     "recordButton",
@@ -17,13 +22,21 @@ export default class extends Controller {
     "uploadInput",
     "sourceKind",
     "submitButton",
-    "aura"
+    "aura",
+    "livePanelSlot",
+    "options"
   ]
+  static values = {
+    createUrl: String
+  }
 
   connect() {
     this.chunks = []
     this.seconds = 0
     this.smoothedLevel = 0
+    this.segmentIndex = 0
+    this.isRecording = false
+    this.segmentStopping = false
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
@@ -35,7 +48,9 @@ export default class extends Controller {
   disconnect() {
     this.stopTimer()
     this.stopVisualizer()
+    this.stopSegmentRecorder({ forceUpload: false, restart: false })
     this.stopStream()
+    this.unsubscribeFromLiveStream()
   }
 
   async start() {
@@ -43,6 +58,13 @@ export default class extends Controller {
 
     try {
       this.chunks = []
+      this.segmentIndex = 0
+      this.segmentStopping = false
+      this.sourceKindTarget.value = "microphone"
+      this.liveSession = await this.createRecordingSession()
+      this.subscribeToLiveStream(this.liveSession.live_stream_name)
+      this.showLivePanel()
+
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.recorder = new MediaRecorder(this.stream, {
         mimeType: this.mimeOption.mimeType,
@@ -53,29 +75,46 @@ export default class extends Controller {
       })
       this.recorder.addEventListener("stop", () => this.finishRecording())
       this.recorder.start()
-      this.sourceKindTarget.value = "microphone"
+      this.isRecording = true
       this.recordButtonTarget.classList.add("hidden")
       this.stopButtonTarget.classList.remove("hidden")
       this.stopButtonTarget.disabled = false
       this.timerTarget.classList.remove("hidden")
-      this.submitButtonTarget.disabled = true
+      this.setOptionsHidden(true)
       this.startTimer()
       this.startVisualizer()
       this.updateStatus("Recording… speak naturally, then press Stop.")
     } catch (_error) {
-      this.updateStatus("We couldn't access your microphone. Check your browser permissions and try again.")
+      this.updateStatus("We couldn't start recording. Check your microphone permissions and try again.")
+      this.isRecording = false
       this.stopStream()
+      if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.add("hidden")
+      this.unsubscribeFromLiveStream()
     }
   }
 
   stop() {
     if (!this.recorder || this.recorder.state === "inactive") return
 
+    this.isRecording = false
+    this.stopSegmentRecorder({ forceUpload: true, restart: false })
     this.recorder.stop()
     this.stopTimer()
     this.stopVisualizer()
     this.stopStream()
+    this.resetRecordingControls()
+  }
+
+  resetRecordingControls() {
     this.stopButtonTarget.disabled = true
+    this.stopButtonTarget.classList.add("hidden")
+    this.timerTarget.classList.add("hidden")
+    this.recordButtonTarget.classList.remove("hidden")
+    this.setOptionsHidden(false)
+  }
+
+  setOptionsHidden(hidden) {
+    if (this.hasOptionsTarget) this.optionsTarget.classList.toggle("hidden", hidden)
   }
 
   useUpload() {
@@ -91,12 +130,7 @@ export default class extends Controller {
     const blob = new Blob(this.chunks, { type: this.mimeOption.mimeType })
     const filename = `microphone-recording-${Date.now()}.${this.mimeOption.extension}`
     const file = new File([blob], filename, { type: this.mimeOption.mimeType })
-    const transfer = new DataTransfer()
-    transfer.items.add(file)
-    this.recordInputTarget.files = transfer.files
-    this.uploadInputTarget.value = ""
-    this.updateStatus("Got it — structuring your notes…")
-    this.submit()
+    this.finalizeRecording(file)
   }
 
   submit() {
@@ -105,6 +139,68 @@ export default class extends Controller {
     this.submitting = true
     this.submitButtonTarget.disabled = true
     this.element.requestSubmit()
+  }
+
+  async createRecordingSession() {
+    const formData = new FormData(this.element)
+    formData.delete("recording_session[original_audio]")
+    formData.set("recording_session[source_kind]", "microphone")
+
+    const response = await window.fetch(this.createUrlValue, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      body: formData
+    })
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}))
+      throw new Error(payload.error || "Recording session could not be created.")
+    }
+
+    return response.json()
+  }
+
+  async finalizeRecording(file) {
+    if (!this.liveSession) {
+      this.finishRecordingWithForm(file)
+      return
+    }
+
+    const formData = new FormData()
+    formData.set("recording_session[source_kind]", "microphone")
+    formData.set("recording_session[transformer_handle]", this.selectedTransformerHandle())
+    formData.set("recording_session[original_audio]", file)
+
+    this.updateStatus("Got it — finalizing the clean transcript and document…")
+
+    try {
+      const response = await window.fetch(this.liveSession.finalize_url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken()
+        },
+        body: formData
+      })
+
+      if (!response.ok) throw new Error("Finalize failed.")
+      // The live panel now owns finalizing/done status; clear the transient line.
+      this.updateStatus("")
+    } catch (_error) {
+      this.updateStatus("We couldn't finalize this recording. Please try recording again.")
+    }
+  }
+
+  finishRecordingWithForm(file) {
+    const transfer = new DataTransfer()
+    transfer.items.add(file)
+    this.recordInputTarget.files = transfer.files
+    this.uploadInputTarget.value = ""
+    this.updateStatus("Got it — structuring your notes…")
+    this.submit()
   }
 
   supportedMimeOption() {
@@ -178,6 +274,7 @@ export default class extends Controller {
     }
     const rms = Math.sqrt(sumSquares / this.levelData.length)
     const target = Math.min(1, rms * 4)
+    this.handleVoiceActivity(target)
 
     // Heavy exponential smoothing: gentle, breathing response — no nervous motion.
     this.smoothedLevel += (target - this.smoothedLevel) * 0.08
@@ -219,5 +316,127 @@ export default class extends Controller {
 
   updateStatus(message) {
     this.statusTarget.textContent = message
+  }
+
+  handleVoiceActivity(level) {
+    if (!this.isRecording || !this.liveSession) return
+
+    const now = Date.now()
+    if (level >= SEGMENT_SPEECH_LEVEL) {
+      this.lastSpeechAt = now
+      if (!this.segmentRecorder && !this.segmentStopping) {
+        this.startSegmentRecorder()
+      }
+      this.segmentHadSpeech = true
+    }
+
+    if (!this.segmentRecorder || this.segmentRecorder.state !== "recording") return
+
+    const segmentAge = now - this.segmentStartedAt
+    const silenceAge = now - (this.lastSpeechAt || now)
+    if (this.segmentHadSpeech && segmentAge >= SEGMENT_MIN_MS && silenceAge >= SEGMENT_SILENCE_HANGOVER_MS) {
+      this.stopSegmentRecorder({ forceUpload: true, restart: false })
+    } else if (segmentAge >= SEGMENT_MAX_MS) {
+      this.stopSegmentRecorder({ forceUpload: this.segmentHadSpeech, restart: this.isRecording })
+    }
+  }
+
+  startSegmentRecorder() {
+    if (!this.stream || !window.MediaRecorder) return
+
+    try {
+      this.segmentChunks = []
+      this.segmentHadSpeech = false
+      this.segmentStopping = false
+      this.segmentStartedAt = Date.now()
+      this.segmentRecorder = new MediaRecorder(this.stream, {
+        mimeType: this.mimeOption.mimeType,
+        audioBitsPerSecond: 64000
+      })
+      this.segmentRecorder.addEventListener("dataavailable", (event) => {
+        if (event.data.size > 0) this.segmentChunks.push(event.data)
+      })
+      this.segmentRecorder.addEventListener("stop", () => this.finishSegment())
+      this.segmentRecorder.start()
+    } catch (_error) {
+      this.segmentRecorder = null
+    }
+  }
+
+  stopSegmentRecorder({ forceUpload, restart }) {
+    if (!this.segmentRecorder || this.segmentRecorder.state === "inactive" || this.segmentStopping) return
+
+    this.segmentStopping = true
+    this.segmentForceUpload = forceUpload
+    this.segmentRestartAfterStop = restart
+    this.segmentRecorder.stop()
+  }
+
+  finishSegment() {
+    const shouldUpload = this.segmentForceUpload && this.segmentHadSpeech && this.segmentChunks.length > 0
+    const shouldRestart = this.segmentRestartAfterStop
+    this.segmentForceUpload = false
+    this.segmentRestartAfterStop = false
+
+    if (shouldUpload) {
+      const blob = new Blob(this.segmentChunks, { type: this.mimeOption.mimeType })
+      this.uploadSegment(blob, this.segmentIndex)
+      this.segmentIndex += 1
+    }
+
+    this.segmentChunks = []
+    this.segmentRecorder = null
+    this.segmentHadSpeech = false
+    this.segmentStopping = false
+
+    if (shouldRestart) this.startSegmentRecorder()
+  }
+
+  uploadSegment(blob, index) {
+    if (!this.liveSession || blob.size === 0) return
+
+    const formData = new FormData()
+    const filename = `recording-segment-${index}.${this.mimeOption.extension}`
+    formData.set("index", index.toString())
+    formData.set("segment", new File([blob], filename, { type: this.mimeOption.mimeType }))
+
+    window.fetch(this.liveSession.segments_url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      body: formData
+    }).catch(() => {})
+  }
+
+  subscribeToLiveStream(signedStreamName) {
+    if (!signedStreamName || !window.customElements) return
+
+    this.unsubscribeFromLiveStream()
+    this.liveStreamSource = document.createElement("turbo-cable-stream-source")
+    this.liveStreamSource.setAttribute("channel", "Turbo::StreamsChannel")
+    this.liveStreamSource.setAttribute("signed-stream-name", signedStreamName)
+    document.body.appendChild(this.liveStreamSource)
+  }
+
+  unsubscribeFromLiveStream() {
+    if (!this.liveStreamSource) return
+
+    this.liveStreamSource.remove()
+    this.liveStreamSource = null
+  }
+
+  showLivePanel() {
+    if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.remove("hidden")
+  }
+
+  selectedTransformerHandle() {
+    const field = this.element.querySelector("[name='recording_session[transformer_handle]']")
+    return field ? field.value : "default"
+  }
+
+  csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 }

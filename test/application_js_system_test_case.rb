@@ -1,8 +1,15 @@
 require "application_system_test_case"
+require "selenium/webdriver"
 
 class ApplicationJsSystemTestCase < ApplicationSystemTestCase
   if ENV["JS_SYSTEM_TESTS"] == "1"
-    driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1000 ]
+    driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1000 ] do |options|
+      options.add_argument("--no-sandbox")
+      options.add_argument("--disable-dev-shm-usage")
+      options.add_argument("--disable-gpu")
+      options.add_argument("--window-size=1400,1000")
+      options.binary = ENV.fetch("CHROME_BIN", "/usr/bin/chromium")
+    end
   end
 
   setup do

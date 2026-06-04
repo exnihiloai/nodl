@@ -17,6 +17,7 @@ Design input documents describe what should be built, why it matters, and what c
 | [design-input/architecture.md](design-input/architecture.md) | Architecture notes and design input |
 | [design-input/live-transcription/design.md](design-input/live-transcription/design.md) | Live transcription design: two-track hybrid (live preview + authoritative diarized batch pass) |
 | [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | Suggested phased plan to build live transcription |
+| [design-input/live-transcription/test-plan.md](design-input/live-transcription/test-plan.md) | Lean test plan: happy paths + obvious failure modes for live transcription |
 | [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
 | [design-input/testing/testing-guidelines.md](design-input/testing/testing-guidelines.md) | Testing philosophy and coverage guidance for trusted product behavior |
 | [design-input/user-stories/2026-06-04-live-transcription.md](design-input/user-stories/2026-06-04-live-transcription.md) | User story for live transcription with speaker attribution |

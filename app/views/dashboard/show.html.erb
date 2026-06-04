@@ -30,7 +30,11 @@
                       local: true,
                       multipart: true,
                       class: "mt-6 flex flex-col items-center gap-4",
-                      data: { controller: "audio-recorder", testid: "recording-form" } do |form| %>
+                      data: {
+                        controller: "audio-recorder",
+                        testid: "recording-form",
+                        "audio-recorder-create-url-value": recording_sessions_path
+                      } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
           <div class="relative isolate flex flex-wrap items-center justify-center gap-3">
@@ -44,32 +48,47 @@
             <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer" data-testid="recording-timer">00:00</span>
           </div>
 
-          <label class="cursor-pointer text-sm text-base-content/60 hover:text-base-content hover:underline">
-            or upload audio
-            <%= form.file_field :original_audio,
-                                accept: "audio/*,video/webm,video/mp4",
-                                class: "hidden",
-                                data: {
-                                  "audio-recorder-target": "uploadInput",
-                                  action: "change->audio-recorder#useUpload",
-                                  testid: "audio-upload-input"
-                                } %>
-          </label>
+          <div class="flex flex-col items-center gap-4" data-audio-recorder-target="options">
+            <label class="cursor-pointer text-sm text-base-content/60 hover:text-base-content hover:underline">
+              or upload audio
+              <%= form.file_field :original_audio,
+                                  accept: "audio/*,video/webm,video/mp4",
+                                  class: "hidden",
+                                  data: {
+                                    "audio-recorder-target": "uploadInput",
+                                    action: "change->audio-recorder#useUpload",
+                                    testid: "audio-upload-input"
+                                  } %>
+            </label>
 
-          <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
-            <span class="text-base-content/60">Output:</span>
-            <%= form.select :transformer_handle,
-                            @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
-                            {},
-                            class: "select select-sm select-bordered",
-                            data: { testid: "output-type-select" } %>
+            <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+              <span class="text-base-content/60">Output:</span>
+              <%= form.select :transformer_handle,
+                              @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                              {},
+                              class: "select select-sm select-bordered",
+                              data: { testid: "output-type-select" } %>
+            </div>
+
+            <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
           </div>
 
           <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
 
-          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
+          <div class="hidden w-full max-w-2xl" data-audio-recorder-target="livePanelSlot">
+            <section id="live_transcript_panel" class="rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
+              <div class="flex items-center justify-between gap-3">
+                <h2 class="text-sm font-semibold">Transcript</h2>
+                <span class="badge badge-warning badge-sm">Preview</span>
+              </div>
+              <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
+              <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+                <p class="text-sm text-base-content/60">Your live transcript will appear here a few seconds after you speak.</p>
+              </div>
+            </section>
+          </div>
 
-          <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
+          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
 
           <input type="file"
                  name="recording_session[original_audio]"

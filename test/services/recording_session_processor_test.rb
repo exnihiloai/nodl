@@ -25,11 +25,15 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
   class FakePipeline
     attr_reader :audio_path, :transformer_handle
 
+    def initialize(transcript_text: "Generated transcript")
+      @transcript_text = transcript_text
+    end
+
     def run(audio_path:, transformer_handle:, **)
       @audio_path = audio_path
       @transformer_handle = transformer_handle
       transcript = Tempfile.new("transcript")
-      transcript.write("Generated transcript")
+      transcript.write(@transcript_text)
       transcript.flush
       document = Tempfile.new("document")
       document.write("# Generated document")
@@ -55,6 +59,38 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_equal "Generated transcript", recording_session.transcript_text
     assert_equal "# Generated document", recording_session.document.content
     assert_equal "default", pipeline.transformer_handle
+  end
+
+  test "persists speaker-attributed transcript from the authoritative pipeline" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Interview",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    pipeline = FakePipeline.new(transcript_text: "Speaker 1: Welcome.\nSpeaker 2: Thanks for having me.")
+
+    RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: pipeline).call(recording_session)
+
+    assert_predicate recording_session.reload, :completed?
+    assert_equal "Speaker 1: Welcome.\nSpeaker 2: Thanks for having me.", recording_session.transcript_text
+    assert_equal "# Generated document", recording_session.document.content
+  end
+
+  test "persists single-speaker transcript without adding labels" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Solo note",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    pipeline = FakePipeline.new(transcript_text: "This is a single-speaker note.")
+
+    RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: pipeline).call(recording_session)
+
+    assert_predicate recording_session.reload, :completed?
+    assert_equal "This is a single-speaker note.", recording_session.transcript_text
+    assert_no_match(/Speaker \d+:/, recording_session.transcript_text)
   end
 
   test "marks the session failed when processing raises" do

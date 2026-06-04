@@ -14,7 +14,10 @@ Rails.application.routes.draw do
   post "/logout", to: "sessions#destroy"
 
   get "/dashboard", to: "dashboard#show"
-  resources :recording_sessions, only: %i[create show]
+  resources :recording_sessions, only: %i[create show] do
+    post :finalize, on: :member
+    resources :segments, only: %i[create], controller: "recording_segments"
+  end
   resources :documents, only: %i[show]
 
   resources :workspaces, only: [] do

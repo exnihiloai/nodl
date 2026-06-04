@@ -4,13 +4,13 @@
 
 The audio pipeline turns audio into a Markdown document. It began as a console prototype and is now also used by the authenticated dashboard through a database-backed recording-session flow.
 
-The implemented flow is:
+The authoritative implemented flow is:
 
 ```text
 audio.mp3 -> Gemini transcription -> transcript.md -> filesystem transformer -> Gemini document transformation -> document.md
 ```
 
-Dashboard processing stores the original uploaded or recorded audio in Active Storage, normalizes non-MP3 inputs to MP3 with `ffmpeg`, runs this pipeline in an Active Job, and saves transcript/document content back to database records.
+Dashboard processing stores the original uploaded or recorded audio in Active Storage, normalizes non-MP3 inputs to MP3 with `ffmpeg`, runs this pipeline in an Active Job, and saves transcript/document content back to database records. Microphone recordings also have a live preview track: the browser sends short silence-cut audio segments while recording, those segments are transcribed asynchronously, and their text is streamed back as throwaway preview text. The final whole-file pass remains the source of truth and replaces the preview when complete.
 
 ## Entry Point
 
@@ -148,9 +148,13 @@ The UI flow adds database records around the pipeline:
 
 `RecordingSession` also owns the dashboard live-update contract. Its status transition helpers broadcast one Turbo Stream replacement for `dashboard_activity` on `[workspace, :dashboard]`. The activity feed renders recent sessions and links to a generated document when a completed session has one.
 
+Microphone recording sessions can start in `recording` status before the final audio exists. During that state, `POST /recording_sessions/:recording_session_id/segments` accepts live preview segments and `TranscribeSegmentJob` broadcasts ordered preview text on `[recording_session, :live]`. `POST /recording_sessions/:id/finalize` attaches the uninterrupted full clip, moves the session into processing, and enqueues the normal `ProcessRecordingSessionJob`.
+
 ## Prompting
 
-The transcription prompt asks Gemini to produce a faithful transcript, preserve the speaker language, add speaker tags when multiple speakers are present, add punctuation and paragraphs where helpful, avoid summarization, and return only transcript text.
+The final transcription prompt asks Gemini to produce a faithful transcript, preserve the speaker language, add stable `Speaker 1:`, `Speaker 2:`, `Speaker 3:` labels only when multiple speakers are present, add punctuation and paragraphs where helpful, avoid summarization, and return only transcript text. Single-speaker recordings should not receive speaker labels.
+
+Live preview segments use a separate shorter prompt that explicitly avoids speaker labels. Preview text is not the saved transcript.
 
 The document transformation prompt is assembled from:
 

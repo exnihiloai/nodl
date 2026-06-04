@@ -1,0 +1,34 @@
+<section id="live_transcript_panel" class="rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
+  <div class="flex items-center justify-between gap-3">
+    <h2 class="text-sm font-semibold">Transcript</h2>
+    <% if recording_session.recording? %>
+      <span class="badge badge-warning badge-sm">Preview</span>
+    <% elsif recording_session.processing? %>
+      <span class="badge badge-info badge-sm">Finalizing</span>
+    <% elsif recording_session.completed? %>
+      <span class="badge badge-success badge-sm">Final</span>
+    <% elsif recording_session.failed? %>
+      <span class="badge badge-error badge-sm">Failed</span>
+    <% end %>
+  </div>
+
+  <% if recording_session.processing? %>
+    <p class="mt-1 text-xs text-base-content/60">Cleaning up your transcript — you can close this page, we'll keep working.</p>
+  <% elsif recording_session.failed? %>
+    <p class="mt-1 text-xs text-error"><%= recording_session.error_message.presence || "Final transcription failed." %></p>
+  <% elsif !recording_session.completed? %>
+    <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
+  <% end %>
+
+  <% if recording_session.completed? && recording_session.transcript_text.present? %>
+    <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+      <pre class="whitespace-pre-wrap text-sm leading-6 text-base-content"><%= recording_session.transcript_text %></pre>
+    </div>
+  <% elsif recording_session.failed? %>
+    <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+      <p class="text-sm text-base-content/70">The live preview is no longer available.</p>
+    </div>
+  <% else %>
+    <%= render "recording_sessions/live_transcript_segments", segments: segments %>
+  <% end %>
+</section>
