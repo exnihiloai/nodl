@@ -33,7 +33,6 @@ export default class extends Controller {
     this.smoothedLevel = 0
     this.fastPreviewText = ""
     this.slowPreviewText = ""
-    this.fastPreviewSinceStable = ""
     this.isRecording = false
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
@@ -59,7 +58,6 @@ export default class extends Controller {
       this.chunks = []
       this.fastPreviewText = ""
       this.slowPreviewText = ""
-      this.fastPreviewSinceStable = ""
       this.sourceKindTarget.value = "microphone"
       this.liveSession = await this.createRecordingSession()
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
@@ -393,11 +391,9 @@ export default class extends Controller {
   handleRealtimeMessage(data) {
     if (data.type === "fast_delta" && data.text) {
       this.fastPreviewText += data.text
-      this.fastPreviewSinceStable += data.text
       this.scheduleLivePreviewRender()
     } else if (data.type === "slow_delta" && data.text) {
       this.slowPreviewText += data.text
-      this.fastPreviewSinceStable = ""
       this.scheduleLivePreviewRender()
     } else if (data.type === "error") {
       this.updateStatus("Live preview stopped; the final transcript will still be generated.")
@@ -435,16 +431,29 @@ export default class extends Controller {
 
     const stable = transcript.querySelector("[data-live-stable]")
     const fast = transcript.querySelector("[data-live-fast]")
-    const stableText = this.slowPreviewText || ""
-    stable.textContent = stableText
-    fast.textContent = this.provisionalPreviewText()
+    const { confirmed, provisional } = this.splitPreview()
+    stable.textContent = confirmed
+    fast.textContent = provisional
     panel.scrollTop = panel.scrollHeight
   }
 
-  provisionalPreviewText() {
-    if (this.slowPreviewText) return this.fastPreviewSinceStable || ""
+  // The slow stream is the refined, confident transcript and is rendered in
+  // black; the fast stream runs ahead with a provisional guess. We show the
+  // confirmed words in black and only the still-unconfirmed tail of the fast
+  // text in orange, so confirmation fills in left-to-right instead of the
+  // orange line vanishing and reappearing as black.
+  splitPreview() {
+    const slowWords = this.tokenizePreview(this.slowPreviewText)
+    const fastWords = this.tokenizePreview(this.fastPreviewText)
+    const confirmed = (this.slowPreviewText || "").replace(/\s+$/, "")
+    const tail = fastWords.slice(slowWords.length)
+    const provisional = tail.length ? `${confirmed ? " " : ""}${tail.join(" ")}` : ""
+    return { confirmed, provisional }
+  }
 
-    return this.fastPreviewText || ""
+  tokenizePreview(text) {
+    const trimmed = (text || "").trim()
+    return trimmed ? trimmed.split(/\s+/) : []
   }
 
   arrayBufferToBase64(buffer) {
