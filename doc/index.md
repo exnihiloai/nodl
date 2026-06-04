@@ -16,9 +16,9 @@ Design input documents describe what should be built, why it matters, and what c
 |---|---|
 | [design-input/architecture.md](design-input/architecture.md) | Architecture notes and design input |
 | [design-input/custom-transformers/design.md](design-input/custom-transformers/design.md) | Custom transformers design: user-defined instructions + reference documents (.docx, .odt, .pdf, .md, .txt) |
-| [design-input/live-transcription/design.md](design-input/live-transcription/design.md) | Live transcription design: two-track hybrid (live preview + authoritative diarized batch pass) |
-| [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | Suggested phased plan to build live transcription |
-| [design-input/live-transcription/test-plan.md](design-input/live-transcription/test-plan.md) | Lean test plan: happy paths + obvious failure modes for live transcription |
+| [design-input/live-transcription/design.md](design-input/live-transcription/design.md) | ⚠️ **Outdated** (Gemini segmented-HTTP). Real implementation: [design-output/modules/live-transcription.md](design-output/modules/live-transcription.md) |
+| [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | ⚠️ **Outdated** plan for the abandoned Gemini approach |
+| [design-input/live-transcription/test-plan.md](design-input/live-transcription/test-plan.md) | ⚠️ **Outdated** test plan for the abandoned Gemini approach |
 | [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
 | [design-input/testing/testing-guidelines.md](design-input/testing/testing-guidelines.md) | Testing philosophy and coverage guidance for trusted product behavior |
 | [design-input/user-stories/2026-06-04-live-transcription.md](design-input/user-stories/2026-06-04-live-transcription.md) | User story for live transcription with speaker attribution |
@@ -40,6 +40,7 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/modules/payments.md](design-output/modules/payments.md) | Stripe Checkout integration and webhook handling |
 | [design-output/modules/dashboard.md](design-output/modules/dashboard.md) | Authenticated audio-to-document dashboard, recording UX, live activity feed |
 | [design-output/modules/audio-pipeline.md](design-output/modules/audio-pipeline.md) | Audio-to-Markdown pipeline used by CLI and dashboard processing |
+| [design-output/modules/live-transcription.md](design-output/modules/live-transcription.md) | Realtime Voxtral live preview, batch diarization, waveform precompute, and the synced audio player |
 | [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
 | [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 

@@ -66,6 +66,7 @@ lib/nodl/
   audio_input.rb
   working_directory.rb
   transcription/voxtral_transcriber.rb
+  audio/waveform_extractor.rb
   transformation/transformer_repository.rb
   transformation/gemini_document_transformer.rb
   providers/gemini_client.rb
@@ -79,7 +80,8 @@ The important responsibilities are:
 - `Nodl::Pipeline` orchestrates the run.
 - `Nodl::AudioInput` validates the source file. Only `.mp3` is supported.
 - `Nodl::WorkingDirectory` creates a run folder.
-- `Nodl::Transcription::VoxtralTranscriber` asks Mistral Voxtral for a diarized transcript with segment and word timestamps.
+- `Nodl::Transcription::VoxtralTranscriber` asks Mistral Voxtral for a diarized transcript with segment timestamps, then strips Voxtral's `speaker_1:` labels to produce clean flowing prose (speaker identity is kept in the structured segments).
+- `Nodl::Audio::WaveformExtractor` runs `ffmpeg` to reduce the audio to ~320 normalized peak values plus duration, so the player can draw the waveform instantly without a client-side download/decode.
 - `Nodl::Transformation::TransformerRepository` loads transformer instructions and templates from disk.
 - `Nodl::Transformation::GeminiDocumentTransformer` combines default instructions, transformer instructions, templates, and transcript into the document prompt.
 - `Nodl::Providers::GeminiClient` wraps Gemini REST calls with Ruby standard library HTTP and JSON APIs.
@@ -138,7 +140,7 @@ work/sessions/<run-id>/
 The files mean:
 
 - `audio.mp3`: copied source audio for the run.
-- `transcript.md`: speaker-prefixed transcript generated from the audio.
+- `transcript.md`: clean prose transcript (Voxtral's speaker labels stripped; speakers retained in the segments json).
 - `transcript.segments.json`: structured segment/word timestamp data returned by Voxtral.
 - `document.md`: Markdown document generated from the transcript and transformer.
 - `metadata.json`: source path, output paths, transformer handle, model names, transcript language/audio duration, and timestamps.
@@ -149,7 +151,7 @@ The generated `work/` directory is ignored by git.
 
 The UI flow adds database records around the pipeline:
 
-- `RecordingSession` belongs to a workspace and creator, stores status, source kind, transformer handle, transcript text, structured transcript segments, error message, and processing timestamps.
+- `RecordingSession` belongs to a workspace and creator, stores status, source kind, transformer handle, transcript text, structured transcript segments, precomputed `waveform_peaks` + `audio_duration`, error message, and processing timestamps.
 - `Document` belongs to a workspace and recording session, and stores generated Markdown content.
 - `TransformerProfile` belongs to a workspace and points at filesystem transformer folders. Each workspace gets one default profile for `transformers/default`.
 
@@ -161,7 +163,7 @@ Microphone recording sessions can start in `recording` status before the final a
 
 ## Prompting
 
-Voxtral batch transcription runs with diarization enabled and requests segment timestamp granularity. The pipeline converts speaker-attributed segments into speaker-prefixed plain text for the document prompt. Voxtral realtime preview does not support diarization, so preview text is plain and not saved as the final transcript.
+Voxtral batch transcription runs with diarization enabled and requests segment timestamp granularity. Voxtral returns `speaker_1:` labels in the text; the pipeline **strips** them and feeds clean prose to the document prompt, while keeping speaker identity in the structured segments. Voxtral realtime preview does not support diarization, so preview text is plain and not saved as the final transcript. The realtime preview architecture and the audio player are documented in [live-transcription.md](live-transcription.md).
 
 The document transformation prompt is assembled from:
 

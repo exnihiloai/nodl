@@ -107,6 +107,6 @@ All migrations are in [`db/migrate/`](../db/migrate/). Prefer reversible migrati
 
 `transformer_profiles` stores workspace-local transformer catalog entries. Each workspace has one default profile for the filesystem transformer handle `default`.
 
-`recording_sessions` stores tenant-scoped dashboard processing state, including creator, status, source kind, transformer handle, transcript text, failure message, and processing timestamps. Original and normalized audio files are attached through Active Storage.
+`recording_sessions` stores tenant-scoped dashboard processing state, including creator, status, source kind, transformer handle, transcript text, failure message, and processing timestamps. It also stores the structured transcript (`transcript_segments` jsonb: per-segment start/end/speaker/text) and the precomputed waveform (`waveform_peaks` jsonb + `audio_duration` float) used by the audio player. Original and normalized audio files are attached through Active Storage.
 
 `documents` stores generated Markdown output for a completed recording session. Document versioning and editing are not implemented yet.
