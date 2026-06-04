@@ -17,6 +17,19 @@ class RecordingSessionTest < ActiveSupport::TestCase
     assert_predicate recording_session, :valid?
   end
 
+  test "allows microphone recording sessions to start without audio" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Live recording",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+
+    assert_predicate recording_session, :valid?
+  end
+
   test "rejects unsupported original audio content type" do
     user = create_user_with_workspace
     recording_session = user.workspaces.first.recording_sessions.build(
@@ -45,12 +58,14 @@ class RecordingSessionTest < ActiveSupport::TestCase
 
     recording_session.mark_completed!(
       transcript_text: "Transcript",
+      transcript_segments: [ { "start" => 0.0, "end" => 1.0, "speaker" => "Speaker 1", "text" => "Transcript", "words" => [] } ],
       document_content: "# Document",
       work_path: "/tmp/session"
     )
 
     assert_predicate recording_session.reload, :completed?
     assert_equal "Transcript", recording_session.transcript_text
+    assert_equal "Speaker 1", recording_session.transcript_segments.first.fetch("speaker")
     assert_equal "# Document", recording_session.document.content
     assert_equal workspace, recording_session.document.workspace
   end
@@ -70,6 +85,12 @@ class RecordingSessionTest < ActiveSupport::TestCase
       partial: "dashboard/activity",
       locals: has_key(:recording_sessions)
     )
+    Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
+      recording_session.live_stream,
+      target: "live_transcript_status",
+      partial: "recording_sessions/live_transcript_status",
+      locals: has_entries(recording_session: recording_session)
+    )
 
     recording_session.mark_processing!
   end
@@ -88,6 +109,12 @@ class RecordingSessionTest < ActiveSupport::TestCase
       target: "dashboard_activity",
       partial: "dashboard/activity",
       locals: has_key(:recording_sessions)
+    )
+    Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
+      recording_session.live_stream,
+      target: "live_transcript_panel",
+      partial: "recording_sessions/live_transcript_panel",
+      locals: has_entries(recording_session: recording_session)
     )
 
     recording_session.mark_completed!(

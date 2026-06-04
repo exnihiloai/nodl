@@ -14,6 +14,10 @@ module Nodl
         path.join("transcript.md")
       end
 
+      def transcript_segments_path
+        path.join("transcript.segments.json")
+      end
+
       def document_path
         path.join("document.md")
       end

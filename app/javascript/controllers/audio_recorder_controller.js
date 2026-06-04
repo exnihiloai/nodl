@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { createConsumer } from "@rails/actioncable"
 
 const MIME_OPTIONS = [
   { mimeType: "audio/webm;codecs=opus", extension: "webm" },
@@ -17,13 +18,22 @@ export default class extends Controller {
     "uploadInput",
     "sourceKind",
     "submitButton",
-    "aura"
+    "aura",
+    "livePanelSlot",
+    "options"
   ]
+  static values = {
+    createUrl: String,
+    workletUrl: String
+  }
 
   connect() {
     this.chunks = []
     this.seconds = 0
     this.smoothedLevel = 0
+    this.fastPreviewText = ""
+    this.slowPreviewText = ""
+    this.isRecording = false
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
@@ -35,7 +45,10 @@ export default class extends Controller {
   disconnect() {
     this.stopTimer()
     this.stopVisualizer()
+    this.stopRealtimeTranscription()
+    this.cancelLivePreviewRender()
     this.stopStream()
+    this.unsubscribeFromLiveStream()
   }
 
   async start() {
@@ -43,6 +56,13 @@ export default class extends Controller {
 
     try {
       this.chunks = []
+      this.fastPreviewText = ""
+      this.slowPreviewText = ""
+      this.sourceKindTarget.value = "microphone"
+      this.liveSession = await this.createRecordingSession()
+      this.subscribeToLiveStream(this.liveSession.live_stream_name)
+      this.showLivePanel()
+
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.recorder = new MediaRecorder(this.stream, {
         mimeType: this.mimeOption.mimeType,
@@ -53,29 +73,48 @@ export default class extends Controller {
       })
       this.recorder.addEventListener("stop", () => this.finishRecording())
       this.recorder.start()
-      this.sourceKindTarget.value = "microphone"
+      this.isRecording = true
       this.recordButtonTarget.classList.add("hidden")
       this.stopButtonTarget.classList.remove("hidden")
       this.stopButtonTarget.disabled = false
       this.timerTarget.classList.remove("hidden")
-      this.submitButtonTarget.disabled = true
+      this.setOptionsHidden(true)
       this.startTimer()
       this.startVisualizer()
-      this.updateStatus("Recording… speak naturally, then press Stop.")
+      await this.startRealtimeTranscription()
+      this.updateStatus(this.realtimeSubscription ? "Recording… live preview is streaming." : "Recording… live preview is unavailable in this browser.")
     } catch (_error) {
-      this.updateStatus("We couldn't access your microphone. Check your browser permissions and try again.")
+      this.updateStatus("We couldn't start recording. Check your microphone permissions and try again.")
+      this.isRecording = false
+      this.stopRealtimeTranscription()
       this.stopStream()
+      if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.add("hidden")
+      this.unsubscribeFromLiveStream()
     }
   }
 
   stop() {
     if (!this.recorder || this.recorder.state === "inactive") return
 
+    this.isRecording = false
+    this.stopRealtimeTranscription()
     this.recorder.stop()
     this.stopTimer()
     this.stopVisualizer()
     this.stopStream()
+    this.resetRecordingControls()
+  }
+
+  resetRecordingControls() {
     this.stopButtonTarget.disabled = true
+    this.stopButtonTarget.classList.add("hidden")
+    this.timerTarget.classList.add("hidden")
+    this.recordButtonTarget.classList.remove("hidden")
+    this.setOptionsHidden(false)
+  }
+
+  setOptionsHidden(hidden) {
+    if (this.hasOptionsTarget) this.optionsTarget.classList.toggle("hidden", hidden)
   }
 
   useUpload() {
@@ -91,12 +130,7 @@ export default class extends Controller {
     const blob = new Blob(this.chunks, { type: this.mimeOption.mimeType })
     const filename = `microphone-recording-${Date.now()}.${this.mimeOption.extension}`
     const file = new File([blob], filename, { type: this.mimeOption.mimeType })
-    const transfer = new DataTransfer()
-    transfer.items.add(file)
-    this.recordInputTarget.files = transfer.files
-    this.uploadInputTarget.value = ""
-    this.updateStatus("Got it — structuring your notes…")
-    this.submit()
+    this.finalizeRecording(file)
   }
 
   submit() {
@@ -105,6 +139,67 @@ export default class extends Controller {
     this.submitting = true
     this.submitButtonTarget.disabled = true
     this.element.requestSubmit()
+  }
+
+  async createRecordingSession() {
+    const formData = new FormData(this.element)
+    formData.delete("recording_session[original_audio]")
+    formData.set("recording_session[source_kind]", "microphone")
+
+    const response = await window.fetch(this.createUrlValue, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      body: formData
+    })
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}))
+      throw new Error(payload.error || "Recording session could not be created.")
+    }
+
+    return response.json()
+  }
+
+  async finalizeRecording(file) {
+    if (!this.liveSession) {
+      this.finishRecordingWithForm(file)
+      return
+    }
+
+    const formData = new FormData()
+    formData.set("recording_session[source_kind]", "microphone")
+    formData.set("recording_session[transformer_handle]", this.selectedTransformerHandle())
+    formData.set("recording_session[original_audio]", file)
+
+    this.updateStatus("Got it — finalizing the clean transcript and document…")
+
+    try {
+      const response = await window.fetch(this.liveSession.finalize_url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken()
+        },
+        body: formData
+      })
+
+      if (!response.ok) throw new Error("Finalize failed.")
+      this.updateStatus("")
+    } catch (_error) {
+      this.updateStatus("We couldn't finalize this recording. Please try recording again.")
+    }
+  }
+
+  finishRecordingWithForm(file) {
+    const transfer = new DataTransfer()
+    transfer.items.add(file)
+    this.recordInputTarget.files = transfer.files
+    this.uploadInputTarget.value = ""
+    this.updateStatus("Got it — structuring your notes…")
+    this.submit()
   }
 
   supportedMimeOption() {
@@ -162,7 +257,6 @@ export default class extends Controller {
       this.auraTarget.classList.add("is-active")
       this.renderAura()
     } catch (_error) {
-      // Visualization is non-essential; recording continues without it.
       this.stopVisualizer()
     }
   }
@@ -179,7 +273,6 @@ export default class extends Controller {
     const rms = Math.sqrt(sumSquares / this.levelData.length)
     const target = Math.min(1, rms * 4)
 
-    // Heavy exponential smoothing: gentle, breathing response — no nervous motion.
     this.smoothedLevel += (target - this.smoothedLevel) * 0.08
 
     if (this.reduceMotion) {
@@ -217,7 +310,192 @@ export default class extends Controller {
     }
   }
 
+  async startRealtimeTranscription() {
+    if (!this.liveSession || !this.stream || !this.realtimeSupported()) return
+
+    try {
+      this.consumer ||= createConsumer()
+      this.realtimeSubscription = this.consumer.subscriptions.create(
+        {
+          channel: this.liveSession.realtime_channel,
+          recording_session_id: this.liveSession.id
+        },
+        {
+          received: (data) => this.handleRealtimeMessage(data)
+        }
+      )
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      this.pcmContext = new AudioContextClass()
+      if (this.pcmContext.state === "suspended") await this.pcmContext.resume()
+
+      await this.pcmContext.audioWorklet.addModule(this.workletUrlValue)
+      this.pcmSourceNode = this.pcmContext.createMediaStreamSource(this.stream)
+      this.pcmWorkletNode = new AudioWorkletNode(this.pcmContext, "audio-pcm-worklet")
+      this.pcmMuteNode = this.pcmContext.createGain()
+      this.pcmMuteNode.gain.value = 0
+      this.pcmWorkletNode.port.onmessage = (event) => {
+        if (!this.realtimeSubscription || !this.isRecording) return
+
+        this.realtimeSubscription.send({
+          type: "audio",
+          audio: this.arrayBufferToBase64(event.data)
+        })
+      }
+      this.pcmSourceNode.connect(this.pcmWorkletNode)
+      this.pcmWorkletNode.connect(this.pcmMuteNode)
+      this.pcmMuteNode.connect(this.pcmContext.destination)
+    } catch (_error) {
+      this.stopRealtimeTranscription()
+    }
+  }
+
+  realtimeSupported() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+    return Boolean(AudioContextClass && "AudioWorkletNode" in window)
+  }
+
+  stopRealtimeTranscription() {
+    this.cancelLivePreviewRender()
+    if (this.realtimeSubscription) {
+      this.realtimeSubscription.send({ type: "stop" })
+      this.consumer.subscriptions.remove(this.realtimeSubscription)
+      this.realtimeSubscription = null
+    }
+    if (this.pcmSourceNode) {
+      this.pcmSourceNode.disconnect()
+      this.pcmSourceNode = null
+    }
+    if (this.pcmWorkletNode) {
+      this.pcmWorkletNode.disconnect()
+      this.pcmWorkletNode.port.onmessage = null
+      this.pcmWorkletNode = null
+    }
+    if (this.pcmMuteNode) {
+      this.pcmMuteNode.disconnect()
+      this.pcmMuteNode = null
+    }
+    if (this.pcmContext) {
+      this.pcmContext.close()
+      this.pcmContext = null
+    }
+  }
+
+  cancelLivePreviewRender() {
+    if (!this.livePreviewFrameId) return
+
+    window.cancelAnimationFrame(this.livePreviewFrameId)
+    this.livePreviewFrameId = null
+  }
+
+  handleRealtimeMessage(data) {
+    if (data.type === "fast_delta" && data.text) {
+      this.fastPreviewText += data.text
+      this.scheduleLivePreviewRender()
+    } else if (data.type === "slow_delta" && data.text) {
+      this.slowPreviewText += data.text
+      this.scheduleLivePreviewRender()
+    } else if (data.type === "error") {
+      this.updateStatus("Live preview stopped; the final transcript will still be generated.")
+      this.stopRealtimeTranscription()
+    }
+  }
+
+  scheduleLivePreviewRender() {
+    if (this.livePreviewFrameId) return
+
+    this.livePreviewFrameId = window.requestAnimationFrame(() => {
+      this.livePreviewFrameId = null
+      this.renderLivePreview()
+    })
+  }
+
+  renderLivePreview() {
+    const panel = document.getElementById("live_transcript_segments")
+    if (!panel) return
+
+    const placeholder = panel.querySelector("[data-live-placeholder]")
+    if (placeholder) placeholder.remove()
+
+    let transcript = panel.querySelector("[data-live-transcript-wrapper]")
+    if (!transcript) {
+      transcript = document.createElement("div")
+      transcript.dataset.liveTranscriptWrapper = "true"
+      transcript.className = "whitespace-pre-wrap text-sm leading-6"
+      transcript.innerHTML = [
+        "<span data-live-stable class=\"text-base-content\"></span>",
+        "<span data-live-fast class=\"text-warning\"></span>"
+      ].join("")
+      panel.appendChild(transcript)
+    }
+
+    const stable = transcript.querySelector("[data-live-stable]")
+    const fast = transcript.querySelector("[data-live-fast]")
+    const { confirmed, provisional } = this.splitPreview()
+    stable.textContent = confirmed
+    fast.textContent = provisional
+    panel.scrollTop = panel.scrollHeight
+  }
+
+  // The slow stream is the refined, confident transcript and is rendered in
+  // black; the fast stream runs ahead with a provisional guess. We show the
+  // confirmed words in black and only the still-unconfirmed tail of the fast
+  // text in orange, so confirmation fills in left-to-right instead of the
+  // orange line vanishing and reappearing as black.
+  splitPreview() {
+    const slowWords = this.tokenizePreview(this.slowPreviewText)
+    const fastWords = this.tokenizePreview(this.fastPreviewText)
+    const confirmed = (this.slowPreviewText || "").replace(/\s+$/, "")
+    const tail = fastWords.slice(slowWords.length)
+    const provisional = tail.length ? `${confirmed ? " " : ""}${tail.join(" ")}` : ""
+    return { confirmed, provisional }
+  }
+
+  tokenizePreview(text) {
+    const trimmed = (text || "").trim()
+    return trimmed ? trimmed.split(/\s+/) : []
+  }
+
+  arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer)
+    let binary = ""
+    for (let i = 0; i < bytes.byteLength; i += 1) {
+      binary += String.fromCharCode(bytes[i])
+    }
+    return window.btoa(binary)
+  }
+
   updateStatus(message) {
     this.statusTarget.textContent = message
+  }
+
+  subscribeToLiveStream(signedStreamName) {
+    if (!signedStreamName || !window.customElements) return
+
+    this.unsubscribeFromLiveStream()
+    this.liveStreamSource = document.createElement("turbo-cable-stream-source")
+    this.liveStreamSource.setAttribute("channel", "Turbo::StreamsChannel")
+    this.liveStreamSource.setAttribute("signed-stream-name", signedStreamName)
+    document.body.appendChild(this.liveStreamSource)
+  }
+
+  unsubscribeFromLiveStream() {
+    if (!this.liveStreamSource) return
+
+    this.liveStreamSource.remove()
+    this.liveStreamSource = null
+  }
+
+  showLivePanel() {
+    if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.remove("hidden")
+  }
+
+  selectedTransformerHandle() {
+    const field = this.element.querySelector("[name='recording_session[transformer_handle]']")
+    return field ? field.value : "default"
+  }
+
+  csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 }

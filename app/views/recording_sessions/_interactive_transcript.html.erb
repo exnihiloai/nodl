@@ -1,0 +1,37 @@
+<%# Compact, clickable transcript. Consecutive segments from the same speaker
+    flow together as one paragraph; a new paragraph starts only when the speaker
+    changes. Each segment seeks to its start time on click and is highlighted in
+    its speaker color while it plays. Speaker colors/underlines and the speaker
+    count appear only when there is more than one speaker. %>
+<% colors = speaker_color_map(segments) %>
+<% multi = multi_speaker_transcript?(segments) %>
+<div class="text-sm leading-7 text-base-content" data-audio-player-target="transcript">
+  <% if multi %>
+    <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-base-content/70">
+      <span class="inline-flex items-center gap-1">
+        <%= icon("users", class: "size-4") %>
+        <%= pluralize(colors.size, "speaker") %>
+      </span>
+      <% colors.each_with_index do |(_speaker, color), index| %>
+        <span class="inline-flex items-center gap-1">
+          <span class="inline-block size-2 rounded-full" style="background-color:<%= color %>"></span>
+          Speaker <%= index + 1 %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% segments.chunk { |segment| segment["speaker"] }.each_with_index do |(speaker, run), run_index| %>
+    <% color = colors[speaker] %>
+    <% underline = ("text-decoration-line:underline;text-decoration-color:#{color};text-decoration-thickness:2px;text-underline-offset:3px" if multi && color) %>
+    <%= tag.p class: (run_index.zero? ? "m-0" : "mt-3 mb-0"), style: underline do %>
+      <% run.each do |segment| %>
+        <% text = strip_speaker_label(segment["text"]) %>
+        <% next if text.blank? %>
+        <%= tag.span text,
+                     class: "cursor-pointer rounded transition-colors hover:bg-base-300",
+                     data: { "audio-player-target": "cue", action: "click->audio-player#seekToCue", start: segment["start"], end: segment["end"], color: (color if multi) } %><%= " " %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

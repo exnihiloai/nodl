@@ -1,0 +1,9 @@
+<div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+  <% if recording_session.completed? && recording_session.transcript_text.present? %>
+    <div class="whitespace-pre-wrap text-sm leading-6 text-base-content"><%= recording_session.transcript_text %></div>
+  <% elsif recording_session.failed? %>
+    <p class="text-sm text-base-content/70">The live preview is no longer available.</p>
+  <% else %>
+    <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
+  <% end %>
+</div>

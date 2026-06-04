@@ -8,7 +8,8 @@ module Nodl
     HelpRequested = Class.new(StandardError)
 
     DEFAULT_TRANSFORMER = "default"
-    DEFAULT_MODEL = "gemini-3.1-flash-lite"
+    DEFAULT_TRANSCRIBER_MODEL = "voxtral-mini-latest"
+    DEFAULT_TRANSFORMER_MODEL = "gemini-3.1-flash-lite"
     COMMANDS = %w[run transcribe].freeze
 
     def initialize(argv, output: $stdout, error_output: $stderr)
@@ -52,7 +53,7 @@ module Nodl
         opts.on("--work-dir PATH", "Working sessions directory. Default: work/sessions") do |value|
           parsed_options[:work_dir] = Pathname.new(value)
         end
-        opts.on("--transcriber-model MODEL", "Gemini transcription model.") do |value|
+        opts.on("--transcriber-model MODEL", "Voxtral transcription model.") do |value|
           parsed_options[:transcriber_model] = value
         end
         opts.on("--transformer-model MODEL", "Gemini document transformation model.") do |value|
@@ -72,8 +73,8 @@ module Nodl
       options = {
         transformer: DEFAULT_TRANSFORMER,
         work_dir: Rails.root.join("work", "sessions"),
-        transcriber_model: ENV.fetch("NODL_GEMINI_TRANSCRIBER_MODEL", DEFAULT_MODEL),
-        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_MODEL)
+        transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
+        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL)
       }
 
       option_parser.parse!(argv)

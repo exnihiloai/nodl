@@ -1,4 +1,5 @@
 class RecordingSession < ApplicationRecord
+  DEFAULT_TITLE = "Untitled recording".freeze
   MAX_AUDIO_SIZE = 100.megabytes
   DASHBOARD_RECENT_LIMIT = 8
   ALLOWED_AUDIO_CONTENT_TYPES = %w[
@@ -20,7 +21,7 @@ class RecordingSession < ApplicationRecord
   has_one_attached :original_audio
   has_one_attached :normalized_audio
 
-  enum :status, { pending: 0, processing: 1, completed: 2, failed: 3 }, default: :pending
+  enum :status, { pending: 0, processing: 1, completed: 2, failed: 3, recording: 4 }, default: :pending
   enum :source_kind, { upload: 0, microphone: 1 }, default: :upload
 
   normalizes :title, with: ->(title) { title.to_s.strip }
@@ -42,27 +43,35 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: nil
     )
     broadcast_dashboard_activity
+    broadcast_live_transcript_status
   end
 
-  def mark_completed!(transcript_text:, document_content:, work_path:, generated_at: Time.current)
+  def mark_completed!(transcript_text:, document_content:, work_path:, transcript_segments: nil, waveform_peaks: nil, audio_duration: nil, generated_title: nil, generated_at: Time.current)
+    attributes = {
+      status: :completed,
+      transcript_text: transcript_text,
+      transcript_segments: transcript_segments,
+      waveform_peaks: waveform_peaks,
+      audio_duration: audio_duration,
+      error_message: nil,
+      work_path: work_path,
+      processing_completed_at: generated_at
+    }
+    attributes[:title] = generated_title if generated_title.present?
+
     transaction do
-      update!(
-        status: :completed,
-        transcript_text: transcript_text,
-        error_message: nil,
-        work_path: work_path,
-        processing_completed_at: generated_at
-      )
+      update!(attributes)
       document&.destroy!
       create_document!(
         workspace: workspace,
         transformer_handle: transformer_handle,
-        title: title,
+        title: self.title,
         content: document_content,
         generated_at: generated_at
       )
     end
     broadcast_dashboard_activity
+    broadcast_live_transcript_panel
   end
 
   def mark_failed!(message)
@@ -72,6 +81,22 @@ class RecordingSession < ApplicationRecord
       processing_completed_at: Time.current
     )
     broadcast_dashboard_activity
+    broadcast_live_transcript_status
+  end
+
+  def live_stream
+    [ self, :live ]
+  end
+
+  # Audio to play back in the app. Prefer the normalized copy when present: it
+  # is what Voxtral transcribed (so timestamps line up exactly) and always has a
+  # reliable duration, unlike raw microphone WebM.
+  def playback_audio
+    normalized_audio.attached? ? normalized_audio : original_audio
+  end
+
+  def default_title?
+    title == DEFAULT_TITLE
   end
 
   private
@@ -94,11 +119,13 @@ class RecordingSession < ApplicationRecord
   end
 
   def assign_default_title
-    self.title = "Untitled recording" if title.blank?
+    self.title = DEFAULT_TITLE if title.blank?
   end
 
   def original_audio_is_supported
     unless original_audio.attached?
+      return if recording?
+
       errors.add(:original_audio, "is required")
       return
     end
@@ -107,5 +134,27 @@ class RecordingSession < ApplicationRecord
     content_type = blob.content_type.to_s.split(";").first
     errors.add(:original_audio, "must be an audio file") unless ALLOWED_AUDIO_CONTENT_TYPES.include?(content_type)
     errors.add(:original_audio, "must be smaller than 100 MB") if blob.byte_size > MAX_AUDIO_SIZE
+  end
+
+  def broadcast_live_transcript_panel
+    Turbo::StreamsChannel.broadcast_replace_to(
+      live_stream,
+      target: "live_transcript_panel",
+      partial: "recording_sessions/live_transcript_panel",
+      locals: { recording_session: self }
+    )
+  end
+
+  # Updates only the status header (badge + helper text), leaving the live
+  # preview text in #live_transcript_segments untouched. Used while finalizing
+  # and on failure so the user keeps seeing what they just dictated instead of
+  # the panel blanking out.
+  def broadcast_live_transcript_status
+    Turbo::StreamsChannel.broadcast_replace_to(
+      live_stream,
+      target: "live_transcript_status",
+      partial: "recording_sessions/live_transcript_status",
+      locals: { recording_session: self }
+    )
   end
 end

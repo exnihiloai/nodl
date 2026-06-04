@@ -88,6 +88,40 @@ class DashboardTenancyTest < ApplicationSystemTestCase
     end
   end
 
+  test "recording session page exposes live pane while recording and final transcript when completed" do
+    email = unique_email("dashboard-live-pane")
+    user = create_user_with_workspace(email: email, password: "Valid123")
+    workspace = user.workspaces.first
+    recording_session = workspace.recording_sessions.create!(
+      creator: user,
+      title: "Live note",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+    completed_session = workspace.recording_sessions.create!(
+      creator: user,
+      title: "Final note",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    completed_session.mark_completed!(
+      transcript_text: "Speaker 1: Final transcript",
+      document_content: "# Final",
+      work_path: "/tmp/final"
+    )
+
+    login_via_ui(email: email, password: "Valid123")
+
+    visit recording_session_path(recording_session)
+    assert_selector "[data-testid='live-transcript-panel']"
+    assert_text "Preview while recording"
+    assert_selector "turbo-cable-stream-source"
+
+    visit recording_session_path(completed_session)
+    assert_no_selector "[data-testid='live-transcript-panel']"
+    assert_text "Speaker 1: Final transcript"
+  end
+
   test "user can create an upload recording session from the dashboard" do
     email = unique_email("dashboard-upload")
     user = create_user_with_workspace(email: email, password: "Valid123")

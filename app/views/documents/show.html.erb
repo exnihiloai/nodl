@@ -11,8 +11,8 @@
       <%= link_to "Dashboard", dashboard_path, class: "btn btn-outline" %>
     </div>
 
-    <article class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
-      <pre class="whitespace-pre-wrap text-sm leading-6"><%= @document.content %></pre>
+    <article class="prose dark:prose-invert max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+      <%= render_markdown(@document.content) %>
     </article>
   </div>
 </section>
