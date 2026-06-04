@@ -15,6 +15,7 @@ Design input documents describe what should be built, why it matters, and what c
 | Document | Description |
 |---|---|
 | [design-input/architecture.md](design-input/architecture.md) | Architecture notes and design input |
+| [design-input/custom-transformers/design.md](design-input/custom-transformers/design.md) | Custom transformers design: user-defined instructions + reference documents (.docx, .odt, .pdf, .md, .txt) |
 | [design-input/live-transcription/design.md](design-input/live-transcription/design.md) | Live transcription design: two-track hybrid (live preview + authoritative diarized batch pass) |
 | [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | Suggested phased plan to build live transcription |
 | [design-input/live-transcription/test-plan.md](design-input/live-transcription/test-plan.md) | Lean test plan: happy paths + obvious failure modes for live transcription |
