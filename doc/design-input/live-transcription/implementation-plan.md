@@ -1,11 +1,17 @@
 # Live Transcription — Implementation Plan
 
-> Status: **Approved** · Date: 2026-06-04 · Type: design-input
+> ⚠️ **OUTDATED / SUPERSEDED — DO NOT IMPLEMENT.** Date: 2026-06-04 · Type: design-input (historical)
 >
-> This is a **suggested** path and a set of guidelines for building the system described in
-> [design.md](design.md). It is **not a hard rule**. Phase boundaries, file names, and table shapes
-> are starting points — adapt them as the code reveals better options. Each phase is independently
-> shippable and leaves the app working.
+> This plan builds the **abandoned** Gemini segmented-HTTP design in [design.md](design.md)
+> (`/segments` endpoint, `TranscribeSegmentJob`, `GeminiTranscriber`, VAD segmenter). **None of that
+> shipped.** Transcription is now **Mistral Voxtral** with a realtime WebSocket preview and a Voxtral
+> batch pass; Gemini is used only for document transformation.
+>
+> The real implementation is documented in
+> [../../design-output/modules/live-transcription.md](../../design-output/modules/live-transcription.md)
+> and [../../design-output/modules/audio-pipeline.md](../../design-output/modules/audio-pipeline.md).
+>
+> Historical content preserved below for context only.
 
 ## Guiding principles
 

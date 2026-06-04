@@ -1,11 +1,13 @@
 # Live Transcription — Test Plan
 
-> Status: **Proposed** · Date: 2026-06-04 · Type: design-input
+> ⚠️ **OUTDATED / SUPERSEDED.** Date: 2026-06-04 · Type: design-input (historical)
 >
-> A lean test plan for the feature in [design.md](design.md) /
-> [implementation-plan.md](implementation-plan.md). Goal (per
-> [testing-guidelines.md](../../design-input/testing/testing-guidelines.md)): a **small, meaningful**
-> suite that proves the happy paths and prevents the obvious failures — not maximum coverage.
+> This plan targets the **abandoned** Gemini segmented-HTTP design ([design.md](design.md) /
+> [implementation-plan.md](implementation-plan.md)). The shipped Voxtral implementation is tested
+> differently; see the testing notes in
+> [../../design-output/modules/live-transcription.md](../../design-output/modules/live-transcription.md).
+>
+> Historical content preserved below for context only.
 
 ## Principles
 

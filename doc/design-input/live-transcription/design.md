@@ -1,10 +1,22 @@
 # Live Transcription — Design Document
 
-> Status: **Approved** · Date: 2026-06-04 · Type: design-input
+> ⚠️ **OUTDATED / SUPERSEDED — DO NOT IMPLEMENT.** Date: 2026-06-04 · Type: design-input (historical)
 >
-> This document describes *how the improved speech-to-text system should work*. It is the
-> design contract. The companion [implementation-plan.md](implementation-plan.md) describes a
-> *suggested* path to build it.
+> This document describes an **abandoned** approach: a live preview built from short audio
+> **segments POSTed over HTTP to Gemini**, cut at silence by VAD using two `MediaRecorder`s, with
+> speaker diarization produced by a whole-file **Gemini** batch pass.
+>
+> **What we actually shipped is different.** Transcription moved from Gemini to **Mistral Voxtral**.
+> The live preview is now a **true realtime WebSocket** stream (browser PCM → a Rails Action Cable
+> proxy → Voxtral realtime), and the authoritative pass is a **Voxtral batch** call with native
+> diarization and segment timestamps. Gemini is kept **only** for the transcript→document step. There
+> is no `/segments` endpoint, no VAD segmenter, and no per-segment job.
+>
+> For how it really works, see the design-output docs:
+> [../../design-output/modules/live-transcription.md](../../design-output/modules/live-transcription.md)
+> and [../../design-output/modules/audio-pipeline.md](../../design-output/modules/audio-pipeline.md).
+>
+> The original (historical) content is preserved below for context only.
 
 ## 1. Summary
 
