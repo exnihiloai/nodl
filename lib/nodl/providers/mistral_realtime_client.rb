@@ -54,7 +54,7 @@ module Nodl
         require "async/http/protocol/http11"
         require "async/websocket/client"
 
-        Async do
+        Async do |task|
           endpoint = Async::HTTP::Endpoint.parse(realtime_url, protocol: Async::HTTP::Protocol::HTTP11)
           @connection = Async::WebSocket::Client.connect(
             endpoint,
@@ -62,8 +62,10 @@ module Nodl
           )
           read_handshake(event_handler)
           send_session_update
-          start_audio_writer
+          @connection.flush
+          writer = task.async { audio_writer_loop }
           read_events(event_handler)
+          writer.stop
         ensure
           @connection&.close
         end
@@ -99,20 +101,23 @@ module Nodl
         ))
       end
 
-      def start_audio_writer
-        Thread.new do
-          loop do
-            frame = audio_queue.pop
-            break if frame == :close
+      # Runs inside the Async reactor as a fiber (not a foreign Thread) so writes
+      # and the read loop share one reactor. Each frame is flushed immediately;
+      # protocol-websocket only flushes on read/close otherwise, which would
+      # collapse the live stream into a slow request/response ping-pong.
+      def audio_writer_loop
+        loop do
+          frame = audio_queue.pop
+          break if frame == :close
 
-            @connection.write(JSON.dump(
-              type: "input_audio.append",
-              audio: Base64.strict_encode64(frame)
-            ))
-          end
-        rescue StandardError
-          nil
+          @connection.write(JSON.dump(
+            type: "input_audio.append",
+            audio: Base64.strict_encode64(frame)
+          ))
+          @connection.flush
         end
+      rescue StandardError
+        nil
       end
 
       def read_events(event_handler)
