@@ -8,10 +8,12 @@ class RecordingSessionProcessor
 
   def initialize(
     normalizer: Nodl::Audio::Normalizer.new,
-    pipeline: Nodl::Pipeline.new
+    pipeline: Nodl::Pipeline.new,
+    title_generator: nil
   )
     @normalizer = normalizer
     @pipeline = pipeline
+    @title_generator = title_generator
   end
 
   def call(recording_session)
@@ -30,10 +32,13 @@ class RecordingSessionProcessor
         transcriber_model: ENV.fetch("NODL_GEMINI_TRANSCRIBER_MODEL", DEFAULT_MODEL),
         transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_MODEL)
       )
+      transcript_text = result.transcript_path.read.strip
+      document_content = result.document_path.read.strip
       recording_session.mark_completed!(
-        transcript_text: result.transcript_path.read.strip,
-        document_content: result.document_path.read.strip,
-        work_path: result.session_path.to_s
+        transcript_text: transcript_text,
+        document_content: document_content,
+        work_path: result.session_path.to_s,
+        generated_title: generated_title_for(recording_session, transcript_text)
       )
     ensure
       FileUtils.rm_f(normalized.path) if normalized&.converted?
@@ -45,7 +50,21 @@ class RecordingSessionProcessor
 
   private
 
-  attr_reader :normalizer, :pipeline
+  attr_reader :normalizer, :pipeline, :title_generator
+
+  def generated_title_for(recording_session, transcript_text)
+    return unless recording_session.default_title?
+
+    (title_generator || RecordingTitleGenerator.new).generate(transcript: transcript_text)
+  rescue StandardError => error
+    Rails.logger.warn(
+      "Recording title generation failed " \
+      "recording_session_id=#{recording_session.id} " \
+      "error_class=#{error.class} " \
+      "error_message=#{error.message}"
+    )
+    nil
+  end
 
   def with_original_audio_file(recording_session)
     extension = recording_session.original_audio.filename.extension_with_delimiter.presence || ".audio"

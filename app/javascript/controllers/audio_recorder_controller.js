@@ -7,10 +7,10 @@ const MIME_OPTIONS = [
   { mimeType: "audio/aac", extension: "aac" }
 ]
 
-const SEGMENT_MIN_MS = 800
-const SEGMENT_MAX_MS = 7000
-const SEGMENT_SILENCE_HANGOVER_MS = 350
-const SEGMENT_SPEECH_LEVEL = 0.06
+const SEGMENT_MIN_MS = 500
+const SEGMENT_MAX_MS = 4000
+const SEGMENT_SILENCE_HANGOVER_MS = 200
+const SEGMENT_SPEECH_LEVEL = 0.05
 
 export default class extends Controller {
   static targets = [
@@ -97,7 +97,7 @@ export default class extends Controller {
     if (!this.recorder || this.recorder.state === "inactive") return
 
     this.isRecording = false
-    this.stopSegmentRecorder({ forceUpload: true, restart: false })
+    this.stopSegmentRecorder({ forceUpload: true, restart: false, reason: "stop" })
     this.recorder.stop()
     this.stopTimer()
     this.stopVisualizer()
@@ -335,9 +335,9 @@ export default class extends Controller {
     const segmentAge = now - this.segmentStartedAt
     const silenceAge = now - (this.lastSpeechAt || now)
     if (this.segmentHadSpeech && segmentAge >= SEGMENT_MIN_MS && silenceAge >= SEGMENT_SILENCE_HANGOVER_MS) {
-      this.stopSegmentRecorder({ forceUpload: true, restart: false })
+      this.stopSegmentRecorder({ forceUpload: true, restart: false, reason: "silence" })
     } else if (segmentAge >= SEGMENT_MAX_MS) {
-      this.stopSegmentRecorder({ forceUpload: this.segmentHadSpeech, restart: this.isRecording })
+      this.stopSegmentRecorder({ forceUpload: this.segmentHadSpeech, restart: this.isRecording, reason: "max_length" })
     }
   }
 
@@ -349,6 +349,7 @@ export default class extends Controller {
       this.segmentHadSpeech = false
       this.segmentStopping = false
       this.segmentStartedAt = Date.now()
+      this.segmentPerformanceStartedAt = window.performance.now()
       this.segmentRecorder = new MediaRecorder(this.stream, {
         mimeType: this.mimeOption.mimeType,
         audioBitsPerSecond: 64000
@@ -358,36 +359,61 @@ export default class extends Controller {
       })
       this.segmentRecorder.addEventListener("stop", () => this.finishSegment())
       this.segmentRecorder.start()
+      this.logLiveTiming("segment_started", { index: this.segmentIndex })
     } catch (_error) {
       this.segmentRecorder = null
     }
   }
 
-  stopSegmentRecorder({ forceUpload, restart }) {
+  stopSegmentRecorder({ forceUpload, restart, reason = "manual" }) {
     if (!this.segmentRecorder || this.segmentRecorder.state === "inactive" || this.segmentStopping) return
 
     this.segmentStopping = true
     this.segmentForceUpload = forceUpload
     this.segmentRestartAfterStop = restart
+    this.segmentStopReason = reason
+    this.logLiveTiming("segment_stopping", {
+      index: this.segmentIndex,
+      reason,
+      ageMs: Math.round(Date.now() - this.segmentStartedAt)
+    })
     this.segmentRecorder.stop()
   }
 
   finishSegment() {
     const shouldUpload = this.segmentForceUpload && this.segmentHadSpeech && this.segmentChunks.length > 0
     const shouldRestart = this.segmentRestartAfterStop
+    const stopReason = this.segmentStopReason
+    const segmentDurationMs = this.segmentPerformanceStartedAt
+      ? Math.round(window.performance.now() - this.segmentPerformanceStartedAt)
+      : null
     this.segmentForceUpload = false
     this.segmentRestartAfterStop = false
+    this.segmentStopReason = null
 
     if (shouldUpload) {
       const blob = new Blob(this.segmentChunks, { type: this.mimeOption.mimeType })
+      this.logLiveTiming("segment_ready", {
+        index: this.segmentIndex,
+        reason: stopReason,
+        durationMs: segmentDurationMs,
+        bytes: blob.size
+      })
       this.uploadSegment(blob, this.segmentIndex)
       this.segmentIndex += 1
+    } else {
+      this.logLiveTiming("segment_discarded", {
+        index: this.segmentIndex,
+        reason: stopReason,
+        durationMs: segmentDurationMs
+      })
     }
 
     this.segmentChunks = []
     this.segmentRecorder = null
     this.segmentHadSpeech = false
     this.segmentStopping = false
+    this.segmentPerformanceStartedAt = null
 
     if (shouldRestart) this.startSegmentRecorder()
   }
@@ -400,6 +426,9 @@ export default class extends Controller {
     formData.set("index", index.toString())
     formData.set("segment", new File([blob], filename, { type: this.mimeOption.mimeType }))
 
+    const uploadStartedAt = window.performance.now()
+    this.logLiveTiming("segment_upload_started", { index, bytes: blob.size })
+
     window.fetch(this.liveSession.segments_url, {
       method: "POST",
       headers: {
@@ -407,7 +436,19 @@ export default class extends Controller {
         "X-CSRF-Token": this.csrfToken()
       },
       body: formData
-    }).catch(() => {})
+    }).then((response) => {
+      this.logLiveTiming("segment_upload_finished", {
+        index,
+        status: response.status,
+        durationMs: Math.round(window.performance.now() - uploadStartedAt)
+      })
+    }).catch((error) => {
+      this.logLiveTiming("segment_upload_failed", {
+        index,
+        durationMs: Math.round(window.performance.now() - uploadStartedAt),
+        error: error.message
+      })
+    })
   }
 
   subscribeToLiveStream(signedStreamName) {
@@ -438,5 +479,14 @@ export default class extends Controller {
 
   csrfToken() {
     return document.querySelector("meta[name='csrf-token']")?.content || ""
+  }
+
+  logLiveTiming(event, details = {}) {
+    if (!window.console?.info) return
+
+    window.console.info("[live-transcript]", event, {
+      sessionId: this.liveSession?.id,
+      ...details
+    })
   }
 }

@@ -42,6 +42,22 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     end
   end
 
+  class FakeTitleGenerator
+    attr_reader :transcript
+
+    def initialize(title: "Generated Meeting Title", error: nil)
+      @title = title
+      @error = error
+    end
+
+    def generate(transcript:)
+      raise @error if @error
+
+      @transcript = transcript
+      @title
+    end
+  end
+
   test "processes a recording session and stores transcript and document" do
     user = create_user_with_workspace
     workspace = user.workspaces.first
@@ -91,6 +107,57 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_predicate recording_session.reload, :completed?
     assert_equal "This is a single-speaker note.", recording_session.transcript_text
     assert_no_match(/Speaker \d+:/, recording_session.transcript_text)
+  end
+
+  test "generates a meaningful title when session still has the default title" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    title_generator = FakeTitleGenerator.new(title: "Sebastians Aufnahme Test")
+    pipeline = FakePipeline.new(transcript_text: "Hallo, ich mache hier eine Aufnahme.")
+
+    RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: pipeline, title_generator: title_generator).call(recording_session)
+
+    assert_predicate recording_session.reload, :completed?
+    assert_equal "Sebastians Aufnahme Test", recording_session.title
+    assert_equal "Sebastians Aufnahme Test", recording_session.document.title
+    assert_equal "Hallo, ich mache hier eine Aufnahme.", title_generator.transcript
+  end
+
+  test "keeps an explicit user title instead of generating one" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Client interview",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    title_generator = FakeTitleGenerator.new(title: "Generated title")
+
+    RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: FakePipeline.new, title_generator: title_generator).call(recording_session)
+
+    assert_predicate recording_session.reload, :completed?
+    assert_equal "Client interview", recording_session.title
+    assert_equal "Client interview", recording_session.document.title
+    assert_nil title_generator.transcript
+  end
+
+  test "keeps default title when title generation fails" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    title_generator = FakeTitleGenerator.new(error: Nodl::GeminiError.new("temporary"))
+
+    assert_nothing_raised do
+      RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: FakePipeline.new, title_generator: title_generator).call(recording_session)
+    end
+
+    assert_predicate recording_session.reload, :completed?
+    assert_equal RecordingSession::DEFAULT_TITLE, recording_session.title
+    assert_equal RecordingSession::DEFAULT_TITLE, recording_session.document.title
   end
 
   test "marks the session failed when processing raises" do

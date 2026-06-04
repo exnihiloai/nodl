@@ -1,4 +1,5 @@
 class RecordingSession < ApplicationRecord
+  DEFAULT_TITLE = "Untitled recording".freeze
   MAX_AUDIO_SIZE = 100.megabytes
   DASHBOARD_RECENT_LIMIT = 8
   LIVE_SEGMENT_CACHE = ActiveSupport::Cache::MemoryStore.new
@@ -46,20 +47,23 @@ class RecordingSession < ApplicationRecord
     broadcast_live_transcript_panel
   end
 
-  def mark_completed!(transcript_text:, document_content:, work_path:, generated_at: Time.current)
+  def mark_completed!(transcript_text:, document_content:, work_path:, generated_title: nil, generated_at: Time.current)
+    attributes = {
+      status: :completed,
+      transcript_text: transcript_text,
+      error_message: nil,
+      work_path: work_path,
+      processing_completed_at: generated_at
+    }
+    attributes[:title] = generated_title if generated_title.present?
+
     transaction do
-      update!(
-        status: :completed,
-        transcript_text: transcript_text,
-        error_message: nil,
-        work_path: work_path,
-        processing_completed_at: generated_at
-      )
+      update!(attributes)
       document&.destroy!
       create_document!(
         workspace: workspace,
         transformer_handle: transformer_handle,
-        title: title,
+        title: self.title,
         content: document_content,
         generated_at: generated_at
       )
@@ -101,6 +105,10 @@ class RecordingSession < ApplicationRecord
     LIVE_SEGMENT_CACHE.delete(live_segments_cache_key)
   end
 
+  def default_title?
+    title == DEFAULT_TITLE
+  end
+
   private
 
   def broadcast_dashboard_activity
@@ -121,7 +129,7 @@ class RecordingSession < ApplicationRecord
   end
 
   def assign_default_title
-    self.title = "Untitled recording" if title.blank?
+    self.title = DEFAULT_TITLE if title.blank?
   end
 
   def original_audio_is_supported
