@@ -29,6 +29,8 @@
       <p class="text-sm text-base-content/70">The live preview is no longer available.</p>
     </div>
   <% else %>
-    <%= render "recording_sessions/live_transcript_segments", segments: segments %>
+    <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+      <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
+    </div>
   <% end %>
 </section>

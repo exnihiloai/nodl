@@ -20,7 +20,7 @@ The local development workflow is Docker-only. You should not need a local Ruby,
 - Docker Compose v2
 - Make
 
-The application image includes `ffmpeg`, which is required to normalize browser microphone recordings and non-MP3 uploads before Gemini processing.
+The application image includes `ffmpeg`, which is required to normalize browser microphone recordings and non-MP3 uploads before transcription processing.
 
 ## Setup
 
@@ -60,7 +60,7 @@ For local environment overrides:
 cp .env.example .env
 ```
 
-The Docker `web` service loads `.env` and `private/.env` when present. Keep real secrets such as `GEMINI_API_KEY` in one of those local files, preferably `private/.env` for repo-private values.
+The Docker `web` service loads `.env` and `private/.env` when present. Keep real secrets such as `GEMINI_API_KEY` and `MISTRAL_API_KEY` in one of those local files, preferably `private/.env` for repo-private values.
 
 ## Daily Commands
 
@@ -127,41 +127,46 @@ Each dashboard session stores:
 - the original uploaded or recorded audio via Active Storage;
 - a normalized MP3 copy when conversion is required;
 - the generated transcript;
+- structured transcript segments with timestamps and speaker labels when available;
 - the generated Markdown document;
 - the selected transformer handle.
 
-Processing runs asynchronously through Active Job. The current implementation uses the existing Gemini-backed pipeline and filesystem transformer folders.
+Processing runs asynchronously through Active Job. Transcription uses Mistral Voxtral for both live preview and the authoritative batch pass. Document transformation still uses Gemini and filesystem transformer folders.
 
-Dashboard processing requires `GEMINI_API_KEY` in the Rails container environment. For local Docker development, set it in `.env` or `private/.env`, then restart the stack with `make down && make up`.
+Dashboard processing requires `MISTRAL_API_KEY` and `GEMINI_API_KEY` in the Rails container environment. For local Docker development, set them in `.env` or `private/.env`, then restart the stack with `make down && make up`.
 
 Supported upload/recording inputs include MP3 plus common browser/audio formats that `ffmpeg` can decode, such as WebM/Opus, MP4/AAC, OGG, AAC, FLAC, and WAV.
 
 ## Audio-To-Markdown CLI
 
-The repository also includes a console entry point for turning an `.mp3` file into a Markdown document through Gemini.
+The repository also includes a console entry point for turning an `.mp3` file into a Markdown document through Voxtral transcription and Gemini document transformation.
 
 Run the full pipeline inside the Docker web container:
 
 ```sh
-GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl run path/to/audio.mp3 --transformer default
+MISTRAL_API_KEY=... GEMINI_API_KEY=... docker compose exec -e MISTRAL_API_KEY -e GEMINI_API_KEY web bin/nodl run path/to/audio.mp3 --transformer default
 ```
 
 `transcribe` is accepted as an alias for the same happy-path run:
 
 ```sh
-GEMINI_API_KEY=... docker compose exec -e GEMINI_API_KEY web bin/nodl transcribe path/to/audio.mp3 --transformer default
+MISTRAL_API_KEY=... GEMINI_API_KEY=... docker compose exec -e MISTRAL_API_KEY -e GEMINI_API_KEY web bin/nodl transcribe path/to/audio.mp3 --transformer default
 ```
 
 Required environment:
 
 ```sh
 GEMINI_API_KEY=...
+MISTRAL_API_KEY=...
 ```
 
 Optional model overrides:
 
 ```sh
-NODL_GEMINI_TRANSCRIBER_MODEL=gemini-3.1-flash-lite
+NODL_VOXTRAL_MODEL=voxtral-mini-latest
+NODL_VOXTRAL_REALTIME_MODEL=voxtral-mini-transcribe-realtime-2602
+NODL_VOXTRAL_REALTIME_FAST_DELAY_MS=240
+NODL_VOXTRAL_REALTIME_SLOW_DELAY_MS=2400
 NODL_GEMINI_TRANSFORMER_MODEL=gemini-3.1-flash-lite
 ```
 
@@ -175,7 +180,7 @@ transformers/
       example.md
 ```
 
-Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `document.md`, and `metadata.json`. Dashboard processing stores the database records separately and keeps the generated `work/` directory ignored by git.
+Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `transcript.segments.json`, `document.md`, and `metadata.json`. Dashboard processing stores the database records separately and keeps the generated `work/` directory ignored by git.
 
 ## Observability
 

@@ -67,8 +67,8 @@ class RecordingSessionsController < ApplicationController
     {
       id: recording_session.id,
       status: recording_session.status,
-      segments_url: recording_session_segments_path(recording_session),
       finalize_url: finalize_recording_session_path(recording_session),
+      realtime_channel: "LiveTranscriptionChannel",
       live_stream_name: Turbo::StreamsChannel.signed_stream_name(recording_session.live_stream)
     }
   end

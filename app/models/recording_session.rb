@@ -2,7 +2,6 @@ class RecordingSession < ApplicationRecord
   DEFAULT_TITLE = "Untitled recording".freeze
   MAX_AUDIO_SIZE = 100.megabytes
   DASHBOARD_RECENT_LIMIT = 8
-  LIVE_SEGMENT_CACHE = ActiveSupport::Cache::MemoryStore.new
   ALLOWED_AUDIO_CONTENT_TYPES = %w[
     audio/aac
     audio/flac
@@ -47,10 +46,11 @@ class RecordingSession < ApplicationRecord
     broadcast_live_transcript_panel
   end
 
-  def mark_completed!(transcript_text:, document_content:, work_path:, generated_title: nil, generated_at: Time.current)
+  def mark_completed!(transcript_text:, document_content:, work_path:, transcript_segments: nil, generated_title: nil, generated_at: Time.current)
     attributes = {
       status: :completed,
       transcript_text: transcript_text,
+      transcript_segments: transcript_segments,
       error_message: nil,
       work_path: work_path,
       processing_completed_at: generated_at
@@ -68,7 +68,6 @@ class RecordingSession < ApplicationRecord
         generated_at: generated_at
       )
     end
-    clear_live_transcript_preview
     broadcast_dashboard_activity
     broadcast_live_transcript_panel
   end
@@ -85,24 +84,6 @@ class RecordingSession < ApplicationRecord
 
   def live_stream
     [ self, :live ]
-  end
-
-  def live_segments_cache_key
-    "recording_sessions/#{id}/live_segments"
-  end
-
-  def live_transcript_segments
-    LIVE_SEGMENT_CACHE.fetch(live_segments_cache_key) { {} }.sort_by { |index, _text| index.to_i }.map(&:second)
-  end
-
-  def store_live_segment_text(index, text)
-    segments = LIVE_SEGMENT_CACHE.fetch(live_segments_cache_key) { {} }
-    segments[index.to_i] = text.to_s.strip
-    LIVE_SEGMENT_CACHE.write(live_segments_cache_key, segments, expires_in: 2.hours)
-  end
-
-  def clear_live_transcript_preview
-    LIVE_SEGMENT_CACHE.delete(live_segments_cache_key)
   end
 
   def default_title?
@@ -151,7 +132,7 @@ class RecordingSession < ApplicationRecord
       live_stream,
       target: "live_transcript_panel",
       partial: "recording_sessions/live_transcript_panel",
-      locals: { recording_session: self, segments: live_transcript_segments }
+      locals: { recording_session: self }
     )
   end
 end

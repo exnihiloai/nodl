@@ -33,7 +33,8 @@
                       data: {
                         controller: "audio-recorder",
                         testid: "recording-form",
-                        "audio-recorder-create-url-value": recording_sessions_path
+                        "audio-recorder-create-url-value": recording_sessions_path,
+                        "audio-recorder-worklet-url-value": asset_path("audio_pcm_worklet.js")
                       } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
@@ -83,7 +84,7 @@
               </div>
               <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
               <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
-                <p class="text-sm text-base-content/60">Your live transcript will appear here a few seconds after you speak.</p>
+                <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
               </div>
             </section>
           </div>

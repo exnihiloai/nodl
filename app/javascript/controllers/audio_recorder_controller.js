@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { createConsumer } from "@rails/actioncable"
 
 const MIME_OPTIONS = [
   { mimeType: "audio/webm;codecs=opus", extension: "webm" },
@@ -6,11 +7,6 @@ const MIME_OPTIONS = [
   { mimeType: "audio/mp4", extension: "m4a" },
   { mimeType: "audio/aac", extension: "aac" }
 ]
-
-const SEGMENT_MIN_MS = 500
-const SEGMENT_MAX_MS = 4000
-const SEGMENT_SILENCE_HANGOVER_MS = 200
-const SEGMENT_SPEECH_LEVEL = 0.05
 
 export default class extends Controller {
   static targets = [
@@ -27,16 +23,18 @@ export default class extends Controller {
     "options"
   ]
   static values = {
-    createUrl: String
+    createUrl: String,
+    workletUrl: String
   }
 
   connect() {
     this.chunks = []
     this.seconds = 0
     this.smoothedLevel = 0
-    this.segmentIndex = 0
+    this.fastPreviewText = ""
+    this.slowPreviewText = ""
+    this.fastPreviewSinceStable = ""
     this.isRecording = false
-    this.segmentStopping = false
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
@@ -48,7 +46,8 @@ export default class extends Controller {
   disconnect() {
     this.stopTimer()
     this.stopVisualizer()
-    this.stopSegmentRecorder({ forceUpload: false, restart: false })
+    this.stopRealtimeTranscription()
+    this.cancelLivePreviewRender()
     this.stopStream()
     this.unsubscribeFromLiveStream()
   }
@@ -58,8 +57,9 @@ export default class extends Controller {
 
     try {
       this.chunks = []
-      this.segmentIndex = 0
-      this.segmentStopping = false
+      this.fastPreviewText = ""
+      this.slowPreviewText = ""
+      this.fastPreviewSinceStable = ""
       this.sourceKindTarget.value = "microphone"
       this.liveSession = await this.createRecordingSession()
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
@@ -83,10 +83,12 @@ export default class extends Controller {
       this.setOptionsHidden(true)
       this.startTimer()
       this.startVisualizer()
-      this.updateStatus("Recording… speak naturally, then press Stop.")
+      await this.startRealtimeTranscription()
+      this.updateStatus(this.realtimeSubscription ? "Recording… live preview is streaming." : "Recording… live preview is unavailable in this browser.")
     } catch (_error) {
       this.updateStatus("We couldn't start recording. Check your microphone permissions and try again.")
       this.isRecording = false
+      this.stopRealtimeTranscription()
       this.stopStream()
       if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.add("hidden")
       this.unsubscribeFromLiveStream()
@@ -97,7 +99,7 @@ export default class extends Controller {
     if (!this.recorder || this.recorder.state === "inactive") return
 
     this.isRecording = false
-    this.stopSegmentRecorder({ forceUpload: true, restart: false, reason: "stop" })
+    this.stopRealtimeTranscription()
     this.recorder.stop()
     this.stopTimer()
     this.stopVisualizer()
@@ -187,7 +189,6 @@ export default class extends Controller {
       })
 
       if (!response.ok) throw new Error("Finalize failed.")
-      // The live panel now owns finalizing/done status; clear the transient line.
       this.updateStatus("")
     } catch (_error) {
       this.updateStatus("We couldn't finalize this recording. Please try recording again.")
@@ -258,7 +259,6 @@ export default class extends Controller {
       this.auraTarget.classList.add("is-active")
       this.renderAura()
     } catch (_error) {
-      // Visualization is non-essential; recording continues without it.
       this.stopVisualizer()
     }
   }
@@ -274,9 +274,7 @@ export default class extends Controller {
     }
     const rms = Math.sqrt(sumSquares / this.levelData.length)
     const target = Math.min(1, rms * 4)
-    this.handleVoiceActivity(target)
 
-    // Heavy exponential smoothing: gentle, breathing response — no nervous motion.
     this.smoothedLevel += (target - this.smoothedLevel) * 0.08
 
     if (this.reduceMotion) {
@@ -314,141 +312,152 @@ export default class extends Controller {
     }
   }
 
-  updateStatus(message) {
-    this.statusTarget.textContent = message
-  }
-
-  handleVoiceActivity(level) {
-    if (!this.isRecording || !this.liveSession) return
-
-    const now = Date.now()
-    if (level >= SEGMENT_SPEECH_LEVEL) {
-      this.lastSpeechAt = now
-      if (!this.segmentRecorder && !this.segmentStopping) {
-        this.startSegmentRecorder()
-      }
-      this.segmentHadSpeech = true
-    }
-
-    if (!this.segmentRecorder || this.segmentRecorder.state !== "recording") return
-
-    const segmentAge = now - this.segmentStartedAt
-    const silenceAge = now - (this.lastSpeechAt || now)
-    if (this.segmentHadSpeech && segmentAge >= SEGMENT_MIN_MS && silenceAge >= SEGMENT_SILENCE_HANGOVER_MS) {
-      this.stopSegmentRecorder({ forceUpload: true, restart: false, reason: "silence" })
-    } else if (segmentAge >= SEGMENT_MAX_MS) {
-      this.stopSegmentRecorder({ forceUpload: this.segmentHadSpeech, restart: this.isRecording, reason: "max_length" })
-    }
-  }
-
-  startSegmentRecorder() {
-    if (!this.stream || !window.MediaRecorder) return
+  async startRealtimeTranscription() {
+    if (!this.liveSession || !this.stream || !this.realtimeSupported()) return
 
     try {
-      this.segmentChunks = []
-      this.segmentHadSpeech = false
-      this.segmentStopping = false
-      this.segmentStartedAt = Date.now()
-      this.segmentPerformanceStartedAt = window.performance.now()
-      this.segmentRecorder = new MediaRecorder(this.stream, {
-        mimeType: this.mimeOption.mimeType,
-        audioBitsPerSecond: 64000
-      })
-      this.segmentRecorder.addEventListener("dataavailable", (event) => {
-        if (event.data.size > 0) this.segmentChunks.push(event.data)
-      })
-      this.segmentRecorder.addEventListener("stop", () => this.finishSegment())
-      this.segmentRecorder.start()
-      this.logLiveTiming("segment_started", { index: this.segmentIndex })
+      this.consumer ||= createConsumer()
+      this.realtimeSubscription = this.consumer.subscriptions.create(
+        {
+          channel: this.liveSession.realtime_channel,
+          recording_session_id: this.liveSession.id
+        },
+        {
+          received: (data) => this.handleRealtimeMessage(data)
+        }
+      )
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
+      this.pcmContext = new AudioContextClass()
+      if (this.pcmContext.state === "suspended") await this.pcmContext.resume()
+
+      await this.pcmContext.audioWorklet.addModule(this.workletUrlValue)
+      this.pcmSourceNode = this.pcmContext.createMediaStreamSource(this.stream)
+      this.pcmWorkletNode = new AudioWorkletNode(this.pcmContext, "audio-pcm-worklet")
+      this.pcmMuteNode = this.pcmContext.createGain()
+      this.pcmMuteNode.gain.value = 0
+      this.pcmWorkletNode.port.onmessage = (event) => {
+        if (!this.realtimeSubscription || !this.isRecording) return
+
+        this.realtimeSubscription.send({
+          type: "audio",
+          audio: this.arrayBufferToBase64(event.data)
+        })
+      }
+      this.pcmSourceNode.connect(this.pcmWorkletNode)
+      this.pcmWorkletNode.connect(this.pcmMuteNode)
+      this.pcmMuteNode.connect(this.pcmContext.destination)
     } catch (_error) {
-      this.segmentRecorder = null
+      this.stopRealtimeTranscription()
     }
   }
 
-  stopSegmentRecorder({ forceUpload, restart, reason = "manual" }) {
-    if (!this.segmentRecorder || this.segmentRecorder.state === "inactive" || this.segmentStopping) return
-
-    this.segmentStopping = true
-    this.segmentForceUpload = forceUpload
-    this.segmentRestartAfterStop = restart
-    this.segmentStopReason = reason
-    this.logLiveTiming("segment_stopping", {
-      index: this.segmentIndex,
-      reason,
-      ageMs: Math.round(Date.now() - this.segmentStartedAt)
-    })
-    this.segmentRecorder.stop()
+  realtimeSupported() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+    return Boolean(AudioContextClass && "AudioWorkletNode" in window)
   }
 
-  finishSegment() {
-    const shouldUpload = this.segmentForceUpload && this.segmentHadSpeech && this.segmentChunks.length > 0
-    const shouldRestart = this.segmentRestartAfterStop
-    const stopReason = this.segmentStopReason
-    const segmentDurationMs = this.segmentPerformanceStartedAt
-      ? Math.round(window.performance.now() - this.segmentPerformanceStartedAt)
-      : null
-    this.segmentForceUpload = false
-    this.segmentRestartAfterStop = false
-    this.segmentStopReason = null
+  stopRealtimeTranscription() {
+    this.cancelLivePreviewRender()
+    if (this.realtimeSubscription) {
+      this.realtimeSubscription.send({ type: "stop" })
+      this.consumer.subscriptions.remove(this.realtimeSubscription)
+      this.realtimeSubscription = null
+    }
+    if (this.pcmSourceNode) {
+      this.pcmSourceNode.disconnect()
+      this.pcmSourceNode = null
+    }
+    if (this.pcmWorkletNode) {
+      this.pcmWorkletNode.disconnect()
+      this.pcmWorkletNode.port.onmessage = null
+      this.pcmWorkletNode = null
+    }
+    if (this.pcmMuteNode) {
+      this.pcmMuteNode.disconnect()
+      this.pcmMuteNode = null
+    }
+    if (this.pcmContext) {
+      this.pcmContext.close()
+      this.pcmContext = null
+    }
+  }
 
-    if (shouldUpload) {
-      const blob = new Blob(this.segmentChunks, { type: this.mimeOption.mimeType })
-      this.logLiveTiming("segment_ready", {
-        index: this.segmentIndex,
-        reason: stopReason,
-        durationMs: segmentDurationMs,
-        bytes: blob.size
-      })
-      this.uploadSegment(blob, this.segmentIndex)
-      this.segmentIndex += 1
-    } else {
-      this.logLiveTiming("segment_discarded", {
-        index: this.segmentIndex,
-        reason: stopReason,
-        durationMs: segmentDurationMs
-      })
+  cancelLivePreviewRender() {
+    if (!this.livePreviewFrameId) return
+
+    window.cancelAnimationFrame(this.livePreviewFrameId)
+    this.livePreviewFrameId = null
+  }
+
+  handleRealtimeMessage(data) {
+    if (data.type === "fast_delta" && data.text) {
+      this.fastPreviewText += data.text
+      this.fastPreviewSinceStable += data.text
+      this.scheduleLivePreviewRender()
+    } else if (data.type === "slow_delta" && data.text) {
+      this.slowPreviewText += data.text
+      this.fastPreviewSinceStable = ""
+      this.scheduleLivePreviewRender()
+    } else if (data.type === "error") {
+      this.updateStatus("Live preview stopped; the final transcript will still be generated.")
+      this.stopRealtimeTranscription()
+    }
+  }
+
+  scheduleLivePreviewRender() {
+    if (this.livePreviewFrameId) return
+
+    this.livePreviewFrameId = window.requestAnimationFrame(() => {
+      this.livePreviewFrameId = null
+      this.renderLivePreview()
+    })
+  }
+
+  renderLivePreview() {
+    const panel = document.getElementById("live_transcript_segments")
+    if (!panel) return
+
+    const placeholder = panel.querySelector("[data-live-placeholder]")
+    if (placeholder) placeholder.remove()
+
+    let transcript = panel.querySelector("[data-live-transcript-wrapper]")
+    if (!transcript) {
+      transcript = document.createElement("div")
+      transcript.dataset.liveTranscriptWrapper = "true"
+      transcript.className = "whitespace-pre-wrap text-sm leading-6"
+      transcript.innerHTML = [
+        "<span data-live-stable class=\"text-base-content\"></span>",
+        "<span data-live-fast class=\"text-warning\"></span>"
+      ].join("")
+      panel.appendChild(transcript)
     }
 
-    this.segmentChunks = []
-    this.segmentRecorder = null
-    this.segmentHadSpeech = false
-    this.segmentStopping = false
-    this.segmentPerformanceStartedAt = null
-
-    if (shouldRestart) this.startSegmentRecorder()
+    const stable = transcript.querySelector("[data-live-stable]")
+    const fast = transcript.querySelector("[data-live-fast]")
+    const stableText = this.slowPreviewText || ""
+    stable.textContent = stableText
+    fast.textContent = this.provisionalPreviewText()
+    panel.scrollTop = panel.scrollHeight
   }
 
-  uploadSegment(blob, index) {
-    if (!this.liveSession || blob.size === 0) return
+  provisionalPreviewText() {
+    if (this.slowPreviewText) return this.fastPreviewSinceStable || ""
 
-    const formData = new FormData()
-    const filename = `recording-segment-${index}.${this.mimeOption.extension}`
-    formData.set("index", index.toString())
-    formData.set("segment", new File([blob], filename, { type: this.mimeOption.mimeType }))
+    return this.fastPreviewText || ""
+  }
 
-    const uploadStartedAt = window.performance.now()
-    this.logLiveTiming("segment_upload_started", { index, bytes: blob.size })
+  arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer)
+    let binary = ""
+    for (let i = 0; i < bytes.byteLength; i += 1) {
+      binary += String.fromCharCode(bytes[i])
+    }
+    return window.btoa(binary)
+  }
 
-    window.fetch(this.liveSession.segments_url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "X-CSRF-Token": this.csrfToken()
-      },
-      body: formData
-    }).then((response) => {
-      this.logLiveTiming("segment_upload_finished", {
-        index,
-        status: response.status,
-        durationMs: Math.round(window.performance.now() - uploadStartedAt)
-      })
-    }).catch((error) => {
-      this.logLiveTiming("segment_upload_failed", {
-        index,
-        durationMs: Math.round(window.performance.now() - uploadStartedAt),
-        error: error.message
-      })
-    })
+  updateStatus(message) {
+    this.statusTarget.textContent = message
   }
 
   subscribeToLiveStream(signedStreamName) {
@@ -479,14 +488,5 @@ export default class extends Controller {
 
   csrfToken() {
     return document.querySelector("meta[name='csrf-token']")?.content || ""
-  }
-
-  logLiveTiming(event, details = {}) {
-    if (!window.console?.info) return
-
-    window.console.info("[live-transcript]", event, {
-      sessionId: this.liveSession?.id,
-      ...details
-    })
   }
 }

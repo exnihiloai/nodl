@@ -7,7 +7,7 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     end
   end
 
-  PipelineResult = Struct.new(:session_path, :transcript_path, :document_path, keyword_init: true)
+  PipelineResult = Struct.new(:session_path, :transcript_path, :document_path, :transcript_segments, keyword_init: true)
 
   class FakeNormalizer
     attr_reader :input_path
@@ -27,6 +27,15 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
 
     def initialize(transcript_text: "Generated transcript")
       @transcript_text = transcript_text
+      @transcript_segments = [
+        {
+          "start" => 0.0,
+          "end" => 1.0,
+          "speaker" => "Speaker 1",
+          "text" => transcript_text,
+          "words" => []
+        }
+      ]
     end
 
     def run(audio_path:, transformer_handle:, **)
@@ -38,7 +47,7 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
       document = Tempfile.new("document")
       document.write("# Generated document")
       document.flush
-      PipelineResult.new(session_path: Pathname.new("/tmp/work/session"), transcript_path: Pathname.new(transcript.path), document_path: Pathname.new(document.path))
+      PipelineResult.new(session_path: Pathname.new("/tmp/work/session"), transcript_path: Pathname.new(transcript.path), document_path: Pathname.new(document.path), transcript_segments: @transcript_segments)
     end
   end
 
@@ -73,6 +82,7 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
 
     assert_predicate recording_session.reload, :completed?
     assert_equal "Generated transcript", recording_session.transcript_text
+    assert_equal "Speaker 1", recording_session.transcript_segments.first.fetch("speaker")
     assert_equal "# Generated document", recording_session.document.content
     assert_equal "default", pipeline.transformer_handle
   end

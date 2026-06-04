@@ -4,7 +4,8 @@ require "nodl/audio/normalizer"
 require "nodl/pipeline"
 
 class RecordingSessionProcessor
-  DEFAULT_MODEL = "gemini-3.1-flash-lite"
+  DEFAULT_TRANSCRIBER_MODEL = "voxtral-mini-latest"
+  DEFAULT_TRANSFORMER_MODEL = "gemini-3.1-flash-lite"
 
   def initialize(
     normalizer: Nodl::Audio::Normalizer.new,
@@ -29,13 +30,14 @@ class RecordingSessionProcessor
       result = pipeline.run(
         audio_path: normalized.path,
         transformer_handle: recording_session.transformer_handle,
-        transcriber_model: ENV.fetch("NODL_GEMINI_TRANSCRIBER_MODEL", DEFAULT_MODEL),
-        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_MODEL)
+        transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
+        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL)
       )
       transcript_text = result.transcript_path.read.strip
       document_content = result.document_path.read.strip
       recording_session.mark_completed!(
         transcript_text: transcript_text,
+        transcript_segments: result.transcript_segments,
         document_content: document_content,
         work_path: result.session_path.to_s,
         generated_title: generated_title_for(recording_session, transcript_text)

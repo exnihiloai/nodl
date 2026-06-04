@@ -58,12 +58,14 @@ class RecordingSessionTest < ActiveSupport::TestCase
 
     recording_session.mark_completed!(
       transcript_text: "Transcript",
+      transcript_segments: [ { "start" => 0.0, "end" => 1.0, "speaker" => "Speaker 1", "text" => "Transcript", "words" => [] } ],
       document_content: "# Document",
       work_path: "/tmp/session"
     )
 
     assert_predicate recording_session.reload, :completed?
     assert_equal "Transcript", recording_session.transcript_text
+    assert_equal "Speaker 1", recording_session.transcript_segments.first.fetch("speaker")
     assert_equal "# Document", recording_session.document.content
     assert_equal workspace, recording_session.document.workspace
   end
