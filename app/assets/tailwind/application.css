@@ -152,3 +152,9 @@
     animation: none;
   }
 }
+
+/* Active word/segment highlight in the audio-synced transcript. */
+.cue-active {
+  background-color: color-mix(in oklab, var(--color-warning) 35%, transparent);
+  border-radius: 0.25rem;
+}

@@ -38,6 +38,8 @@ class RecordingSessionProcessor
       recording_session.mark_completed!(
         transcript_text: transcript_text,
         transcript_segments: result.transcript_segments,
+        waveform_peaks: result.waveform_peaks,
+        audio_duration: result.audio_duration,
         document_content: document_content,
         work_path: result.session_path.to_s,
         generated_title: generated_title_for(recording_session, transcript_text)

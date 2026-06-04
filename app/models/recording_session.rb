@@ -46,11 +46,13 @@ class RecordingSession < ApplicationRecord
     broadcast_live_transcript_status
   end
 
-  def mark_completed!(transcript_text:, document_content:, work_path:, transcript_segments: nil, generated_title: nil, generated_at: Time.current)
+  def mark_completed!(transcript_text:, document_content:, work_path:, transcript_segments: nil, waveform_peaks: nil, audio_duration: nil, generated_title: nil, generated_at: Time.current)
     attributes = {
       status: :completed,
       transcript_text: transcript_text,
       transcript_segments: transcript_segments,
+      waveform_peaks: waveform_peaks,
+      audio_duration: audio_duration,
       error_message: nil,
       work_path: work_path,
       processing_completed_at: generated_at
@@ -84,6 +86,13 @@ class RecordingSession < ApplicationRecord
 
   def live_stream
     [ self, :live ]
+  end
+
+  # Audio to play back in the app. Prefer the normalized copy when present: it
+  # is what Voxtral transcribed (so timestamps line up exactly) and always has a
+  # reliable duration, unlike raw microphone WebM.
+  def playback_audio
+    normalized_audio.attached? ? normalized_audio : original_audio
   end
 
   def default_title?

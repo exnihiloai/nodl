@@ -39,6 +39,15 @@ class NodlPipelineTest < ActiveSupport::TestCase
     end
   end
 
+  class FakeWaveformExtractor
+    attr_reader :path
+
+    def extract(path, **)
+      @path = path
+      Nodl::Audio::WaveformExtractor::Result.new(peaks: [ 0.1, 0.5, 1.0 ], duration: 12.5)
+    end
+  end
+
   test "runs the pipeline and writes all working files" do
     Dir.mktmpdir do |dir|
       root = Pathname.new(dir)
@@ -53,7 +62,8 @@ class NodlPipelineTest < ActiveSupport::TestCase
         transcriber: transcriber,
         document_transformer: document_transformer,
         transformer_repository: Nodl::Transformation::TransformerRepository.new(root_path: transformer_root),
-        working_directory: Nodl::WorkingDirectory.new(root_path: work_root)
+        working_directory: Nodl::WorkingDirectory.new(root_path: work_root),
+        waveform_extractor: FakeWaveformExtractor.new
       ).run(
         audio_path: Rails.root.join("test", "fixtures", "files", "sample.mp3"),
         transformer_handle: "default",
@@ -73,6 +83,8 @@ class NodlPipelineTest < ActiveSupport::TestCase
       assert_equal 1.5, metadata.fetch("transcript_audio_seconds")
       assert_equal result.audio_path.to_s, transcriber.audio.path.to_s
       assert_equal "Speaker 1: This is the transcript.", document_transformer.transcript
+      assert_equal [ 0.1, 0.5, 1.0 ], result.waveform_peaks
+      assert_equal 12.5, result.audio_duration
     end
   end
 end

@@ -147,6 +147,65 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "completed recording session renders the audio player and clickable transcript" do
+    user = create_user_with_workspace(email: "audio-player@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Playable session",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    recording_session.update!(
+      status: :completed,
+      transcript_text: "Hallo Welt. Wie geht es dir?",
+      transcript_segments: [
+        { "start" => 0.0, "end" => 1.5, "speaker" => "speaker_1", "text" => "speaker_1: Hallo Welt." },
+        { "start" => 1.6, "end" => 3.2, "speaker" => "speaker_1", "text" => "speaker_1: Wie geht es dir?" }
+      ],
+      waveform_peaks: [ 0.2, 0.6, 1.0, 0.4 ],
+      audio_duration: 3.2
+    )
+
+    post login_path, params: { email: user.email, password: "Valid123" }
+    get recording_session_path(recording_session)
+
+    assert_response :success
+    assert_select "[data-controller='audio-player']"
+    assert_select "[data-testid='audio-player'] audio[data-audio-player-target='audio']"
+    assert_select "[data-audio-player-target='cue']", count: 2
+    assert_select "[data-audio-player-target='cue'][data-start='0.0']", text: "Hallo Welt."
+    # Single speaker: no speaker-count legend, no per-cue color.
+    assert_select "[data-audio-player-target='cue'][data-color]", count: 0
+    # Waveform peaks are embedded so the client draws instantly (no audio download).
+    assert_select "[data-controller='audio-player'][data-audio-player-peaks-value*='1.0']"
+  end
+
+  test "multi-speaker transcript shows speaker count and per-speaker colors" do
+    user = create_user_with_workspace(email: "audio-multi@example.test")
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Interview",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    recording_session.update!(
+      status: :completed,
+      transcript_text: "Frage. Antwort.",
+      transcript_segments: [
+        { "start" => 0.0, "end" => 1.0, "speaker" => "speaker_1", "text" => "speaker_1: Frage." },
+        { "start" => 1.1, "end" => 2.0, "speaker" => "speaker_2", "text" => "speaker_2: Antwort." }
+      ]
+    )
+
+    post login_path, params: { email: user.email, password: "Valid123" }
+    get recording_session_path(recording_session)
+
+    assert_response :success
+    assert_select "[data-audio-player-target='transcript']", text: /2 speakers/
+    # Each segment becomes its own paragraph because the speaker changes.
+    assert_select "[data-audio-player-target='transcript'] p", count: 2
+    # Cues carry their speaker color so the highlight can match it.
+    assert_select "[data-audio-player-target='cue'][data-color]", count: 2
+  end
+
   test "renders markdown document correctly as HTML" do
     user = create_user_with_workspace(email: "document-render@example.test")
     recording_session = user.workspaces.first.recording_sessions.create!(

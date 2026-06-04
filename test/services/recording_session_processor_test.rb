@@ -7,7 +7,7 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     end
   end
 
-  PipelineResult = Struct.new(:session_path, :transcript_path, :document_path, :transcript_segments, keyword_init: true)
+  PipelineResult = Struct.new(:session_path, :transcript_path, :document_path, :transcript_segments, :waveform_peaks, :audio_duration, keyword_init: true)
 
   class FakeNormalizer
     attr_reader :input_path
@@ -47,7 +47,7 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
       document = Tempfile.new("document")
       document.write("# Generated document")
       document.flush
-      PipelineResult.new(session_path: Pathname.new("/tmp/work/session"), transcript_path: Pathname.new(transcript.path), document_path: Pathname.new(document.path), transcript_segments: @transcript_segments)
+      PipelineResult.new(session_path: Pathname.new("/tmp/work/session"), transcript_path: Pathname.new(transcript.path), document_path: Pathname.new(document.path), transcript_segments: @transcript_segments, waveform_peaks: [ 0.2, 0.8, 1.0 ], audio_duration: 7.5)
     end
   end
 
@@ -85,6 +85,8 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_equal "Speaker 1", recording_session.transcript_segments.first.fetch("speaker")
     assert_equal "# Generated document", recording_session.document.content
     assert_equal "default", pipeline.transformer_handle
+    assert_equal [ 0.2, 0.8, 1.0 ], recording_session.waveform_peaks
+    assert_equal 7.5, recording_session.audio_duration
   end
 
   test "persists speaker-attributed transcript from the authoritative pipeline" do

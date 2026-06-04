@@ -26,7 +26,7 @@ class RecordingSessionsController < ApplicationController
   end
 
   def show
-    @recording_session = current_workspace.recording_sessions.includes(:document, original_audio_attachment: :blob).find(params[:id])
+    @recording_session = current_workspace.recording_sessions.includes(:document, original_audio_attachment: :blob, normalized_audio_attachment: :blob).find(params[:id])
     @document = @recording_session.document
   end
 
