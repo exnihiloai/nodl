@@ -3,6 +3,9 @@
 As a logged in user, who is not satisfied with the default transformer and has specific needs,
 I want to create, define, and save my own transformer, so I can select it for use later and instruct the AI how it should transform the audio transcription into a document. 
 
+## Additional Information
+
+- For the technical architecture and specifications, see the [Design Document: Custom Transformers](../custom-transformers/design.md).
 
 ## Acceptance Criteria
 
