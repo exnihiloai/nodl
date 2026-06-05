@@ -522,8 +522,17 @@ export default class extends Controller {
   }
 
   resetLivePanel() {
-    if (this.hasPreviewBadgeTarget) this.previewBadgeTarget.classList.remove("hidden")
-    if (this.hasFinalizingBadgeTarget) this.finalizingBadgeTarget.classList.add("hidden")
+    const statusContainer = document.getElementById("live_transcript_status")
+    if (statusContainer) {
+      statusContainer.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold">Transcript</h2>
+          <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
+            <span class="loading loading-spinner loading-xs"></span>Finalizing…
+          </span>
+        </div>
+      `
+    }
 
     const segmentsContainer = document.getElementById("live_transcript_segments")
     if (segmentsContainer) {
