@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.5.0] - 2026-06-05
+
+### Added
+- **Smooth Audio-Duration-Based Progress Bar:** You can now see real-time progress of your recordings being processed on the dashboard, with a dynamic bar that estimates processing time using the audio duration and updates its status step-by-step ("Analyzing...", "Transcribing...", "Structuring...").
+- **Accidental Recording Safeguard:** The "Record" button is now locked for 3 seconds immediately after you stop a recording to prevent accidental double-clicks or duplicate requests.
+- **Voice-Reactive Live Panel Glow:** The live transcription box now blooms with a highly polished, voice-reactive outer halo and border light that expands and shines dynamically as you speak, providing clean and quiet visual feedback.
+- **Polished Page Transitions:** Starting a new recording now automatically cleans up and resets the live transcription slot, while completing a recording triggers smooth collapse and grow animations to transition from the live panel to the new activity list row without sudden page jumps.
+
+### Changed
+- **Refined Navigation Flow:** Clicking a completed recording's title on the dashboard now takes you straight to the generated document. Jump back to its source session with the new "Show Recording" button on the document page, or find the session quickly using the "Open Recording" button in the activity list.
+
+### Fixed
+- **Support for Silence and Empty Audio:** Recordings with no detected speech are now resolved gracefully. NODL avoids calling external AI models with blank input (preventing errors and conversational filler) and returns a clean, deterministic "No speech detected" placeholder.
+
+### Technical
+- Implemented `estimated_duration` on `RecordingSession` to extract and compute the audio length in seconds from Active Storage blob metadata (via bitrate and byte size calculations) when not directly provided.
+- Added native CSS keyframe animations for the collapsing live panel and expanding dashboard rows, as well as a custom-drawn CSS gradient text-shimmer for live transcripts.
+- Added robust system-test coverage (`audio_recorder_js_test.rb`) to verify JavaScript-based button locking and animation states using Headless Chrome.
+
+
 ## [0.4.0] - 2026-06-05
 
 ### Added
