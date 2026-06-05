@@ -225,36 +225,42 @@
    Voice is the headline. When silent the halo sits dim and pulled in;
    speaking blooms it bright and pushes it outward, so the difference
    between talking and not talking is unmistakable. The only autonomous
-   motion is a barely-there breathe on the blurred blobs — slow, with no
-   rotation, so it never competes with the voice for "is it getting
-   brighter?". --voice-level is the dominant signal. */
+   motion is a very slow positional undulation of the blurred blobs — a
+   gentle wave, no rotation, so it sways the glow rather than pulsing it
+   brighter. --voice-level stays the dominant signal. */
 .voice-stage.is-recording .voice-aura {
-  opacity: calc(0.12 + var(--voice-level) * 0.55);
-  transform: scale(calc(0.9 + var(--voice-level) * 0.14));
+  /* Idle floor is high enough that the glow is clearly present (and its slow
+     wave visible) even in dead silence; voice still blooms it on top. */
+  opacity: calc(0.42 + var(--voice-level) * 0.3);
+  transform: scale(calc(0.92 + var(--voice-level) * 0.13));
 }
 
 .voice-stage.is-recording .voice-aura::before {
-  animation: voice-aura-breathe 9s ease-in-out infinite;
+  animation: voice-aura-wave-a 13s ease-in-out infinite;
 }
 
 .voice-stage.is-recording .voice-aura::after {
-  animation: voice-aura-breathe 11s ease-in-out infinite reverse;
+  animation: voice-aura-wave-b 18s ease-in-out infinite;
 }
 
 .voice-stage.is-recording .voice-stage__panel::after {
   opacity: calc(0.08 + var(--voice-level) * 0.55);
 }
 
-/* Faint, slow swell of the blurred blobs — keeps the glow from feeling
-   dead while idle, without changing overall brightness enough to read
-   as the user's voice. */
-@keyframes voice-aura-breathe {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
+/* Two slow, phase-offset waves of the blurred blobs. Each one drifts across
+   the box, swells slightly, and gently brightens/dims — so the glow visibly
+   undulates while idle. The two layers move in opposition (left↔right,
+   bright↔dim) and run on mismatched 13s/18s periods, so the result reads as a
+   slow, organic wave that never settles into an obvious loop. It's slow enough
+   (and the voice bloom fast enough) that it never gets mistaken for speech. */
+@keyframes voice-aura-wave-a {
+  0%, 100% { transform: translate3d(-3.5%, -1%, 0) scale(1);     opacity: 0.6; }
+  50%      { transform: translate3d(3.5%, 2.5%, 0) scale(1.08);  opacity: 1; }
+}
+
+@keyframes voice-aura-wave-b {
+  0%, 100% { transform: translate3d(3%, 1%, 0) scale(1.07);      opacity: 0.4; }
+  50%      { transform: translate3d(-3.5%, -2.5%, 0) scale(1);   opacity: 0.72; }
 }
 
 /* Provisional (still-being-confirmed) words in the live transcript. Instead of
