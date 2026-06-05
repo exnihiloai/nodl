@@ -1,11 +1,13 @@
 # User Story: Create Own Transformer
 
 As a logged in user, who is not satisfied with the default transformer and has specific needs,
-I want to create, define, and save my own transformer, so I can select it for use later and instruct the AI how it should transform the audio transcription into a document. 
+I want to view details about a transformer, and create, define, and save my own transformer, so I can select it for use later and instruct the AI how it should transform the audio transcription into a document. 
 
 ## Additional Information
 
 - For the technical architecture and specifications, see the [Design Document: Custom Transformers](../custom-transformers/design.md).
+
+- For wording and language in the frontend, see the [Design Document: User Friendly Language](../language/user-friendly-naming.md).
 
 ## Acceptance Criteria
 
