@@ -18,7 +18,7 @@ export default class extends Controller {
     "uploadInput",
     "sourceKind",
     "submitButton",
-    "aura",
+    "stage",
     "livePanelSlot",
     "options",
     "previewBadge",
@@ -238,7 +238,7 @@ export default class extends Controller {
   }
 
   startVisualizer() {
-    if (!this.hasAuraTarget || !this.stream) return
+    if (!this.hasStageTarget || !this.stream) return
 
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext
@@ -253,14 +253,17 @@ export default class extends Controller {
       this.levelData = new Uint8Array(this.analyser.fftSize)
       this.smoothedLevel = 0
 
-      this.auraTarget.classList.remove("hidden")
-      this.auraTarget.classList.add("is-active")
+      this.stageTarget.style.setProperty("--voice-level", "0")
+      this.stageTarget.classList.add("is-recording")
       this.renderAura()
     } catch (_error) {
       this.stopVisualizer()
     }
   }
 
+  // Pushes a single, heavily smoothed audio level (0..1) onto the stage as
+  // --voice-level. All of the premium halo/edge visuals are derived from it in
+  // CSS, so the box stays calm when idle and only blooms when the user speaks.
   renderAura() {
     if (!this.analyser) return
 
@@ -271,17 +274,15 @@ export default class extends Controller {
       sumSquares += sample * sample
     }
     const rms = Math.sqrt(sumSquares / this.levelData.length)
-    const target = Math.min(1, rms * 4)
+    const target = Math.min(1, rms * 5.5)
 
-    this.smoothedLevel += (target - this.smoothedLevel) * 0.08
+    // Fast attack, slow release: the halo pops the instant the user speaks and
+    // eases back down, so voice is clearly the thing driving the bloom rather
+    // than any ambient animation.
+    const coeff = target > this.smoothedLevel ? 0.45 : 0.12
+    this.smoothedLevel += (target - this.smoothedLevel) * coeff
 
-    if (this.reduceMotion) {
-      this.auraTarget.style.setProperty("--aura-scale", "1")
-      this.auraTarget.style.setProperty("--aura-opacity", (0.18 + this.smoothedLevel * 0.3).toFixed(3))
-    } else {
-      this.auraTarget.style.setProperty("--aura-scale", (0.85 + this.smoothedLevel * 0.5).toFixed(3))
-      this.auraTarget.style.setProperty("--aura-opacity", (0.25 + this.smoothedLevel * 0.5).toFixed(3))
-    }
+    this.stageTarget.style.setProperty("--voice-level", this.smoothedLevel.toFixed(3))
 
     this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
   }
@@ -303,10 +304,9 @@ export default class extends Controller {
       this.audioContext.close()
       this.audioContext = null
     }
-    if (this.hasAuraTarget) {
-      this.auraTarget.classList.add("hidden")
-      this.auraTarget.classList.remove("is-active")
-      this.auraTarget.style.setProperty("--aura-opacity", "0")
+    if (this.hasStageTarget) {
+      this.stageTarget.classList.remove("is-recording")
+      this.stageTarget.style.setProperty("--voice-level", "0")
     }
   }
 
@@ -424,7 +424,7 @@ export default class extends Controller {
       transcript.className = "whitespace-pre-wrap text-sm leading-6"
       transcript.innerHTML = [
         "<span data-live-stable class=\"text-base-content\"></span>",
-        "<span data-live-fast class=\"text-warning\"></span>"
+        "<span data-live-fast class=\"voice-live-text\"></span>"
       ].join("")
       panel.appendChild(transcript)
     }
@@ -438,10 +438,10 @@ export default class extends Controller {
   }
 
   // The slow stream is the refined, confident transcript and is rendered in
-  // black; the fast stream runs ahead with a provisional guess. We show the
-  // confirmed words in black and only the still-unconfirmed tail of the fast
-  // text in orange, so confirmation fills in left-to-right instead of the
-  // orange line vanishing and reappearing as black.
+  // the solid base text colour; the fast stream runs ahead with a provisional
+  // guess. We show the confirmed words solid and only the still-unconfirmed
+  // tail of the fast text in the animated voice gradient, so confirmation
+  // fills in left-to-right instead of the live line vanishing and reappearing.
   splitPreview() {
     const slowWords = this.tokenizePreview(this.slowPreviewText)
     const fastWords = this.tokenizePreview(this.fastPreviewText)

@@ -16,6 +16,10 @@ Rails.application.configure do
   end
 
   config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
-  config.content_security_policy_nonce_directives = %w[script-src style-src]
+  # Only nonce script-src. Nonce-ing style-src would make the browser ignore the
+  # 'unsafe_inline' declared above (per the CSP spec), which blocks every
+  # JS-driven inline style we rely on — the voice aura's --voice-level, the
+  # bouncy button tilt, the theme toggle, and the processing progress bar.
+  config.content_security_policy_nonce_directives = %w[script-src]
   config.content_security_policy_nonce_auto = true
 end
