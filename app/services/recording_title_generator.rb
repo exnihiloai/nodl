@@ -21,6 +21,12 @@ class RecordingTitleGenerator
   end
 
   def generate(transcript:)
+    # A recording with no speech has an empty transcript. Asking the model to
+    # title nothing makes it reply with a meta-response ("Please provide the
+    # transcript..."), so skip the call and let the caller keep its default
+    # title instead.
+    return if transcript.to_s.strip.blank?
+
     title = client.generate_text(
       model: ENV.fetch("NODL_GEMINI_TITLE_MODEL", DEFAULT_MODEL),
       parts: [ { text: "#{PROMPT}\n\nTranscript:\n#{transcript}" } ],

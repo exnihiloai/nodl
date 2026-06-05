@@ -26,6 +26,17 @@ class RecordingTitleGeneratorTest < ActiveSupport::TestCase
     assert_equal({ temperature: 0.2 }, client.generation_config)
   end
 
+  test "returns nil without calling the model when the transcript is blank" do
+    [ "", "   ", "\n\t", nil ].each do |blank|
+      client = FakeClient.new("Please provide the transcript you would like me to title")
+
+      title = RecordingTitleGenerator.new(client: client).generate(transcript: blank)
+
+      assert_nil title, "expected no title for blank transcript #{blank.inspect}"
+      assert_nil client.model, "model should not be called for blank transcript #{blank.inspect}"
+    end
+  end
+
   test "sanitizes markdown, quotes, trailing punctuation, and long responses" do
     client = FakeClient.new("# \"This Is A Very Long Title That Should Be Trimmed Because It Has Far Too Many Words.\"")
     title = RecordingTitleGenerator.new(client: client).generate(transcript: "Transcript")
