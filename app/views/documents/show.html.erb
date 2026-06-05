@@ -4,11 +4,10 @@
   <div class="container mx-auto px-4 max-w-5xl space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <%= link_to "Back to session", recording_session_path(@recording_session), class: "link link-hover text-sm" %>
-        <h1 class="mt-2 text-3xl font-bold"><%= @document.title %></h1>
+        <h1 class="text-3xl font-bold"><%= @document.title %></h1>
         <p class="text-base-content/70"><%= @document.transformer_handle.humanize %> · <%= l(@document.generated_at, format: :short) %></p>
       </div>
-      <%= link_to "Dashboard", dashboard_path, class: "btn btn-outline" %>
+      <%= link_to "Show Recording", recording_session_path(@recording_session), class: "btn btn-outline" %>
     </div>
 
     <article class="prose dark:prose-invert max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
