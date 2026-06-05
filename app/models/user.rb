@@ -13,10 +13,22 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :preferred_language, inclusion: { in: %w[en de] }
+  validates :password, length: { minimum: 8 }, allow_nil: true
+  validate :password_complexity
 
   scope :active_only, -> { where(active: true) }
 
   def display_role
     role.to_s.capitalize
+  end
+
+  private
+
+  def password_complexity
+    return if password.blank?
+
+    unless password.match?(/[A-Z]/) && password.match?(/[a-z]/) && password.match?(/\d/)
+      errors.add(:password, "must include uppercase, lowercase, and a number")
+    end
   end
 end

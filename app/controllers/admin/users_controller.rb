@@ -20,7 +20,7 @@ module Admin
       email = params[:email].to_s.strip.downcase
       role = params[:role].presence || "user"
       raw_password = params[:password].to_s
-      generated_password = raw_password.presence || SecureRandom.base58(14)
+      generated_password = raw_password.presence || generate_complex_password
       normalized_role = normalize_role(role)
 
       if normalized_role.blank?
@@ -98,27 +98,27 @@ module Admin
     def update_password
       password = params[:password].to_s
 
-      if password.length < 8
-        render_password_section(error: "Password must be at least 8 characters.", status: :unprocessable_entity)
+      if password.blank?
+        render_password_section(error: "Password cannot be blank.", status: :unprocessable_entity)
         return
       end
 
-      if @managed_user.update(password:, password_confirmation: password)
+      if @managed_user.update(password: password, password_confirmation: password)
         audit!(@managed_user, "update_password", nil, { updated: true })
         render_password_section(notice: "Password updated.")
       else
-        render_password_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
+        render_password_section(error: @managed_user.errors.full_messages_for(:password).to_sentence, status: :unprocessable_entity)
       end
     end
 
     def generate_password
-      generated_password = SecureRandom.base58(14)
+      generated_password = generate_complex_password
 
       if @managed_user.update(password: generated_password, password_confirmation: generated_password)
         audit!(@managed_user, "generate_password", nil, { generated: true })
         render_password_section(notice: "Temporary password generated.", generated_password:)
       else
-        render_password_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
+        render_password_section(error: @managed_user.errors.full_messages_for(:password).to_sentence, status: :unprocessable_entity)
       end
     end
 
@@ -275,6 +275,13 @@ module Admin
     def normalize_role(raw_role)
       role = raw_role.to_s
       User.roles.key?(role) ? role : nil
+    end
+
+    def generate_complex_password
+      loop do
+        pass = SecureRandom.base58(15)
+        return pass if pass.match?(/[A-Z]/) && pass.match?(/[a-z]/) && pass.match?(/\d/)
+      end
     end
   end
 end

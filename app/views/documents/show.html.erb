@@ -6,7 +6,7 @@
       <div>
         <%= link_to "Back to session", recording_session_path(@recording_session), class: "link link-hover text-sm" %>
         <h1 class="mt-2 text-3xl font-bold"><%= @document.title %></h1>
-        <p class="text-base-content/70"><%= @document.transformer_handle %> · <%= l(@document.generated_at, format: :short) %></p>
+        <p class="text-base-content/70"><%= @document.transformer_handle.humanize %> · <%= l(@document.generated_at, format: :short) %></p>
       </div>
       <%= link_to "Dashboard", dashboard_path, class: "btn btn-outline" %>
     </div>

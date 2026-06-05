@@ -1,6 +1,6 @@
 # Security Audit Report
 
-Generated: 2026-02-22
+Generated: 2026-06-05
 Scope: Nodl Rails app (code + config + dependency scans)
 
 ## Summary
@@ -16,6 +16,7 @@ Verified strengths:
 - AuthN/AuthZ guards are present for protected surfaces (`authenticate_user!`, `require_admin!`) and tenancy switching is scoped to memberships.
 - Production config enforces HTTPS and host allow-listing.
 - Sensitive params are filtered from logs.
+- **Dependency Hygiene:** All third-party gems are updated, and dependency scans (`bundler-audit` and `importmap audit`) return 0 vulnerabilities.
 
 ## Findings
 
@@ -127,14 +128,13 @@ Verified strengths:
 ## Scanner Outputs
 
 - Brakeman: `bin/brakeman --no-pager` via `.codex/skills/security-auditor/scripts/security_audit.sh` (Docker `web` runtime).
-  - Summary: executed successfully (Scan Date: `2026-02-22 10:20:27 +0000`); 0 security warnings (`tmp/security-audit/brakeman.txt`).
+  - Summary: executed successfully (Scan Date: `2026-06-05`); 0 security warnings (`tmp/security-audit/brakeman.txt`).
 - bundler-audit: `bin/bundler-audit` via `.codex/skills/security-auditor/scripts/security_audit.sh` (Docker `web` runtime).
-  - Summary: executed successfully; no vulnerable gems reported (`tmp/security-audit/bundler-audit.txt`).
+  - Summary: executed successfully on `2026-06-05` after updating vulnerable dependencies (including rack, addressable, nokogiri, action_text-trix, loofah, etc.). **0 vulnerable gems reported** (`tmp/security-audit/bundler-audit.txt`).
 - importmap audit: `bin/importmap audit` via `.codex/skills/security-auditor/scripts/security_audit.sh` (Docker `web` runtime).
-  - Summary: executed successfully; no vulnerable packages found (`tmp/security-audit/importmap-audit.txt`).
+  - Summary: executed successfully on `2026-06-05`; **0 vulnerable packages found** (`tmp/security-audit/importmap-audit.txt`).
 
 ## Recommended Next Steps (ordered)
 
-1. Fix MEDIUM
-2. Fix LOW
-3. Keep scanner execution containerized to avoid host Ruby/Bundler drift
+1. Review architecture and proceed with fixing remaining/existing architectural findings (MEDIUM / LOW) such as tightening CSP or formalizing model-level password validation when human review/approval allows.
+2. Keep scanner execution containerized to avoid host Ruby/Bundler drift.

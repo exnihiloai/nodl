@@ -131,7 +131,7 @@ class DashboardTenancyTest < ApplicationSystemTestCase
     attach_file "recording_session_original_audio", Rails.root.join("test", "fixtures", "files", "sample.mp3")
 
     assert_enqueued_with(job: ProcessRecordingSessionJob) do
-      click_button "Create document"
+      click_button "Create document", visible: :all
     end
 
     assert_current_path dashboard_path, ignore_query: true

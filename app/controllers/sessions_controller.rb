@@ -1,6 +1,10 @@
 require "digest"
 
 class SessionsController < ApplicationController
+  class CacheUnavailableError < StandardError; end
+
+  rescue_from CacheUnavailableError, with: :handle_cache_unavailable
+
   LOGIN_ATTEMPT_WINDOW = 10.minutes
   LOGIN_BLOCK_WINDOW = 15.minutes
   MAX_LOGIN_ATTEMPTS = 10
@@ -43,6 +47,12 @@ class SessionsController < ApplicationController
 
   private
 
+  def handle_cache_unavailable(exception)
+    Rails.logger.error("Authentication failed closed due to cache error: #{exception.message}")
+    flash.now[:alert] = "Authentication service is temporarily unavailable. Please try again later."
+    render :new, status: :service_unavailable
+  end
+
   def normalized_email
     login_params[:email].to_s.downcase.strip
   end
@@ -54,8 +64,8 @@ class SessionsController < ApplicationController
   def login_throttled?(email, remote_ip)
     blocked_until = Rails.cache.read(blocked_login_cache_key(email, remote_ip))
     blocked_until.present? && blocked_until > Time.current
-  rescue StandardError
-    false
+  rescue StandardError => e
+    raise CacheUnavailableError, "Cache read failed: #{e.message}"
   end
 
   def record_failed_login_attempt(email, remote_ip)
@@ -66,15 +76,15 @@ class SessionsController < ApplicationController
     return unless attempts >= MAX_LOGIN_ATTEMPTS
 
     Rails.cache.write(blocked_login_cache_key(email, remote_ip), Time.current + LOGIN_BLOCK_WINDOW, expires_in: LOGIN_BLOCK_WINDOW)
-  rescue StandardError
-    nil
+  rescue StandardError => e
+    raise CacheUnavailableError, "Cache write failed: #{e.message}"
   end
 
   def clear_failed_login_attempts(email, remote_ip)
     Rails.cache.delete(failed_login_cache_key(email, remote_ip))
     Rails.cache.delete(blocked_login_cache_key(email, remote_ip))
-  rescue StandardError
-    nil
+  rescue StandardError => e
+    raise CacheUnavailableError, "Cache delete failed: #{e.message}"
   end
 
   def failed_login_cache_key(email, remote_ip)

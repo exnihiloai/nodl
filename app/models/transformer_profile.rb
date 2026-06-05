@@ -1,6 +1,6 @@
 class TransformerProfile < ApplicationRecord
   DEFAULT_HANDLE = "default"
-  DEFAULT_NAME = "Default Transformer"
+  DEFAULT_NAME = "Basic Summary"
   DEFAULT_SOURCE_PATH = "transformers/default"
 
   belongs_to :workspace

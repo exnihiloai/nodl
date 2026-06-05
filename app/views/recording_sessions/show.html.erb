@@ -20,7 +20,7 @@
       <div>
         <%= link_to "Back to dashboard", dashboard_path, class: "link link-hover text-sm" %>
         <h1 class="mt-2 text-3xl font-bold"><%= @recording_session.title %></h1>
-        <p class="text-base-content/70">Transformer: <%= @recording_session.transformer_handle %></p>
+        <p class="text-base-content/70">Format: <%= @recording_session.transformer_handle.humanize %></p>
       </div>
       <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= @recording_session.status.humanize %></span>
     </div>

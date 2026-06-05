@@ -8,7 +8,7 @@ class TransformerProfileTest < ActiveSupport::TestCase
     default = workspace.transformer_profiles.find_by(default: true)
 
     assert_equal "default", default.handle
-    assert_equal "Default Transformer", default.name
+    assert_equal "Basic Summary", default.name
     assert_equal "transformers/default", default.source_path
   end
 

@@ -17,19 +17,12 @@
     <% else %>
       <% first_run = @recording_sessions.none? %>
 
-      <div class="rounded-box border border-base-300 bg-base-100 px-6 py-10 text-center shadow-sm" data-testid="record-hero">
-        <% if first_run %>
-          <h1 class="text-3xl font-bold">Speak. We'll structure it.</h1>
-          <p class="mx-auto mt-2 max-w-md text-base-content/70">Capture a thought out loud and get a clean document back.</p>
-        <% else %>
-          <h1 class="text-xl font-semibold">Capture a thought</h1>
-        <% end %>
-
+      <div class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-testid="record-hero">
         <%= form_with model: @recording_session,
                       url: recording_sessions_path,
                       local: true,
                       multipart: true,
-                      class: "mt-6 flex flex-col items-center gap-4",
+                      class: "flex flex-col gap-6",
                       data: {
                         controller: "audio-recorder",
                         testid: "recording-form",
@@ -38,60 +31,71 @@
                       } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
-          <div class="relative isolate flex flex-wrap items-center justify-center gap-3">
-            <span data-audio-recorder-target="aura" data-testid="recording-aura" class="voice-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-44 w-44" aria-hidden="true"></span>
-            <%= form.button type: "button",
-                            class: "btn btn-bouncy btn-primary btn-lg gap-2",
-                            data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start", testid: "record-button" } do %>
-              <span class="text-lg" aria-hidden="true">●</span> Record
-            <% end %>
-            <button type="button" class="btn btn-outline hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" data-testid="stop-recording-button" disabled>Stop</button>
-            <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer" data-testid="recording-timer">00:00</span>
+          <h1 class="text-2xl font-bold">Start a New Document</h1>
+
+          <div class="mx-auto w-full max-w-md flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-base-content/60">Turn recording into</label>
+            <%= form.select :transformer_handle,
+                            @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                            {},
+                            class: "select select-bordered w-full",
+                            data: { testid: "output-type-select" } %>
           </div>
 
-          <div class="flex flex-col items-center gap-4" data-audio-recorder-target="options">
-            <label class="cursor-pointer text-sm text-base-content/60 hover:text-base-content hover:underline">
-              or upload audio
-              <%= form.file_field :original_audio,
-                                  accept: "audio/*,video/webm,video/mp4",
-                                  class: "hidden",
-                                  data: {
-                                    "audio-recorder-target": "uploadInput",
-                                    action: "change->audio-recorder#useUpload",
-                                    testid: "audio-upload-input"
-                                  } %>
-            </label>
-
-            <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
-              <span class="text-base-content/60">Output:</span>
-              <%= form.select :transformer_handle,
-                              @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
-                              {},
-                              class: "select select-sm select-bordered",
-                              data: { testid: "output-type-select" } %>
+          <div class="flex gap-3">
+            <div class="relative isolate flex flex-1 items-center gap-2">
+              <span data-audio-recorder-target="aura" data-testid="recording-aura" class="voice-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-44 w-44" aria-hidden="true"></span>
+              <%= form.button type: "button",
+                              class: "btn btn-bouncy btn-primary flex-1 gap-2",
+                              data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start", testid: "record-button" } do %>
+                <span aria-hidden="true">●</span> Record
+              <% end %>
+              <button type="button" class="btn btn-outline flex-1 hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" data-testid="stop-recording-button" disabled>Stop</button>
+              <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer" data-testid="recording-timer">00:00</span>
             </div>
 
-            <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
+            <div class="flex-1" data-audio-recorder-target="options">
+              <label class="btn btn-outline w-full cursor-pointer">
+                Upload Audio
+                <%= form.file_field :original_audio,
+                                    accept: "audio/*,video/webm,video/mp4",
+                                    class: "hidden",
+                                    data: {
+                                      "audio-recorder-target": "uploadInput",
+                                      action: "change->audio-recorder#useUpload",
+                                      testid: "audio-upload-input"
+                                    } %>
+              </label>
+            </div>
           </div>
+          </div>
+
+          <%= form.submit "Create document", class: "hidden", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
 
           <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
 
-          <div class="hidden w-full max-w-2xl" data-audio-recorder-target="livePanelSlot">
+          <div class="hidden w-full" data-audio-recorder-target="livePanelSlot">
             <section id="live_transcript_panel" class="rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
               <div id="live_transcript_status">
                 <div class="flex items-center justify-between gap-3">
                   <h2 class="text-sm font-semibold">Transcript</h2>
-                  <span class="badge badge-warning badge-sm">Preview</span>
+                  <span class="badge badge-warning badge-sm" data-audio-recorder-target="previewBadge">Preview</span>
+                  <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
+                    <span class="loading loading-spinner loading-xs"></span>Finalizing…
+                  </span>
                 </div>
-                <p class="mt-1 text-xs text-base-content/60">Preview while recording — the final transcript will be cleaner.</p>
               </div>
               <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
-                <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
+                <p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>
               </div>
             </section>
           </div>
 
-          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
+          <p class="flex items-center justify-center gap-1 text-xs text-base-content/50">
+            <%= icon("lock", class: "size-3.5") %>
+            <span>Private to your workspace. Nothing is shared.</span>
+          </p>
 
           <input type="file"
                  name="recording_session[original_audio]"
@@ -104,8 +108,8 @@
       <div class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <%= render "activity", recording_sessions: @recording_sessions %>
 
-        <aside class="space-y-3" data-testid="output-types-panel">
-          <h2 class="text-lg font-semibold">Output types</h2>
+        <aside class="space-y-3" data-testid="formats-panel">
+          <h2 class="text-lg font-semibold">Formats</h2>
           <ul class="rounded-box border border-base-300 bg-base-100">
             <% @transformer_profiles.each do |profile| %>
               <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0">
@@ -116,7 +120,7 @@
               </li>
             <% end %>
           </ul>
-          <p class="text-xs text-base-content/50">Output types decide how your recording is turned into a document.</p>
+          <p class="text-xs text-base-content/50">A format decides what kind of document to create from your recording.</p>
         </aside>
       </div>
     <% end %>

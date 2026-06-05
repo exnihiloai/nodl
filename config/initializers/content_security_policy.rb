@@ -6,7 +6,7 @@ Rails.application.configure do
     policy.base_uri :self
     policy.frame_ancestors :none
     policy.object_src :none
-    policy.script_src :self, :https
+    policy.script_src :self, "https://js.stripe.com"
     policy.style_src :self, :unsafe_inline
     policy.img_src :self, :https, :data
     policy.font_src :self, :data

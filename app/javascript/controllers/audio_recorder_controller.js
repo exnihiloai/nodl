@@ -20,7 +20,9 @@ export default class extends Controller {
     "submitButton",
     "aura",
     "livePanelSlot",
-    "options"
+    "options",
+    "previewBadge",
+    "finalizingBadge"
   ]
   static values = {
     createUrl: String,
@@ -82,7 +84,7 @@ export default class extends Controller {
       this.startTimer()
       this.startVisualizer()
       await this.startRealtimeTranscription()
-      this.updateStatus(this.realtimeSubscription ? "Recording… live preview is streaming." : "Recording… live preview is unavailable in this browser.")
+      this.updateStatus("")
     } catch (_error) {
       this.updateStatus("We couldn't start recording. Check your microphone permissions and try again.")
       this.isRecording = false
@@ -137,7 +139,7 @@ export default class extends Controller {
     if (this.submitting) return
 
     this.submitting = true
-    this.submitButtonTarget.disabled = true
+    if (this.hasSubmitButtonTarget) this.submitButtonTarget.disabled = true
     this.element.requestSubmit()
   }
 
@@ -174,7 +176,7 @@ export default class extends Controller {
     formData.set("recording_session[transformer_handle]", this.selectedTransformerHandle())
     formData.set("recording_session[original_audio]", file)
 
-    this.updateStatus("Got it — finalizing the clean transcript and document…")
+    this.showFinalizingBadge()
 
     try {
       const response = await window.fetch(this.liveSession.finalize_url, {
@@ -187,7 +189,6 @@ export default class extends Controller {
       })
 
       if (!response.ok) throw new Error("Finalize failed.")
-      this.updateStatus("")
     } catch (_error) {
       this.updateStatus("We couldn't finalize this recording. Please try recording again.")
     }
@@ -198,7 +199,6 @@ export default class extends Controller {
     transfer.items.add(file)
     this.recordInputTarget.files = transfer.files
     this.uploadInputTarget.value = ""
-    this.updateStatus("Got it — structuring your notes…")
     this.submit()
   }
 
@@ -488,6 +488,11 @@ export default class extends Controller {
 
   showLivePanel() {
     if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.remove("hidden")
+  }
+
+  showFinalizingBadge() {
+    if (this.hasPreviewBadgeTarget) this.previewBadgeTarget.classList.add("hidden")
+    if (this.hasFinalizingBadgeTarget) this.finalizingBadgeTarget.classList.remove("hidden")
   }
 
   selectedTransformerHandle() {

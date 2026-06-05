@@ -65,15 +65,17 @@ class RegistrationsController < ApplicationController
 
     errors << "Email and confirmation must match." if email != email_confirm
     errors << "Passwords must match." if password != password_confirm
-    errors << "Password must be at least 8 characters." if password.length < 8
-    errors << "Password must include uppercase, lowercase, and a number." unless strong_password?(password)
     errors << "This email is already registered." if User.exists?(email:)
 
-    errors
-  end
+    # Validate password complexity via central User model validations
+    temp_user = User.new(password: password, password_confirmation: password_confirm)
+    unless temp_user.valid?
+      temp_user.errors.full_messages_for(:password).each do |msg|
+        errors << msg
+      end
+    end
 
-  def strong_password?(password)
-    password.match?(/[A-Z]/) && password.match?(/[a-z]/) && password.match?(/\d/)
+    errors
   end
 
   def default_workspace_name(email)
