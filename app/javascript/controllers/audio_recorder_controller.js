@@ -560,7 +560,6 @@ export default class extends Controller {
 
         // Make sure the row is hidden initially (before repaint)
         targetRow.style.opacity = "0"
-        targetRow.style.transform = "scaleY(0)"
         targetRow.style.maxHeight = "0"
         targetRow.style.paddingTop = "0"
         targetRow.style.paddingBottom = "0"
@@ -568,7 +567,6 @@ export default class extends Controller {
         // Delay the grow animation until the vertical collapse of the live transcript panel finishes
         setTimeout(() => {
           targetRow.style.opacity = ""
-          targetRow.style.transform = ""
           targetRow.style.maxHeight = ""
           targetRow.style.paddingTop = ""
           targetRow.style.paddingBottom = ""
