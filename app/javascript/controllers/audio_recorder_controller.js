@@ -20,8 +20,7 @@ export default class extends Controller {
     "submitButton",
     "stage",
     "livePanelSlot",
-    "options",
-    "finalizingBadge"
+    "options"
   ]
   static values = {
     createUrl: String,
@@ -202,8 +201,6 @@ export default class extends Controller {
     formData.set("recording_session[source_kind]", "microphone")
     formData.set("recording_session[transformer_handle]", this.selectedTransformerHandle())
     formData.set("recording_session[original_audio]", file)
-
-    this.showFinalizingBadge()
 
     try {
       const response = await window.fetch(this.liveSession.finalize_url, {
@@ -517,19 +514,12 @@ export default class extends Controller {
     if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.remove("hidden")
   }
 
-  showFinalizingBadge() {
-    if (this.hasFinalizingBadgeTarget) this.finalizingBadgeTarget.classList.remove("hidden")
-  }
-
   resetLivePanel() {
     const statusContainer = document.getElementById("live_transcript_status")
     if (statusContainer) {
       statusContainer.innerHTML = `
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-sm font-semibold">Transcript</h2>
-          <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
-            <span class="loading loading-spinner loading-xs"></span>Finalizing…
-          </span>
         </div>
       `
     }

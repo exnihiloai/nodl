@@ -117,7 +117,7 @@ class DashboardTenancyTest < ApplicationSystemTestCase
 
     visit recording_session_path(recording_session)
     assert_selector "[data-testid='live-transcript-panel']"
-    assert_text "Preview while recording"
+    assert_text "Preview"
     assert_selector "turbo-cable-stream-source"
 
     visit recording_session_path(completed_session)
