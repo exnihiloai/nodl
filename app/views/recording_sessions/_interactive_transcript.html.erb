@@ -21,17 +21,21 @@
     </div>
   <% end %>
 
-  <% segments.chunk { |segment| segment["speaker"] }.each_with_index do |(speaker, run), run_index| %>
-    <% color = colors[speaker] %>
-    <% underline = ("text-decoration-line:underline;text-decoration-color:#{color};text-decoration-thickness:2px;text-underline-offset:3px" if multi && color) %>
-    <%= tag.p class: (run_index.zero? ? "m-0" : "mt-3 mb-0"), style: underline do %>
-      <% run.each do |segment| %>
-        <% text = strip_speaker_label(segment["text"]) %>
-        <% next if text.blank? %>
-        <%= tag.span text,
-                     class: "cursor-pointer rounded transition-colors hover:bg-base-300",
-                     data: { "audio-player-target": "cue", action: "click->audio-player#seekToCue", start: segment["start"], end: segment["end"], color: (color if multi) } %><%= " " %>
+  <%# Only the transcript paragraphs are copyable — the speaker legend above is
+      intentionally left outside the clipboard source. %>
+  <div data-clipboard-target="source">
+    <% segments.chunk { |segment| segment["speaker"] }.each_with_index do |(speaker, run), run_index| %>
+      <% color = colors[speaker] %>
+      <% underline = ("text-decoration-line:underline;text-decoration-color:#{color};text-decoration-thickness:2px;text-underline-offset:3px" if multi && color) %>
+      <%= tag.p class: (run_index.zero? ? "m-0" : "mt-3 mb-0"), style: underline do %>
+        <% run.each do |segment| %>
+          <% text = strip_speaker_label(segment["text"]) %>
+          <% next if text.blank? %>
+          <%= tag.span text,
+                       class: "cursor-pointer rounded transition-colors hover:bg-base-300",
+                       data: { "audio-player-target": "cue", action: "click->audio-player#seekToCue", start: segment["start"], end: segment["end"], color: (color if multi) } %><%= " " %>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>
