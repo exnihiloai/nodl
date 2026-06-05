@@ -124,11 +124,19 @@
                   <span class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="Format actions">⋯</label>
                     <ul tabindex="0" class="dropdown-content menu z-10 w-32 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-                      <li><%= link_to "Edit", edit_transformer_profile_path(profile) %></li>
+                      <li>
+                        <%= link_to edit_transformer_profile_path(profile), class: "flex items-center gap-2" do %>
+                          <%= icon "square-pen", class: "size-4" %>
+                          Edit
+                        <% end %>
+                      </li>
                       <% unless profile.default? %>
                         <li>
-                          <%= button_to "Delete", transformer_profile_path(profile), method: :delete,
-                                class: "text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } %>
+                          <%= button_to transformer_profile_path(profile), method: :delete,
+                                class: "flex items-center gap-2 text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } do %>
+                            <%= icon "trash-2", class: "size-4" %>
+                            Delete
+                          <% end %>
                         </li>
                       <% end %>
                     </ul>
