@@ -19,7 +19,10 @@
               <span class="mt-1 text-warning motion-safe:animate-pulse" title="Processing" aria-hidden="true">◐</span>
             <% end %>
             <div class="min-w-0">
-              <%= link_to session.title, recording_session_path(session), class: "block truncate font-medium hover:underline" %>
+              <% is_truncated = session.title.to_s.length > 45 %>
+              <div class="<%= 'tooltip tooltip-top' if is_truncated %> max-w-full text-left" <%= "data-tip=\"#{ERB::Util.html_escape(session.title)}\"".html_safe if is_truncated %>>
+                <%= link_to truncate(session.title, length: 45), recording_session_path(session), class: "block font-medium hover:underline" %>
+              </div>
               <p class="mt-0.5 text-xs text-base-content/50">
                 <%= time_ago_in_words(session.created_at) %> ago
                 <% if session.completed? && session.document %>
