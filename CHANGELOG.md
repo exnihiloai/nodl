@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.0] - 2026-06-05
+
+### Added
+- **Stronger Password Requirements:** Your account is now more secure with centralized password complexity validation requiring at least 8 characters, including uppercase, lowercase, and a number.
+- **Fail-Closed Login Throttling:** Added a robust security guard that temporarily blocks login attempts if the background caching service is unavailable, preventing potential brute-force attacks.
+- **User-Friendly Naming Guidelines:** Added a comprehensive naming convention guide to ensure all product terminology remains clear, consistent, and accessible to non-technical users.
+
+### Changed
+- **Simplified Dashboard UI:**
+  - Redesigned the recording hub with a clean, left-aligned layout and stacked options for a more focused experience.
+  - Positioned the "Record" and "Upload Audio" buttons side-by-side with a constrained width, giving the interface more breathing room on wide screens.
+  - Replaced the live-preview status text with a clean spinner badge ("Finalizing…") and the transcript placeholder with a simple italic "Listening…".
+  - Replaced the generic lock emoji in the privacy notice with a crisp, local Lucide lock icon.
+- **User-Friendly Terminology:**
+  - Replaced technical jargon with product-facing language across the entire interface: "Transformer" is now "Format", "Output types" is now "Formats", and "Transformation" is now "Generate document".
+  - Renamed the default profile from "Default Transformer" to "Basic Summary" to make it more descriptive and intuitive.
+- **Tightened Content Security Policy (CSP):** Restricted allowed script sources to prevent cross-site scripting (XSS) attacks, explicitly whitelisting only local scripts and Stripe.
+- **Upgraded Core Dependencies:** Updated Rails and other third-party libraries to their latest secure versions (8.1.3), resolving all outstanding security vulnerabilities for a clean audit.
+
+### Fixed
+- **Session Title Truncation:** Fixed a layout overflow issue on the dashboard by truncating long recording session titles to a maximum of 45 characters, with a tooltip showing the full title on hover.
+
+
 ## [0.2.0] - 2026-06-05
 
 ### Added
