@@ -40,5 +40,23 @@
         </div>
       </div>
     </footer>
+
+    <%# Styled replacement for the browser's native confirm() dialog. Turbo is
+        pointed at this modal for every `data-turbo-confirm` action. %>
+    <dialog data-controller="confirm-modal" data-confirm-modal-target="dialog" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold" data-confirm-modal-target="title">Are you sure?</h3>
+        <p class="py-4" data-confirm-modal-target="message"></p>
+        <div class="modal-action">
+          <form method="dialog" class="flex gap-2">
+            <button value="cancel" class="btn btn-ghost" data-confirm-modal-target="cancel">Cancel</button>
+            <button value="confirm" class="btn btn-error" data-confirm-modal-target="accept">Delete</button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button value="cancel" aria-label="Close">close</button>
+      </form>
+    </dialog>
   </body>
 </html>

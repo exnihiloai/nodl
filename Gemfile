@@ -21,6 +21,10 @@ gem "jbuilder"
 gem "bcrypt", "~> 3.1.7"
 gem "stripe", "~> 13.0"
 gem "kramdown", "~> 2.4.0"
+# Pure-Ruby document export for downloads: PDF (prawn/prawn-html) and Word (htmltoword). No native binaries.
+gem "prawn", "~> 2.5"
+gem "prawn-html", "~> 0.6"
+gem "htmltoword", "~> 1.0"
 # Pure-Ruby text extraction for custom format example files (no native binaries)
 gem "pdf-reader", "~> 2.12"
 gem "docx", "~> 0.8"

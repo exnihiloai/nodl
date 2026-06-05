@@ -55,7 +55,7 @@
             </div>
 
             <div class="flex-1" data-audio-recorder-target="options">
-              <label class="btn btn-outline w-full cursor-pointer">
+              <label class="btn w-full cursor-pointer">
                 Upload Audio
                 <%= form.file_field :original_audio,
                                     accept: "audio/*,video/webm,video/mp4",
@@ -81,9 +81,6 @@
                 <div id="live_transcript_status">
                   <div class="flex items-center justify-between gap-3">
                     <h2 class="text-sm font-semibold">Transcript</h2>
-                    <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
-                      <span class="loading loading-spinner loading-xs"></span>Finalizing…
-                    </span>
                   </div>
                 </div>
                 <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
@@ -127,11 +124,19 @@
                   <span class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="Format actions">⋯</label>
                     <ul tabindex="0" class="dropdown-content menu z-10 w-32 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-                      <li><%= link_to "Edit", edit_transformer_profile_path(profile) %></li>
+                      <li>
+                        <%= link_to edit_transformer_profile_path(profile), class: "flex items-center gap-2" do %>
+                          <%= icon "square-pen", class: "size-4" %>
+                          Edit
+                        <% end %>
+                      </li>
                       <% unless profile.default? %>
                         <li>
-                          <%= button_to "Delete", transformer_profile_path(profile), method: :delete,
-                                class: "text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } %>
+                          <%= button_to transformer_profile_path(profile), method: :delete,
+                                class: "flex items-center gap-2 text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } do %>
+                            <%= icon "trash-2", class: "size-4" %>
+                            Delete
+                          <% end %>
                         </li>
                       <% end %>
                     </ul>
