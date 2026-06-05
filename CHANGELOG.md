@@ -8,12 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2026-06-05
 
-### Added
+### Security
 - **Stronger Password Requirements:** Your account is now more secure with centralized password complexity validation requiring at least 8 characters, including uppercase, lowercase, and a number.
 - **Fail-Closed Login Throttling:** Added a robust security guard that temporarily blocks login attempts if the background caching service is unavailable, preventing potential brute-force attacks.
-- **User-Friendly Naming Guidelines:** Added a comprehensive naming convention guide to ensure all product terminology remains clear, consistent, and accessible to non-technical users.
+
+
 
 ### Changed
+- **User-Friendly Naming Guidelines:** Added a comprehensive naming convention guide to ensure all product terminology remains clear, consistent, and accessible to non-technical users.
+
+
 - **Simplified Dashboard UI:**
   - Redesigned the recording hub with a clean, left-aligned layout and stacked options for a more focused experience.
   - Positioned the "Record" and "Upload Audio" buttons side-by-side with a constrained width, giving the interface more breathing room on wide screens.
