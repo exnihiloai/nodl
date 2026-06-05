@@ -33,13 +33,15 @@
               <p class="px-3 py-1 text-xs text-base-content/50">Workspace</p>
               <ul class="menu menu-sm w-full">
                 <% account_workspaces.each do |workspace| %>
+                  <% is_current = workspace == current_workspace %>
                   <li>
                     <%= button_to switch_workspace_path(workspace),
                                   method: :post,
-                                  class: ["flex w-full items-center justify-between", (workspace == current_workspace ? "active" : "")].join(" ") do %>
+                                  form_class: "w-full",
+                                  class: ["flex w-full items-center justify-between gap-3", ("active" if is_current)].compact.join(" ") do %>
                       <span class="truncate"><%= workspace.name %></span>
-                      <% if workspace == current_workspace %>
-                        <span class="text-xs text-primary">Current</span>
+                      <% if is_current %>
+                        <span class="badge badge-primary badge-sm shrink-0">Current</span>
                       <% end %>
                     <% end %>
                   </li>
