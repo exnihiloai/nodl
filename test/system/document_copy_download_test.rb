@@ -1,0 +1,53 @@
+require "application_js_system_test_case"
+
+class DocumentCopyDownloadTest < ApplicationJsSystemTestCase
+  test "copy button copies the document and shows feedback" do
+    document = create_document_for_ui
+
+    visit document_path(document)
+
+    assert_selector "[data-testid='copy-document']", text: "Copy"
+    find("[data-testid='copy-document']").click
+
+    assert_selector "[data-testid='copy-document']", text: "Copied"
+  end
+
+  test "download menu links to every export format" do
+    document = create_document_for_ui
+
+    visit document_path(document)
+
+    # Links live inside a DaisyUI dropdown that is hidden until focused.
+    assert_link "PDF", href: download_document_path(document, format: "pdf"), visible: :all
+    assert_link "Word (.docx)", href: download_document_path(document, format: "docx"), visible: :all
+    assert_link "Markdown", href: download_document_path(document, format: "md"), visible: :all
+  end
+
+  private
+
+  def create_document_for_ui
+    email = unique_email
+    user = create_user_with_workspace(email: email, password: "Valid123")
+    workspace = user.workspaces.first
+    session = workspace.recording_sessions.new(
+      creator: user,
+      title: "Field Notes",
+      transformer_handle: "default"
+    )
+    attach_sample_audio(session)
+    session.save!
+    document = workspace.documents.create!(
+      recording_session: session,
+      title: "Field Notes",
+      content: "# Heading\n\nSome **bold** text.\n",
+      transformer_handle: "default",
+      generated_at: Time.current
+    )
+
+    login_via_ui(email: email, password: "Valid123")
+    # Wait for the authenticated session to settle (Turbo form submit is async
+    # under Selenium) before navigating on.
+    assert_selector "[data-testid='account-menu']"
+    document
+  end
+end
