@@ -137,7 +137,7 @@ export default class extends Controller {
     if (this.submitting) return
 
     this.submitting = true
-    this.submitButtonTarget.disabled = true
+    if (this.hasSubmitButtonTarget) this.submitButtonTarget.disabled = true
     this.element.requestSubmit()
   }
 

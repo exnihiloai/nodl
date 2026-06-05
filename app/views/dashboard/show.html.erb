@@ -18,18 +18,11 @@
       <% first_run = @recording_sessions.none? %>
 
       <div class="rounded-box border border-base-300 bg-base-100 px-6 py-10 text-center shadow-sm" data-testid="record-hero">
-        <% if first_run %>
-          <h1 class="text-3xl font-bold">Speak. We'll structure it.</h1>
-          <p class="mx-auto mt-2 max-w-md text-base-content/70">Capture a thought out loud and get a clean document back.</p>
-        <% else %>
-          <h1 class="text-xl font-semibold">Capture a thought</h1>
-        <% end %>
-
         <%= form_with model: @recording_session,
                       url: recording_sessions_path,
                       local: true,
                       multipart: true,
-                      class: "mt-6 flex flex-col items-center gap-4",
+                      class: "flex flex-col items-center gap-4",
                       data: {
                         controller: "audio-recorder",
                         testid: "recording-form",
@@ -63,7 +56,6 @@
             </label>
 
             <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
-              <span class="text-base-content/60">Output:</span>
               <%= form.select :transformer_handle,
                               @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
                               {},
@@ -71,7 +63,7 @@
                               data: { testid: "output-type-select" } %>
             </div>
 
-            <%= form.submit "Create document", class: "btn btn-ghost btn-sm", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
+            <%= form.submit "Create document", class: "hidden", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
           </div>
 
           <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
@@ -91,7 +83,10 @@
             </section>
           </div>
 
-          <p class="text-xs text-base-content/50">🔒 Private to your workspace · nothing is shared</p>
+          <p class="flex items-center justify-center gap-1 text-xs text-base-content/50">
+            <%= icon("lock", class: "size-3.5") %>
+            <span>Private to your workspace. Nothing is shared</span>
+          </p>
 
           <input type="file"
                  name="recording_session[original_audio]"
