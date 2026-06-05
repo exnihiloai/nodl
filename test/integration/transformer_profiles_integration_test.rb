@@ -185,6 +185,40 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid=format-instructions-input]", text: /well-structured Markdown/
   end
 
+  test "edit form keeps its fields and save button inside one form" do
+    # Regression: rendering the example-files list with button_to nested a
+    # <form> inside the edit form. Browsers close the outer form at that point,
+    # orphaning the name/guidelines fields and the Save button, so nothing
+    # submitted and no change was saved. Parse the body the way a browser does
+    # (HTML5) and assert every field still lives inside the edit form.
+    default = @workspace.transformer_profiles.find_by!(handle: "default")
+
+    get edit_transformer_profile_path(default)
+    assert_response :success
+
+    form = Nokogiri::HTML5(response.body).at_css("form[data-testid=format-form]")
+    assert form, "edit form not found"
+    assert form.at_css("[data-testid=format-name-input]"), "name field is outside the form"
+    assert form.at_css("[data-testid=format-instructions-input]"), "guidelines field is outside the form"
+    assert form.at_css("[data-testid=format-submit-button]"), "save button is outside the form"
+    # The remove control must be a Turbo link, not a nested <form>.
+    assert_select "a[data-testid=remove-example-file-button][data-turbo-method=delete]"
+  end
+
+  test "renaming an existing format saves and confirms" do
+    profile = create_custom_profile
+    attach_example(profile, "guide.txt")
+
+    patch transformer_profile_path(profile), params: {
+      transformer_profile: { name: "Renamed Journal", instructions: profile.instructions }
+    }
+
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_select ".alert-success", text: /updated/
+    assert_equal "Renamed Journal", profile.reload.name
+  end
+
   test "editing the default updates its guidelines and keeps it the default" do
     default = @workspace.transformer_profiles.find_by!(handle: "default")
 

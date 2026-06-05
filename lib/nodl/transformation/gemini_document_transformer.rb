@@ -8,7 +8,7 @@ module Nodl
         You transform raw speech transcripts into clean, useful Markdown documents.
         Improve punctuation, grammar, headings, paragraph structure, bullet points, and readability.
         Preserve the meaning of the original transcript and do not invent facts.
-        Return only Markdown.
+        Return only Markdown. Use the language of the transcript for all text in the markdown document.
       INSTRUCTIONS
 
       def initialize(client: nil)
