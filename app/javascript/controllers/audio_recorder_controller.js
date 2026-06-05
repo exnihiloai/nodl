@@ -21,7 +21,6 @@ export default class extends Controller {
     "stage",
     "livePanelSlot",
     "options",
-    "previewBadge",
     "finalizingBadge"
   ]
   static values = {
@@ -51,6 +50,10 @@ export default class extends Controller {
     this.cancelLivePreviewRender()
     this.stopStream()
     this.unsubscribeFromLiveStream()
+    if (this.rowObserver) {
+      this.rowObserver.disconnect()
+      this.rowObserver = null
+    }
   }
 
   async start() {
@@ -61,6 +64,7 @@ export default class extends Controller {
       this.fastPreviewText = ""
       this.slowPreviewText = ""
       this.sourceKindTarget.value = "microphone"
+      this.resetLivePanel()
       this.liveSession = await this.createRecordingSession()
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
       this.showLivePanel()
@@ -104,15 +108,38 @@ export default class extends Controller {
     this.stopTimer()
     this.stopVisualizer()
     this.stopStream()
-    this.resetRecordingControls()
-  }
 
-  resetRecordingControls() {
+    // Disable and show record button, hide stop button and timer
     this.stopButtonTarget.disabled = true
     this.stopButtonTarget.classList.add("hidden")
     this.timerTarget.classList.add("hidden")
     this.recordButtonTarget.classList.remove("hidden")
+    this.recordButtonTarget.disabled = true // lock the button for 3 seconds
     this.setOptionsHidden(false)
+
+    this.stopClickedTime = Date.now()
+
+    // Start vertical collapse animation of the live transcript panel slot
+    if (this.hasLivePanelSlotTarget) {
+      this.livePanelSlotTarget.classList.add("live-panel-collapse")
+      
+      // After 1 second (1000ms), hide the slot completely and clean up
+      setTimeout(() => {
+        this.livePanelSlotTarget.classList.add("hidden")
+        this.livePanelSlotTarget.classList.remove("live-panel-collapse")
+        this.unsubscribeFromLiveStream()
+      }, 1000)
+    } else {
+      this.unsubscribeFromLiveStream()
+    }
+
+    // Observe the DOM to animate the newly inserted dashboard list item
+    this.startNewRowObserver()
+
+    // Unlock the record button after 3 seconds
+    setTimeout(() => {
+      this.recordButtonTarget.disabled = false
+    }, 3000)
   }
 
   setOptionsHidden(hidden) {
@@ -491,8 +518,17 @@ export default class extends Controller {
   }
 
   showFinalizingBadge() {
-    if (this.hasPreviewBadgeTarget) this.previewBadgeTarget.classList.add("hidden")
     if (this.hasFinalizingBadgeTarget) this.finalizingBadgeTarget.classList.remove("hidden")
+  }
+
+  resetLivePanel() {
+    if (this.hasPreviewBadgeTarget) this.previewBadgeTarget.classList.remove("hidden")
+    if (this.hasFinalizingBadgeTarget) this.finalizingBadgeTarget.classList.add("hidden")
+
+    const segmentsContainer = document.getElementById("live_transcript_segments")
+    if (segmentsContainer) {
+      segmentsContainer.innerHTML = '<p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>'
+    }
   }
 
   selectedTransformerHandle() {
@@ -502,5 +538,49 @@ export default class extends Controller {
 
   csrfToken() {
     return document.querySelector("meta[name='csrf-token']")?.content || ""
+  }
+
+  startNewRowObserver() {
+    if (!this.liveSession || !this.liveSession.id) return
+
+    if (this.rowObserver) {
+      this.rowObserver.disconnect()
+    }
+
+    const targetId = `dashboard_row_recording_session_${this.liveSession.id}`
+
+    this.rowObserver = new MutationObserver((mutations) => {
+      const targetRow = document.getElementById(targetId)
+      if (targetRow && !targetRow.dataset.animated) {
+        // Mark it as animated so we don't process it multiple times
+        targetRow.dataset.animated = "true"
+
+        const elapsed = Date.now() - (this.stopClickedTime || Date.now())
+        const remainingCollapseTime = Math.max(0, 1000 - elapsed)
+
+        // Make sure the row is hidden initially (before repaint)
+        targetRow.style.opacity = "0"
+        targetRow.style.transform = "scaleY(0)"
+        targetRow.style.maxHeight = "0"
+        targetRow.style.paddingTop = "0"
+        targetRow.style.paddingBottom = "0"
+
+        // Delay the grow animation until the vertical collapse of the live transcript panel finishes
+        setTimeout(() => {
+          targetRow.style.opacity = ""
+          targetRow.style.transform = ""
+          targetRow.style.maxHeight = ""
+          targetRow.style.paddingTop = ""
+          targetRow.style.paddingBottom = ""
+          targetRow.classList.add("dashboard-row-grow")
+        }, remainingCollapseTime)
+
+        // We found our target, so disconnect the observer
+        this.rowObserver.disconnect()
+        this.rowObserver = null
+      }
+    })
+
+    this.rowObserver.observe(document.body, { childList: true, subtree: true })
   }
 }

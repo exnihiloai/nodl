@@ -41,7 +41,7 @@ class DashboardTenancyTest < ApplicationSystemTestCase
     assert_selector "[data-testid='record-button']"
     assert_selector "[data-testid='audio-upload-input']", visible: :all
     assert_selector "[data-testid='output-type-select']"
-    assert_selector "[data-testid='output-types-panel']"
+    assert_selector "[data-testid='formats-panel']"
     assert_selector "[data-testid='dashboard-activity']"
     assert_text "No recordings yet"
     assert_selector "turbo-cable-stream-source"

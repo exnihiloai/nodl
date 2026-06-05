@@ -300,3 +300,52 @@
   background-color: color-mix(in oklab, var(--color-warning) 35%, transparent);
   border-radius: 0.25rem;
 }
+
+/* Vertical collapse animation for the live transcript panel */
+.live-panel-collapse {
+  animation: live-panel-collapse-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: center;
+  overflow: hidden;
+}
+
+@keyframes live-panel-collapse-anim {
+  0% {
+    transform: scaleY(1);
+    opacity: 1;
+    max-height: 600px;
+  }
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+/* Vertical grow animation for the newly added dashboard activity row */
+.dashboard-row-grow {
+  animation: dashboard-row-grow-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: bottom;
+  overflow: hidden;
+}
+
+@keyframes dashboard-row-grow-anim {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+    max-height: 200px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
