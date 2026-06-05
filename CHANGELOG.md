@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.4.0] - 2026-06-05
+
+### Added
+- **Create Your Own Formats:** You can now create your own formats from the dashboard and tell NODL exactly how to turn a recording into the kind of document you need (for example meeting notes, a blog post, or a client summary). Each format has its own guidelines that NODL follows when writing your document.
+- **Add Examples to Guide NODL:** When creating or editing a format, you can add up to 3 example documents so NODL matches your preferred structure and style. You can upload files, drag and drop them, or simply paste text straight into the form. Supported file types are Word (.docx), OpenDocument (.odt), PDF, Markdown (.md), and plain text (.txt).
+- **Manage Your Formats:** View, edit, and delete your formats directly from the dashboard. The detail page shows a format's guidelines and the full content of its example documents, so you can see how a format works and use it as a starting point for your own.
+
+### Changed
+- **The "Basic Summary" Default Is Now Editable:** The built-in default format is now fully editable like any format you create — you can open it to read its guidelines and example, then tailor them to your needs. (The default can be edited but not deleted, so you always have one to fall back on.)
+
+### Technical
+- Custom format guidelines and example files are stored in the database (Active Storage), and example text is extracted on the fly using pure-Ruby parsers (`pdf-reader`, `docx`, `rubyzip` + Nokogiri) — no native binaries added to the image.
+- The default transformer was moved off the filesystem into the database: the `source_path` column was dropped (with a backfill migration for existing default profiles), and `TransformerRepository` now resolves formats from the database for the web app and from the filesystem only for the CLI.
+
+
 ## [0.3.0] - 2026-06-05
 
 ### Security
