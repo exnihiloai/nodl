@@ -109,18 +109,36 @@
         <%= render "activity", recording_sessions: @recording_sessions %>
 
         <aside class="space-y-3" data-testid="formats-panel">
-          <h2 class="text-lg font-semibold">Formats</h2>
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-lg font-semibold">Formats</h2>
+            <%= link_to "+ New format", new_transformer_profile_path, class: "btn btn-ghost btn-xs", data: { testid: "new-format-button" } %>
+          </div>
           <ul class="rounded-box border border-base-300 bg-base-100">
             <% @transformer_profiles.each do |profile| %>
-              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0">
-                <span class="truncate text-sm font-medium"><%= profile.name %></span>
-                <% if profile.default? %>
-                  <span class="shrink-0 text-xs text-base-content/50">★ Default</span>
-                <% end %>
+              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0" data-testid="format-item">
+                <span class="truncate text-sm font-medium">
+                  <%= link_to profile.name, transformer_profile_path(profile), class: "hover:underline" %>
+                </span>
+                <div class="flex shrink-0 items-center gap-2">
+                  <% if profile.default? %>
+                    <span class="text-xs text-base-content/50">★ Default</span>
+                  <% end %>
+                  <span class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="Format actions">⋯</label>
+                    <ul tabindex="0" class="dropdown-content menu z-10 w-32 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                      <li><%= link_to "Edit", edit_transformer_profile_path(profile) %></li>
+                      <% unless profile.default? %>
+                        <li>
+                          <%= button_to "Delete", transformer_profile_path(profile), method: :delete,
+                                class: "text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </span>
+                </div>
               </li>
             <% end %>
           </ul>
-          <p class="text-xs text-base-content/50">A format decides what kind of document to create from your recording.</p>
         </aside>
       </div>
     <% end %>

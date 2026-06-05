@@ -1,0 +1,9 @@
+<li id="<%= dom_id(file) %>" class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0" data-testid="example-file-item">
+  <span class="truncate text-sm"><%= file.filename %></span>
+  <%= button_to "Remove",
+                example_file_transformer_profile_path(transformer_profile, file),
+                method: :delete,
+                class: "btn btn-ghost btn-xs text-error",
+                form: { data: { turbo_stream: true } },
+                data: { testid: "remove-example-file-button" } %>
+</li>

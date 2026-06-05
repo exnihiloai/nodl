@@ -14,23 +14,55 @@ module Nodl
         @root_path = Pathname.new(root_path.to_s)
       end
 
-      def fetch(handle)
+      # The web app is fully database-backed: when a workspace is given, resolve
+      # the format from its stored profiles. The CLI passes no workspace and
+      # loads formats from the filesystem under transformers/ instead.
+      def fetch(handle, workspace: nil)
         normalized_handle = normalize_handle(handle)
-        transformer_path = root_path.join(normalized_handle)
+
+        if workspace
+          fetch_from_database(normalized_handle, workspace)
+        else
+          fetch_from_filesystem(normalized_handle)
+        end
+      end
+
+      private
+
+      def fetch_from_database(handle, workspace)
+        profile = workspace.transformer_profiles.active.find_by(handle: handle)
+        raise ValidationError, "Transformer not found: #{handle}" unless profile
+
+        templates = profile.example_files.map do |file|
+          Template.new(
+            name: file.filename.to_s,
+            path: nil,
+            content: DocumentTextExtractor.extract(file)
+          )
+        end
+
+        Transformer.new(
+          handle: handle,
+          path: nil,
+          instructions: profile.instructions.to_s,
+          templates: templates
+        )
+      end
+
+      def fetch_from_filesystem(handle)
+        transformer_path = root_path.join(handle)
         instructions_path = transformer_path.join("instructions.md")
 
-        raise ValidationError, "Transformer not found: #{normalized_handle}" unless transformer_path.directory?
+        raise ValidationError, "Transformer not found: #{handle}" unless transformer_path.directory?
         raise ValidationError, "Transformer instructions missing: #{instructions_path}" unless instructions_path.file?
 
         Transformer.new(
-          handle: normalized_handle,
+          handle: handle,
           path: transformer_path,
           instructions: instructions_path.read,
           templates: load_templates(transformer_path)
         )
       end
-
-      private
 
       def normalize_handle(handle)
         normalized = handle.to_s.strip.presence || "default"

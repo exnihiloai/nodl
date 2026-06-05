@@ -1,0 +1,86 @@
+<%= form_with model: transformer_profile,
+              url: transformer_profile.persisted? ? transformer_profile_path(transformer_profile) : transformer_profiles_path,
+              method: transformer_profile.persisted? ? :patch : :post,
+              multipart: true,
+              class: "space-y-6",
+              data: { testid: "format-form" } do |form| %>
+  <% if transformer_profile.errors.any? %>
+    <div class="rounded-box border border-error/40 bg-error/10 p-4 text-sm" data-testid="format-form-errors">
+      <p class="font-medium">Please fix the following:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% transformer_profile.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="flex flex-col gap-2">
+    <%= form.label :name, "Format name", class: "text-sm font-medium" %>
+    <%= form.text_field :name,
+                        class: "input input-bordered w-full",
+                        placeholder: "e.g. Meeting Notes",
+                        required: true,
+                        data: { testid: "format-name-input" } %>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <%= form.label :instructions, "Guidelines", class: "text-sm font-medium" %>
+    <%= form.text_area :instructions,
+                       rows: 8,
+                       class: "textarea textarea-bordered w-full",
+                       placeholder: "Write structured meeting notes with a short summary, key decisions, and a list of action items with owners.",
+                       required: true,
+                       data: { testid: "format-instructions-input" } %>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <%= form.label :example_files, "Examples", class: "text-sm font-medium" %>
+
+
+    <% if transformer_profile.persisted? && transformer_profile.example_files.attached? %>
+      <ul id="example_files" class="rounded-box border border-base-300 bg-base-100" data-testid="example-files-list">
+        <% transformer_profile.example_files.each do |file| %>
+          <%= render "example_file", transformer_profile: transformer_profile, file: file %>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div data-controller="example-files"
+         data-example-files-active-class="border-primary bg-primary/5">
+      <button type="button"
+              data-example-files-target="dropzone"
+              data-action="click->example-files#open dragover->example-files#over dragleave->example-files#leave drop->example-files#drop"
+              class="flex w-full flex-col items-center gap-1 rounded-box border-2 border-dashed border-base-300 bg-base-100 p-6 text-center transition-colors hover:border-base-content/40"
+              data-testid="example-files-dropzone">
+        <span class="text-sm font-medium">Drag &amp; drop files here</span>
+        <span class="text-xs text-base-content/60">or click to choose files</span>
+      </button>
+
+      <%= form.file_field :example_files,
+                          multiple: true,
+                          accept: ".docx,.odt,.pdf,.md,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,text/plain,text/markdown",
+                          class: "hidden",
+                          data: { testid: "example-files-input", "example-files-target": "input", action: "example-files#renderNames" } %>
+
+      <ul class="mt-2 space-y-1" data-example-files-target="list" data-testid="example-files-selected"></ul>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <%= form.label :example_text, "Or paste example text", class: "text-sm font-medium" %>
+    <%= text_area_tag "transformer_profile[example_text]",
+                      params.dig(:transformer_profile, :example_text),
+                      rows: 6,
+                      class: "textarea textarea-bordered w-full",
+                      placeholder: "Paste the text of a document you like.",
+                      data: { testid: "example-text-input" } %>
+  </div>
+
+  <div class="flex mt-6 items-center gap-3">
+    <%= form.submit transformer_profile.persisted? ? "Save changes" : "Create format",
+                    class: "btn btn-primary",
+                    data: { testid: "format-submit-button" } %>
+    <%= link_to "Cancel", dashboard_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>
