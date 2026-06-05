@@ -20,8 +20,9 @@
             <% end %>
             <div class="min-w-0">
               <% is_truncated = session.title.to_s.length > 45 %>
+              <% title_path = session.completed? && session.document ? document_path(session.document) : recording_session_path(session) %>
               <div class="<%= 'tooltip tooltip-top' if is_truncated %> max-w-full text-left" <%= "data-tip=\"#{ERB::Util.html_escape(session.title)}\"".html_safe if is_truncated %>>
-                <%= link_to truncate(session.title, length: 45), recording_session_path(session), class: "block font-medium hover:underline" %>
+                <%= link_to truncate(session.title, length: 45), title_path, class: "block font-medium hover:underline" %>
               </div>
               <p class="mt-0.5 text-xs text-base-content/50">
                 <%= time_ago_in_words(session.created_at) %> ago
@@ -34,11 +35,22 @@
 
           <div class="shrink-0 pl-7 sm:pl-0">
             <% if session.completed? && session.document %>
-              <%= link_to "Open document", document_path(session.document), class: "btn btn-sm" %>
+              <%= link_to "Open Recording", recording_session_path(session), class: "btn btn-sm" %>
             <% elsif session.failed? %>
               <span class="text-sm text-base-content/60">Couldn't process — <%= link_to "view", recording_session_path(session), class: "link" %></span>
             <% else %>
-              <span class="text-sm text-base-content/60">Structuring your notes…</span>
+              <div class="flex flex-col items-end gap-1 w-44"
+                   data-controller="processing-progress"
+                   data-processing-progress-started-at-value="<%= session.processing_started_at&.iso8601 || session.created_at.iso8601 %>"
+                   data-processing-progress-duration-value="<%= session.estimated_duration %>">
+                <div class="flex items-center justify-between w-full text-xs">
+                  <span class="text-base-content/60" data-processing-progress-target="label">Structuring...</span>
+                  <span class="font-semibold text-primary" data-processing-progress-target="percentage">0%</span>
+                </div>
+                <div class="w-full h-1.5 bg-base-300 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full transition-[width] duration-300 ease-out" style="width: 0%" data-processing-progress-target="bar"></div>
+                </div>
+              </div>
             <% end %>
           </div>
         </li>

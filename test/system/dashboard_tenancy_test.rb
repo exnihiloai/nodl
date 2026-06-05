@@ -81,9 +81,12 @@ class DashboardTenancyTest < ApplicationSystemTestCase
 
     within("[data-testid='dashboard-activity']") do
       assert_selector "[data-testid='dashboard-activity-item'][data-status='processing']", text: "Processing note"
+      assert_selector "[data-controller='processing-progress']"
+      assert_selector "[data-processing-progress-target='bar']"
       assert_selector "[data-testid='dashboard-activity-item'][data-status='completed']", text: "Completed note"
       assert_selector "[data-testid='dashboard-activity-item'][data-status='failed']", text: "Failed note"
-      assert_link "Open document", href: document_path(completed_session.document)
+      assert_link "Completed note", href: document_path(completed_session.document)
+      assert_link "Open Recording", href: recording_session_path(completed_session)
       assert_link "view", href: recording_session_path(failed_session)
     end
   end

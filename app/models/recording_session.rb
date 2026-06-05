@@ -99,6 +99,28 @@ class RecordingSession < ApplicationRecord
     title == DEFAULT_TITLE
   end
 
+  def estimated_duration
+    return audio_duration if audio_duration.present? && audio_duration > 0
+
+    if original_audio.attached?
+      blob = original_audio.blob
+      if blob.metadata.is_a?(Hash)
+        # Check direct duration
+        dur = blob.metadata[:duration] || blob.metadata["duration"]
+        return dur.to_f if dur.present?
+
+        # Check bit rate to compute duration perfectly
+        br = blob.metadata[:bit_rate] || blob.metadata["bit_rate"]
+        return (blob.byte_size * 8.0 / br.to_f) if br.present? && br.to_f > 0
+      end
+
+      # Fallback based on average audio recording bitrate (e.g., 64 kbps = 8000 bytes/sec)
+      return blob.byte_size.to_f / 8000.0
+    end
+
+    0.0
+  end
+
   private
 
   def broadcast_dashboard_activity

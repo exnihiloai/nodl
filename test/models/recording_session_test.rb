@@ -123,4 +123,36 @@ class RecordingSessionTest < ActiveSupport::TestCase
       work_path: "/tmp/session"
     )
   end
+
+  test "estimated_duration returns precise or estimated values" do
+    user = create_user_with_workspace
+    workspace = user.workspaces.first
+    recording_session = workspace.recording_sessions.build(
+      creator: user,
+      title: "Estimating duration",
+      transformer_handle: "default"
+    )
+
+    # If audio_duration is directly set, prefer it
+    recording_session.audio_duration = 123.45
+    assert_equal 123.45, recording_session.estimated_duration
+
+    # Otherwise if original_audio is attached, check metadata or estimate
+    recording_session.audio_duration = nil
+    attach_sample_audio(recording_session)
+
+    # Let's set some metadata
+    recording_session.original_audio.blob.update!(metadata: { "duration" => 200.5 })
+    assert_equal 200.5, recording_session.estimated_duration
+
+    # If direct duration is missing but bitrate is present
+    recording_session.original_audio.blob.update!(metadata: { "bit_rate" => 64000 })
+    expected_dur = recording_session.original_audio.blob.byte_size * 8.0 / 64000.0
+    assert_equal expected_dur, recording_session.estimated_duration
+
+    # If metadata is missing entirely, fall back to byte size fallback
+    recording_session.original_audio.blob.update!(metadata: nil)
+    expected_fallback_dur = recording_session.original_audio.blob.byte_size.to_f / 8000.0
+    assert_equal expected_fallback_dur, recording_session.estimated_duration
+  end
 end
