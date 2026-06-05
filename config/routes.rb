@@ -18,6 +18,9 @@ Rails.application.routes.draw do
     post :finalize, on: :member
   end
   resources :documents, only: %i[show]
+  resources :transformer_profiles, only: %i[show new create edit update destroy] do
+    delete "example_files/:attachment_id", to: "transformer_profiles#remove_example_file", on: :member, as: :example_file
+  end
 
   resources :workspaces, only: [] do
     post :switch, on: :member

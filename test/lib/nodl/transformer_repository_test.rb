@@ -42,4 +42,50 @@ class NodlTransformerRepositoryTest < ActiveSupport::TestCase
       assert_includes error.message, "Transformer instructions missing"
     end
   end
+
+  test "loads a database profile with extracted example templates when a workspace is given" do
+    workspace = create_user_with_workspace.workspaces.first
+    profile = workspace.transformer_profiles.create!(
+      name: "Journal",
+      handle: "journal",
+      instructions: "Write a reflective journal entry."
+    )
+    profile.example_files.attach(
+      io: StringIO.new("Example journal body."),
+      filename: "sample.txt",
+      content_type: "text/plain"
+    )
+
+    transformer = Nodl::Transformation::TransformerRepository.new.fetch("journal", workspace: workspace)
+
+    assert_equal "journal", transformer.handle
+    assert_equal "Write a reflective journal entry.", transformer.instructions
+    assert_equal [ "sample.txt" ], transformer.templates.map(&:name)
+    assert_equal [ "Example journal body." ], transformer.templates.map(&:content)
+  end
+
+  test "resolves the database-backed default for a workspace without touching the filesystem" do
+    workspace = create_user_with_workspace.workspaces.first
+
+    Dir.mktmpdir do |dir|
+      # An unrelated filesystem default must be ignored when a workspace is given.
+      Pathname.new(dir).join("default").mkpath
+      Pathname.new(dir).join("default", "instructions.md").write("Filesystem instructions.")
+
+      transformer = Nodl::Transformation::TransformerRepository.new(root_path: dir).fetch("default", workspace: workspace)
+
+      assert_includes transformer.instructions, "well-structured Markdown"
+      assert_equal [ "example.md" ], transformer.templates.map(&:name)
+    end
+  end
+
+  test "raises when a workspace has no profile for the handle" do
+    workspace = create_user_with_workspace.workspaces.first
+
+    error = assert_raises(Nodl::ValidationError) do
+      Nodl::Transformation::TransformerRepository.new.fetch("missing", workspace: workspace)
+    end
+
+    assert_includes error.message, "Transformer not found: missing"
+  end
 end

@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.5.0] - 2026-06-05
+
+### Added
+- **Smooth Audio-Duration-Based Progress Bar:** You can now see real-time progress of your recordings being processed on the dashboard, with a dynamic bar that estimates processing time using the audio duration and updates its status step-by-step ("Analyzing...", "Transcribing...", "Structuring...").
+- **Accidental Recording Safeguard:** The "Record" button is now locked for 3 seconds immediately after you stop a recording to prevent accidental double-clicks or duplicate requests.
+- **Voice-Reactive Live Panel Glow:** The live transcription box now blooms with a highly polished, voice-reactive outer halo and border light that expands and shines dynamically as you speak, providing clean and quiet visual feedback.
+- **Polished Page Transitions:** Starting a new recording now automatically cleans up and resets the live transcription slot, while completing a recording triggers smooth collapse and grow animations to transition from the live panel to the new activity list row without sudden page jumps.
+
+### Changed
+- **Refined Navigation Flow:** Clicking a completed recording's title on the dashboard now takes you straight to the generated document. Jump back to its source session with the new "Show Recording" button on the document page, or find the session quickly using the "Open Recording" button in the activity list.
+
+### Fixed
+- **Support for Silence and Empty Audio:** Recordings with no detected speech are now resolved gracefully. NODL avoids calling external AI models with blank input (preventing errors and conversational filler) and returns a clean, deterministic "No speech detected" placeholder.
+
+### Technical
+- Implemented `estimated_duration` on `RecordingSession` to extract and compute the audio length in seconds from Active Storage blob metadata (via bitrate and byte size calculations) when not directly provided.
+- Added native CSS keyframe animations for the collapsing live panel and expanding dashboard rows, as well as a custom-drawn CSS gradient text-shimmer for live transcripts.
+- Added robust system-test coverage (`audio_recorder_js_test.rb`) to verify JavaScript-based button locking and animation states using Headless Chrome.
+
+
+## [0.4.0] - 2026-06-05
+
+### Added
+- **Create Your Own Formats:** You can now create your own formats from the dashboard and tell NODL exactly how to turn a recording into the kind of document you need (for example meeting notes, a blog post, or a client summary). Each format has its own guidelines that NODL follows when writing your document.
+- **Add Examples to Guide NODL:** When creating or editing a format, you can add up to 3 example documents so NODL matches your preferred structure and style. You can upload files, drag and drop them, or simply paste text straight into the form. Supported file types are Word (.docx), OpenDocument (.odt), PDF, Markdown (.md), and plain text (.txt).
+- **Manage Your Formats:** View, edit, and delete your formats directly from the dashboard. The detail page shows a format's guidelines and the full content of its example documents, so you can see how a format works and use it as a starting point for your own.
+
+### Changed
+- **The "Basic Summary" Default Is Now Editable:** The built-in default format is now fully editable like any format you create — you can open it to read its guidelines and example, then tailor them to your needs. (The default can be edited but not deleted, so you always have one to fall back on.)
+
+### Technical
+- Custom format guidelines and example files are stored in the database (Active Storage), and example text is extracted on the fly using pure-Ruby parsers (`pdf-reader`, `docx`, `rubyzip` + Nokogiri) — no native binaries added to the image.
+- The default transformer was moved off the filesystem into the database: the `source_path` column was dropped (with a backfill migration for existing default profiles), and `TransformerRepository` now resolves formats from the database for the web app and from the filesystem only for the CLI.
+
+
 ## [0.3.0] - 2026-06-05
 
 ### Security

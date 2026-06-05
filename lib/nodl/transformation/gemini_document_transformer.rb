@@ -8,14 +8,24 @@ module Nodl
         You transform raw speech transcripts into clean, useful Markdown documents.
         Improve punctuation, grammar, headings, paragraph structure, bullet points, and readability.
         Preserve the meaning of the original transcript and do not invent facts.
-        Return only Markdown.
+        Return only Markdown. Use the language of the transcript for all text in the markdown document.
       INSTRUCTIONS
+
+      # Returned for recordings with no speech. Asking the model to write a
+      # document from an empty transcript yields chatty filler ("This is an
+      # empty recording..."), so we skip the call and return a clear,
+      # deterministic placeholder instead.
+      EMPTY_TRANSCRIPT_DOCUMENT = <<~MARKDOWN.freeze
+        # No speech detected
+      MARKDOWN
 
       def initialize(client: nil)
         @client = client
       end
 
       def transform(transcript:, transformer:, model:)
+        return EMPTY_TRANSCRIPT_DOCUMENT if transcript.to_s.strip.blank?
+
         client.generate_text(
           model: model,
           parts: [ { text: build_prompt(transcript: transcript, transformer: transformer) } ],

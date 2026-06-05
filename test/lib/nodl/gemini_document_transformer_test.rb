@@ -31,6 +31,22 @@ class NodlGeminiDocumentTransformerTest < ActiveSupport::TestCase
     assert_includes prompt, "Raw transcript text."
   end
 
+  test "returns a placeholder document without calling gemini for a blank transcript" do
+    [ "", "   ", "\n\t", nil ].each do |blank|
+      client = FakeClient.new
+      transformer = Nodl::Transformation::Transformer.new(handle: "default", instructions: "Clean it.", templates: [])
+
+      document = Nodl::Transformation::GeminiDocumentTransformer.new(client: client).transform(
+        transcript: blank,
+        transformer: transformer,
+        model: "gemini-3.1-flash-lite"
+      )
+
+      assert_equal Nodl::Transformation::GeminiDocumentTransformer::EMPTY_TRANSCRIPT_DOCUMENT, document
+      assert_nil client.captured, "gemini should not be called for blank transcript #{blank.inspect}"
+    end
+  end
+
   test "sends prompt to gemini with expected model and generation config" do
     client = FakeClient.new
     transformer = Nodl::Transformation::Transformer.new(handle: "default", instructions: "Clean it.", templates: [])

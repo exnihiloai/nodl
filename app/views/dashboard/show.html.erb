@@ -44,8 +44,7 @@
           </div>
 
           <div class="flex gap-3">
-            <div class="relative isolate flex flex-1 items-center gap-2">
-              <span data-audio-recorder-target="aura" data-testid="recording-aura" class="voice-aura pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-44 w-44" aria-hidden="true"></span>
+            <div class="flex flex-1 items-center gap-2">
               <%= form.button type: "button",
                               class: "btn btn-bouncy btn-primary flex-1 gap-2",
                               data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start", testid: "record-button" } do %>
@@ -76,20 +75,22 @@
           <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
 
           <div class="hidden w-full" data-audio-recorder-target="livePanelSlot">
-            <section id="live_transcript_panel" class="rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
-              <div id="live_transcript_status">
-                <div class="flex items-center justify-between gap-3">
-                  <h2 class="text-sm font-semibold">Transcript</h2>
-                  <span class="badge badge-warning badge-sm" data-audio-recorder-target="previewBadge">Preview</span>
-                  <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
-                    <span class="loading loading-spinner loading-xs"></span>Finalizing…
-                  </span>
+            <div class="voice-stage" data-audio-recorder-target="stage">
+              <span class="voice-aura" data-testid="recording-aura" aria-hidden="true"></span>
+              <section id="live_transcript_panel" class="voice-stage__panel rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
+                <div id="live_transcript_status">
+                  <div class="flex items-center justify-between gap-3">
+                    <h2 class="text-sm font-semibold">Transcript</h2>
+                    <span class="badge badge-sm hidden gap-1" data-audio-recorder-target="finalizingBadge">
+                      <span class="loading loading-spinner loading-xs"></span>Finalizing…
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
-                <p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>
-              </div>
-            </section>
+                <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
+                  <p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>
+                </div>
+              </section>
+            </div>
           </div>
 
           <p class="flex items-center justify-center gap-1 text-xs text-base-content/50">
@@ -109,18 +110,36 @@
         <%= render "activity", recording_sessions: @recording_sessions %>
 
         <aside class="space-y-3" data-testid="formats-panel">
-          <h2 class="text-lg font-semibold">Formats</h2>
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-lg font-semibold">Formats</h2>
+            <%= link_to "+ New format", new_transformer_profile_path, class: "btn btn-ghost btn-xs", data: { testid: "new-format-button" } %>
+          </div>
           <ul class="rounded-box border border-base-300 bg-base-100">
             <% @transformer_profiles.each do |profile| %>
-              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0">
-                <span class="truncate text-sm font-medium"><%= profile.name %></span>
-                <% if profile.default? %>
-                  <span class="shrink-0 text-xs text-base-content/50">★ Default</span>
-                <% end %>
+              <li class="flex items-center justify-between gap-3 border-t border-base-300 p-3 first:border-t-0" data-testid="format-item">
+                <span class="truncate text-sm font-medium">
+                  <%= link_to profile.name, transformer_profile_path(profile), class: "hover:underline" %>
+                </span>
+                <div class="flex shrink-0 items-center gap-2">
+                  <% if profile.default? %>
+                    <span class="text-xs text-base-content/50">★ Default</span>
+                  <% end %>
+                  <span class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="Format actions">⋯</label>
+                    <ul tabindex="0" class="dropdown-content menu z-10 w-32 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                      <li><%= link_to "Edit", edit_transformer_profile_path(profile) %></li>
+                      <% unless profile.default? %>
+                        <li>
+                          <%= button_to "Delete", transformer_profile_path(profile), method: :delete,
+                                class: "text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </span>
+                </div>
               </li>
             <% end %>
           </ul>
-          <p class="text-xs text-base-content/50">A format decides what kind of document to create from your recording.</p>
         </aside>
       </div>
     <% end %>

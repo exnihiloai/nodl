@@ -54,7 +54,7 @@
         <h2 class="text-xl font-semibold">Document</h2>
         <% if @document %>
           <p class="mt-2 text-sm text-base-content/70">Generated <%= l(@document.generated_at, format: :short) %></p>
-          <%= link_to "Open document", document_path(@document), class: "btn btn-primary mt-4" %>
+          <%= link_to "Open Document", document_path(@document), class: "btn btn-primary mt-4" %>
         <% else %>
           <p class="mt-4 text-base-content/70">Document generation is not finished yet.</p>
         <% end %>

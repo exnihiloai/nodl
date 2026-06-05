@@ -30,6 +30,7 @@ class RecordingSessionProcessor
       result = pipeline.run(
         audio_path: normalized.path,
         transformer_handle: recording_session.transformer_handle,
+        workspace: recording_session.workspace,
         transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
         transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL)
       )

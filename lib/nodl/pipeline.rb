@@ -28,10 +28,10 @@ module Nodl
       @waveform_extractor = waveform_extractor
     end
 
-    def run(audio_path:, transformer_handle:, transcriber_model:, transformer_model:)
+    def run(audio_path:, transformer_handle:, transcriber_model:, transformer_model:, workspace: nil)
       started_at = Time.now.utc
       source_audio = AudioInput.new(audio_path)
-      transformer = transformer_repository.fetch(transformer_handle)
+      transformer = transformer_repository.fetch(transformer_handle, workspace: workspace)
       session = working_directory.create_session(source_audio, now: started_at)
       FileUtils.cp(source_audio.path, session.audio_path)
 

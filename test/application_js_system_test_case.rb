@@ -8,6 +8,9 @@ class ApplicationJsSystemTestCase < ApplicationSystemTestCase
       options.add_argument("--disable-dev-shm-usage")
       options.add_argument("--disable-gpu")
       options.add_argument("--window-size=1400,1000")
+      # Enable fake media devices for microphone testing
+      options.add_argument("--use-fake-ui-for-media-stream")
+      options.add_argument("--use-fake-device-for-media-stream")
       options.binary = ENV.fetch("CHROME_BIN", "/usr/bin/chromium")
     end
   end

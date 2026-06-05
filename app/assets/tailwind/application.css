@@ -119,37 +119,185 @@
   outline-offset: 0;
 }
 
-/* Voice-reactive recording aura: a soft, blurred blob behind the record button.
-   --aura-scale and --aura-opacity are driven (heavily smoothed) by the audio-recorder
-   Stimulus controller; the slow morph keeps it feeling alive without nervous motion. */
+/* ============================================================
+   Voice recording stage
+   ------------------------------------------------------------
+   While the user is dictating, the live transcript box becomes
+   "alive": a soft, blurred halo blooms around its edges and a
+   gentle light traces its border. Everything is built from our
+   own palette tokens (primary / accent / secondary) for a calm,
+   premium, assistant-like feel — never a loud spinner.
+
+   The audio-recorder Stimulus controller pushes a single,
+   heavily smoothed --voice-level (0..1) onto .voice-stage and
+   toggles .is-recording. All visuals derive from that level in
+   CSS, so the box stays calm when idle and only blooms when the
+   user actually speaks. We animate transform/opacity only, so
+   the effect stays composited and cheap, and the transcript
+   text never sits on top of moving colour.
+   ============================================================ */
+.voice-stage {
+  position: relative;
+  isolation: isolate;
+  --voice-level: 0;
+}
+
+.voice-stage__panel {
+  position: relative;
+  z-index: 1;
+  /* A touch translucent so the ambient glow reads softly through the box. */
+  background-color: color-mix(in oklab, var(--color-base-100) 72%, transparent);
+}
+
+/* The inner transcript well stays more opaque than the panel so the text on
+   top is always easy to read while still picking up a hint of the glow. */
+.voice-stage__panel #live_transcript_segments {
+  background-color: color-mix(in oklab, var(--color-base-200) 86%, transparent);
+}
+
+/* Ambient halo that lives just outside the panel's edges. The panel
+   is opaque and sits on top, so this reads as a soft coloured glow
+   around the box rather than a wash behind the text. */
 .voice-aura {
-  background: radial-gradient(circle, var(--color-primary) 0%, transparent 68%);
-  filter: blur(22px);
-  opacity: var(--aura-opacity, 0);
-  border-radius: 42% 58% 55% 45% / 50% 45% 55% 50%;
-  transform: translate(-50%, -50%) scale(var(--aura-scale, 0.85));
+  position: absolute;
+  inset: -16px;
+  z-index: 0;
+  border-radius: calc(var(--radius-box, 1.25rem) + 16px);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+  /* Short transition only — the controller's attack/release envelope does the
+     smoothing, so we want the halo to track the voice closely, not lag it. */
+  transition: opacity 0.1s linear, transform 0.1s linear;
 }
 
-.voice-aura.is-active {
-  animation: voice-aura-morph 9s ease-in-out infinite;
+.voice-aura::before,
+.voice-aura::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  filter: blur(24px);
 }
 
-@keyframes voice-aura-morph {
-  0%,
-  100% {
-    border-radius: 42% 58% 55% 45% / 50% 45% 55% 50%;
-  }
-  33% {
-    border-radius: 58% 42% 48% 52% / 45% 55% 50% 50%;
-  }
-  66% {
-    border-radius: 50% 50% 58% 42% / 55% 42% 48% 55%;
+/* Cool body of the glow: primary → accent, our brand pairing. */
+.voice-aura::before {
+  background:
+    radial-gradient(60% 75% at 26% 28%, var(--color-primary) 0%, transparent 70%),
+    radial-gradient(62% 70% at 80% 26%, var(--color-accent) 0%, transparent 72%),
+    radial-gradient(90% 95% at 50% 92%,
+      color-mix(in oklab, var(--color-primary) 60%, var(--color-accent)) 0%, transparent 74%);
+}
+
+/* Warm secondary highlight, kept faint, for a little depth + life. */
+.voice-aura::after {
+  background: radial-gradient(46% 56% at 72% 70%, var(--color-secondary) 0%, transparent 70%);
+  opacity: 0.55;
+}
+
+/* A soft light that traces the panel border — a slow wave, not a spin.
+   Masked so only the 1.5px ring shows; the centre stays transparent so
+   the transcript underneath is never tinted. */
+.voice-stage__panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: var(--border, 1.5px);
+  background: linear-gradient(110deg,
+    transparent 8%,
+    color-mix(in oklab, var(--color-primary) 80%, transparent) 30%,
+    color-mix(in oklab, var(--color-accent) 88%, transparent) 50%,
+    color-mix(in oklab, var(--color-primary) 80%, transparent) 70%,
+    transparent 92%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.1s linear;
+  pointer-events: none;
+}
+
+/* --- Active recording state ---------------------------------------
+   Voice is the headline. When silent the halo sits dim and pulled in;
+   speaking blooms it bright and pushes it outward, so the difference
+   between talking and not talking is unmistakable. The only autonomous
+   motion is a very slow positional undulation of the blurred blobs — a
+   gentle wave, no rotation, so it sways the glow rather than pulsing it
+   brighter. --voice-level stays the dominant signal. */
+.voice-stage.is-recording .voice-aura {
+  /* Idle floor is high enough that the glow is clearly present (and its slow
+     wave visible) even in dead silence; voice still blooms it on top. */
+  opacity: calc(0.42 + var(--voice-level) * 0.3);
+  transform: scale(calc(0.92 + var(--voice-level) * 0.13));
+}
+
+.voice-stage.is-recording .voice-aura::before {
+  animation: voice-aura-wave-a 13s ease-in-out infinite;
+}
+
+.voice-stage.is-recording .voice-aura::after {
+  animation: voice-aura-wave-b 18s ease-in-out infinite;
+}
+
+.voice-stage.is-recording .voice-stage__panel::after {
+  opacity: calc(0.08 + var(--voice-level) * 0.55);
+}
+
+/* Two slow, phase-offset waves of the blurred blobs. Each one drifts across
+   the box, swells slightly, and gently brightens/dims — so the glow visibly
+   undulates while idle. The two layers move in opposition (left↔right,
+   bright↔dim) and run on mismatched 13s/18s periods, so the result reads as a
+   slow, organic wave that never settles into an obvious loop. It's slow enough
+   (and the voice bloom fast enough) that it never gets mistaken for speech. */
+@keyframes voice-aura-wave-a {
+  0%, 100% { transform: translate3d(-3.5%, -1%, 0) scale(1);     opacity: 0.6; }
+  50%      { transform: translate3d(3.5%, 2.5%, 0) scale(1.08);  opacity: 1; }
+}
+
+@keyframes voice-aura-wave-b {
+  0%, 100% { transform: translate3d(3%, 1%, 0) scale(1.07);      opacity: 0.4; }
+  50%      { transform: translate3d(-3.5%, -2.5%, 0) scale(1);   opacity: 0.72; }
+}
+
+/* Provisional (still-being-confirmed) words in the live transcript. Instead of
+   a flat orange, they shimmer with the same primary→accent palette as the voice
+   aura, so the "live" text feels connected to the glow. Both stops sit in the
+   55–70% lightness range, which keeps the words legible on the dark transcript
+   well and on the light theme alike. */
+.voice-live-text {
+  background-image: linear-gradient(100deg,
+    var(--color-primary) 0%,
+    var(--color-accent) 50%,
+    var(--color-primary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: voice-live-text-flow 4s linear infinite;
+}
+
+/* Symmetric gradient, so shifting by one full tile loops seamlessly. */
+@keyframes voice-live-text-flow {
+  to {
+    background-position: 200% center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-aura.is-active {
+  .voice-stage.is-recording .voice-aura,
+  .voice-stage.is-recording .voice-aura::before,
+  .voice-stage.is-recording .voice-aura::after,
+  .voice-stage.is-recording .voice-stage__panel::after,
+  .voice-live-text {
     animation: none;
+  }
+  .voice-stage.is-recording .voice-aura {
+    transform: none;
   }
 }
 
@@ -158,3 +306,49 @@
   background-color: color-mix(in oklab, var(--color-warning) 35%, transparent);
   border-radius: 0.25rem;
 }
+
+/* Vertical collapse animation for the live transcript panel */
+.live-panel-collapse {
+  animation: live-panel-collapse-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes live-panel-collapse-anim {
+  0% {
+    opacity: 1;
+    max-height: 600px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
+}
+
+/* Vertical grow animation for the newly added dashboard activity row */
+.dashboard-row-grow {
+  animation: dashboard-row-grow-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes dashboard-row-grow-anim {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  100% {
+    opacity: 1;
+    max-height: 200px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
