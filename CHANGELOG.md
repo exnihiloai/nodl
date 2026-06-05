@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.6.0] - 2026-06-05
+
+### Added
+- **Copy Your Document with Formatting:** A new "Copy" button on the document page copies the whole document to your clipboard with its formatting intact — headings, bold text, and lists carry over cleanly when you paste into Word, Google Docs, email, or anywhere else.
+- **Download Documents as PDF, Word, or Markdown:** A new "Download" menu on the document page lets you save your document as a PDF, a Microsoft Word file (.docx), or a Markdown file, so you can print it, share it, or keep editing it in your own tools.
+
+### Technical
+- Added pure-Ruby export gems (`prawn`, `prawn-html`, `htmltoword`) — no native binaries — behind a new `DocumentExporters` service layer (`PdfExporter`, `DocxExporter`, `MarkdownExporter`) and a workspace-scoped `GET /documents/:id/download.:format` route. Both the PDF and Word exporters reuse the existing Markdown-to-HTML rendering pipeline.
+
+
 ## [0.5.0] - 2026-06-05
 
 ### Added
