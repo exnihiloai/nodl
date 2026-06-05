@@ -30,8 +30,15 @@ def ensure_user_with_workspace!(email:, password:, role:)
   TransformerProfile.ensure_default_for!(workspace)
 end
 
-admin_password = SecureRandom.hex(12)
-demo_password  = SecureRandom.hex(12)
+def generate_seed_password
+  loop do
+    pass = SecureRandom.base58(15)
+    return pass if pass.match?(/[A-Z]/) && pass.match?(/[a-z]/) && pass.match?(/\d/)
+  end
+end
+
+admin_password = generate_seed_password
+demo_password  = generate_seed_password
 
 ensure_user_with_workspace!(email: "admin@example.com", password: admin_password, role: :admin)
 ensure_user_with_workspace!(email: "demo@example.com",  password: demo_password,  role: :user)
