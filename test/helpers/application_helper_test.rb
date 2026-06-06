@@ -34,4 +34,14 @@ class ApplicationHelperTest < ActionView::TestCase
     # Should be safely escaped and formatted with simple_format
     assert_match "Broken **text** &amp; &lt;script&gt;alert(1)&lt;/script&gt;", result
   end
+
+  test "workspace_display_name strips auto-generated Workspace suffix" do
+    workspace = Workspace.new(name: "Sebastian.Beyer Workspace")
+    assert_equal "Sebastian.Beyer", workspace_display_name(workspace)
+  end
+
+  test "workspace_display_name leaves custom workspace names unchanged" do
+    workspace = Workspace.new(name: "Acme Consulting")
+    assert_equal "Acme Consulting", workspace_display_name(workspace)
+  end
 end

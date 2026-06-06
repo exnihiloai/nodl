@@ -19,14 +19,14 @@
             <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
               <%= current_user.email.to_s[0]&.upcase %>
             </span>
-            <span class="hidden max-w-[12rem] truncate text-sm sm:inline"><%= current_user.email %></span>
+            <span class="hidden min-w-0 max-w-[12rem] truncate text-sm sm:inline" title="<%= current_user.email %>"><%= current_user.email %></span>
           </div>
-          <div tabindex="0" class="dropdown-content z-50 mt-2 w-72 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
-            <div class="flex items-start gap-2 px-3 py-2">
+          <div tabindex="0" class="dropdown-content z-50 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-box border border-base-300 bg-base-100 p-2 shadow-lg overflow-hidden">
+            <div class="flex items-start gap-2 px-3 py-2 min-w-0">
               <%= icon("user", class: "size-4 mt-0.5 shrink-0 text-base-content/50", label: t("nav.account.signed_in_as")) %>
-              <div class="min-w-0">
+              <div class="min-w-0 flex-1">
                 <p class="text-xs text-base-content/50"><%= t("nav.account.signed_in_as") %></p>
-                <p class="truncate text-sm font-medium"><%= current_user.email %></p>
+                <p class="truncate text-sm font-medium" title="<%= current_user.email %>"><%= current_user.email %></p>
               </div>
             </div>
 
@@ -43,11 +43,11 @@
                   <li>
                     <%= button_to switch_workspace_path(workspace),
                                   method: :post,
-                                  form_class: "w-full",
-                                  class: ["flex w-full items-center justify-between gap-3", ("active" if is_current)].compact.join(" ") do %>
-                      <span class="flex min-w-0 items-center gap-2">
-                        <%= icon("building-2", class: "size-4 shrink-0 text-base-content/60", label: workspace.name) %>
-                        <span class="truncate"><%= workspace.name %></span>
+                                  form_class: "w-full min-w-0",
+                                  class: ["flex w-full min-w-0 items-center justify-between gap-3 overflow-hidden", ("active" if is_current)].compact.join(" ") do %>
+                      <span class="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                        <%= icon("building-2", class: "size-4 shrink-0 text-base-content/60", label: workspace_display_name(workspace)) %>
+                        <span class="truncate" title="<%= workspace_display_name(workspace) %>"><%= workspace_display_name(workspace) %></span>
                       </span>
                       <% if is_current %>
                         <span class="badge badge-primary badge-sm shrink-0"><%= t("nav.account.current") %></span>
