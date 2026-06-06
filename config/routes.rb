@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
+  get "/sitemap.xml", to: "sitemap#show", defaults: { format: :xml }, as: :sitemap
+  get "/robots.txt", to: "robots#show", as: :robots
   get "/impressum", to: "legal_pages#imprint", as: :imprint
   get "/datenschutz", to: "legal_pages#privacy", as: :privacy
   get "/agb", to: "legal_pages#terms", as: :terms
