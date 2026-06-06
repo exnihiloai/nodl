@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.7.0] - 2026-06-06
+
+### Added
+- **Use NODL in German:** The whole app is now available in German as well as English. Every page — the landing page, your dashboard, recordings, documents, formats, payments, and the admin area — along with buttons, messages, and notifications now appears in your chosen language.
+- **Switch Languages Anytime:** A simple language switcher lets you pick between English and Deutsch. It's available right on the landing page before you sign in, and from the menu in the top-right corner once you're logged in. Languages are shown by name (English, Deutsch) — no flags.
+- **Your Language Sticks:** When you're signed in, your language choice is saved to your account, so the app stays in your language across visits and devices. New visitors are greeted in their browser's language automatically when it's one we support.
+
+### Technical
+- Added Rails i18n with `en` (source of truth) and `de` locales: `config/locales/en.yml` and `de.yml` cover all UI strings, flash messages, and model validations; `de.yml` also carries hand-maintained German framework data (validation errors, date/time formats, relative time) so no extra gem is required.
+- Locale is resolved per request in `ApplicationController` (session choice → user `preferred_language` → `Accept-Language` header → default) and persisted via a new `PATCH /locale/:locale` route and `LocalesController`.
+- JavaScript-rendered copy (audio recorder status, processing progress labels, clipboard buttons) is localized by passing translations into Stimulus controllers through `data-*-value` attributes — no client-side i18n library needed.
+- Added the `i18n-translate` skill plus a pure-Ruby delta script (`skills/i18n-translate/scripts/i18n_delta.rb`) to find untranslated keys, and `test/i18n/locale_parity_test.rb` to enforce that every locale defines the same application keys with matching interpolation placeholders.
+
+
 ## [0.6.0] - 2026-06-05
 
 ### Added
