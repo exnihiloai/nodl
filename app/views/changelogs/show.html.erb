@@ -1,0 +1,164 @@
+<% content_for :title, t("changelog.title") %>
+<% content_for :head do %>
+  <meta name="description" content="<%= t("changelog.meta_description") %>" />
+  <meta name="robots" content="noindex, follow" />
+  <style>
+    .changelog-board {
+      scroll-snap-type: x proximity;
+    }
+    .changelog-column {
+      scroll-snap-align: start;
+    }
+    .changelog-column-scroll {
+      scrollbar-width: thin;
+    }
+    .changelog-column-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .changelog-column-scroll::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 3px;
+    }
+    .changelog-column-scroll:hover::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--bc) / 0.2);
+    }
+    .changelog-card-preview {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .changelog-card-title-clamp {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+<% end %>
+
+<div class="bg-base-100 text-base-content pt-10 sm:pt-14">
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl">
+      <h1 class="text-4xl sm:text-5xl font-bold"><%= t("changelog.heading") %></h1>
+    </div>
+  </div>
+</div>
+
+<div class="bg-base-100 text-base-content pt-8 pb-16">
+  <% if @columns.any? %>
+    <div
+      id="changelog-board"
+      data-controller="changelog-board"
+      data-changelog-board-base-path-value="<%= changelog_path %>"
+      <% if @open_entry_slug.present? %>data-changelog-board-open-slug-value="<%= @open_entry_slug %>"<% end %>
+      data-testid="changelog-list"
+      class="changelog-board flex gap-4 overflow-x-auto overflow-y-hidden pb-4"
+      style="height: clamp(22rem, calc(100dvh - 26rem), 44rem); margin-left: 2rem; margin-right: 2rem;"
+    >
+      <div class="shrink-0" style="width: 1rem; min-width: 1rem;" aria-hidden="true"></div>
+
+      <% @columns.each do |column| %>
+        <div class="changelog-column shrink-0 w-72 sm:w-80 flex flex-col">
+          <div class="mb-3 px-1">
+            <h2 class="text-lg font-bold leading-tight"><%= column.label %></h2>
+            <p class="text-sm opacity-60"><%= column.subtitle %></p>
+          </div>
+
+          <div class="changelog-column-scroll flex-1 overflow-y-auto pr-1 space-y-3" data-testid="changelog-column">
+            <% column.entries.each do |entry| %>
+              <% first_section = entry.sections.first %>
+              <% first_item = first_section&.items&.first %>
+              <% entry_id = entry.modal_id %>
+
+              <input type="checkbox" id="<%= entry_id %>" class="modal-toggle" />
+
+              <div class="modal" role="dialog">
+                <div class="modal-box max-w-2xl">
+                  <div class="flex items-center gap-3 flex-wrap mb-4">
+                    <h2 class="text-2xl font-bold tracking-tight">
+                      <span class="text-base-content/50 font-normal text-base">v&nbsp;</span><span class="font-mono"><%= entry.version %></span>
+                    </h2>
+                    <span class="text-base-content/60 text-sm ml-auto shrink-0">
+                      <%= changelog_formatted_date(entry.date) %>
+                    </span>
+                  </div>
+
+                  <div class="space-y-8">
+                    <% entry.sections.each do |section| %>
+                      <% badge = changelog_section_badge(section) %>
+                      <section class="space-y-4">
+                        <div class="inline-flex">
+                          <span class="badge <%= badge[:class_name] %> font-bold uppercase text-xs py-2 px-3"><%= badge[:label] %></span>
+                        </div>
+
+                        <% section.items.each do |item| %>
+                          <% if item.indent.zero? %>
+                            <div class="space-y-2">
+                              <% if item.title.present? %>
+                                <h3 class="text-lg font-bold leading-tight"><%= item.title %></h3>
+                              <% end %>
+                              <div class="text-base text-base-content/80 leading-relaxed"><%= item.html %></div>
+                            </div>
+                          <% else %>
+                            <div class="ml-6 pl-4 border-l-2 border-base-300">
+                              <% if item.title.present? %>
+                                <h4 class="text-base font-semibold mb-1"><%= item.title %></h4>
+                              <% end %>
+                              <div class="text-sm text-base-content/70 leading-relaxed"><%= item.html %></div>
+                            </div>
+                          <% end %>
+                        <% end %>
+                      </section>
+                    <% end %>
+                  </div>
+
+                  <div class="modal-action">
+                    <label for="<%= entry_id %>" class="btn"><%= t("changelog.close") %></label>
+                  </div>
+                </div>
+                <label class="modal-backdrop" for="<%= entry_id %>"><%= t("changelog.close") %></label>
+              </div>
+
+              <label
+                for="<%= entry_id %>"
+                class="block bg-base-200 border border-base-300 rounded-lg p-4 cursor-pointer hover:border-primary/40 hover:shadow-md transition"
+                data-testid="changelog-entry"
+              >
+                <div class="flex items-center gap-2 mb-2 flex-wrap">
+                  <% if first_section %>
+                    <% preview_badge = changelog_section_badge(first_section) %>
+                    <span class="badge <%= preview_badge[:class_name] %> font-bold uppercase text-[10px] px-2 py-1"><%= preview_badge[:label] %></span>
+                  <% end %>
+                  <span class="text-xs font-mono opacity-60 ml-auto" data-testid="changelog-entry-version">v<%= entry.version %></span>
+                </div>
+
+                <% if first_item&.title.present? %>
+                  <h3 class="changelog-card-title-clamp font-bold text-base leading-snug mb-1"><%= first_item.title %></h3>
+                <% end %>
+
+                <div class="changelog-card-preview text-sm text-base-content/70 leading-relaxed">
+                  <%= first_item&.html %>
+                </div>
+
+                <div class="mt-3 flex items-center justify-between text-xs">
+                  <span class="opacity-50"><%= changelog_formatted_date(entry.date) %></span>
+                  <span class="text-primary font-medium"><%= t("changelog.read_more") %></span>
+                </div>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="shrink-0" style="width: 1rem; min-width: 1rem;" aria-hidden="true"></div>
+    </div>
+  <% else %>
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="alert alert-warning">
+        <span><%= t("changelog.unavailable") %></span>
+      </div>
+    </div>
+  <% end %>
+</div>

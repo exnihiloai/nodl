@@ -2,7 +2,7 @@ require "test_helper"
 
 class AppVersionTest < ActiveSupport::TestCase
   test "reads the latest semver from CHANGELOG.md" do
-    assert_equal "0.9.3", AppVersion.from_changelog
+    assert_equal "0.9.4", AppVersion.from_changelog
   end
 
   test "prefers APP_VERSION when set" do

@@ -52,6 +52,45 @@ en:
       upgrade_plan: "Upgrade plan"
       log_out: "Log out"
 
+  changelog:
+    title: "Changelog - Nodl"
+    meta_description: "Product changelog for Nodl with improvements, fixes, and updates."
+    heading: "Changelog"
+    link: "Changelog"
+    close: "Close"
+    read_more: "Read more →"
+    unavailable: "The changelog could not be loaded right now."
+    week_label: "%{month} %{year} – Week %{week}"
+    column_subtitle:
+      one: "1 update"
+      other: "%{count} updates"
+    badges:
+      feature: "Feature"
+      fix: "Fix"
+      update: "Update"
+      security: "Security"
+      technical: "Technical"
+    sections:
+      added: "Added"
+      fixed: "Fixed"
+      changed: "Changed"
+      removed: "Removed"
+      security: "Security"
+      technical: "Technical"
+    months:
+      1: "January"
+      2: "February"
+      3: "March"
+      4: "April"
+      5: "May"
+      6: "June"
+      7: "July"
+      8: "August"
+      9: "September"
+      10: "October"
+      11: "November"
+      12: "December"
+
   footer:
     copyright: "© %{year} ex-nihilo GmbH. All rights reserved."
     about: "About"

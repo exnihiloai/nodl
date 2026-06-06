@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.4] - 2026-06-06
+
+### Added
+- **Browse What's New in the App:** A new Changelog page at `/changelog` shows every release in a scrollable board grouped by week. Each version appears as a card with a preview; tap or click to open the full notes in a modal. You can link directly to a release (for example `/changelog/v0.9.3`), and the About page now includes a Changelog link. Available in English and German.
+- **Search Engines Can Find Public Pages:** The site now serves a dynamic `/sitemap.xml` listing indexable marketing pages (home, about, try-now, login, register) and any configured legal pages (imprint, privacy, terms). `/robots.txt` allows crawlers and points them to the sitemap, replacing the old static file.
+
+### Technical
+- `Changelog` parses `CHANGELOG.md` at runtime with short-lived caching; the changelog page is marked `noindex` so it stays out of search results.
+- Added `Sitemap` builder, `SitemapController`, `RobotsController`, and integration tests for sitemap and robots endpoints.
+
+
 ## [0.9.3] - 2026-06-06
 
 ### Changed
