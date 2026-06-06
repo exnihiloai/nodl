@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_103106) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_130100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,9 +64,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_103106) do
     t.datetime "updated_at", null: false
     t.bigint "workspace_id", null: false
     t.index ["recording_session_id", "transformer_handle"], name: "index_documents_on_recording_session_id_and_transformer_handle"
-    t.index ["recording_session_id"], name: "index_documents_on_recording_session_id"
+    t.index ["recording_session_id"], name: "index_documents_on_recording_session_id", unique: true
     t.index ["workspace_id", "generated_at"], name: "index_documents_on_workspace_id_and_generated_at"
-    t.index ["workspace_id"], name: "index_documents_on_workspace_id"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -76,7 +75,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_103106) do
     t.bigint "user_id", null: false
     t.bigint "workspace_id", null: false
     t.index ["user_id", "workspace_id"], name: "index_memberships_on_user_id_and_workspace_id", unique: true
-    t.index ["user_id"], name: "index_memberships_on_user_id"
     t.index ["workspace_id"], name: "index_memberships_on_workspace_id"
   end
 
@@ -101,7 +99,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_103106) do
     t.index ["transformer_handle"], name: "index_recording_sessions_on_transformer_handle"
     t.index ["workspace_id", "created_at"], name: "index_recording_sessions_on_workspace_id_and_created_at"
     t.index ["workspace_id", "status"], name: "index_recording_sessions_on_workspace_id_and_status"
-    t.index ["workspace_id"], name: "index_recording_sessions_on_workspace_id"
   end
 
   create_table "transformer_profiles", force: :cascade do |t|
@@ -114,7 +111,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_103106) do
     t.datetime "updated_at", null: false
     t.bigint "workspace_id", null: false
     t.index ["workspace_id", "handle"], name: "index_transformer_profiles_on_workspace_id_and_handle", unique: true
-    t.index ["workspace_id"], name: "index_transformer_profiles_on_workspace_id"
     t.index ["workspace_id"], name: "index_transformer_profiles_one_default_per_workspace", unique: true, where: "(\"default\" = true)"
   end
 

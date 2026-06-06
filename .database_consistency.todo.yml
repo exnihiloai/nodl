@@ -1,26 +1,14 @@
 ---
-Document:
-  index_documents_on_recording_session_id:
-    RedundantIndexChecker:
-      enabled: false
-  index_documents_on_workspace_id:
-    RedundantIndexChecker:
-      enabled: false
-Membership:
-  index_memberships_on_user_id:
-    RedundantIndexChecker:
-      enabled: false
-RecordingSession:
-  document:
-    MissingIndexChecker:
-      enabled: false
-  index_recording_sessions_on_workspace_id:
-    RedundantIndexChecker:
-      enabled: false
+# Remaining baselined findings are intentional / false-positive, not deferred work:
+#
+# - TransformerProfile.index_transformer_profiles_one_default_per_workspace:
+#     The partial unique index (one default per workspace) is backed by the
+#     custom `single_default_per_workspace` model validation, not a plain
+#     `validates :uniqueness`, which is what UniqueIndexChecker looks for.
+# - User.password_digest:
+#     NOT NULL is enforced; `has_secure_password` guarantees presence, so no
+#     explicit nil-disallowing validator is needed.
 TransformerProfile:
-  index_transformer_profiles_on_workspace_id:
-    RedundantIndexChecker:
-      enabled: false
   index_transformer_profiles_one_default_per_workspace:
     UniqueIndexChecker:
       enabled: false
