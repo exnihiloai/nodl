@@ -1,17 +1,18 @@
 <%# Flag-free language switcher: languages are listed by their endonym
     ("English", "Deutsch"). Persists the choice via LocalesController. %>
-<div class="dropdown dropdown-end" data-testid="language-switcher">
-  <div tabindex="0" role="button" class="btn btn-ghost btn-sm gap-1" aria-label="<%= t("language_switcher.label") %>">
+<details class="dropdown dropdown-end" data-testid="language-switcher" data-controller="dropdown">
+  <summary class="btn btn-ghost btn-sm gap-1 list-none" aria-label="<%= t("language_switcher.label") %>">
     <%= icon("languages", class: "size-4") %>
     <span class="text-sm font-medium uppercase"><%= I18n.locale %></span>
-  </div>
-  <ul tabindex="0" class="dropdown-content menu z-50 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-1 shadow-lg">
+  </summary>
+  <ul class="dropdown-content menu z-50 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-1 shadow-lg">
     <% I18n.available_locales.each do |locale| %>
-      <li>
+      <li class="p-0">
         <%= button_to locale_path(locale: locale),
                       method: :patch,
-                      form_class: "w-full",
-                      class: ["flex w-full items-center justify-between", ("active" if I18n.locale == locale)].compact.join(" "),
+                      form_class: "w-full flex !p-0",
+                      form: { data: { turbo: false } },
+                      class: ["flex w-full items-center justify-between px-3 py-1.5 rounded-[inherit]", ("active" if I18n.locale == locale)].compact.join(" "),
                       data: { testid: "language-option-#{locale}" } do %>
           <span><%= t("language_switcher.languages.#{locale}") %></span>
           <% if I18n.locale == locale %>
@@ -21,4 +22,4 @@
       </li>
     <% end %>
   </ul>
-</div>
+</details>

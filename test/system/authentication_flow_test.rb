@@ -20,6 +20,7 @@ class AuthenticationFlowTest < ApplicationSystemTestCase
     assert_current_path dashboard_path, ignore_query: true
     assert_selector "[data-testid='account-menu']"
 
+    find("[data-testid='account-menu']").click
     find("[data-testid='logout-btn-desktop']").click
 
     assert_current_path root_path, ignore_query: true
