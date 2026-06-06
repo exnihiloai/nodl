@@ -71,8 +71,12 @@ make dev           # Alias for make up
 make logs          # Stream Docker Compose logs
 make shell         # Open a shell in the web container
 make seed          # Seed demo data
-make lint          # Run RuboCop inside Docker
+make lint          # Run RuboCop + database_consistency inside Docker
 make test          # Prepare the test DB, then run Rails unit/integration and system tests
+make check         # Handoff gate: db-check + lint + full tests (run before handing off work)
+make check-fast    # Inner loop: db-check + lint + unit/integration tests (no system tests)
+make db-check      # Apply migrations (runs strong_migrations) + assert db/schema.rb is in sync
+make coverage      # Run tests with SimpleCov coverage; report to ./coverage/index.html
 make down          # Stop and remove the local stack
 ```
 
@@ -225,19 +229,53 @@ make skills-clean  # Remove generated outputs
 
 ## Quality Gates
 
-Before handing off significant changes:
+Before handing off significant changes, run the single handoff gate — it must pass:
 
 ```sh
-make lint
-make test
+make check        # db-check + lint + full tests (unit/integration + system)
 ```
+
+For the inner development loop, a faster variant skips the browser/system tests:
+
+```sh
+make check-fast   # db-check + lint + unit/integration tests only
+```
+
+`make check` is the aggregate of three steps, each runnable on its own:
+
+- `make db-check` — applies pending migrations (so [strong_migrations](https://github.com/ankane/strong_migrations) actually runs and aborts on unsafe operations) and asserts `db/schema.rb` is in sync (fails if a migration was added but not applied/committed).
+- `make lint` — see below.
+- `make test` — see below.
+
+`make lint` runs, inside the container:
+
+- `bin/rubocop` — style + a few loose complexity cops.
+- `bundle exec database_consistency` — checks that model validations/associations are backed by DB constraints (FKs, NOT NULL, unique indexes). Pre-existing findings are baselined in `.database_consistency.todo.yml`; only *new* mismatches fail the check. Triage that baseline over time.
 
 `make test` runs:
 
 - `bin/rails test`
 - `bin/rails test:system`
 
+Migration safety is enforced by [strong_migrations](https://github.com/ankane/strong_migrations), which runs automatically during `bin/rails db:migrate` and aborts on unsafe operations. It fires wherever migrations actually run — `make up` (`db:prepare`) and `make db-check`. Note that `make test` uses `db:test:prepare` (a schema load), which does **not** run migrations, so `make db-check` is what exercises strong_migrations in the handoff gate. Existing migrations are grandfathered via `start_after` in `config/initializers/strong_migrations.rb`; checks target Postgres 16.
+
 Optional JavaScript-specific system tests are guarded by environment flags where noted in the tests, for example `JS_SYSTEM_TESTS=1`.
+
+### Test Coverage
+
+Coverage is measured with SimpleCov and is **opt-in** (off by default so normal runs stay fast). Run it inside the container:
+
+```sh
+make coverage
+```
+
+This runs `COVERAGE=1 bin/rails test` in the `web` container and writes an HTML report to `./coverage/index.html` (git-ignored). The same opt-in works for ad-hoc runs:
+
+```sh
+docker compose exec -e COVERAGE=1 web bin/rails test
+```
+
+Treat the report as a map of untested paths, not a grade. System tests run in a separate process group and are not included in the figure, so real coverage of user-facing flows is higher.
 
 ## Documentation
 
@@ -300,9 +338,11 @@ The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo 
 - App URL: `http://localhost:3000`.
 
 ## Quality Gates
-- Run lint before handing off significant changes: `make lint`.
-- Run tests before handing off significant changes: `make test`.
-- `make test` runs both `bin/rails test` and `bin/rails test:system`.
+- **Before handing off any work, run `make check` and it MUST pass (green).** This is the required handoff gate.
+- `make check` runs, in order: `db-check` (applies migrations so `strong_migrations` runs + asserts `db/schema.rb` is in sync), `lint` (`rubocop` + `database_consistency`), then `test` (`bin/rails test` + `bin/rails test:system`).
+- Use `make check-fast` (skips system tests) for the inner loop, but run the full `make check` before handoff.
+- If you add a migration, `make db-check` will apply it and regenerate `db/schema.rb`; commit the updated schema. An unsafe migration aborts the gate — fix it (the error explains how) rather than bypassing it.
+- Do not hand off with a red gate, and do not bypass it (no `--no-verify`, no skipping `make check`).
 - Optional JS-specific system tests are guarded by env flags (example in README with `JS_SYSTEM_TESTS=1`).
 
 ## Coding Guidelines (Rails)

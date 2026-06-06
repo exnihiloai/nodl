@@ -6,6 +6,8 @@ gem "rails", "~> 8.1.2"
 gem "propshaft"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
+# Catch unsafe migrations (locking/blocking operations) at db:migrate time.
+gem "strong_migrations", "~> 2.8"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -31,13 +33,13 @@ gem "docx", "~> 0.8"
 gem "async-websocket", "~> 0.30"
 gem "tailwindcss-rails"
 gem "opentelemetry-sdk", "~> 1.10"
-gem "opentelemetry-exporter-otlp", "~> 0.31.1"
-gem "opentelemetry-logs-sdk", "~> 0.4.0"
-gem "opentelemetry-exporter-otlp-logs", "~> 0.2.2"
-gem "opentelemetry-metrics-sdk", "~> 0.12.0"
-gem "opentelemetry-exporter-otlp-metrics", "~> 0.6.1"
-gem "opentelemetry-instrumentation-rails", "~> 0.39.1"
-gem "opentelemetry-instrumentation-logger", "~> 0.3.1"
+gem "opentelemetry-exporter-otlp", "~> 0.34.0"
+gem "opentelemetry-logs-sdk", "~> 0.6.0"
+gem "opentelemetry-exporter-otlp-logs", "~> 0.5.1"
+gem "opentelemetry-metrics-sdk", "~> 0.14.0"
+gem "opentelemetry-exporter-otlp-metrics", "~> 0.9.1"
+gem "opentelemetry-instrumentation-rails", "~> 0.42.0"
+gem "opentelemetry-instrumentation-logger", "~> 0.4.0"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -71,6 +73,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Audits that model validations/associations are backed by DB constraints.
+  gem "database_consistency", require: false
 end
 
 group :development do
@@ -79,6 +84,8 @@ group :development do
 end
 
 group :test do
+  # Code coverage map (opt-in via COVERAGE=1). A guide to untested paths, not a grade.
+  gem "simplecov", require: false
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   # Lightweight mocking/stubbing for Minitest (Rails doesn't ship stubs in Minitest 6+).

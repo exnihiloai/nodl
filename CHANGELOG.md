@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.8.0] - 2026-06-06
+
+### Security
+- Patched the bundled Puma web server to resolve two High-severity CVEs.
+- The production Docker image no longer ships the repo-private `private/` directory (nor `work/`, `test/`, or `doc/`), so local secrets and internal material can't end up in a built image.
+
+### Technical
+- Hardened database integrity ahead of launch: `transformer_profiles.instructions` is now `NOT NULL`, each recording can have only one generated document (enforced by a unique index plus a model validation), and redundant single-column indexes were dropped.
+- Added a single `make check` handoff gate (migrations + lint + full test suite) and wired in `strong_migrations` (aborts unsafe migrations at `db:migrate`) and `database_consistency` (verifies model validations are backed by real DB constraints).
+- Added opt-in SimpleCov coverage (`make coverage`) and re-enabled deliberately loose RuboCop complexity cops as regression guards.
+- Fixed the `bin/brakeman` binstub, which was silently disabling the security scan; consolidated workspace nil-handling behind a shared `require_workspace!` controller guard.
+- Routine dependency refresh: updated the OpenTelemetry suite and a batch of minor gems (`bootsnap`, `brakeman`, `jbuilder`, `mocha`, `propshaft`, `selenium-webdriver`, `solid_queue`, `thruster`, `web-console`, `kamal`).
+- Added pre-launch code-quality audit documentation under `doc/design-output/code-quality/`.
+
+
 ## [0.7.0] - 2026-06-06
 
 ### Added

@@ -1,0 +1,18 @@
+---
+# Remaining baselined findings are intentional / false-positive, not deferred work:
+#
+# - TransformerProfile.index_transformer_profiles_one_default_per_workspace:
+#     The partial unique index (one default per workspace) is backed by the
+#     custom `single_default_per_workspace` model validation, not a plain
+#     `validates :uniqueness`, which is what UniqueIndexChecker looks for.
+# - User.password_digest:
+#     NOT NULL is enforced; `has_secure_password` guarantees presence, so no
+#     explicit nil-disallowing validator is needed.
+TransformerProfile:
+  index_transformer_profiles_one_default_per_workspace:
+    UniqueIndexChecker:
+      enabled: false
+User:
+  password_digest:
+    NullConstraintChecker:
+      enabled: false

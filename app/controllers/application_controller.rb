@@ -58,6 +58,16 @@ class ApplicationController < ActionController::Base
     redirect_to login_path, alert: t("flash.authentication_required")
   end
 
+  # Guards workspace-scoped controllers: every signed-in user is expected to
+  # have a workspace (registration and admin-create both build one), so a nil
+  # here means a clean redirect instead of a NoMethodError on current_workspace.
+  def require_workspace!
+    @workspace = current_workspace
+    return if @workspace
+
+    redirect_to dashboard_path, alert: t("flash.no_workspace")
+  end
+
   def require_admin!
     return if current_user&.admin?
 
