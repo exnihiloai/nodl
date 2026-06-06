@@ -3,9 +3,10 @@ COMPOSE ?= docker compose
 WEB ?= web
 NOTIFY_ENV ?= private/notify.env
 
-# Deployment: build the prod image for the server arch, push to DockerHub,
-# then trigger the Dokploy redeploy webhook (URL lives in $(DEPLOY_ENV)).
-IMAGE ?= exnihiloai/nodl
+# Deployment: build the prod image for the server arch, push to a registry,
+# then trigger the Dokploy redeploy webhook. Operator-specific values
+# (DEPLOY_IMAGE, DOKPLOY_DEPLOYMENT_HOOK) live in $(DEPLOY_ENV), not in this
+# public file, so forks/other operators configure their own without editing it.
 DEPLOY_PLATFORM ?= linux/amd64
 BUILDX_BUILDER ?= nodlbuilder
 DEPLOY_ENV ?= private/.env
@@ -36,7 +37,7 @@ help:
 	@echo "  make skills-clean # Remove generated skill outputs"
 	@echo "  make skill-new ID=<id> NAME=\"<Skill Name>\" # Create canonical skill scaffold"
 	@echo "  make setup  # Configure git hooks (run once after cloning)"
-	@echo "  make deploy # Build+push amd64 image to DockerHub and trigger the Dokploy redeploy webhook"
+	@echo "  make deploy # Build+push amd64 image (DEPLOY_IMAGE) to your registry and trigger the Dokploy redeploy webhook"
 	@echo "  make notify MSG=\"Hello\"  # Send a Telegram message (uses local private/notify.env)"
 	@echo "  make logs   # Follow logs"
 	@echo "  make shell  # Open bash in web container"
@@ -141,27 +142,29 @@ notify:
 		>/dev/null && echo Sent.
 
 # Build the production image for the server's architecture (the dev Mac is
-# arm64, the VPS is amd64), push both :$(VERSION) and :latest to the private
-# DockerHub registry, then trigger Dokploy to pull & redeploy via its webhook.
-# The webhook URL lives in $(DEPLOY_ENV) as DOKPLOY_DEPLOYMENT_HOOK and is never
-# committed. Reminder: the image MUST be built locally because private/ (legal
-# pages, telemetry initializer) is git-ignored and only exists on disk here.
+# arm64, the VPS is amd64), push both :$(VERSION) and :latest to the registry,
+# then trigger Dokploy to pull & redeploy via its webhook. Operator-specific
+# values come from $(DEPLOY_ENV) (git-ignored): DEPLOY_IMAGE (e.g.
+# youruser/nodl) and DOKPLOY_DEPLOYMENT_HOOK. Reminder: the image MUST be built
+# locally because private/ (legal pages, telemetry initializer) is git-ignored
+# and only exists on disk here.
 deploy:
 	@set -e; \
 	if [ -z "$(VERSION)" ]; then \
 		echo "ERROR: could not derive VERSION from CHANGELOG.md (expected '## [X.Y.Z]')."; exit 1; \
 	fi; \
-	echo "==> Building $(IMAGE):$(VERSION) (+ :latest) for $(DEPLOY_PLATFORM)"; \
+	if [ ! -f "$(DEPLOY_ENV)" ]; then \
+		echo "ERROR: $(DEPLOY_ENV) not found (needs DEPLOY_IMAGE and DOKPLOY_DEPLOYMENT_HOOK)."; exit 1; \
+	fi; \
+	set -a; . "$(DEPLOY_ENV)"; set +a; \
+	: $${DEPLOY_IMAGE:?set DEPLOY_IMAGE (e.g. youruser/nodl) in $(DEPLOY_ENV)}; \
+	: $${DOKPLOY_DEPLOYMENT_HOOK:?set DOKPLOY_DEPLOYMENT_HOOK in $(DEPLOY_ENV)}; \
+	echo "==> Building $$DEPLOY_IMAGE:$(VERSION) (+ :latest) for $(DEPLOY_PLATFORM)"; \
 	docker buildx inspect "$(BUILDX_BUILDER)" >/dev/null 2>&1 || \
 		docker buildx create --name "$(BUILDX_BUILDER)" --driver docker-container --bootstrap >/dev/null; \
 	docker buildx build --builder "$(BUILDX_BUILDER)" --platform "$(DEPLOY_PLATFORM)" \
-		-t "$(IMAGE):$(VERSION)" -t "$(IMAGE):latest" --push .; \
-	echo "==> Pushed $(IMAGE):$(VERSION) and $(IMAGE):latest"; \
-	if [ ! -f "$(DEPLOY_ENV)" ]; then \
-		echo "ERROR: $(DEPLOY_ENV) not found (needs DOKPLOY_DEPLOYMENT_HOOK)."; exit 1; \
-	fi; \
-	set -a; . "$(DEPLOY_ENV)"; set +a; \
-	: $${DOKPLOY_DEPLOYMENT_HOOK:?set DOKPLOY_DEPLOYMENT_HOOK in $(DEPLOY_ENV)}; \
+		-t "$$DEPLOY_IMAGE:$(VERSION)" -t "$$DEPLOY_IMAGE:latest" --push .; \
+	echo "==> Pushed $$DEPLOY_IMAGE:$(VERSION) and $$DEPLOY_IMAGE:latest"; \
 	echo "==> Triggering Dokploy redeploy webhook"; \
 	curl -fsSL -X POST "$$DOKPLOY_DEPLOYMENT_HOOK" >/dev/null; \
 	echo "==> Dokploy redeploy triggered. Watch the container logs in the Dokploy dashboard."; \
