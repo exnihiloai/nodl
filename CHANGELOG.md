@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.0] - 2026-06-06
+
+### Added
+- **A Real Landing Page:** The home page now explains what Nodl does — speak a thought, get a structured document — with clear calls to start a free test, see pricing, and read FAQs. New visitors are greeted in English or German based on their browser language.
+- **Free Test Limits You Can See Up Front:** The landing page and your dashboard now show the test-plan caps — up to 8 recordings, 5 formats, and 1 hour per recording — so you know what’s included before you sign up. The app enforces these limits and stops long recordings automatically.
+- **Operator Legal Pages:** Imprint, privacy, and terms pages can be served from operator-specific content; footer links appear only when those pages are configured for your deployment.
+- **A Friendlier “Page Not Found”:** In production, broken links show a branded 404 page instead of a generic error screen. (Developers still get full Rails debug pages locally.)
+
+### Changed
+- **Copy That Matches the Product:** Register, login, about, demo, and payments pages now describe Nodl as a voice-to-document tool with a free test tier and Pro coming soon — not generic Rails boilerplate text.
+- **Clearer Account Menu:** The signed-in menu uses icons for workspace, language, upgrade, and sign-out so each action is easier to scan.
+- **Nodl Brand Icons:** Browser tab and home-screen icons now use custom Nodl branding instead of the placeholder.
+
+### Fixed
+- **Readable Bottom Call-to-Action:** The final “start free” section on the landing page is legible again in light and dark mode.
+- **Honest Limit Messages When Recording:** Hitting the recording cap now shows the real limit message instead of a misleading microphone error.
+
+### Security
+- **Edge Rate Limiting:** Added Rack::Attack throttles and blocklists for registration, login, junk probe paths, and a global request ceiling to harden the public deployment.
+
+### Technical
+- Added `PlanLimits` as the single source of truth for free-tier caps; enforced in models, processing, dashboard UI, and the browser recorder.
+- Legal page wiring (`LegalPage`, routes, conditional footer links) with templates loaded from git-ignored `private/legal/`.
+- Production routes exceptions to `ErrorsController`; development keeps `consider_all_requests_local` debug UI.
+- Instrumented core product events via `ActiveSupport::Notifications` (`nodl.*`); operator Telegram delivery lives in `private/`.
+- Added `config/initializers/rack_attack.rb` and `private_loader.rb` for operator initializers.
+
+
 ## [0.8.0] - 2026-06-06
 
 ### Security
