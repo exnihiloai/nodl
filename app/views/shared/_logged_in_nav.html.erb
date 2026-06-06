@@ -22,15 +22,21 @@
             <span class="hidden max-w-[12rem] truncate text-sm sm:inline"><%= current_user.email %></span>
           </div>
           <div tabindex="0" class="dropdown-content z-50 mt-2 w-72 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
-            <div class="px-3 py-2">
-              <p class="text-xs text-base-content/50"><%= t("nav.account.signed_in_as") %></p>
-              <p class="truncate text-sm font-medium"><%= current_user.email %></p>
+            <div class="flex items-start gap-2 px-3 py-2">
+              <%= icon("user", class: "size-4 mt-0.5 shrink-0 text-base-content/50", label: t("nav.account.signed_in_as")) %>
+              <div class="min-w-0">
+                <p class="text-xs text-base-content/50"><%= t("nav.account.signed_in_as") %></p>
+                <p class="truncate text-sm font-medium"><%= current_user.email %></p>
+              </div>
             </div>
 
             <% account_workspaces = current_user.memberships.includes(:workspace).order(:created_at).map(&:workspace) %>
             <% if account_workspaces.any? %>
               <div class="divider my-1"></div>
-              <p class="px-3 py-1 text-xs text-base-content/50"><%= t("nav.account.workspace") %></p>
+              <p class="flex items-center gap-1.5 px-3 py-1 text-xs text-base-content/50">
+                <%= icon("building-2", class: "size-3.5 shrink-0", label: t("nav.account.workspace")) %>
+                <%= t("nav.account.workspace") %>
+              </p>
               <ul class="menu menu-sm w-full">
                 <% account_workspaces.each do |workspace| %>
                   <% is_current = workspace == current_workspace %>
@@ -39,7 +45,10 @@
                                   method: :post,
                                   form_class: "w-full",
                                   class: ["flex w-full items-center justify-between gap-3", ("active" if is_current)].compact.join(" ") do %>
-                      <span class="truncate"><%= workspace.name %></span>
+                      <span class="flex min-w-0 items-center gap-2">
+                        <%= icon("building-2", class: "size-4 shrink-0 text-base-content/60", label: workspace.name) %>
+                        <span class="truncate"><%= workspace.name %></span>
+                      </span>
                       <% if is_current %>
                         <span class="badge badge-primary badge-sm shrink-0"><%= t("nav.account.current") %></span>
                       <% end %>
@@ -50,7 +59,10 @@
             <% end %>
 
             <div class="divider my-1"></div>
-            <p class="px-3 py-1 text-xs text-base-content/50"><%= t("language_switcher.label") %></p>
+            <p class="flex items-center gap-1.5 px-3 py-1 text-xs text-base-content/50">
+              <%= icon("languages", class: "size-3.5 shrink-0", label: t("language_switcher.label")) %>
+              <%= t("language_switcher.label") %>
+            </p>
             <ul class="menu menu-sm w-full" data-testid="language-switcher">
               <% I18n.available_locales.each do |locale| %>
                 <li>
@@ -70,8 +82,21 @@
 
             <div class="divider my-1"></div>
             <ul class="menu menu-sm w-full">
-              <li><%= link_to t("nav.account.upgrade_plan"), payments_path %></li>
-              <li><%= button_to t("nav.account.log_out"), logout_path, method: :post, class: "w-full justify-start", data: { testid: "logout-btn-desktop" } %></li>
+              <li>
+                <%= link_to payments_path, class: "flex items-center gap-2" do %>
+                  <%= icon("sparkles", class: "size-4 shrink-0", label: t("nav.account.upgrade_plan")) %>
+                  <%= t("nav.account.upgrade_plan") %>
+                <% end %>
+              </li>
+              <li>
+                <%= button_to logout_path,
+                              method: :post,
+                              class: "flex w-full items-center gap-2 justify-start",
+                              data: { testid: "logout-btn-desktop" } do %>
+                  <%= icon("log-out", class: "size-4 shrink-0", label: t("nav.account.log_out")) %>
+                  <%= t("nav.account.log_out") %>
+                <% end %>
+              </li>
             </ul>
           </div>
         </div>
