@@ -1,3 +1,26 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#7C3AED" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- Hintergrund mit abgerundeten Ecken -->
+  <rect width="512" height="512" rx="128" fill="url(#grad)" />
+  
+  <!-- Das "N" Symbol mit Schatten -->
+  <g filter="url(#shadow)">
+    <!-- Das "N" aus Linien -->
+    <path d="M 160 362 L 160 150 L 352 362 L 352 150" stroke="white" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Die Nodes (Knotenpunkte) -->
+    <circle cx="160" cy="362" r="32" fill="white" />
+    <circle cx="160" cy="150" r="32" fill="white" />
+    <circle cx="352" cy="362" r="32" fill="white" />
+    <circle cx="352" cy="150" r="32" fill="white" />
+  </g>
 </svg>
