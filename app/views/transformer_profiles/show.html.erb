@@ -1,4 +1,4 @@
-<% content_for :title, "#{@transformer_profile.name} - Nodl" %>
+<% content_for :title, t("transformer_profiles.show.title", name: @transformer_profile.name) %>
 
 <section class="bg-base-200 py-10">
   <div class="container mx-auto max-w-2xl px-4 space-y-6">
@@ -6,34 +6,34 @@
       <div>
         <h1 class="text-2xl font-bold" data-testid="format-name"><%= @transformer_profile.name %></h1>
         <p class="mt-1 text-sm text-base-content/60">
-          <%= @transformer_profile.default? ? "Your workspace's default format." : "A custom format for your workspace." %>
+          <%= @transformer_profile.default? ? t("transformer_profiles.show.default_description") : t("transformer_profiles.show.custom_description") %>
         </p>
       </div>
       <div class="flex shrink-0 gap-2">
-        <%= link_to "Edit", edit_transformer_profile_path(@transformer_profile), class: "btn btn-sm", data: { testid: "edit-format-button" } %>
+        <%= link_to t("transformer_profiles.show.edit"), edit_transformer_profile_path(@transformer_profile), class: "btn btn-sm", data: { testid: "edit-format-button" } %>
         <% unless @transformer_profile.default? %>
-          <%= button_to "Delete",
+          <%= button_to t("transformer_profiles.show.delete"),
                         transformer_profile_path(@transformer_profile),
                         method: :delete,
                         class: "btn btn-sm btn-ghost text-error",
-                        data: { testid: "delete-format-button", turbo_confirm: "Delete this format? This cannot be undone." } %>
+                        data: { testid: "delete-format-button", turbo_confirm: t("transformer_profiles.show.delete_confirm") } %>
         <% end %>
       </div>
     </div>
 
     <div class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm space-y-2">
-      <h2 class="text-sm font-semibold">Guidelines</h2>
-      <p class="text-xs text-base-content/50">How NODL writes documents in this format.</p>
+      <h2 class="text-sm font-semibold"><%= t("transformer_profiles.show.guidelines") %></h2>
+      <p class="text-xs text-base-content/50"><%= t("transformer_profiles.show.guidelines_hint") %></p>
       <% if @transformer_profile.instructions.present? %>
         <div class="mt-2 whitespace-pre-wrap rounded-box bg-base-200 p-4 text-sm" data-testid="format-instructions"><%= @transformer_profile.instructions %></div>
       <% else %>
-        <p class="mt-2 text-sm text-base-content/60" data-testid="format-instructions">No guidelines added yet.</p>
+        <p class="mt-2 text-sm text-base-content/60" data-testid="format-instructions"><%= t("transformer_profiles.show.no_guidelines") %></p>
       <% end %>
     </div>
 
     <div class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm space-y-2">
-      <h2 class="text-sm font-semibold">Examples</h2>
-      <p class="text-xs text-base-content/50">Documents NODL uses to match your preferred structure and style.</p>
+      <h2 class="text-sm font-semibold"><%= t("transformer_profiles.show.examples") %></h2>
+      <p class="text-xs text-base-content/50"><%= t("transformer_profiles.show.examples_hint") %></p>
       <% if @example_previews.any? %>
         <div class="mt-2 space-y-4" data-testid="format-examples">
           <% @example_previews.each do |file, preview| %>
@@ -42,16 +42,16 @@
               <% if preview.present? %>
                 <pre class="max-h-72 overflow-auto whitespace-pre-wrap p-3 text-xs text-base-content/70"><%= preview.strip %></pre>
               <% else %>
-                <p class="p-3 text-xs italic text-base-content/50">Preview not available for this file.</p>
+                <p class="p-3 text-xs italic text-base-content/50"><%= t("transformer_profiles.show.preview_unavailable") %></p>
               <% end %>
             </div>
           <% end %>
         </div>
       <% else %>
-        <p class="text-sm text-base-content/60">No example documents added.</p>
+        <p class="text-sm text-base-content/60"><%= t("transformer_profiles.show.no_examples") %></p>
       <% end %>
     </div>
 
-    <%= link_to "Back to dashboard", dashboard_path, class: "btn btn-ghost btn-sm" %>
+    <%= link_to t("transformer_profiles.show.back_to_dashboard"), dashboard_path, class: "btn btn-ghost btn-sm" %>
   </div>
 </section>

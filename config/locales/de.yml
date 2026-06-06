@@ -1,0 +1,609 @@
+# German translation. Mirrors every key in en.yml. Tone: informal ("du"),
+# modern SaaS voice; common anglicisms (Dashboard, Login, Workspace, Checkout,
+# Upload, Demo, Status) are kept intentionally.
+#
+# This file also carries the framework-level German data (validation errors,
+# date/time formats, relative time) because the app does not bundle rails-i18n.
+de:
+  # --- Framework-level data (normally provided by rails-i18n) ---------------
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: "muss ausgefüllt werden"
+      present: "muss leer sein"
+      taken: "ist bereits vergeben"
+      invalid: "ist nicht gültig"
+      confirmation: "stimmt nicht mit %{attribute} überein"
+      accepted: "muss akzeptiert werden"
+      empty: "muss ausgefüllt werden"
+      too_long:
+        one: "ist zu lang (mehr als 1 Zeichen)"
+        other: "ist zu lang (mehr als %{count} Zeichen)"
+      too_short:
+        one: "ist zu kurz (weniger als 1 Zeichen)"
+        other: "ist zu kurz (weniger als %{count} Zeichen)"
+      wrong_length:
+        one: "hat die falsche Länge (muss genau 1 Zeichen haben)"
+        other: "hat die falsche Länge (muss genau %{count} Zeichen haben)"
+      not_a_number: "ist keine Zahl"
+      greater_than: "muss größer als %{count} sein"
+      greater_than_or_equal_to: "muss größer oder gleich %{count} sein"
+      less_than: "muss kleiner als %{count} sein"
+      less_than_or_equal_to: "muss kleiner oder gleich %{count} sein"
+      inclusion: "ist kein gültiger Wert"
+      exclusion: "ist nicht verfügbar"
+
+  date:
+    formats:
+      default: "%d.%m.%Y"
+      short: "%e. %b"
+      long: "%e. %B %Y"
+    abbr_day_names: [So, Mo, Di, Mi, Do, Fr, Sa]
+    abbr_month_names: [~, Jan, Feb, Mär, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez]
+    day_names: [Sonntag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag]
+    month_names: [~, Januar, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+
+  time:
+    formats:
+      default: "%A, %d. %B %Y, %H:%M Uhr"
+      short: "%d.%m.%Y %H:%M"
+      long: "%A, %d. %B %Y, %H:%M Uhr"
+    am: "vormittags"
+    pm: "nachmittags"
+
+  datetime:
+    distance_in_words:
+      half_a_minute: "eine halbe Minute"
+      less_than_x_seconds:
+        one: "weniger als 1 Sekunde"
+        other: "weniger als %{count} Sekunden"
+      x_seconds:
+        one: "1 Sekunde"
+        other: "%{count} Sekunden"
+      less_than_x_minutes:
+        one: "weniger als 1 Minute"
+        other: "weniger als %{count} Minuten"
+      x_minutes:
+        one: "1 Minute"
+        other: "%{count} Minuten"
+      about_x_hours:
+        one: "etwa 1 Stunde"
+        other: "etwa %{count} Stunden"
+      x_days:
+        one: "1 Tag"
+        other: "%{count} Tagen"
+      about_x_months:
+        one: "etwa 1 Monat"
+        other: "etwa %{count} Monaten"
+      x_months:
+        one: "1 Monat"
+        other: "%{count} Monaten"
+      about_x_years:
+        one: "etwa 1 Jahr"
+        other: "etwa %{count} Jahren"
+      over_x_years:
+        one: "mehr als 1 Jahr"
+        other: "mehr als %{count} Jahren"
+      almost_x_years:
+        one: "fast 1 Jahr"
+        other: "fast %{count} Jahren"
+
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " und "
+      last_word_connector: " und "
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            password:
+              password_complexity: "muss Groß- und Kleinbuchstaben sowie eine Zahl enthalten"
+    attributes:
+      user:
+        email: "E-Mail"
+        password: "Passwort"
+        password_confirmation: "Passwortbestätigung"
+        preferred_language: "Bevorzugte Sprache"
+      recording_session:
+        title: "Titel"
+        transformer_handle: "Format"
+
+  # --- Application strings --------------------------------------------------
+  language_switcher:
+    label: "Sprache"
+    languages:
+      en: "English"
+      de: "Deutsch"
+
+  clipboard:
+    copy: "Kopieren"
+    copied: "Kopiert"
+
+  confirm_modal:
+    title: "Bist du sicher?"
+    cancel: "Abbrechen"
+    confirm: "Löschen"
+    close: "Schließen"
+
+  nav:
+    services: "Services"
+    how_it_works: "So funktioniert's"
+    pricing: "Preise"
+    faq: "FAQ"
+    login: "Login"
+    register: "Registrieren"
+    dashboard: "Dashboard"
+    admin: "Admin"
+    account:
+      signed_in_as: "Angemeldet als"
+      workspace: "Workspace"
+      current: "Aktuell"
+      upgrade_plan: "Plan upgraden"
+      log_out: "Abmelden"
+
+  footer:
+    copyright: "© %{year} Nodl. Alle Rechte vorbehalten."
+    about: "Über uns"
+    pricing: "Preise"
+    demo: "Demo"
+
+  flash:
+    authentication_required: "Bitte melde dich an, um fortzufahren."
+    not_authorized: "Du bist für diesen Bereich nicht berechtigt."
+    no_workspace: "Es ist kein Workspace verfügbar."
+    sessions:
+      welcome_back: "Willkommen zurück."
+      signed_out: "Du wurdest abgemeldet."
+      invalid_credentials: "Ungültige Anmeldedaten."
+      cache_unavailable: "Der Authentifizierungsdienst ist vorübergehend nicht verfügbar. Bitte versuche es später erneut."
+    registrations:
+      created: "Konto erfolgreich erstellt."
+    recording_sessions:
+      created: "Aufnahme-Session erstellt. Die Verarbeitung hat begonnen."
+      not_ready_to_finalize: "Die Aufnahme-Session ist noch nicht bereit zum Abschließen."
+    transformer_profiles:
+      created: 'Format „%{name}" erstellt.'
+      updated: 'Format „%{name}" aktualisiert.'
+      deleted: 'Format „%{name}" gelöscht.'
+      default_undeletable: "Das Standardformat kann nicht gelöscht werden."
+      example_removed: "Beispieldokument entfernt."
+    workspaces:
+      switched: "Zu Workspace %{name} gewechselt."
+      not_found: "Workspace nicht gefunden."
+    payments:
+      not_configured: "Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY."
+      checkout_failed: "Checkout kann derzeit nicht gestartet werden."
+
+  registrations:
+    errors:
+      email_mismatch: "E-Mail und Bestätigung müssen übereinstimmen."
+      password_mismatch: "Die Passwörter müssen übereinstimmen."
+      email_taken: "Diese E-Mail-Adresse ist bereits registriert."
+
+  shared:
+    status_check:
+      healthy: "Status: einsatzbereit"
+      unavailable: "Status: nicht verfügbar"
+    theme_toggle:
+      label: "Dunkelmodus umschalten"
+
+  pages:
+    home:
+      title: "Nodl – Rails-SaaS-Boilerplate"
+      meta_description: "Produktionsreifes SaaS-Boilerplate, gebaut mit Rails, Turbo, Tailwind und DaisyUI."
+      hero:
+        badge: "Powered by Rails + Turbo"
+        heading: "Bring produktionsreifes SaaS an den Start – ohne schwere SPA."
+        subheading: "Server-gerenderte Seiten mit Turbo-Interaktionen, Tailwind-Utilities und DaisyUI-Komponenten halten den Stack schlank und schnell."
+        get_started: "Loslegen"
+        live_demo: "Live-Demo"
+        check_status: "Status prüfen"
+        status_unchecked: "Der Servicestatus wurde noch nicht geprüft."
+      cards:
+        observability:
+          label: "Observability"
+          title: "Observability von Haus aus"
+          body: "Health-Endpoints, strukturierte Logs und klare Erweiterungspunkte für Produktions-Telemetrie."
+        security:
+          label: "Sicherheit"
+          title: "Sicher von Anfang an"
+          body: "CSRF-Schutz, Passwort-Hashing und rollenbasierte Admin-Tools sind sofort einsatzbereit."
+        velocity:
+          label: "Entwicklungstempo"
+          title: "Entwicklungstempo"
+          body: "Containerisiertes lokales Setup, Postgres, Turbo Streams und ergonomische Rails-Konventionen."
+      services:
+        badge: "Praxistauglich"
+        heading: "Gebaut, um nah an deinem Datenmodell zu bleiben."
+        subheading: "Nutze es für Kunden-SaaS, interne Tools oder Agentur-Plattformen."
+        seed:
+          tab: "SaaS in der Seed-Phase"
+          title: "SaaS in der Seed-Phase"
+          item_1: "Mandantenfähiges Workspace-Modell vom ersten Tag an"
+          item_2: "E-Mail-/Passwort-Authentifizierung mit sicheren Sessions"
+          item_3: "Stripe-Checkout-Platzhalter und Webhook-Endpoint"
+        internal:
+          tab: "Interne Plattformen"
+          title: "Interne Plattformen"
+          item_1: "Admin-Steuerung für den Nutzer-Lebenszyklus"
+          item_2: "Audit-Trail für sensible Nutzeränderungen"
+          item_3: "Server-getriebene UI-Updates über Turbo Frames/Streams"
+        agencies:
+          tab: "Agenturen und Studios"
+          title: "Agenturen und Studios"
+          item_1: "DaisyUI-Designsystem-Primitive"
+          item_2: "Einfacher Deploy-Pfad mit Rails-Docker-Setup"
+          item_3: "Klare Rails-Konventionen für schnelles Onboarding"
+      faq:
+        badge: "Fragen"
+        heading: "Was Teams am häufigsten fragen"
+        subheading: "Schnelle Antworten, während du den Stack bewertest."
+        q1: "Wird alles serverseitig gerendert?"
+        a1: "Ja. Rails-ERB-Templates rendern alle Views, und Turbo ergänzt gezielte HTML-Swaps, wo nötig."
+        q2: "Kann ich PostgreSQL und Mandantenfähigkeit sofort nutzen?"
+        a2: "Ja. Dieses Boilerplate startet mit Postgres, Workspaces, Mitgliedschaften und Mandantenwechsel."
+        q3: "Enthält es ein Billing-Grundgerüst?"
+        a3: "Ja. Stripe Checkout und Webhook-Platzhalter sind verdrahtet, sodass du echte Produkte schnell anbinden kannst."
+    about:
+      title: "Über - Nodl"
+      meta_description: "Über diesen Rails-SaaS-Starter."
+      heading: "Über diese Plattform"
+      intro: "Ein moderner SaaS-Starter, gebaut mit Rails, Turbo, Tailwind und DaisyUI."
+      backend:
+        title: "Backend"
+        item_1: "Rails 8"
+        item_2: "PostgreSQL"
+        item_3: "Mandantenfähige Workspaces"
+        item_4: "Integrierte sichere Authentifizierung"
+      frontend:
+        title: "Frontend"
+        item_1: "ERB-Server-Rendering"
+        item_2: "Turbo Frames/Streams"
+        item_3: "Tailwind-Utilities"
+        item_4: "DaisyUI-Komponenten"
+      ops:
+        title: "Ops"
+        item_1: "Dockerisiertes lokales Setup"
+        item_2: "Health-/Readiness-Endpoints"
+        item_3: "Stripe-Webhook-Platzhalter"
+        item_4: "Rails-Produktions-Image"
+      version:
+        title: "Versionsinformationen"
+        current: "Aktuelle App-Version"
+        back_home: "Zurück zur Startseite"
+        try_demo: "Demo ausprobieren"
+    try_now:
+      title: "Nodl ausprobieren - Demo"
+      meta_description: "Entdecke die Demo-Erfahrung."
+      badge: "Interaktive Demo"
+      heading: "Erlebe die Plattform"
+      subheading: "Entdecke die Kernfunktionen und sieh, wie dieser Rails-Stack deinen Workflow beschleunigt."
+      features_title: "Demo-Funktionen"
+      feature_1: "Mandantenfähiges Dashboard"
+      feature_2: "Turbo-HTML-Updates"
+      feature_3: "Admin-Aktionen für den Nutzer-Lebenszyklus"
+      feature_4: "Stripe-Checkout-Platzhalter"
+      start_trial: "Kostenlos testen"
+      learn_more: "Mehr erfahren"
+      back_home: "← Zurück zur Startseite"
+
+  sessions:
+    new:
+      title: "Login - Nodl"
+      meta_description: "Melde dich bei deinem Nodl-Konto an."
+      heading: "Willkommen zurück"
+      subheading: "Melde dich bei deinem Konto an."
+      email_placeholder: "deine@email.com"
+      password_placeholder: "Passwort eingeben"
+      sign_in: "Anmelden"
+      new_to_platform: "Neu auf unserer Plattform?"
+      create_account: "Konto erstellen"
+      aside:
+        heading: "Warum Teams bleiben"
+        body: "Sichere Sessions, ein mandantenfähiges Datenmodell und Admin-Tools sind ab dem ersten Tag bereit."
+        badge_1: "Session-Sicherheit"
+        badge_2: "Audit-freundliche Admin-Aktionen"
+        badge_3: "Turbo-getriebene UX"
+
+  registrations_view:
+    new:
+      title: "Registrieren - Nodl"
+      meta_description: "Erstelle dein Konto und leg schnell los."
+      aside:
+        badge: "Willkommen"
+        heading: "Erstelle dein Konto"
+        body: "Nodl liefert produktionsreife Authentifizierung, Mandantenfähigkeit, Billing-Platzhalter und eine moderne UI-Basis."
+        item_1: "E-Mail-Authentifizierung mit sicherem Passwort-Hashing"
+        item_2: "Workspace wird bei der Registrierung automatisch erstellt"
+        item_3: "Turbo-fähige, serverseitig gerenderte Interaktionen"
+      lead: "Schließe dich Teams an, die mit Rails schneller starten."
+      email_placeholder: "deine@email.com"
+      email_confirm_placeholder: "E-Mail bestätigen"
+      password_placeholder: "Erstelle ein starkes Passwort"
+      password_confirm_placeholder: "Passwort bestätigen"
+      create_account: "Konto erstellen"
+      already_have_account: "Hast du bereits ein Konto?"
+      sign_in: "Anmelden"
+
+  dashboard:
+    title: "Dashboard - Nodl"
+    meta_description: "Sprich einen Gedanken aus und erhalte ein sauberes, strukturiertes Dokument zurück."
+    no_workspace:
+      heading: "Kein Workspace zugewiesen"
+      body: "Bitte eine:n Administrator:in, dich einem Workspace hinzuzufügen, um mit dem Aufnehmen zu beginnen."
+    start_heading: "Neues Dokument starten"
+    turn_recording_into: "Aufnahme umwandeln in"
+    default_suffix: "%{name} (Standard)"
+    record: "Aufnehmen"
+    stop: "Stopp"
+    upload_audio: "Audio hochladen"
+    create_document: "Dokument erstellen"
+    listening: "Höre zu…"
+    transcript: "Transkript"
+    recorder:
+      unsupported: "Aufnahme wird in diesem Browser nicht unterstützt – nutze stattdessen den Upload."
+      start_error: "Die Aufnahme konnte nicht gestartet werden. Prüfe die Mikrofon-Berechtigungen und versuche es erneut."
+      uploading: "Dein Audio wird hochgeladen…"
+      session_error: "Die Aufnahme-Session konnte nicht erstellt werden."
+      finalize_error: "Diese Aufnahme konnte nicht abgeschlossen werden. Bitte nimm sie erneut auf."
+      preview_stopped: "Live-Vorschau gestoppt; das endgültige Transkript wird trotzdem erstellt."
+    privacy_note: "Privat für deinen Workspace. Nichts wird geteilt."
+    formats: "Formate"
+    new_format: "+ Neues Format"
+    default_badge: "★ Standard"
+    format_actions: "Format-Aktionen"
+    edit: "Bearbeiten"
+    delete: "Löschen"
+    delete_format_confirm: "Dieses Format löschen? Das kann nicht rückgängig gemacht werden."
+    activity:
+      recent: "Zuletzt"
+      recordings:
+        one: "%{count} Aufnahme"
+        other: "%{count} Aufnahmen"
+      ready: "Bereit"
+      failed: "Fehlgeschlagen"
+      processing: "Wird verarbeitet"
+      time_ago: "vor %{time}"
+      open_recording: "Aufnahme öffnen"
+      couldnt_process_html: "Konnte nicht verarbeitet werden — %{link}"
+      view: "ansehen"
+      analyzing: "Analysiere..."
+      transcribing: "Transkribiere..."
+      structuring: "Strukturiere..."
+      empty_heading: "Noch keine Aufnahmen"
+      empty_body: "Drücke oben auf Aufnehmen, um deinen ersten Gedanken festzuhalten."
+
+  recording_sessions:
+    statuses:
+      pending: "Ausstehend"
+      processing: "Wird verarbeitet"
+      completed: "Abgeschlossen"
+      failed: "Fehlgeschlagen"
+      recording: "Aufnahme läuft"
+    show:
+      back_to_dashboard: "Zurück zum Dashboard"
+      format: "Format: %{name}"
+      transcript: "Transkript"
+      copy: "Kopieren"
+      copy_transcript: "Transkript kopieren"
+      transcript_unavailable: "Das Transkript ist noch nicht verfügbar."
+      document: "Dokument"
+      generated_at: "Erstellt %{time}"
+      open_document: "Dokument öffnen"
+      document_not_finished: "Die Dokumenterstellung ist noch nicht abgeschlossen."
+      play_pause: "Abspielen oder pausieren"
+      volume: "Lautstärke"
+    live:
+      transcript: "Transkript"
+      preview: "Vorschau"
+      final: "Endgültig"
+      failed: "Fehlgeschlagen"
+      final_failed: "Die endgültige Transkription ist fehlgeschlagen."
+      preview_unavailable: "Die Live-Vorschau ist nicht mehr verfügbar."
+      placeholder: "Dein Live-Transkript erscheint hier, während du sprichst."
+    interactive:
+      speakers:
+        one: "%{count} Sprecher:in"
+        other: "%{count} Sprecher:innen"
+      speaker: "Sprecher:in %{number}"
+
+  documents:
+    show:
+      title: "%{title} - Nodl"
+      download: "Herunterladen"
+      pdf: "PDF"
+      docx: "Word (.docx)"
+      markdown: "Markdown"
+      show_recording: "Aufnahme anzeigen"
+      copy: "Kopieren"
+      copy_document: "Dokument kopieren"
+
+  transformer_profiles:
+    new:
+      title: "Format erstellen - Nodl"
+      heading: "Erstelle dein eigenes Format"
+      subheading: "Erstelle ein Format für Dokumente, die du oft anfertigst, und sag NODL genau, wie du sie haben möchtest."
+    edit:
+      title: "Format bearbeiten - Nodl"
+      heading: "Format bearbeiten"
+      view: "Ansehen"
+    show:
+      title: "%{name} - Nodl"
+      default_description: "Das Standardformat deines Workspace."
+      custom_description: "Ein eigenes Format für deinen Workspace."
+      edit: "Bearbeiten"
+      delete: "Löschen"
+      delete_confirm: "Dieses Format löschen? Das kann nicht rückgängig gemacht werden."
+      guidelines: "Richtlinien"
+      guidelines_hint: "Wie NODL Dokumente in diesem Format schreibt."
+      no_guidelines: "Noch keine Richtlinien hinzugefügt."
+      examples: "Beispiele"
+      examples_hint: "Dokumente, die NODL nutzt, um deine bevorzugte Struktur und deinen Stil zu treffen."
+      preview_unavailable: "Vorschau für diese Datei nicht verfügbar."
+      no_examples: "Keine Beispieldokumente hinzugefügt."
+      back_to_dashboard: "Zurück zum Dashboard"
+    form:
+      errors_heading: "Bitte korrigiere Folgendes:"
+      name_label: "Formatname"
+      name_placeholder: "z. B. Meeting-Notizen"
+      guidelines_label: "Richtlinien"
+      guidelines_placeholder: "Schreibe strukturierte Meeting-Notizen mit einer kurzen Zusammenfassung, den wichtigsten Entscheidungen und einer Liste von To-dos mit Verantwortlichen."
+      examples_label: "Beispiele"
+      dropzone_primary: "Dateien hierher ziehen & ablegen"
+      dropzone_secondary: "oder klicken, um Dateien auszuwählen"
+      example_text_label: "Oder Beispieltext einfügen"
+      example_text_placeholder: "Füge den Text eines Dokuments ein, das dir gefällt."
+      save_changes: "Änderungen speichern"
+      create_format: "Format erstellen"
+      cancel: "Abbrechen"
+    example_file:
+      remove: "Entfernen"
+      remove_confirm: "Dieses Beispieldokument entfernen?"
+
+  payments:
+    show:
+      title: "Tarife und Checkout"
+      meta_description: "Wähle deinen Tarif und bezahle mit Stripe."
+      badge: "Payments-Vorschau"
+      heading: "Mach dich bereit für Stripe Checkout"
+      subheading: "Starte Zahlungen schnell mit vorverdrahteten Stripe-Checkout-Flows."
+      charge_note_html: "Erhebe eine einmalige Zahlung über Stripe Checkout. Konfiguriere Preise in Stripe oder gib %{code} an."
+      managed_in_stripe: "In Stripe verwaltet"
+      using_price_html: "Verwendet %{code} für den gehosteten Checkout."
+      test_defaults: "Verwendet Test-Standardwerte. Aktualisiere die Umgebungsvariablen vor dem Livegang."
+      start_checkout: "Sicheren Checkout starten"
+      redirect_note: "Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet."
+      test_card_html: "Testkarte: %{code}"
+      config_required: "Stripe-Konfiguration erforderlich"
+      config_hint: "Setze diese Umgebungsvariablen, um den Checkout zu aktivieren:"
+      webhooks_title: "Webhooks testen"
+      webhooks_hint_html: "Richte die Stripe CLI auf %{path} mit %{secret}."
+      back_home: "← Zurück zur Startseite"
+    success:
+      title: "Zahlung erfolgreich"
+      badge: "Zahlung bestätigt"
+      heading: "Vielen Dank für deinen Einkauf!"
+      body_html: "Deine Zahlung für %{product} wurde erfolgreich verarbeitet."
+      session_id: "Session-ID"
+      go_to_dashboard: "Zum Dashboard"
+      back_to_payments: "Zurück zu den Zahlungen"
+    cancel:
+      title: "Zahlung abgebrochen"
+      badge: "Checkout abgebrochen"
+      heading: "Die Zahlung wurde abgebrochen"
+      body: "Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist."
+      try_again: "Erneut versuchen"
+      review_details: "Zahlungsdetails prüfen"
+
+  admin:
+    flash:
+      invalid_role: "Ungültige Rolle ausgewählt."
+      user_created: "Nutzer erfolgreich erstellt."
+      email_updated: "E-Mail aktualisiert."
+      role_updated: "Rolle aktualisiert."
+      password_blank: "Das Passwort darf nicht leer sein."
+      password_updated: "Passwort aktualisiert."
+      temp_password_generated: "Temporäres Passwort generiert."
+      user_deactivated: "Nutzer deaktiviert."
+      user_reactivated: "Nutzer reaktiviert."
+      no_workspace: "Dieser Nutzer hat keinen Workspace."
+      usage_updated: "Nutzungslimits aktualisiert."
+    breadcrumbs:
+      dashboard: "Dashboard"
+      admin: "Admin"
+      users: "Nutzer"
+    roles:
+      admin: "Admin"
+      user: "Nutzer"
+    audit_actions:
+      create_user: "Nutzer erstellt"
+      update_email: "E-Mail aktualisiert"
+      update_role: "Rolle aktualisiert"
+      update_password: "Passwort aktualisiert"
+      generate_password: "Passwort generiert"
+      deactivate: "Deaktiviert"
+      reactivate: "Reaktiviert"
+      update_usage_limits: "Nutzungslimits aktualisiert"
+    common:
+      never: "Nie"
+      none: "-"
+      free: "Free"
+      inactive: "Inaktiv"
+    users:
+      index:
+        title: "Admin - Nutzer"
+        heading: "Nutzerübersicht"
+        subheading: "Überblick über Konten, Rollen und Workspace-Limits."
+        create_user: "Nutzer erstellen"
+        col_user: "Nutzer"
+        col_role: "Rolle"
+        col_created: "Erstellt"
+        col_last_login: "Letzter Login"
+        col_workspace: "Workspace"
+        col_plan: "Tarif"
+        col_usage: "Nutzung"
+        id: "ID %{id}"
+        scans: "Scans: %{used} / %{limit}"
+        storage: "Speicher: %{used} MB / %{limit} MB"
+      show:
+        title: "Admin - Nutzerdetails"
+        heading: "Nutzerdetails: %{email}"
+        id: "ID: %{id}"
+        account_information: "Kontoinformationen"
+        created: "Erstellt:"
+        last_login: "Letzter Login:"
+        subscription_and_usage: "Abonnement und Nutzung"
+        subscription_status: "Abonnementstatus"
+        plan_html: "Tarif: %{plan}"
+        billing_cycle_html: "Abrechnungszyklus: %{cycle}"
+        no_workspace: "Kein Workspace zugewiesen."
+        audit_events: "Letzte Audit-Ereignisse"
+        col_action: "Aktion"
+        col_timestamp: "Zeitstempel"
+        col_changes: "Änderungen"
+        col_admin: "Admin"
+        before_after: "Vorher/Nachher"
+        admin_id: "ID %{id}"
+        no_audit_events: "Noch keine Audit-Ereignisse."
+      new:
+        title: "Admin - Nutzer erstellen"
+        create_user: "Nutzer erstellen"
+        email: "E-Mail"
+        email_placeholder: "nutzer@beispiel.com"
+        role: "Rolle"
+        password: "Passwort"
+        password_optional: "Optional"
+        password_placeholder: "Leer lassen für automatische Generierung"
+      email_section:
+        label: "E-Mail"
+        update: "E-Mail aktualisieren"
+      role_section:
+        label: "Rolle"
+        update: "Rolle aktualisieren"
+      password_section:
+        label: "Passwort"
+        generated_label: "Generiertes Passwort"
+        generated_hint: "Kopiere es jetzt. Es wird nicht erneut angezeigt."
+        generate: "Temporäres Passwort generieren"
+        placeholder: "Neues Passwort eingeben"
+        set: "Passwort setzen"
+      lifecycle_section:
+        heading: "Lebenszyklus-Verwaltung"
+        deactivate: "Nutzer deaktivieren"
+        deactivate_confirm: "Bist du sicher, dass du diesen Nutzer deaktivieren möchtest?"
+        reactivate: "Nutzer reaktivieren"
+      usage_section:
+        heading: "Nutzungslimits"
+        scans: "Scans"
+        storage: "Speicher (MB)"
+        scans_limit: "Scan-Limit"
+        storage_limit: "Speicherlimit (MB)"
+        update: "Limits aktualisieren"
+        no_workspace: "Für diesen Nutzer ist kein Workspace zugewiesen."
+      create_result:
+        success: "Nutzer erfolgreich erstellt."
+        generated_password: "Generiertes Passwort:"
+        view_user: "Nutzer ansehen"

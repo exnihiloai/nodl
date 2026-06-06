@@ -1,11 +1,11 @@
-<% content_for :title, "Admin - Create User" %>
+<% content_for :title, t("admin.users.new.title") %>
 
 <section class="container mx-auto px-4 py-10">
   <div class="breadcrumbs text-sm mb-4">
     <ul>
-      <li><%= link_to "Dashboard", dashboard_path, class: "link" %></li>
-      <li><%= link_to "Users", admin_users_path, class: "link" %></li>
-      <li>Create User</li>
+      <li><%= link_to t("admin.breadcrumbs.dashboard"), dashboard_path, class: "link" %></li>
+      <li><%= link_to t("admin.breadcrumbs.users"), admin_users_path, class: "link" %></li>
+      <li><%= t("admin.users.new.create_user") %></li>
     </ul>
   </div>
 
@@ -14,28 +14,28 @@
       <%= form_with url: admin_users_path, method: :post, class: "space-y-4" do |f| %>
         <div class="form-control">
           <%= f.label :email, class: "label" do %>
-            <span class="label-text">Email</span>
+            <span class="label-text"><%= t("admin.users.new.email") %></span>
           <% end %>
-          <%= f.email_field :email, required: true, class: "input input-bordered w-full", placeholder: "user@example.com" %>
+          <%= f.email_field :email, required: true, class: "input input-bordered w-full", placeholder: t("admin.users.new.email_placeholder") %>
         </div>
 
         <div class="form-control">
           <%= f.label :role, class: "label" do %>
-            <span class="label-text">Role</span>
+            <span class="label-text"><%= t("admin.users.new.role") %></span>
           <% end %>
-          <%= f.select :role, options_for_select([["User", "user"], ["Admin", "admin"]]), {}, class: "select select-bordered w-full" %>
+          <%= f.select :role, options_for_select([[t("admin.roles.user"), "user"], [t("admin.roles.admin"), "admin"]]), {}, class: "select select-bordered w-full" %>
         </div>
 
         <div class="form-control">
           <%= f.label :password, class: "label" do %>
-            <span class="label-text">Password</span>
-            <span class="label-text-alt text-base-content/70">Optional</span>
+            <span class="label-text"><%= t("admin.users.new.password") %></span>
+            <span class="label-text-alt text-base-content/70"><%= t("admin.users.new.password_optional") %></span>
           <% end %>
-          <%= f.password_field :password, minlength: 8, class: "input input-bordered w-full", placeholder: "Leave blank to auto-generate" %>
+          <%= f.password_field :password, minlength: 8, class: "input input-bordered w-full", placeholder: t("admin.users.new.password_placeholder") %>
         </div>
 
         <div class="form-control mt-6">
-          <%= f.submit "Create User", class: "btn btn-primary" %>
+          <%= f.submit t("admin.users.new.create_user"), class: "btn btn-primary" %>
         </div>
       <% end %>
 

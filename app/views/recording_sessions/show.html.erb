@@ -18,11 +18,11 @@
 
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <%= link_to "Back to dashboard", dashboard_path, class: "link link-hover text-sm" %>
+        <%= link_to t("recording_sessions.show.back_to_dashboard"), dashboard_path, class: "link link-hover text-sm" %>
         <h1 class="mt-2 text-3xl font-bold"><%= @recording_session.title %></h1>
-        <p class="text-base-content/70">Format: <%= @recording_session.transformer_handle.humanize %></p>
+        <p class="text-base-content/70"><%= t("recording_sessions.show.format", name: @recording_session.transformer_handle.humanize) %></p>
       </div>
-      <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= @recording_session.status.humanize %></span>
+      <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= t("recording_sessions.statuses.#{@recording_session.status}") %></span>
     </div>
 
     <% if @recording_session.failed? %>
@@ -32,18 +32,18 @@
     <% end %>
 
     <div class="grid gap-6 lg:grid-cols-2">
-      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-controller="clipboard">
+      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-controller="clipboard" data-clipboard-copy-text-value="<%= t("clipboard.copy") %>" data-clipboard-copied-text-value="<%= t("clipboard.copied") %>">
         <div class="flex items-start justify-between gap-2">
-          <h2 class="text-xl font-semibold">Transcript</h2>
+          <h2 class="text-xl font-semibold"><%= t("recording_sessions.show.transcript") %></h2>
           <% if @recording_session.completed? && (segments.present? || @recording_session.transcript_text.present?) %>
             <button type="button"
                     class="btn btn-ghost btn-sm gap-2"
                     data-action="clipboard#copy"
                     data-testid="copy-transcript"
-                    aria-label="Copy transcript">
+                    aria-label="<%= t("recording_sessions.show.copy_transcript") %>">
               <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
               <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
-              <span data-clipboard-target="label">Copy</span>
+              <span data-clipboard-target="label"><%= t("recording_sessions.show.copy") %></span>
             </button>
           <% end %>
         </div>
@@ -59,17 +59,17 @@
         <% elsif @recording_session.transcript_text.present? %>
           <div class="mt-4 whitespace-pre-wrap rounded-box bg-base-200 p-4 text-sm leading-6 text-base-content" data-clipboard-target="source"><%= @recording_session.transcript_text %></div>
         <% else %>
-          <p class="mt-4 text-base-content/70">Transcript is not available yet.</p>
+          <p class="mt-4 text-base-content/70"><%= t("recording_sessions.show.transcript_unavailable") %></p>
         <% end %>
       </section>
 
       <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
-        <h2 class="text-xl font-semibold">Document</h2>
+        <h2 class="text-xl font-semibold"><%= t("recording_sessions.show.document") %></h2>
         <% if @document %>
-          <p class="mt-2 text-sm text-base-content/70">Generated <%= l(@document.generated_at, format: :short) %></p>
-          <%= link_to "Open Document", document_path(@document), class: "btn btn-primary mt-4" %>
+          <p class="mt-2 text-sm text-base-content/70"><%= t("recording_sessions.show.generated_at", time: l(@document.generated_at, format: :short)) %></p>
+          <%= link_to t("recording_sessions.show.open_document"), document_path(@document), class: "btn btn-primary mt-4" %>
         <% else %>
-          <p class="mt-4 text-base-content/70">Document generation is not finished yet.</p>
+          <p class="mt-4 text-base-content/70"><%= t("recording_sessions.show.document_not_finished") %></p>
         <% end %>
       </section>
     </div>
@@ -83,7 +83,7 @@
                   class="btn btn-primary btn-circle shrink-0"
                   data-audio-player-target="playButton"
                   data-action="audio-player#togglePlay"
-                  aria-label="Play or pause">
+                  aria-label="<%= t("recording_sessions.show.play_pause") %>">
             <span data-audio-player-target="playIcon"><%= icon("play", class: "size-5") %></span>
             <span data-audio-player-target="pauseIcon" class="hidden"><%= icon("pause", class: "size-5") %></span>
           </button>
@@ -98,7 +98,7 @@
             </div>
           </div>
 
-          <label class="flex shrink-0 items-center gap-2 text-base-content/60" aria-label="Volume">
+          <label class="flex shrink-0 items-center gap-2 text-base-content/60" aria-label="<%= t("recording_sessions.show.volume") %>">
             <%= icon("volume-2", class: "size-4") %>
             <input type="range" min="0" max="1" step="0.01" value="1"
                    class="range range-xs w-24"

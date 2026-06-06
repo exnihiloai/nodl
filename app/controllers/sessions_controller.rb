@@ -18,7 +18,7 @@ class SessionsController < ApplicationController
     remote_ip = request.remote_ip.to_s
 
     if login_throttled?(email, remote_ip)
-      flash.now[:alert] = "Invalid credentials."
+      flash.now[:alert] = t("flash.sessions.invalid_credentials")
       render :new, status: :too_many_requests
       return
     end
@@ -31,25 +31,25 @@ class SessionsController < ApplicationController
       session[:current_workspace_id] = user.workspaces.order("memberships.created_at ASC").pick(:id)
       clear_failed_login_attempts(email, remote_ip)
       user.update(last_login_at: Time.current)
-      redirect_to dashboard_path, notice: "Welcome back."
+      redirect_to dashboard_path, notice: t("flash.sessions.welcome_back")
       return
     end
 
     record_failed_login_attempt(email, remote_ip)
-    flash.now[:alert] = "Invalid credentials."
+    flash.now[:alert] = t("flash.sessions.invalid_credentials")
     render :new, status: login_throttled?(email, remote_ip) ? :too_many_requests : :unprocessable_entity
   end
 
   def destroy
     reset_session
-    redirect_to root_path, notice: "You have been signed out."
+    redirect_to root_path, notice: t("flash.sessions.signed_out")
   end
 
   private
 
   def handle_cache_unavailable(exception)
     Rails.logger.error("Authentication failed closed due to cache error: #{exception.message}")
-    flash.now[:alert] = "Authentication service is temporarily unavailable. Please try again later."
+    flash.now[:alert] = t("flash.sessions.cache_unavailable")
     render :new, status: :service_unavailable
   end
 

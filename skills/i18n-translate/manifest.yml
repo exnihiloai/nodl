@@ -1,0 +1,21 @@
+id: i18n-translate
+name: "i18n Translate"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Find untranslated i18n keys (the delta between the English source locale and a target locale) and fill them in with high-quality, context-aware translations."
+  steps:
+    - "Run scripts/i18n_delta.rb to list keys present in the source locale (en) but missing from the target locale, or run with --emit <locale> to print a ready-to-paste YAML skeleton of just the missing keys with their English values."
+    - "Translate each missing value following the project's voice: English-first source, informal German ('du'), and keep established anglicisms (Dashboard, Login, Workspace, Checkout, Upload, Demo, Status)."
+    - "Preserve every %{interpolation} placeholder verbatim and keep keys ending in _html as valid HTML; never translate placeholder names or HTML tags/attributes."
+    - "Merge the translated keys into config/locales/<locale>.yml under the correct nesting, keeping the file ordered to mirror en.yml."
+    - "Re-run scripts/i18n_delta.rb to confirm the delta is empty, then run `make lint` and the i18n parity test to verify nothing regressed."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

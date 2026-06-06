@@ -1,16 +1,16 @@
 <div id="live_transcript_status">
   <div class="flex items-center justify-between gap-3">
-    <h2 class="text-sm font-semibold">Transcript</h2>
+    <h2 class="text-sm font-semibold"><%= t("recording_sessions.live.transcript") %></h2>
     <% if recording_session.recording? %>
-      <span class="badge badge-warning badge-sm">Preview</span>
+      <span class="badge badge-warning badge-sm"><%= t("recording_sessions.live.preview") %></span>
     <% elsif recording_session.completed? %>
-      <span class="badge badge-success badge-sm">Final</span>
+      <span class="badge badge-success badge-sm"><%= t("recording_sessions.live.final") %></span>
     <% elsif recording_session.failed? %>
-      <span class="badge badge-error badge-sm">Failed</span>
+      <span class="badge badge-error badge-sm"><%= t("recording_sessions.live.failed") %></span>
     <% end %>
   </div>
 
   <% if recording_session.failed? %>
-    <p class="mt-1 text-xs text-error"><%= recording_session.error_message.presence || "Final transcription failed." %></p>
+    <p class="mt-1 text-xs text-error"><%= recording_session.error_message.presence || t("recording_sessions.live.final_failed") %></p>
   <% end %>
 </div>

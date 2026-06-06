@@ -7,7 +7,30 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :current_workspace, :user_signed_in?
 
+  around_action :switch_locale
+
   private
+
+  # Resolve the active locale for every request and keep it scoped to the
+  # request lifecycle so background threads are never affected.
+  def switch_locale(&action)
+    I18n.with_locale(current_locale, &action)
+  end
+
+  # Priority: explicit session choice, signed-in user preference, the browser's
+  # Accept-Language header, then the application default.
+  def current_locale
+    candidate = session[:locale] || current_user&.preferred_language || locale_from_header
+    supported_locale?(candidate) ? candidate.to_sym : I18n.default_locale
+  end
+
+  def locale_from_header
+    request.env["HTTP_ACCEPT_LANGUAGE"].to_s.scan(/[a-z]{2}/i).find { |code| supported_locale?(code) }
+  end
+
+  def supported_locale?(code)
+    code.present? && I18n.available_locales.map(&:to_s).include?(code.to_s)
+  end
 
   def current_user
     return @current_user if defined?(@current_user)
@@ -32,12 +55,12 @@ class ApplicationController < ActionController::Base
   def authenticate_user!
     return if current_user
 
-    redirect_to login_path, alert: "Please sign in to continue."
+    redirect_to login_path, alert: t("flash.authentication_required")
   end
 
   def require_admin!
     return if current_user&.admin?
 
-    redirect_to dashboard_path, alert: "You are not authorized for this section."
+    redirect_to dashboard_path, alert: t("flash.not_authorized")
   end
 end

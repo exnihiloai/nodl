@@ -1,10 +1,10 @@
 <div id="role_section" class="mt-4">
-  <label class="label">Role</label>
+  <label class="label"><%= t("admin.users.role_section.label") %></label>
   <div class="font-medium">
     <% if managed_user.admin? %>
-      <span class="badge badge-warning">Admin</span>
+      <span class="badge badge-warning"><%= t("admin.roles.admin") %></span>
     <% else %>
-      <span class="badge badge-outline">User</span>
+      <span class="badge badge-outline"><%= t("admin.roles.user") %></span>
     <% end %>
   </div>
 
@@ -15,7 +15,7 @@
   <% end %>
 
   <%= form_with url: update_role_admin_user_path(managed_user), method: :patch, class: "mt-2" do |f| %>
-    <%= f.select :role, options_for_select([["User", "user"], ["Admin", "admin"]], managed_user.role), {}, class: "select select-bordered w-full" %>
-    <%= f.submit "Update Role", class: "btn btn-sm mt-2" %>
+    <%= f.select :role, options_for_select([[t("admin.roles.user"), "user"], [t("admin.roles.admin"), "admin"]], managed_user.role), {}, class: "select select-bordered w-full" %>
+    <%= f.submit t("admin.users.role_section.update"), class: "btn btn-sm mt-2" %>
   <% end %>
 </div>

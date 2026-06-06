@@ -6,7 +6,7 @@
               data: { testid: "format-form" } do |form| %>
   <% if transformer_profile.errors.any? %>
     <div class="rounded-box border border-error/40 bg-error/10 p-4 text-sm" data-testid="format-form-errors">
-      <p class="font-medium">Please fix the following:</p>
+      <p class="font-medium"><%= t("transformer_profiles.form.errors_heading") %></p>
       <ul class="mt-1 list-disc pl-5">
         <% transformer_profile.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -16,26 +16,26 @@
   <% end %>
 
   <div class="flex flex-col gap-2">
-    <%= form.label :name, "Format name", class: "text-sm font-medium" %>
+    <%= form.label :name, t("transformer_profiles.form.name_label"), class: "text-sm font-medium" %>
     <%= form.text_field :name,
                         class: "input input-bordered w-full",
-                        placeholder: "e.g. Meeting Notes",
+                        placeholder: t("transformer_profiles.form.name_placeholder"),
                         required: true,
                         data: { testid: "format-name-input" } %>
   </div>
 
   <div class="flex flex-col gap-2">
-    <%= form.label :instructions, "Guidelines", class: "text-sm font-medium" %>
+    <%= form.label :instructions, t("transformer_profiles.form.guidelines_label"), class: "text-sm font-medium" %>
     <%= form.text_area :instructions,
                        rows: 8,
                        class: "textarea textarea-bordered w-full",
-                       placeholder: "Write structured meeting notes with a short summary, key decisions, and a list of action items with owners.",
+                       placeholder: t("transformer_profiles.form.guidelines_placeholder"),
                        required: true,
                        data: { testid: "format-instructions-input" } %>
   </div>
 
   <div class="flex flex-col gap-2">
-    <%= form.label :example_files, "Examples", class: "text-sm font-medium" %>
+    <%= form.label :example_files, t("transformer_profiles.form.examples_label"), class: "text-sm font-medium" %>
 
 
     <% if transformer_profile.persisted? && transformer_profile.example_files.attached? %>
@@ -53,8 +53,8 @@
               data-action="click->example-files#open dragover->example-files#over dragleave->example-files#leave drop->example-files#drop"
               class="flex w-full flex-col items-center gap-1 rounded-box border-2 border-dashed border-base-300 bg-base-100 p-6 text-center transition-colors hover:border-base-content/40"
               data-testid="example-files-dropzone">
-        <span class="text-sm font-medium">Drag &amp; drop files here</span>
-        <span class="text-xs text-base-content/60">or click to choose files</span>
+        <span class="text-sm font-medium"><%= t("transformer_profiles.form.dropzone_primary") %></span>
+        <span class="text-xs text-base-content/60"><%= t("transformer_profiles.form.dropzone_secondary") %></span>
       </button>
 
       <%= form.file_field :example_files,
@@ -68,19 +68,19 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <%= form.label :example_text, "Or paste example text", class: "text-sm font-medium" %>
+    <%= form.label :example_text, t("transformer_profiles.form.example_text_label"), class: "text-sm font-medium" %>
     <%= text_area_tag "transformer_profile[example_text]",
                       params.dig(:transformer_profile, :example_text),
                       rows: 6,
                       class: "textarea textarea-bordered w-full",
-                      placeholder: "Paste the text of a document you like.",
+                      placeholder: t("transformer_profiles.form.example_text_placeholder"),
                       data: { testid: "example-text-input" } %>
   </div>
 
   <div class="flex mt-6 items-center gap-3">
-    <%= form.submit transformer_profile.persisted? ? "Save changes" : "Create format",
+    <%= form.submit transformer_profile.persisted? ? t("transformer_profiles.form.save_changes") : t("transformer_profiles.form.create_format"),
                     class: "btn btn-primary",
                     data: { testid: "format-submit-button" } %>
-    <%= link_to "Cancel", dashboard_path, class: "btn btn-ghost" %>
+    <%= link_to t("transformer_profiles.form.cancel"), dashboard_path, class: "btn btn-ghost" %>
   </div>
 <% end %>

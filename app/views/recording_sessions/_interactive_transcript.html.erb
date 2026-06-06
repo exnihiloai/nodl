@@ -10,12 +10,12 @@
     <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-base-content/70">
       <span class="inline-flex items-center gap-1">
         <%= icon("users", class: "size-4") %>
-        <%= pluralize(colors.size, "speaker") %>
+        <%= t("recording_sessions.interactive.speakers", count: colors.size) %>
       </span>
       <% colors.each_with_index do |(_speaker, color), index| %>
         <span class="inline-flex items-center gap-1">
           <span class="inline-block size-2 rounded-full" style="background-color:<%= color %>"></span>
-          Speaker <%= index + 1 %>
+          <%= t("recording_sessions.interactive.speaker", number: index + 1) %>
         </span>
       <% end %>
     </div>

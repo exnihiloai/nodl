@@ -193,6 +193,26 @@ OTEL_EXPORTER_OTLP_ENDPOINT=...
 OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=...
 ```
 
+## Internationalization (i18n)
+
+The app is **English-first** and ships with a complete German translation.
+
+- Supported locales: `en` (source of truth) and `de`. Configured in `config/application.rb`.
+- Translation files: `config/locales/en.yml` and `config/locales/de.yml`. German keeps common anglicisms (Dashboard, Login, Workspace, Checkout, Upload, Demo) and uses the informal "du".
+- Locale resolution (`ApplicationController#switch_locale`): explicit session choice → signed-in user's `preferred_language` → `Accept-Language` header → default (`en`).
+- Switching: a flag-free language switcher (globe icon + language endonyms) lives in the landing-page nav and in the signed-in user dropdown. It posts to `PATCH /locale/:locale`, persisting the choice in the session and on the user's account.
+- JavaScript copy is localized by passing translated strings into Stimulus controllers via `data-*-value` attributes (no client-side i18n library needed).
+
+Keeping translations in sync — find and fill the **delta** (keys present in `en` but missing from a target locale):
+
+```sh
+ruby skills/i18n-translate/scripts/i18n_delta.rb        # report all locales
+ruby skills/i18n-translate/scripts/i18n_delta.rb de     # German only
+ruby skills/i18n-translate/scripts/i18n_delta.rb --emit de  # YAML skeleton to translate
+```
+
+The `i18n-translate` skill (under `skills/`) guides an agent through translating the delta. `test/i18n/locale_parity_test.rb` enforces that every locale defines the same application keys with matching interpolation placeholders.
+
 ## Skills And Agents
 
 Canonical skill sources live under `skills/`. Generated Claude/Codex outputs are local artifacts and are ignored by git.

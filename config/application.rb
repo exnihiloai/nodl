@@ -27,5 +27,12 @@ module Nodl
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
     config.x.app_version = ENV.fetch("APP_VERSION", "dev")
+
+    # Internationalization: English is the source language, German is the first
+    # added translation. Locale files may be nested in subdirectories.
+    config.i18n.available_locales = %i[en de]
+    config.i18n.default_locale = :en
+    config.i18n.fallbacks = [ :en ]
+    config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
   end
 end

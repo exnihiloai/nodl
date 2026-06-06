@@ -2,15 +2,15 @@
   <% if error_message.present? %>
     <div class="alert alert-error"><span><%= error_message %></span></div>
   <% elsif managed_user.present? %>
-    <div class="alert alert-success"><span>User created successfully.</span></div>
+    <div class="alert alert-success"><span><%= t("admin.users.create_result.success") %></span></div>
     <% if generated_password.present? %>
       <div class="alert alert-warning mt-2 flex-col items-start">
-        <strong>Generated Password:</strong>
+        <strong><%= t("admin.users.create_result.generated_password") %></strong>
         <code class="text-lg font-mono bg-base-200 p-2 rounded mt-2 block"><%= generated_password %></code>
       </div>
     <% end %>
     <div class="mt-4">
-      <%= link_to "View User", admin_user_path(managed_user), class: "btn btn-outline" %>
+      <%= link_to t("admin.users.create_result.view_user"), admin_user_path(managed_user), class: "btn btn-outline" %>
     </div>
   <% end %>
 <% end %>

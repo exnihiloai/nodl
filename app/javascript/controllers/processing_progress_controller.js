@@ -4,7 +4,10 @@ export default class extends Controller {
   static targets = [ "bar", "percentage", "label" ]
   static values = {
     startedAt: String,
-    duration: Number
+    duration: Number,
+    analyzingText: String,
+    transcribingText: String,
+    structuringText: String
   }
 
   connect() {
@@ -79,11 +82,11 @@ export default class extends Controller {
     // Set appropriate label text depending on progress
     if (this.hasLabelTarget) {
       if (displayPercentRounded < 8) {
-        this.labelTarget.textContent = "Analyzing..."
+        this.labelTarget.textContent = this.analyzingTextValue
       } else if (displayPercentRounded < 85) {
-        this.labelTarget.textContent = "Transcribing..."
+        this.labelTarget.textContent = this.transcribingTextValue
       } else {
-        this.labelTarget.textContent = "Structuring..."
+        this.labelTarget.textContent = this.structuringTextValue
       }
     }
   }

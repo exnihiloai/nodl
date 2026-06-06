@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy"
   post "/logout", to: "sessions#destroy"
 
+  patch "/locale/:locale", to: "locales#update", as: :locale
+
   get "/dashboard", to: "dashboard#show"
   resources :recording_sessions, only: %i[create show] do
     post :finalize, on: :member

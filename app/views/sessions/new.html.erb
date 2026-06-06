@@ -1,6 +1,6 @@
-<% content_for :title, "Login - Nodl" %>
+<% content_for :title, t("sessions.new.title") %>
 <% content_for :head do %>
-  <meta name="description" content="Sign in to your Nodl account." />
+  <meta name="description" content="<%= t("sessions.new.meta_description") %>" />
 <% end %>
 
 <section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
@@ -8,38 +8,38 @@
     <div class="card bg-base-100 shadow-2xl w-full lg:w-7/12">
       <div class="card-body space-y-6">
         <div class="text-center space-y-2">
-          <h1 class="text-3xl font-bold">Welcome back</h1>
-          <p class="text-base-content/70">Sign in to your account.</p>
+          <h1 class="text-3xl font-bold"><%= t("sessions.new.heading") %></h1>
+          <p class="text-base-content/70"><%= t("sessions.new.subheading") %></p>
         </div>
 
         <%= form_with url: login_path, class: "space-y-8" do |f| %>
           <div class="space-y-1">
-            <%= f.email_field :email, id: "login_email", class: "input input-bordered w-full h-12", placeholder: "your@email.com", required: true, value: params[:email] %>
+            <%= f.email_field :email, id: "login_email", class: "input input-bordered w-full h-12", placeholder: t("sessions.new.email_placeholder"), required: true, value: params[:email] %>
           </div>
 
           <div class="space-y-1">
-            <%= f.password_field :password, id: "login_password", class: "input input-bordered w-full h-12", placeholder: "Enter your password", required: true %>
+            <%= f.password_field :password, id: "login_password", class: "input input-bordered w-full h-12", placeholder: t("sessions.new.password_placeholder"), required: true %>
           </div>
 
           <div class="pt-2">
-            <%= f.button "Sign in", type: "submit", class: "btn btn-bouncy btn-primary w-full h-12 text-base font-semibold", data: { testid: "login-btn" } %>
+            <%= f.button t("sessions.new.sign_in"), type: "submit", class: "btn btn-bouncy btn-primary w-full h-12 text-base font-semibold", data: { testid: "login-btn" } %>
           </div>
         <% end %>
 
         <div class="text-center text-sm">
-          New to our platform?
-          <%= link_to "Create account", register_path, class: "link link-primary" %>
+          <%= t("sessions.new.new_to_platform") %>
+          <%= link_to t("sessions.new.create_account"), register_path, class: "link link-primary" %>
         </div>
       </div>
     </div>
 
     <aside class="w-full lg:w-5/12 space-y-4 text-center lg:text-left">
-      <h2 class="text-2xl font-semibold">Why teams stay</h2>
-      <p class="text-base-content/70">Secure sessions, tenancy-aware data model, and admin tooling are ready from day one.</p>
+      <h2 class="text-2xl font-semibold"><%= t("sessions.new.aside.heading") %></h2>
+      <p class="text-base-content/70"><%= t("sessions.new.aside.body") %></p>
       <div class="grid gap-3 text-sm text-base-content/70">
-        <span class="badge badge-outline justify-center lg:justify-start">Session security</span>
-        <span class="badge badge-outline justify-center lg:justify-start">Audit-friendly admin actions</span>
-        <span class="badge badge-outline justify-center lg:justify-start">Turbo-driven UX</span>
+        <span class="badge badge-outline justify-center lg:justify-start"><%= t("sessions.new.aside.badge_1") %></span>
+        <span class="badge badge-outline justify-center lg:justify-start"><%= t("sessions.new.aside.badge_2") %></span>
+        <span class="badge badge-outline justify-center lg:justify-start"><%= t("sessions.new.aside.badge_3") %></span>
       </div>
     </aside>
   </div>

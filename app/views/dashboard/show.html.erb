@@ -1,6 +1,6 @@
-<% content_for :title, "Dashboard - Nodl" %>
+<% content_for :title, t("dashboard.title") %>
 <% content_for :head do %>
-  <meta name="description" content="Speak a thought and get a clean, structured document back." />
+  <meta name="description" content="<%= t("dashboard.meta_description") %>" />
 <% end %>
 
 <section class="bg-base-200 py-10">
@@ -11,8 +11,8 @@
   <div class="container mx-auto max-w-5xl px-4 space-y-10">
     <% unless @workspace %>
       <div class="rounded-box border border-base-300 bg-base-100 p-8 text-center">
-        <h1 class="text-2xl font-bold">No workspace assigned</h1>
-        <p class="mt-2 text-base-content/70">Ask an administrator to add you to a workspace to start recording.</p>
+        <h1 class="text-2xl font-bold"><%= t("dashboard.no_workspace.heading") %></h1>
+        <p class="mt-2 text-base-content/70"><%= t("dashboard.no_workspace.body") %></p>
       </div>
     <% else %>
       <% first_run = @recording_sessions.none? %>
@@ -27,17 +27,25 @@
                         controller: "audio-recorder",
                         testid: "recording-form",
                         "audio-recorder-create-url-value": recording_sessions_path,
-                        "audio-recorder-worklet-url-value": asset_path("audio_pcm_worklet.js")
+                        "audio-recorder-worklet-url-value": asset_path("audio_pcm_worklet.js"),
+                        "audio-recorder-unsupported-text-value": t("dashboard.recorder.unsupported"),
+                        "audio-recorder-start-error-text-value": t("dashboard.recorder.start_error"),
+                        "audio-recorder-uploading-text-value": t("dashboard.recorder.uploading"),
+                        "audio-recorder-session-error-text-value": t("dashboard.recorder.session_error"),
+                        "audio-recorder-transcript-label-value": t("dashboard.transcript"),
+                        "audio-recorder-listening-text-value": t("dashboard.listening"),
+                        "audio-recorder-finalize-error-text-value": t("dashboard.recorder.finalize_error"),
+                        "audio-recorder-preview-stopped-text-value": t("dashboard.recorder.preview_stopped")
                       } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
 
-          <h1 class="text-2xl font-bold">Start a New Document</h1>
+          <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
 
           <div class="mx-auto w-full max-w-md flex flex-col gap-6">
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-base-content/60">Turn recording into</label>
+            <label class="text-sm text-base-content/60"><%= t("dashboard.turn_recording_into") %></label>
             <%= form.select :transformer_handle,
-                            @transformer_profiles.map { |profile| [profile.default? ? "#{profile.name} (default)" : profile.name, profile.handle] },
+                            @transformer_profiles.map { |profile| [profile.default? ? t("dashboard.default_suffix", name: profile.name) : profile.name, profile.handle] },
                             {},
                             class: "select select-bordered w-full",
                             data: { testid: "output-type-select" } %>
@@ -48,15 +56,15 @@
               <%= form.button type: "button",
                               class: "btn btn-bouncy btn-primary flex-1 gap-2",
                               data: { "audio-recorder-target": "recordButton", action: "audio-recorder#start", testid: "record-button" } do %>
-                <span aria-hidden="true">●</span> Record
+                <span aria-hidden="true">●</span> <%= t("dashboard.record") %>
               <% end %>
-              <button type="button" class="btn btn-outline flex-1 hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" data-testid="stop-recording-button" disabled>Stop</button>
+              <button type="button" class="btn btn-outline flex-1 hidden" data-audio-recorder-target="stopButton" data-action="audio-recorder#stop" data-testid="stop-recording-button" disabled><%= t("dashboard.stop") %></button>
               <span class="font-mono text-sm text-base-content/60 hidden" data-audio-recorder-target="timer" data-testid="recording-timer">00:00</span>
             </div>
 
             <div class="flex-1" data-audio-recorder-target="options">
               <label class="btn w-full cursor-pointer">
-                Upload Audio
+                <%= t("dashboard.upload_audio") %>
                 <%= form.file_field :original_audio,
                                     accept: "audio/*,video/webm,video/mp4",
                                     class: "hidden",
@@ -70,7 +78,7 @@
           </div>
           </div>
 
-          <%= form.submit "Create document", class: "hidden", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
+          <%= form.submit t("dashboard.create_document"), class: "hidden", data: { "audio-recorder-target": "submitButton", testid: "create-document-button" } %>
 
           <p class="text-sm text-base-content/60" data-audio-recorder-target="status">&nbsp;</p>
 
@@ -80,11 +88,11 @@
               <section id="live_transcript_panel" class="voice-stage__panel rounded-box border border-base-300 bg-base-100 p-4 text-left shadow-sm" data-testid="live-transcript-panel">
                 <div id="live_transcript_status">
                   <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-sm font-semibold">Transcript</h2>
+                    <h2 class="text-sm font-semibold"><%= t("dashboard.transcript") %></h2>
                   </div>
                 </div>
                 <div id="live_transcript_segments" class="mt-4 max-h-72 overflow-y-auto rounded-box bg-base-200 p-4">
-                  <p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>
+                  <p class="text-sm italic text-base-content/60" data-live-placeholder><%= t("dashboard.listening") %></p>
                 </div>
               </section>
             </div>
@@ -92,7 +100,7 @@
 
           <p class="flex items-center justify-center gap-1 text-xs text-base-content/50">
             <%= icon("lock", class: "size-3.5") %>
-            <span>Private to your workspace. Nothing is shared.</span>
+            <span><%= t("dashboard.privacy_note") %></span>
           </p>
 
           <input type="file"
@@ -108,8 +116,8 @@
 
         <aside class="space-y-3" data-testid="formats-panel">
           <div class="flex items-baseline justify-between">
-            <h2 class="text-lg font-semibold">Formats</h2>
-            <%= link_to "+ New format", new_transformer_profile_path, class: "btn btn-ghost btn-xs", data: { testid: "new-format-button" } %>
+            <h2 class="text-lg font-semibold"><%= t("dashboard.formats") %></h2>
+            <%= link_to t("dashboard.new_format"), new_transformer_profile_path, class: "btn btn-ghost btn-xs", data: { testid: "new-format-button" } %>
           </div>
           <ul class="rounded-box border border-base-300 bg-base-100">
             <% @transformer_profiles.each do |profile| %>
@@ -119,23 +127,23 @@
                 </span>
                 <div class="flex shrink-0 items-center gap-2">
                   <% if profile.default? %>
-                    <span class="text-xs text-base-content/50">★ Default</span>
+                    <span class="text-xs text-base-content/50"><%= t("dashboard.default_badge") %></span>
                   <% end %>
                   <span class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="Format actions">⋯</label>
+                    <label tabindex="0" class="btn btn-ghost btn-xs" data-testid="format-menu-button" aria-label="<%= t("dashboard.format_actions") %>">⋯</label>
                     <ul tabindex="0" class="dropdown-content menu z-10 w-32 rounded-box border border-base-300 bg-base-100 p-1 shadow">
                       <li>
                         <%= link_to edit_transformer_profile_path(profile), class: "flex items-center gap-2" do %>
                           <%= icon "square-pen", class: "size-4" %>
-                          Edit
+                          <%= t("dashboard.edit") %>
                         <% end %>
                       </li>
                       <% unless profile.default? %>
                         <li>
                           <%= button_to transformer_profile_path(profile), method: :delete,
-                                class: "flex items-center gap-2 text-error", data: { turbo_confirm: "Delete this format? This cannot be undone." } do %>
+                                class: "flex items-center gap-2 text-error", data: { turbo_confirm: t("dashboard.delete_format_confirm") } do %>
                             <%= icon "trash-2", class: "size-4" %>
-                            Delete
+                            <%= t("dashboard.delete") %>
                           <% end %>
                         </li>
                       <% end %>
