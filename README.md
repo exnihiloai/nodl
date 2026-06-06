@@ -1,8 +1,19 @@
 # Nodl
 
-Nodl is a Ruby on Rails 8 SaaS starter application. It uses server-rendered ERB, Turbo, Stimulus, Tailwind CSS, DaisyUI, PostgreSQL, Rails-native session authentication, workspace-based tenancy, admin user management, and a Stripe Checkout placeholder flow.
+> **A showcase of Agentic AI Engineering.** Nodl is a real, commercially-licensed product whose code is **100% AI-generated** — written by AI agents under human direction and held to production standards through automated quality gates, migration-safety checks, security scanning, and a full test suite. It is published source-available so the *engineering*, not just the product, can be inspected.
+
+Nodl is a Ruby on Rails 8 SaaS application. It uses server-rendered ERB, Turbo, Stimulus, Tailwind CSS, DaisyUI, PostgreSQL, Rails-native session authentication, workspace-based tenancy, admin user management, and a Stripe Checkout placeholder flow. Built and maintained by ex-nihilo GmbH.
 
 The local development workflow is Docker-only. You should not need a local Ruby, Rails, PostgreSQL, or Node runtime to boot and test the app.
+
+## Engineering approach
+
+Nodl demonstrates that agent-written code can meet a commercial quality bar when it runs through real engineering discipline:
+
+- **100% AI-generated code**, authored by AI agents under human review and direction.
+- **One handoff gate, always green:** `make check` runs migration-safety checks, linting, model↔DB constraint parity, and the full unit/integration/system suite before any change lands (see [Quality Gates](#quality-gates)).
+- **Safety by default:** `strong_migrations` blocks unsafe migrations; `brakeman` and `bundler-audit` scan for vulnerabilities; security findings are tracked under `doc/design-output/security/`.
+- **Decisions written down:** architecture, data models, module docs, and ADRs live under `doc/`.
 
 ## Stack
 
@@ -299,13 +310,15 @@ See `SECURITY.md` for vulnerability reporting guidance and `CONTRIBUTING.md` for
 
 Copyright (c) 2026 ex-nihilo GmbH.
 
-Nodl is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`). See `LICENSE`.
+Nodl is **source-available** under the [PolyForm Free Trial License 1.0.0](LICENSE). You may use it to **evaluate** whether it suits a particular application for **less than 32 consecutive days**, on behalf of you or your company. The Free Trial license does not permit production use, internal business use, redistribution, or any commercial use.
 
-Commercial or proprietary licenses may be granted separately by ex-nihilo GmbH. Contact ex-nihilo GmbH for dual licensing terms.
+For any use beyond that free trial, obtain a **commercial license** from ex-nihilo GmbH. Contact ex-nihilo GmbH for commercial licensing terms.
 
-Some non-code material may use separate terms or be reserved. See `LICENSES.md` for repository licensing boundaries.
+Some non-code material uses separate terms or is reserved. See `LICENSES.md` for repository licensing boundaries.
 
-The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo GmbH and are not licensed under the AGPL. See `TRADEMARKS.md`.
+The Nodl name, logo, and branding are trademarks or reserved marks of ex-nihilo GmbH and are not licensed under the PolyForm Free Trial License. See `TRADEMARKS.md`.
+
+Third-party components retain their own licenses; see `LICENSES.md` and the `*-LICENSE` files alongside bundled assets (for example `app/assets/fonts/`).
 
 <!-- BEGIN AGENT INSTRUCTIONS -->
 

@@ -41,3 +41,7 @@ make skills-check
 ## Commits
 
 Keep changes scoped and explain behavior changes clearly. Do not include unrelated refactors in feature or bug-fix pull requests.
+
+## Licensing of contributions
+
+Nodl is source-available under the PolyForm Free Trial License 1.0.0 and offered commercially by ex-nihilo GmbH (see `LICENSES.md`). Because of that dual-licensing model, **external code contributions are not accepted by default** — bug reports, questions, and discussion are very welcome via issues. If you would like to contribute code, contact ex-nihilo GmbH first; any accepted contribution requires a contributor license agreement so the project can continue to be offered under both the free-trial and commercial licenses.
