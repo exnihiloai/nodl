@@ -1,13 +1,13 @@
-<% content_for :title, "About - Nodl" %>
+<% content_for :title, t("pages.about.title") %>
 <% content_for :head do %>
-  <meta name="description" content="About this Rails SaaS starter." />
+  <meta name="description" content="<%= t("pages.about.meta_description") %>" />
 <% end %>
 
 <section class="hero min-h-[60vh] bg-base-200">
   <div class="hero-content text-center flex-col gap-6">
-    <h1 class="text-4xl sm:text-5xl font-bold">About This Platform</h1>
+    <h1 class="text-4xl sm:text-5xl font-bold"><%= t("pages.about.heading") %></h1>
     <p class="max-w-2xl text-base-content/70">
-      A modern SaaS starter built with Rails, Turbo, Tailwind, and DaisyUI.
+      <%= t("pages.about.intro") %>
     </p>
   </div>
 </section>
@@ -17,34 +17,34 @@
     <div class="grid md:grid-cols-3 gap-6">
       <div class="card bg-base-200">
         <div class="card-body items-center text-center gap-3">
-          <h3 class="card-title">Backend</h3>
+          <h3 class="card-title"><%= t("pages.about.backend.title") %></h3>
           <ul class="text-sm text-base-content/70 space-y-1">
-            <li>Rails 8</li>
-            <li>PostgreSQL</li>
-            <li>Multi-tenant workspaces</li>
-            <li>Built-in secure auth</li>
+            <li><%= t("pages.about.backend.item_1") %></li>
+            <li><%= t("pages.about.backend.item_2") %></li>
+            <li><%= t("pages.about.backend.item_3") %></li>
+            <li><%= t("pages.about.backend.item_4") %></li>
           </ul>
         </div>
       </div>
       <div class="card bg-base-200">
         <div class="card-body items-center text-center gap-3">
-          <h3 class="card-title">Frontend</h3>
+          <h3 class="card-title"><%= t("pages.about.frontend.title") %></h3>
           <ul class="text-sm text-base-content/70 space-y-1">
-            <li>ERB server rendering</li>
-            <li>Turbo Frames/Streams</li>
-            <li>Tailwind utilities</li>
-            <li>DaisyUI components</li>
+            <li><%= t("pages.about.frontend.item_1") %></li>
+            <li><%= t("pages.about.frontend.item_2") %></li>
+            <li><%= t("pages.about.frontend.item_3") %></li>
+            <li><%= t("pages.about.frontend.item_4") %></li>
           </ul>
         </div>
       </div>
       <div class="card bg-base-200">
         <div class="card-body items-center text-center gap-3">
-          <h3 class="card-title">Ops</h3>
+          <h3 class="card-title"><%= t("pages.about.ops.title") %></h3>
           <ul class="text-sm text-base-content/70 space-y-1">
-            <li>Dockerized local setup</li>
-            <li>Health/readiness endpoints</li>
-            <li>Stripe webhook placeholder</li>
-            <li>Rails production image</li>
+            <li><%= t("pages.about.ops.item_1") %></li>
+            <li><%= t("pages.about.ops.item_2") %></li>
+            <li><%= t("pages.about.ops.item_3") %></li>
+            <li><%= t("pages.about.ops.item_4") %></li>
           </ul>
         </div>
       </div>
@@ -52,12 +52,12 @@
 
     <div class="card bg-base-200">
       <div class="card-body items-center text-center gap-4">
-        <h2 class="card-title">Version information</h2>
-        <p class="text-base-content/70">Current app version</p>
+        <h2 class="card-title"><%= t("pages.about.version.title") %></h2>
+        <p class="text-base-content/70"><%= t("pages.about.version.current") %></p>
         <div class="badge badge-primary badge-lg"><%= Rails.application.config.x.app_version || "dev" %></div>
         <div class="card-actions">
-          <%= link_to "Back to Home", root_path, class: "btn btn-primary" %>
-          <%= link_to "Try the demo", try_now_path, class: "btn btn-outline" %>
+          <%= link_to t("pages.about.version.back_home"), root_path, class: "btn btn-primary" %>
+          <%= link_to t("pages.about.version.try_demo"), try_now_path, class: "btn btn-outline" %>
         </div>
       </div>
     </div>

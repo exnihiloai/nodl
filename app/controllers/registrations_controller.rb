@@ -34,7 +34,7 @@ class RegistrationsController < ApplicationController
       session[:current_workspace_id] = workspace.id
     end
 
-    redirect_to dashboard_path, notice: "Account created successfully."
+    redirect_to dashboard_path, notice: t("flash.registrations.created")
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.record.errors.full_messages.join(" ")
     render :new, status: :unprocessable_entity
@@ -63,9 +63,9 @@ class RegistrationsController < ApplicationController
     password = form.fetch("password", "").to_s
     password_confirm = form.fetch("password_confirm", "").to_s
 
-    errors << "Email and confirmation must match." if email != email_confirm
-    errors << "Passwords must match." if password != password_confirm
-    errors << "This email is already registered." if User.exists?(email:)
+    errors << t("registrations.errors.email_mismatch") if email != email_confirm
+    errors << t("registrations.errors.password_mismatch") if password != password_confirm
+    errors << t("registrations.errors.email_taken") if User.exists?(email:)
 
     # Validate password complexity via central User model validations
     temp_user = User.new(password: password, password_confirmation: password_confirm)

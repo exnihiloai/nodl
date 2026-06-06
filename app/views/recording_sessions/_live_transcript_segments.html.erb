@@ -2,8 +2,8 @@
   <% if recording_session.completed? && recording_session.transcript_text.present? %>
     <div class="whitespace-pre-wrap text-sm leading-6 text-base-content"><%= recording_session.transcript_text %></div>
   <% elsif recording_session.failed? %>
-    <p class="text-sm text-base-content/70">The live preview is no longer available.</p>
+    <p class="text-sm text-base-content/70"><%= t("recording_sessions.live.preview_unavailable") %></p>
   <% else %>
-    <p class="text-sm text-base-content/60" data-live-placeholder>Your live transcript will appear here as you speak.</p>
+    <p class="text-sm text-base-content/60" data-live-placeholder><%= t("recording_sessions.live.placeholder") %></p>
   <% end %>
 </div>

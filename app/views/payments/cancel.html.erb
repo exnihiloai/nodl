@@ -1,4 +1,4 @@
-<% content_for :title, "Payment Cancelled" %>
+<% content_for :title, t("payments.cancel.title") %>
 
 <section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
   <div class="container mx-auto px-4 max-w-3xl flex flex-col items-center gap-8 text-center">
@@ -6,16 +6,16 @@
       <div class="w-24 rounded-full bg-warning text-warning-content flex items-center justify-center text-4xl">⏸</div>
     </div>
     <div class="space-y-3">
-      <span class="badge badge-warning badge-lg">Checkout cancelled</span>
-      <h1 class="text-4xl font-semibold">Payment was cancelled</h1>
-      <p class="text-base-content/70 text-lg">No charges were made. Resume checkout whenever you're ready.</p>
+      <span class="badge badge-warning badge-lg"><%= t("payments.cancel.badge") %></span>
+      <h1 class="text-4xl font-semibold"><%= t("payments.cancel.heading") %></h1>
+      <p class="text-base-content/70 text-lg"><%= t("payments.cancel.body") %></p>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3">
       <%= form_with url: payments_checkout_path, method: :post do |f| %>
-        <%= f.submit "Try again", class: "btn btn-primary" %>
+        <%= f.submit t("payments.cancel.try_again"), class: "btn btn-primary" %>
       <% end %>
-      <%= link_to "Review payment details", payments_path, class: "btn btn-outline" %>
+      <%= link_to t("payments.cancel.review_details"), payments_path, class: "btn btn-outline" %>
     </div>
   </div>
 </section>

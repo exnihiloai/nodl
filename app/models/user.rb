@@ -28,7 +28,7 @@ class User < ApplicationRecord
     return if password.blank?
 
     unless password.match?(/[A-Z]/) && password.match?(/[a-z]/) && password.match?(/\d/)
-      errors.add(:password, "must include uppercase, lowercase, and a number")
+      errors.add(:password, :password_complexity)
     end
   end
 end

@@ -21,7 +21,7 @@ class TransformerProfilesController < ApplicationController
     attach_example_files(@transformer_profile)
 
     if @transformer_profile.save
-      redirect_to dashboard_path, notice: "Format \"#{@transformer_profile.name}\" created."
+      redirect_to dashboard_path, notice: t("flash.transformer_profiles.created", name: @transformer_profile.name)
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class TransformerProfilesController < ApplicationController
     attach_example_files(@transformer_profile)
 
     if @transformer_profile.save
-      redirect_to dashboard_path, notice: "Format \"#{@transformer_profile.name}\" updated."
+      redirect_to dashboard_path, notice: t("flash.transformer_profiles.updated", name: @transformer_profile.name)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -43,11 +43,11 @@ class TransformerProfilesController < ApplicationController
 
   def destroy
     if @transformer_profile.default?
-      return redirect_to dashboard_path, alert: "The default format can't be deleted."
+      return redirect_to dashboard_path, alert: t("flash.transformer_profiles.default_undeletable")
     end
 
     @transformer_profile.destroy
-    redirect_to dashboard_path, notice: "Format \"#{@transformer_profile.name}\" deleted."
+    redirect_to dashboard_path, notice: t("flash.transformer_profiles.deleted", name: @transformer_profile.name)
   end
 
   def remove_example_file
@@ -56,7 +56,7 @@ class TransformerProfilesController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to edit_transformer_profile_path(@transformer_profile), notice: "Example document removed." }
+      format.html { redirect_to edit_transformer_profile_path(@transformer_profile), notice: t("flash.transformer_profiles.example_removed") }
     end
   end
 
@@ -64,7 +64,7 @@ class TransformerProfilesController < ApplicationController
 
   def require_workspace!
     @workspace = current_workspace
-    redirect_to dashboard_path, alert: "No workspace is available." unless @workspace
+    redirect_to dashboard_path, alert: t("flash.no_workspace") unless @workspace
   end
 
   def set_transformer_profile

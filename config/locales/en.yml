@@ -1,31 +1,507 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
+# English is the source language for the application. Keep this file complete and
+# well organised; every key here must have a matching entry in de.yml.
+# Run `ruby skills/i18n-translate/scripts/i18n_delta.rb` to find missing keys.
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            password:
+              password_complexity: "must include uppercase, lowercase, and a number"
+
+  language_switcher:
+    label: "Language"
+    languages:
+      en: "English"
+      de: "Deutsch"
+
+  clipboard:
+    copy: "Copy"
+    copied: "Copied"
+
+  confirm_modal:
+    title: "Are you sure?"
+    cancel: "Cancel"
+    confirm: "Delete"
+    close: "Close"
+
+  nav:
+    services: "Services"
+    how_it_works: "How it works"
+    pricing: "Pricing"
+    faq: "FAQ"
+    login: "Login"
+    register: "Register"
+    dashboard: "Dashboard"
+    admin: "Admin"
+    account:
+      signed_in_as: "Signed in as"
+      workspace: "Workspace"
+      current: "Current"
+      upgrade_plan: "Upgrade plan"
+      log_out: "Log out"
+
+  footer:
+    copyright: "© %{year} Nodl. All rights reserved."
+    about: "About"
+    pricing: "Pricing"
+    demo: "Demo"
+
+  flash:
+    authentication_required: "Please sign in to continue."
+    not_authorized: "You are not authorized for this section."
+    no_workspace: "No workspace is available."
+    sessions:
+      welcome_back: "Welcome back."
+      signed_out: "You have been signed out."
+      invalid_credentials: "Invalid credentials."
+      cache_unavailable: "Authentication service is temporarily unavailable. Please try again later."
+    registrations:
+      created: "Account created successfully."
+    recording_sessions:
+      created: "Recording session created. Processing has started."
+      not_ready_to_finalize: "Recording session is not ready to finalize."
+    transformer_profiles:
+      created: 'Format "%{name}" created.'
+      updated: 'Format "%{name}" updated.'
+      deleted: 'Format "%{name}" deleted.'
+      default_undeletable: "The default format can't be deleted."
+      example_removed: "Example document removed."
+    workspaces:
+      switched: "Workspace switched to %{name}."
+      not_found: "Workspace not found."
+    payments:
+      not_configured: "Stripe is not configured. Set STRIPE_SECRET_KEY first."
+      checkout_failed: "Unable to start checkout right now."
+
+  registrations:
+    errors:
+      email_mismatch: "Email and confirmation must match."
+      password_mismatch: "Passwords must match."
+      email_taken: "This email is already registered."
+
+  shared:
+    status_check:
+      healthy: "Status: healthy"
+      unavailable: "Status: unavailable"
+    theme_toggle:
+      label: "Toggle dark mode"
+
+  pages:
+    home:
+      title: "Nodl - Rails SaaS Boilerplate"
+      meta_description: "Production-ready SaaS boilerplate built with Rails, Turbo, Tailwind, and DaisyUI."
+      hero:
+        badge: "Powered by Rails + Turbo"
+        heading: "Ship production-ready SaaS without a heavy SPA."
+        subheading: "Server-rendered pages with Turbo interactions, Tailwind utilities, and DaisyUI components keep the stack lean and fast."
+        get_started: "Get Started"
+        live_demo: "Live Demo"
+        check_status: "Check Status"
+        status_unchecked: "Service status has not been checked yet."
+      cards:
+        observability:
+          label: "Observability"
+          title: "Observability baked in"
+          body: "Health endpoints, structured logs, and clear extension points for production telemetry."
+        security:
+          label: "Security"
+          title: "Secure by default"
+          body: "CSRF protection, password hashing, and role-aware admin tools ship out of the box."
+        velocity:
+          label: "Developer velocity"
+          title: "Developer velocity"
+          body: "Containerized local setup, Postgres, Turbo streams, and ergonomic Rails conventions."
+      services:
+        badge: "Real-world fits"
+        heading: "Built to stay close to your data model."
+        subheading: "Use it for customer SaaS, internal tooling, or agency client platforms."
+        seed:
+          tab: "Seed-stage SaaS"
+          title: "Seed-stage SaaS"
+          item_1: "Multi-tenant workspace model from day one"
+          item_2: "Email/password auth with secure sessions"
+          item_3: "Stripe checkout placeholder and webhook endpoint"
+        internal:
+          tab: "Internal platforms"
+          title: "Internal platforms"
+          item_1: "Admin user lifecycle controls"
+          item_2: "Audit trail for sensitive user updates"
+          item_3: "Server-driven UI updates through Turbo Frames/Streams"
+        agencies:
+          tab: "Agencies and studios"
+          title: "Agencies and studios"
+          item_1: "DaisyUI design system primitives"
+          item_2: "Easy deploy path with Rails Docker setup"
+          item_3: "Clear Rails conventions for fast onboarding"
+      faq:
+        badge: "Questions"
+        heading: "What teams ask most often"
+        subheading: "Quick answers as you evaluate the stack."
+        q1: "Is everything server rendered?"
+        a1: "Yes. Rails ERB templates render all views and Turbo adds selective HTML swaps where needed."
+        q2: "Can I use PostgreSQL and multi-tenancy immediately?"
+        a2: "Yes. This boilerplate starts with Postgres, workspaces, memberships, and tenant context switching."
+        q3: "Does it include billing scaffolding?"
+        a3: "Yes. Stripe Checkout and webhook placeholders are wired so you can plug in real products quickly."
+    about:
+      title: "About - Nodl"
+      meta_description: "About this Rails SaaS starter."
+      heading: "About This Platform"
+      intro: "A modern SaaS starter built with Rails, Turbo, Tailwind, and DaisyUI."
+      backend:
+        title: "Backend"
+        item_1: "Rails 8"
+        item_2: "PostgreSQL"
+        item_3: "Multi-tenant workspaces"
+        item_4: "Built-in secure auth"
+      frontend:
+        title: "Frontend"
+        item_1: "ERB server rendering"
+        item_2: "Turbo Frames/Streams"
+        item_3: "Tailwind utilities"
+        item_4: "DaisyUI components"
+      ops:
+        title: "Ops"
+        item_1: "Dockerized local setup"
+        item_2: "Health/readiness endpoints"
+        item_3: "Stripe webhook placeholder"
+        item_4: "Rails production image"
+      version:
+        title: "Version information"
+        current: "Current app version"
+        back_home: "Back to Home"
+        try_demo: "Try the demo"
+    try_now:
+      title: "Try Nodl - Demo"
+      meta_description: "Explore the demo experience."
+      badge: "Interactive demo"
+      heading: "Experience the platform"
+      subheading: "Explore core features and see how this Rails stack accelerates your workflow."
+      features_title: "Demo features"
+      feature_1: "Multi-tenant dashboard"
+      feature_2: "Turbo HTML updates"
+      feature_3: "Admin user lifecycle actions"
+      feature_4: "Stripe checkout placeholder"
+      start_trial: "Start your free trial"
+      learn_more: "Learn more"
+      back_home: "← Back to homepage"
+
+  sessions:
+    new:
+      title: "Login - Nodl"
+      meta_description: "Sign in to your Nodl account."
+      heading: "Welcome back"
+      subheading: "Sign in to your account."
+      email_placeholder: "your@email.com"
+      password_placeholder: "Enter your password"
+      sign_in: "Sign in"
+      new_to_platform: "New to our platform?"
+      create_account: "Create account"
+      aside:
+        heading: "Why teams stay"
+        body: "Secure sessions, tenancy-aware data model, and admin tooling are ready from day one."
+        badge_1: "Session security"
+        badge_2: "Audit-friendly admin actions"
+        badge_3: "Turbo-driven UX"
+
+  registrations_view:
+    new:
+      title: "Register - Nodl"
+      meta_description: "Create your account and launch quickly."
+      aside:
+        badge: "Welcome"
+        heading: "Create your account"
+        body: "Nodl ships with production-ready auth, multi-tenancy, billing placeholders, and a modern UI baseline."
+        item_1: "Email authentication with secure password hashing"
+        item_2: "Workspace created automatically on signup"
+        item_3: "Turbo-ready server-rendered interactions"
+      lead: "Join teams launching faster on Rails."
+      email_placeholder: "your@email.com"
+      email_confirm_placeholder: "Confirm your email"
+      password_placeholder: "Create a strong password"
+      password_confirm_placeholder: "Confirm your password"
+      create_account: "Create account"
+      already_have_account: "Already have an account?"
+      sign_in: "Sign in"
+
+  dashboard:
+    title: "Dashboard - Nodl"
+    meta_description: "Speak a thought and get a clean, structured document back."
+    no_workspace:
+      heading: "No workspace assigned"
+      body: "Ask an administrator to add you to a workspace to start recording."
+    start_heading: "Start a New Document"
+    turn_recording_into: "Turn recording into"
+    default_suffix: "%{name} (default)"
+    record: "Record"
+    stop: "Stop"
+    upload_audio: "Upload Audio"
+    create_document: "Create document"
+    listening: "Listening…"
+    transcript: "Transcript"
+    recorder:
+      unsupported: "Recording isn't supported in this browser — use the upload option instead."
+      start_error: "We couldn't start recording. Check your microphone permissions and try again."
+      uploading: "Uploading your audio…"
+      session_error: "Recording session could not be created."
+      finalize_error: "We couldn't finalize this recording. Please try recording again."
+      preview_stopped: "Live preview stopped; the final transcript will still be generated."
+    privacy_note: "Private to your workspace. Nothing is shared."
+    formats: "Formats"
+    new_format: "+ New format"
+    default_badge: "★ Default"
+    format_actions: "Format actions"
+    edit: "Edit"
+    delete: "Delete"
+    delete_format_confirm: "Delete this format? This cannot be undone."
+    activity:
+      recent: "Recent"
+      recordings:
+        one: "%{count} recording"
+        other: "%{count} recordings"
+      ready: "Ready"
+      failed: "Failed"
+      processing: "Processing"
+      time_ago: "%{time} ago"
+      open_recording: "Open Recording"
+      couldnt_process_html: "Couldn't process — %{link}"
+      view: "view"
+      analyzing: "Analyzing..."
+      transcribing: "Transcribing..."
+      structuring: "Structuring..."
+      empty_heading: "No recordings yet"
+      empty_body: "Press Record above to capture your first thought."
+
+  recording_sessions:
+    statuses:
+      pending: "Pending"
+      processing: "Processing"
+      completed: "Completed"
+      failed: "Failed"
+      recording: "Recording"
+    show:
+      back_to_dashboard: "Back to dashboard"
+      format: "Format: %{name}"
+      transcript: "Transcript"
+      copy: "Copy"
+      copy_transcript: "Copy transcript"
+      transcript_unavailable: "Transcript is not available yet."
+      document: "Document"
+      generated_at: "Generated %{time}"
+      open_document: "Open Document"
+      document_not_finished: "Document generation is not finished yet."
+      play_pause: "Play or pause"
+      volume: "Volume"
+    live:
+      transcript: "Transcript"
+      preview: "Preview"
+      final: "Final"
+      failed: "Failed"
+      final_failed: "Final transcription failed."
+      preview_unavailable: "The live preview is no longer available."
+      placeholder: "Your live transcript will appear here as you speak."
+    interactive:
+      speakers:
+        one: "%{count} speaker"
+        other: "%{count} speakers"
+      speaker: "Speaker %{number}"
+
+  documents:
+    show:
+      title: "%{title} - Nodl"
+      download: "Download"
+      pdf: "PDF"
+      docx: "Word (.docx)"
+      markdown: "Markdown"
+      show_recording: "Show Recording"
+      copy: "Copy"
+      copy_document: "Copy document"
+
+  transformer_profiles:
+    new:
+      title: "Create a format - Nodl"
+      heading: "Create your own format"
+      subheading: "Create a format for documents you make often, and tell NODL exactly how you want them."
+    edit:
+      title: "Edit format - Nodl"
+      heading: "Edit format"
+      view: "View"
+    show:
+      title: "%{name} - Nodl"
+      default_description: "Your workspace's default format."
+      custom_description: "A custom format for your workspace."
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this format? This cannot be undone."
+      guidelines: "Guidelines"
+      guidelines_hint: "How NODL writes documents in this format."
+      no_guidelines: "No guidelines added yet."
+      examples: "Examples"
+      examples_hint: "Documents NODL uses to match your preferred structure and style."
+      preview_unavailable: "Preview not available for this file."
+      no_examples: "No example documents added."
+      back_to_dashboard: "Back to dashboard"
+    form:
+      errors_heading: "Please fix the following:"
+      name_label: "Format name"
+      name_placeholder: "e.g. Meeting Notes"
+      guidelines_label: "Guidelines"
+      guidelines_placeholder: "Write structured meeting notes with a short summary, key decisions, and a list of action items with owners."
+      examples_label: "Examples"
+      dropzone_primary: "Drag & drop files here"
+      dropzone_secondary: "or click to choose files"
+      example_text_label: "Or paste example text"
+      example_text_placeholder: "Paste the text of a document you like."
+      save_changes: "Save changes"
+      create_format: "Create format"
+      cancel: "Cancel"
+    example_file:
+      remove: "Remove"
+      remove_confirm: "Remove this example document?"
+
+  payments:
+    show:
+      title: "Plans and Checkout"
+      meta_description: "Choose your plan and checkout with Stripe."
+      badge: "Payments preview"
+      heading: "Get ready for Stripe Checkout"
+      subheading: "Launch payments quickly with pre-wired Stripe Checkout flows."
+      charge_note_html: "Charge a one-time payment using Stripe Checkout. Configure prices in Stripe or provide %{code}."
+      managed_in_stripe: "Managed in Stripe"
+      using_price_html: "Using %{code} for hosted checkout."
+      test_defaults: "Using test defaults. Update env vars before going live."
+      start_checkout: "Start secure checkout"
+      redirect_note: "You will be redirected to Stripe's hosted checkout page."
+      test_card_html: "Test card: %{code}"
+      config_required: "Stripe configuration required"
+      config_hint: "Set these environment variables to enable checkout:"
+      webhooks_title: "Test webhooks"
+      webhooks_hint_html: "Point Stripe CLI to %{path} with %{secret}."
+      back_home: "← Back to homepage"
+    success:
+      title: "Payment Successful"
+      badge: "Payment confirmed"
+      heading: "Thank you for your purchase!"
+      body_html: "Your payment for %{product} has been processed successfully."
+      session_id: "Session ID"
+      go_to_dashboard: "Go to dashboard"
+      back_to_payments: "Back to payments"
+    cancel:
+      title: "Payment Cancelled"
+      badge: "Checkout cancelled"
+      heading: "Payment was cancelled"
+      body: "No charges were made. Resume checkout whenever you're ready."
+      try_again: "Try again"
+      review_details: "Review payment details"
+
+  admin:
+    flash:
+      invalid_role: "Invalid role selected."
+      user_created: "User created successfully."
+      email_updated: "Email updated."
+      role_updated: "Role updated."
+      password_blank: "Password cannot be blank."
+      password_updated: "Password updated."
+      temp_password_generated: "Temporary password generated."
+      user_deactivated: "User deactivated."
+      user_reactivated: "User reactivated."
+      no_workspace: "This user has no workspace."
+      usage_updated: "Usage limits updated."
+    breadcrumbs:
+      dashboard: "Dashboard"
+      admin: "Admin"
+      users: "Users"
+    roles:
+      admin: "Admin"
+      user: "User"
+    audit_actions:
+      create_user: "Create user"
+      update_email: "Update email"
+      update_role: "Update role"
+      update_password: "Update password"
+      generate_password: "Generate password"
+      deactivate: "Deactivate"
+      reactivate: "Reactivate"
+      update_usage_limits: "Update usage limits"
+    common:
+      never: "Never"
+      none: "-"
+      free: "Free"
+      inactive: "Inactive"
+    users:
+      index:
+        title: "Admin - Users"
+        heading: "User roster"
+        subheading: "Overview of accounts, roles, and workspace limits."
+        create_user: "Create User"
+        col_user: "User"
+        col_role: "Role"
+        col_created: "Created"
+        col_last_login: "Last login"
+        col_workspace: "Workspace"
+        col_plan: "Plan"
+        col_usage: "Usage"
+        id: "ID %{id}"
+        scans: "Scans: %{used} / %{limit}"
+        storage: "Storage: %{used}MB / %{limit}MB"
+      show:
+        title: "Admin - User Detail"
+        heading: "User Detail: %{email}"
+        id: "ID: %{id}"
+        account_information: "Account Information"
+        created: "Created:"
+        last_login: "Last login:"
+        subscription_and_usage: "Subscription and Usage"
+        subscription_status: "Subscription Status"
+        plan_html: "Plan: %{plan}"
+        billing_cycle_html: "Billing Cycle: %{cycle}"
+        no_workspace: "No workspace assigned."
+        audit_events: "Recent Audit Events"
+        col_action: "Action"
+        col_timestamp: "Timestamp"
+        col_changes: "Changes"
+        col_admin: "Admin"
+        before_after: "Before/After"
+        admin_id: "ID %{id}"
+        no_audit_events: "No audit events yet."
+      new:
+        title: "Admin - Create User"
+        create_user: "Create User"
+        email: "Email"
+        email_placeholder: "user@example.com"
+        role: "Role"
+        password: "Password"
+        password_optional: "Optional"
+        password_placeholder: "Leave blank to auto-generate"
+      email_section:
+        label: "Email"
+        update: "Update Email"
+      role_section:
+        label: "Role"
+        update: "Update Role"
+      password_section:
+        label: "Password"
+        generated_label: "Generated Password"
+        generated_hint: "Copy this now. It will not be shown again."
+        generate: "Generate Temporary Password"
+        placeholder: "Enter new password"
+        set: "Set Password"
+      lifecycle_section:
+        heading: "Lifecycle Management"
+        deactivate: "Deactivate User"
+        deactivate_confirm: "Are you sure you want to deactivate this user?"
+        reactivate: "Reactivate User"
+      usage_section:
+        heading: "Usage Limits"
+        scans: "Scans"
+        storage: "Storage (MB)"
+        scans_limit: "Scans Limit"
+        storage_limit: "Storage (MB) Limit"
+        update: "Update Limits"
+        no_workspace: "No workspace assigned for this user."
+      create_result:
+        success: "User created successfully."
+        generated_password: "Generated Password:"
+        view_user: "View User"

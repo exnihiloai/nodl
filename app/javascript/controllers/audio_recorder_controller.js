@@ -24,7 +24,15 @@ export default class extends Controller {
   ]
   static values = {
     createUrl: String,
-    workletUrl: String
+    workletUrl: String,
+    unsupportedText: String,
+    startErrorText: String,
+    uploadingText: String,
+    sessionErrorText: String,
+    transcriptLabel: String,
+    listeningText: String,
+    finalizeErrorText: String,
+    previewStoppedText: String
   }
 
   connect() {
@@ -38,7 +46,7 @@ export default class extends Controller {
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
       this.recordButtonTarget.disabled = true
-      this.updateStatus("Recording isn't supported in this browser — use “or upload audio” instead.")
+      this.updateStatus(this.unsupportedTextValue)
     }
   }
 
@@ -89,7 +97,7 @@ export default class extends Controller {
       await this.startRealtimeTranscription()
       this.updateStatus("")
     } catch (_error) {
-      this.updateStatus("We couldn't start recording. Check your microphone permissions and try again.")
+      this.updateStatus(this.startErrorTextValue)
       this.isRecording = false
       this.stopRealtimeTranscription()
       this.stopStream()
@@ -150,7 +158,7 @@ export default class extends Controller {
 
     this.recordInputTarget.value = ""
     this.sourceKindTarget.value = "upload"
-    this.updateStatus("Uploading your audio…")
+    this.updateStatus(this.uploadingTextValue)
     this.submit()
   }
 
@@ -185,7 +193,7 @@ export default class extends Controller {
 
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}))
-      throw new Error(payload.error || "Recording session could not be created.")
+      throw new Error(payload.error || this.sessionErrorTextValue)
     }
 
     return response.json()
@@ -214,7 +222,7 @@ export default class extends Controller {
 
       if (!response.ok) throw new Error("Finalize failed.")
     } catch (_error) {
-      this.updateStatus("We couldn't finalize this recording. Please try recording again.")
+      this.updateStatus(this.finalizeErrorTextValue)
     }
   }
 
@@ -420,7 +428,7 @@ export default class extends Controller {
       this.slowPreviewText += data.text
       this.scheduleLivePreviewRender()
     } else if (data.type === "error") {
-      this.updateStatus("Live preview stopped; the final transcript will still be generated.")
+      this.updateStatus(this.previewStoppedTextValue)
       this.stopRealtimeTranscription()
     }
   }
@@ -519,14 +527,14 @@ export default class extends Controller {
     if (statusContainer) {
       statusContainer.innerHTML = `
         <div class="flex items-center justify-between gap-3">
-          <h2 class="text-sm font-semibold">Transcript</h2>
+          <h2 class="text-sm font-semibold">${this.transcriptLabelValue}</h2>
         </div>
       `
     }
 
     const segmentsContainer = document.getElementById("live_transcript_segments")
     if (segmentsContainer) {
-      segmentsContainer.innerHTML = '<p class="text-sm italic text-base-content/60" data-live-placeholder>Listening…</p>'
+      segmentsContainer.innerHTML = `<p class="text-sm italic text-base-content/60" data-live-placeholder>${this.listeningTextValue}</p>`
     }
   }
 

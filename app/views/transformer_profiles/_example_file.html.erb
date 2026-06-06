@@ -2,13 +2,13 @@
   <span class="truncate text-sm"><%= file.filename %></span>
 <%# A link (not button_to) so we don't nest a <form> inside the edit form,
       which would close it early and orphan the Save button. %>
-  <%= link_to "Remove",
+  <%= link_to t("transformer_profiles.example_file.remove"),
               example_file_transformer_profile_path(transformer_profile, file),
               class: "btn btn-ghost btn-xs text-error",
               data: {
                 testid: "remove-example-file-button",
                 turbo_method: :delete,
-                turbo_confirm: "Remove this example document?",
-                turbo_confirm_button: "Remove"
+                turbo_confirm: t("transformer_profiles.example_file.remove_confirm"),
+                turbo_confirm_button: t("transformer_profiles.example_file.remove")
               } %>
 </li>

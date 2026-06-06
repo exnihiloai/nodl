@@ -1,5 +1,5 @@
 <div id="lifecycle_section" class="mt-6 pt-4 border-t">
-  <h3 class="font-semibold mb-3">Lifecycle Management</h3>
+  <h3 class="font-semibold mb-3"><%= t("admin.users.lifecycle_section.heading") %></h3>
 
   <% if notice.present? %>
     <div class="alert alert-success mb-2"><span><%= notice %></span></div>
@@ -8,8 +8,8 @@
   <% end %>
 
   <% if managed_user.active? %>
-    <%= button_to "Deactivate User", deactivate_admin_user_path(managed_user), method: :post, class: "btn btn-error btn-sm", form: { data: { turbo_confirm: "Are you sure you want to deactivate this user?" } } %>
+    <%= button_to t("admin.users.lifecycle_section.deactivate"), deactivate_admin_user_path(managed_user), method: :post, class: "btn btn-error btn-sm", form: { data: { turbo_confirm: t("admin.users.lifecycle_section.deactivate_confirm") } } %>
   <% else %>
-    <%= button_to "Reactivate User", reactivate_admin_user_path(managed_user), method: :post, class: "btn btn-success btn-sm" %>
+    <%= button_to t("admin.users.lifecycle_section.reactivate"), reactivate_admin_user_path(managed_user), method: :post, class: "btn btn-success btn-sm" %>
   <% end %>
 </div>

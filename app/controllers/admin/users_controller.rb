@@ -24,7 +24,7 @@ module Admin
       normalized_role = normalize_role(role)
 
       if normalized_role.blank?
-        render_create_error("Invalid role selected.")
+        render_create_error(t("admin.flash.invalid_role"))
         return
       end
 
@@ -61,7 +61,7 @@ module Admin
             }
           )
         end
-        format.html { redirect_to admin_user_path(user), notice: "User created successfully." }
+        format.html { redirect_to admin_user_path(user), notice: t("admin.flash.user_created") }
       end
     rescue ActiveRecord::RecordInvalid => e
       render_create_error(e.record.errors.full_messages.to_sentence, email:, role:)
@@ -72,7 +72,7 @@ module Admin
 
       if @managed_user.update(email: params[:email].to_s.strip.downcase)
         audit!(@managed_user, "update_email", before_state, { email: @managed_user.email })
-        render_email_section(notice: "Email updated.")
+        render_email_section(notice: t("admin.flash.email_updated"))
       else
         render_email_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
       end
@@ -83,13 +83,13 @@ module Admin
       normalized_role = normalize_role(params[:role])
 
       if normalized_role.blank?
-        render_role_section(error: "Invalid role selected.", status: :unprocessable_entity)
+        render_role_section(error: t("admin.flash.invalid_role"), status: :unprocessable_entity)
         return
       end
 
       if @managed_user.update(role: normalized_role)
         audit!(@managed_user, "update_role", before_state, { role: @managed_user.role })
-        render_role_section(notice: "Role updated.")
+        render_role_section(notice: t("admin.flash.role_updated"))
       else
         render_role_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
       end
@@ -99,13 +99,13 @@ module Admin
       password = params[:password].to_s
 
       if password.blank?
-        render_password_section(error: "Password cannot be blank.", status: :unprocessable_entity)
+        render_password_section(error: t("admin.flash.password_blank"), status: :unprocessable_entity)
         return
       end
 
       if @managed_user.update(password: password, password_confirmation: password)
         audit!(@managed_user, "update_password", nil, { updated: true })
-        render_password_section(notice: "Password updated.")
+        render_password_section(notice: t("admin.flash.password_updated"))
       else
         render_password_section(error: @managed_user.errors.full_messages_for(:password).to_sentence, status: :unprocessable_entity)
       end
@@ -116,7 +116,7 @@ module Admin
 
       if @managed_user.update(password: generated_password, password_confirmation: generated_password)
         audit!(@managed_user, "generate_password", nil, { generated: true })
-        render_password_section(notice: "Temporary password generated.", generated_password:)
+        render_password_section(notice: t("admin.flash.temp_password_generated"), generated_password:)
       else
         render_password_section(error: @managed_user.errors.full_messages_for(:password).to_sentence, status: :unprocessable_entity)
       end
@@ -127,7 +127,7 @@ module Admin
 
       if @managed_user.update(active: false)
         audit!(@managed_user, "deactivate", before_state, { active: false })
-        render_lifecycle_section(notice: "User deactivated.")
+        render_lifecycle_section(notice: t("admin.flash.user_deactivated"))
       else
         render_lifecycle_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
       end
@@ -138,7 +138,7 @@ module Admin
 
       if @managed_user.update(active: true)
         audit!(@managed_user, "reactivate", before_state, { active: true })
-        render_lifecycle_section(notice: "User reactivated.")
+        render_lifecycle_section(notice: t("admin.flash.user_reactivated"))
       else
         render_lifecycle_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
       end
@@ -148,7 +148,7 @@ module Admin
       workspace = primary_workspace_for(@managed_user)
 
       if workspace.blank?
-        render_usage_section(error: "This user has no workspace.", status: :unprocessable_entity)
+        render_usage_section(error: t("admin.flash.no_workspace"), status: :unprocessable_entity)
         return
       end
 
@@ -162,7 +162,7 @@ module Admin
 
       if workspace.update(usage_limits: after_limits)
         audit!(@managed_user, "update_usage_limits", before_state, { usage_limits: after_limits })
-        render_usage_section(notice: "Usage limits updated.")
+        render_usage_section(notice: t("admin.flash.usage_updated"))
       else
         render_usage_section(error: workspace.errors.full_messages.to_sentence, status: :unprocessable_entity)
       end

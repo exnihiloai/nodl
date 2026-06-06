@@ -1,4 +1,4 @@
-<% content_for :title, "Payment Successful" %>
+<% content_for :title, t("payments.success.title") %>
 
 <section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
   <div class="container mx-auto px-4 max-w-3xl flex flex-col items-center gap-8 text-center">
@@ -6,23 +6,23 @@
       <div class="w-24 rounded-full bg-success text-success-content flex items-center justify-center text-4xl">✓</div>
     </div>
     <div class="space-y-3">
-      <span class="badge badge-success badge-lg">Payment confirmed</span>
-      <h1 class="text-4xl font-semibold">Thank you for your purchase!</h1>
-      <p class="text-base-content/70 text-lg">Your payment for <strong><%= @product_name %></strong> has been processed successfully.</p>
+      <span class="badge badge-success badge-lg"><%= t("payments.success.badge") %></span>
+      <h1 class="text-4xl font-semibold"><%= t("payments.success.heading") %></h1>
+      <p class="text-base-content/70 text-lg"><%= t("payments.success.body_html", product: content_tag(:strong, @product_name)) %></p>
     </div>
 
     <% if @session_id.present? %>
       <div class="card bg-base-100 shadow">
         <div class="card-body text-sm">
-          <span class="text-base-content/60">Session ID</span>
+          <span class="text-base-content/60"><%= t("payments.success.session_id") %></span>
           <code class="kbd kbd-sm"><%= @session_id %></code>
         </div>
       </div>
     <% end %>
 
     <div class="flex flex-col sm:flex-row gap-3">
-      <%= link_to "Go to dashboard", dashboard_path, class: "btn btn-primary" %>
-      <%= link_to "Back to payments", payments_path, class: "btn btn-outline" %>
+      <%= link_to t("payments.success.go_to_dashboard"), dashboard_path, class: "btn btn-primary" %>
+      <%= link_to t("payments.success.back_to_payments"), payments_path, class: "btn btn-outline" %>
     </div>
   </div>
 </section>

@@ -12,7 +12,7 @@ class PaymentsController < ApplicationController
 
   def checkout
     unless stripe_secret_key.present?
-      redirect_to payments_path, alert: "Stripe is not configured. Set STRIPE_SECRET_KEY first."
+      redirect_to payments_path, alert: t("flash.payments.not_configured")
       return
     end
 
@@ -49,14 +49,14 @@ class PaymentsController < ApplicationController
     session_url = checkout_session.respond_to?(:url) ? checkout_session.url : nil
     if session_url.blank?
       Rails.logger.error("stripe_checkout_missing_session_url")
-      redirect_to payments_path, alert: "Unable to start checkout right now."
+      redirect_to payments_path, alert: t("flash.payments.checkout_failed")
       return
     end
 
     redirect_to session_url, allow_other_host: true, status: :see_other
   rescue Stripe::StripeError => e
     Rails.logger.error("stripe_checkout_failed error=#{e.message}")
-    redirect_to payments_path, alert: "Unable to start checkout right now."
+    redirect_to payments_path, alert: t("flash.payments.checkout_failed")
   end
 
   def success

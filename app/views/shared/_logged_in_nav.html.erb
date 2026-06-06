@@ -8,9 +8,9 @@
         <%= render "shared/theme_toggle" %>
 
         <ul class="menu menu-horizontal hidden px-1 lg:flex">
-          <li><%= link_to "Dashboard", dashboard_path, class: "rounded-btn", data: { testid: "nav-dashboard" } %></li>
+          <li><%= link_to t("nav.dashboard"), dashboard_path, class: "rounded-btn", data: { testid: "nav-dashboard" } %></li>
           <% if current_user&.admin? %>
-            <li><%= link_to "Admin", admin_users_path, class: "rounded-btn" %></li>
+            <li><%= link_to t("nav.admin"), admin_users_path, class: "rounded-btn" %></li>
           <% end %>
         </ul>
 
@@ -23,14 +23,14 @@
           </div>
           <div tabindex="0" class="dropdown-content z-50 mt-2 w-72 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
             <div class="px-3 py-2">
-              <p class="text-xs text-base-content/50">Signed in as</p>
+              <p class="text-xs text-base-content/50"><%= t("nav.account.signed_in_as") %></p>
               <p class="truncate text-sm font-medium"><%= current_user.email %></p>
             </div>
 
             <% account_workspaces = current_user.memberships.includes(:workspace).order(:created_at).map(&:workspace) %>
             <% if account_workspaces.any? %>
               <div class="divider my-1"></div>
-              <p class="px-3 py-1 text-xs text-base-content/50">Workspace</p>
+              <p class="px-3 py-1 text-xs text-base-content/50"><%= t("nav.account.workspace") %></p>
               <ul class="menu menu-sm w-full">
                 <% account_workspaces.each do |workspace| %>
                   <% is_current = workspace == current_workspace %>
@@ -41,7 +41,7 @@
                                   class: ["flex w-full items-center justify-between gap-3", ("active" if is_current)].compact.join(" ") do %>
                       <span class="truncate"><%= workspace.name %></span>
                       <% if is_current %>
-                        <span class="badge badge-primary badge-sm shrink-0">Current</span>
+                        <span class="badge badge-primary badge-sm shrink-0"><%= t("nav.account.current") %></span>
                       <% end %>
                     <% end %>
                   </li>
@@ -50,9 +50,28 @@
             <% end %>
 
             <div class="divider my-1"></div>
+            <p class="px-3 py-1 text-xs text-base-content/50"><%= t("language_switcher.label") %></p>
+            <ul class="menu menu-sm w-full" data-testid="language-switcher">
+              <% I18n.available_locales.each do |locale| %>
+                <li>
+                  <%= button_to locale_path(locale: locale),
+                                method: :patch,
+                                form_class: "w-full",
+                                class: ["flex w-full items-center justify-between gap-3", ("active" if I18n.locale == locale)].compact.join(" "),
+                                data: { testid: "language-option-#{locale}" } do %>
+                    <span><%= t("language_switcher.languages.#{locale}") %></span>
+                    <% if I18n.locale == locale %>
+                      <%= icon("check", class: "size-4") %>
+                    <% end %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+
+            <div class="divider my-1"></div>
             <ul class="menu menu-sm w-full">
-              <li><%= link_to "Upgrade plan", payments_path %></li>
-              <li><%= button_to "Log out", logout_path, method: :post, class: "w-full justify-start", data: { testid: "logout-btn-desktop" } %></li>
+              <li><%= link_to t("nav.account.upgrade_plan"), payments_path %></li>
+              <li><%= button_to t("nav.account.log_out"), logout_path, method: :post, class: "w-full justify-start", data: { testid: "logout-btn-desktop" } %></li>
             </ul>
           </div>
         </div>

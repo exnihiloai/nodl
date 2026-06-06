@@ -3,7 +3,7 @@ class RecordingSessionsController < ApplicationController
 
   def create
     @workspace = current_workspace
-    return redirect_to dashboard_path, alert: "No workspace is available." unless @workspace
+    return redirect_to dashboard_path, alert: t("flash.no_workspace") unless @workspace
 
     @recording_session = @workspace.recording_sessions.build(recording_session_params)
     @recording_session.creator = current_user
@@ -15,7 +15,7 @@ class RecordingSessionsController < ApplicationController
         render json: recording_session_payload(@recording_session), status: :created
       else
         ProcessRecordingSessionJob.perform_later(@recording_session.id)
-        redirect_to dashboard_path, notice: "Recording session created. Processing has started."
+        redirect_to dashboard_path, notice: t("flash.recording_sessions.created")
       end
     else
       respond_to do |format|
@@ -32,7 +32,7 @@ class RecordingSessionsController < ApplicationController
 
   def finalize
     @recording_session = current_workspace.recording_sessions.find(params[:id])
-    return render json: { error: "Recording session is not ready to finalize." }, status: :unprocessable_entity unless @recording_session.recording?
+    return render json: { error: t("flash.recording_sessions.not_ready_to_finalize") }, status: :unprocessable_entity unless @recording_session.recording?
 
     @recording_session.assign_attributes(recording_session_params)
     @recording_session.status = :processing

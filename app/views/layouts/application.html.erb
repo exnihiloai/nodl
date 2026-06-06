@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="<%= I18n.locale %>" data-theme="light">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Nodl" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -31,11 +31,11 @@
     <footer class="border-t border-base-300 bg-base-100/90 backdrop-blur">
       <div class="container mx-auto px-4 py-6">
         <div class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-base-content/70">
-          <div>&copy; <%= Time.current.year %> Nodl. All rights reserved.</div>
+          <div><%= t("footer.copyright", year: Time.current.year) %></div>
           <div class="flex gap-4">
-            <%= link_to "About", about_path, class: "link link-hover" %>
-            <%= link_to "Pricing", payments_path, class: "link link-hover" %>
-            <%= link_to "Demo", try_now_path, class: "link link-hover" %>
+            <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
+            <%= link_to t("footer.pricing"), payments_path, class: "link link-hover" %>
+            <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
           </div>
         </div>
       </div>
@@ -45,17 +45,17 @@
         pointed at this modal for every `data-turbo-confirm` action. %>
     <dialog data-controller="confirm-modal" data-confirm-modal-target="dialog" class="modal">
       <div class="modal-box">
-        <h3 class="text-lg font-bold" data-confirm-modal-target="title">Are you sure?</h3>
+        <h3 class="text-lg font-bold" data-confirm-modal-target="title"><%= t("confirm_modal.title") %></h3>
         <p class="py-4" data-confirm-modal-target="message"></p>
         <div class="modal-action">
           <form method="dialog" class="flex gap-2">
-            <button value="cancel" class="btn btn-ghost" data-confirm-modal-target="cancel">Cancel</button>
-            <button value="confirm" class="btn btn-error" data-confirm-modal-target="accept">Delete</button>
+            <button value="cancel" class="btn btn-ghost" data-confirm-modal-target="cancel"><%= t("confirm_modal.cancel") %></button>
+            <button value="confirm" class="btn btn-error" data-confirm-modal-target="accept"><%= t("confirm_modal.confirm") %></button>
           </form>
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">
-        <button value="cancel" aria-label="Close">close</button>
+        <button value="cancel" aria-label="<%= t("confirm_modal.close") %>"><%= t("confirm_modal.close") %></button>
       </form>
     </dialog>
   </body>

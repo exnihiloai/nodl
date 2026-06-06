@@ -12,33 +12,35 @@
         <div class="dropdown" data-testid="download-menu">
           <label tabindex="0" class="btn btn-sm gap-2">
             <%= icon "download", class: "h-4 w-4" %>
-            Download
+            <%= t("documents.show.download") %>
           </label>
           <ul tabindex="0" class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-            <li><%= link_to "PDF", download_document_path(@document, format: "pdf"), data: { testid: "download-pdf" } %></li>
-            <li><%= link_to "Word (.docx)", download_document_path(@document, format: "docx"), data: { testid: "download-docx" } %></li>
-            <li><%= link_to "Markdown", download_document_path(@document, format: "md"), data: { testid: "download-md" } %></li>
+            <li><%= link_to t("documents.show.pdf"), download_document_path(@document, format: "pdf"), data: { testid: "download-pdf" } %></li>
+            <li><%= link_to t("documents.show.docx"), download_document_path(@document, format: "docx"), data: { testid: "download-docx" } %></li>
+            <li><%= link_to t("documents.show.markdown"), download_document_path(@document, format: "md"), data: { testid: "download-md" } %></li>
           </ul>
         </div>
       </div>
 
-      <%= link_to "Show Recording", recording_session_path(@recording_session), class: "btn btn-outline" %>
+      <%= link_to t("documents.show.show_recording"), recording_session_path(@recording_session), class: "btn btn-outline" %>
     </div>
 
     <article
       class="prose dark:prose-invert relative max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
       data-controller="clipboard"
+      data-clipboard-copy-text-value="<%= t("clipboard.copy") %>"
+      data-clipboard-copied-text-value="<%= t("clipboard.copied") %>"
     >
       <button
         type="button"
         class="not-prose btn btn-ghost btn-sm absolute right-4 top-4 gap-2"
         data-action="clipboard#copy"
         data-testid="copy-document"
-        aria-label="Copy document"
+        aria-label="<%= t("documents.show.copy_document") %>"
       >
         <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
         <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
-        <span data-clipboard-target="label">Copy</span>
+        <span data-clipboard-target="label"><%= t("documents.show.copy") %></span>
       </button>
 
       <div data-clipboard-target="source">

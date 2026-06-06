@@ -6,7 +6,11 @@ import { Controller } from "@hotwired/stimulus"
 // copy when the rich Clipboard API is unavailable (e.g. insecure context).
 export default class extends Controller {
   static targets = ["source", "label", "copyIcon", "checkIcon"]
-  static values = { resetDelay: { type: Number, default: 2000 } }
+  static values = {
+    resetDelay: { type: Number, default: 2000 },
+    copyText: { type: String, default: "Copy" },
+    copiedText: { type: String, default: "Copied" }
+  }
 
   async copy() {
     const html = this.sourceTarget.innerHTML
@@ -48,7 +52,7 @@ export default class extends Controller {
   }
 
   showCopied() {
-    if (this.hasLabelTarget) this.labelTarget.textContent = "Copied"
+    if (this.hasLabelTarget) this.labelTarget.textContent = this.copiedTextValue
     if (this.hasCopyIconTarget) this.copyIconTarget.classList.add("hidden")
     if (this.hasCheckIconTarget) this.checkIconTarget.classList.remove("hidden")
 
@@ -57,7 +61,7 @@ export default class extends Controller {
   }
 
   reset() {
-    if (this.hasLabelTarget) this.labelTarget.textContent = "Copy"
+    if (this.hasLabelTarget) this.labelTarget.textContent = this.copyTextValue
     if (this.hasCopyIconTarget) this.copyIconTarget.classList.remove("hidden")
     if (this.hasCheckIconTarget) this.checkIconTarget.classList.add("hidden")
   }

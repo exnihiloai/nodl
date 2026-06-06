@@ -1,8 +1,8 @@
 <section id="dashboard_activity" class="space-y-3" data-testid="dashboard-activity">
   <div class="flex items-baseline justify-between">
-    <h2 class="text-lg font-semibold">Recent</h2>
+    <h2 class="text-lg font-semibold"><%= t("dashboard.activity.recent") %></h2>
     <% if recording_sessions.any? %>
-      <span class="text-xs text-base-content/50"><%= pluralize(recording_sessions.size, "recording") %></span>
+      <span class="text-xs text-base-content/50"><%= t("dashboard.activity.recordings", count: recording_sessions.size) %></span>
     <% end %>
   </div>
 
@@ -12,11 +12,11 @@
         <li id="<%= dom_id(session, :dashboard_row) %>" class="flex flex-col gap-2 border-t border-base-300 p-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between" data-testid="dashboard-activity-item" data-status="<%= session.status %>">
           <div class="flex min-w-0 items-start gap-3">
             <% if session.completed? %>
-              <span class="mt-1 text-success" title="Ready" aria-hidden="true">●</span>
+              <span class="mt-1 text-success" title="<%= t("dashboard.activity.ready") %>" aria-hidden="true">●</span>
             <% elsif session.failed? %>
-              <span class="mt-1 text-error" title="Failed" aria-hidden="true">⚠</span>
+              <span class="mt-1 text-error" title="<%= t("dashboard.activity.failed") %>" aria-hidden="true">⚠</span>
             <% else %>
-              <span class="mt-1 text-warning motion-safe:animate-pulse" title="Processing" aria-hidden="true">◐</span>
+              <span class="mt-1 text-warning motion-safe:animate-pulse" title="<%= t("dashboard.activity.processing") %>" aria-hidden="true">◐</span>
             <% end %>
             <div class="min-w-0">
               <% is_truncated = session.title.to_s.length > 45 %>
@@ -25,7 +25,7 @@
                 <%= link_to truncate(session.title, length: 45), title_path, class: "block font-medium hover:underline" %>
               </div>
               <p class="mt-0.5 text-xs text-base-content/50">
-                <%= time_ago_in_words(session.created_at) %> ago
+                <%= t("dashboard.activity.time_ago", time: time_ago_in_words(session.created_at)) %>
                 <% if session.completed? && session.document %>
                   · <%= session.document.transformer_handle.humanize %>
                 <% end %>
@@ -35,16 +35,19 @@
 
           <div class="shrink-0 pl-7 sm:pl-0">
             <% if session.completed? && session.document %>
-              <%= link_to "Open Recording", recording_session_path(session), class: "btn btn-sm" %>
+              <%= link_to t("dashboard.activity.open_recording"), recording_session_path(session), class: "btn btn-sm" %>
             <% elsif session.failed? %>
-              <span class="text-sm text-base-content/60">Couldn't process — <%= link_to "view", recording_session_path(session), class: "link" %></span>
+              <span class="text-sm text-base-content/60"><%= t("dashboard.activity.couldnt_process_html", link: link_to(t("dashboard.activity.view"), recording_session_path(session), class: "link")) %></span>
             <% else %>
               <div class="flex flex-col items-end gap-1 w-44"
                    data-controller="processing-progress"
                    data-processing-progress-started-at-value="<%= session.processing_started_at&.iso8601 || session.created_at.iso8601 %>"
-                   data-processing-progress-duration-value="<%= session.estimated_duration %>">
+                   data-processing-progress-duration-value="<%= session.estimated_duration %>"
+                   data-processing-progress-analyzing-text-value="<%= t("dashboard.activity.analyzing") %>"
+                   data-processing-progress-transcribing-text-value="<%= t("dashboard.activity.transcribing") %>"
+                   data-processing-progress-structuring-text-value="<%= t("dashboard.activity.structuring") %>">
                 <div class="flex items-center justify-between w-full text-xs">
-                  <span class="text-base-content/60" data-processing-progress-target="label">Structuring...</span>
+                  <span class="text-base-content/60" data-processing-progress-target="label"><%= t("dashboard.activity.structuring") %></span>
                   <span class="font-semibold text-primary" data-processing-progress-target="percentage">0%</span>
                 </div>
                 <div class="w-full h-1.5 bg-base-300 rounded-full overflow-hidden">
@@ -58,8 +61,8 @@
     </ul>
   <% else %>
     <div class="rounded-box border border-dashed border-base-300 bg-base-100 p-8 text-center">
-      <p class="font-medium">No recordings yet</p>
-      <p class="mt-1 text-sm text-base-content/60">Press Record above to capture your first thought.</p>
+      <p class="font-medium"><%= t("dashboard.activity.empty_heading") %></p>
+      <p class="mt-1 text-sm text-base-content/60"><%= t("dashboard.activity.empty_body") %></p>
     </div>
   <% end %>
 </section>
