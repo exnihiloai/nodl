@@ -47,6 +47,13 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+# Runtime scratch dir for the processing pipeline (Nodl::WorkingDirectory writes
+# session files under work/sessions). work/ is .dockerignored, so it is absent
+# from the build context above; create it here so it is carried into the final
+# image by the `COPY --chown=rails:rails --from=build /rails /rails` step and is
+# therefore writable by the non-root rails user at runtime.
+RUN mkdir -p work/sessions
+
 # Precompile bootsnap code for faster boot times.
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
 RUN bundle exec bootsnap precompile -j 1 app/ lib/

@@ -3,11 +3,19 @@ COMPOSE ?= docker compose
 WEB ?= web
 NOTIFY_ENV ?= private/notify.env
 
+# Deployment: build the prod image for the server arch, push to DockerHub,
+# then trigger the Dokploy redeploy webhook (URL lives in $(DEPLOY_ENV)).
+IMAGE ?= exnihiloai/nodl
+DEPLOY_PLATFORM ?= linux/amd64
+BUILDX_BUILDER ?= nodlbuilder
+DEPLOY_ENV ?= private/.env
+VERSION ?= $(shell grep -m1 -oE '\[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -d '[]')
+
 # Allow both: make notify MSG="Hello" and make notify Hello world
 MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
 
-.PHONY: help notify build up dev check check-fast db-check test test-fast coverage down logs shell lint seed skill skills skills-check skills-clean skill-new setup
+.PHONY: help notify build up dev check check-fast db-check test test-fast coverage down logs shell lint seed skill skills skills-check skills-clean skill-new setup deploy
 
 help:
 	@echo "Available targets:"
@@ -28,6 +36,7 @@ help:
 	@echo "  make skills-clean # Remove generated skill outputs"
 	@echo "  make skill-new ID=<id> NAME=\"<Skill Name>\" # Create canonical skill scaffold"
 	@echo "  make setup  # Configure git hooks (run once after cloning)"
+	@echo "  make deploy # Build+push amd64 image to DockerHub and trigger the Dokploy redeploy webhook"
 	@echo "  make notify MSG=\"Hello\"  # Send a Telegram message (uses local private/notify.env)"
 	@echo "  make logs   # Follow logs"
 	@echo "  make shell  # Open bash in web container"
@@ -130,6 +139,33 @@ notify:
 		-H "Content-Type: application/json" \
 		--data "$$PAYLOAD" \
 		>/dev/null && echo Sent.
+
+# Build the production image for the server's architecture (the dev Mac is
+# arm64, the VPS is amd64), push both :$(VERSION) and :latest to the private
+# DockerHub registry, then trigger Dokploy to pull & redeploy via its webhook.
+# The webhook URL lives in $(DEPLOY_ENV) as DOKPLOY_DEPLOYMENT_HOOK and is never
+# committed. Reminder: the image MUST be built locally because private/ (legal
+# pages, telemetry initializer) is git-ignored and only exists on disk here.
+deploy:
+	@set -e; \
+	if [ -z "$(VERSION)" ]; then \
+		echo "ERROR: could not derive VERSION from CHANGELOG.md (expected '## [X.Y.Z]')."; exit 1; \
+	fi; \
+	echo "==> Building $(IMAGE):$(VERSION) (+ :latest) for $(DEPLOY_PLATFORM)"; \
+	docker buildx inspect "$(BUILDX_BUILDER)" >/dev/null 2>&1 || \
+		docker buildx create --name "$(BUILDX_BUILDER)" --driver docker-container --bootstrap >/dev/null; \
+	docker buildx build --builder "$(BUILDX_BUILDER)" --platform "$(DEPLOY_PLATFORM)" \
+		-t "$(IMAGE):$(VERSION)" -t "$(IMAGE):latest" --push .; \
+	echo "==> Pushed $(IMAGE):$(VERSION) and $(IMAGE):latest"; \
+	if [ ! -f "$(DEPLOY_ENV)" ]; then \
+		echo "ERROR: $(DEPLOY_ENV) not found (needs DOKPLOY_DEPLOYMENT_HOOK)."; exit 1; \
+	fi; \
+	set -a; . "$(DEPLOY_ENV)"; set +a; \
+	: $${DOKPLOY_DEPLOYMENT_HOOK:?set DOKPLOY_DEPLOYMENT_HOOK in $(DEPLOY_ENV)}; \
+	echo "==> Triggering Dokploy redeploy webhook"; \
+	curl -fsSL -X POST "$$DOKPLOY_DEPLOYMENT_HOOK" >/dev/null; \
+	echo "==> Dokploy redeploy triggered. Watch the container logs in the Dokploy dashboard."; \
+	echo "    Tip: if you changed static files in public/ (icons, logos), purge the Cloudflare cache."
 
 # Dummy rule so extra words in `make notify hello world` are not treated as errors.
 %:

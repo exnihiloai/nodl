@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.1] - 2026-06-06
+
+### Fixed
+- **Transcription Works in Production Again:** After recording and uploading, your audio now transcribes and turns into a document as expected. A server-side permissions problem that stopped processing with a “permission denied” error has been resolved.
+
+### Technical
+- Dockerfile pre-creates the processing scratch directory (`work/sessions`) with non-root ownership so `Nodl::WorkingDirectory` can write at runtime (fixes `Permission denied @ dir_s_mkdir - /rails/work`).
+- `.dockerignore` selectively bakes `private/legal` and `private/initializers` into the production image (operator legal pages + telemetry initializer) while keeping secrets (`.env`) and heavy test fixtures out.
+- Added `make deploy`: builds the `linux/amd64` image, pushes both `:<version>` and `:latest` to the private DockerHub registry, and triggers the Dokploy redeploy webhook (`DOKPLOY_DEPLOYMENT_HOOK`, read from `private/.env`).
+
+
 ## [0.9.0] - 2026-06-06
 
 ### Added
