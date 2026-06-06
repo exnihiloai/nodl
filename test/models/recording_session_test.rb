@@ -179,7 +179,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
     )
 
     assert_not recording_session.valid?
-    assert_includes recording_session.errors[:base], "You've reached the maximum of #{PlanLimits::MAX_RECORDINGS} recordings."
+    assert_includes recording_session.errors[:base], "You've used all #{PlanLimits::MAX_RECORDINGS} recordings included in your test plan."
   end
 
   test "rejects audio longer than the plan maximum" do

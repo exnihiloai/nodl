@@ -68,13 +68,20 @@ export default class extends Controller {
   async start() {
     if (!this.mimeOption) return
 
+    this.chunks = []
+    this.fastPreviewText = ""
+    this.slowPreviewText = ""
+    this.sourceKindTarget.value = "microphone"
+    this.resetLivePanel()
+
     try {
-      this.chunks = []
-      this.fastPreviewText = ""
-      this.slowPreviewText = ""
-      this.sourceKindTarget.value = "microphone"
-      this.resetLivePanel()
       this.liveSession = await this.createRecordingSession()
+    } catch (error) {
+      this.updateStatus(error.message || this.sessionErrorTextValue)
+      return
+    }
+
+    try {
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
       this.showLivePanel()
 

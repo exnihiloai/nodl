@@ -104,7 +104,7 @@ de:
         recording_session:
           attributes:
             base:
-              recording_limit_reached: "Du hast das Maximum von %{limit} Recordings erreicht."
+              recording_limit_reached: "Du hast alle %{limit} Recordings deines Testplans verbraucht."
             original_audio:
               too_long: "darf nicht länger als %{limit} Minuten sein"
         transformer_profile:

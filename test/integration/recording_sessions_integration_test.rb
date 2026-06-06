@@ -263,6 +263,6 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_includes response.body, "maximum of #{PlanLimits::MAX_RECORDINGS} recordings"
+    assert_includes response.body, "recordings included in your test plan"
   end
 end

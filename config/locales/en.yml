@@ -12,7 +12,7 @@ en:
         recording_session:
           attributes:
             base:
-              recording_limit_reached: "You've reached the maximum of %{limit} recordings."
+              recording_limit_reached: "You've used all %{limit} recordings included in your test plan."
             original_audio:
               too_long: "can't be longer than %{limit} minutes"
         transformer_profile:
