@@ -32,10 +32,13 @@
       <div class="container mx-auto px-4 py-6">
         <div class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-base-content/70">
           <div><%= t("footer.copyright", year: Time.current.year) %></div>
-          <div class="flex gap-4">
+          <div class="flex flex-wrap gap-4">
             <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
             <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
             <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
+            <% LegalPage::SLUGS.each do |slug| %>
+              <%= legal_page_link(slug) %>
+            <% end %>
           </div>
         </div>
       </div>

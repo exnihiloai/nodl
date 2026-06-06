@@ -9,7 +9,8 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
-  # Show full error reports.
+  # Show full error reports (Routing Error, stack traces, etc.) in the browser.
+  # Do not set exceptions_app here — that would bypass this debug UI.
   config.consider_all_requests_local = true
 
   # Enable server timing.

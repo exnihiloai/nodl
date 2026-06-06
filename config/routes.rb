@@ -2,9 +2,14 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
+  get "/impressum", to: "legal_pages#imprint", as: :imprint
+  get "/datenschutz", to: "legal_pages#privacy", as: :privacy
+  get "/agb", to: "legal_pages#terms", as: :terms
   get "/try-now", to: "pages#try_now"
   get "/healthz", to: "pages#healthz"
   get "/readyz", to: "pages#readyz"
+
+  match "/404", to: "errors#not_found", via: :all
 
   get "/register", to: "registrations#new"
   post "/register", to: "registrations#create"

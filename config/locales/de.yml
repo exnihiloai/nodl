@@ -155,10 +155,36 @@ de:
       log_out: "Abmelden"
 
   footer:
-    copyright: "© %{year} Nodl. Alle Rechte vorbehalten."
+    copyright: "© %{year} ex-nihilo GmbH. Alle Rechte vorbehalten."
     about: "Über uns"
     pricing: "Preise"
     demo: "Demo"
+    imprint: "Impressum"
+    privacy: "Datenschutz"
+    terms: "AGB"
+
+  legal_pages:
+    imprint:
+      title: "Impressum - Nodl"
+    privacy:
+      title: "Datenschutz - Nodl"
+    terms:
+      title: "AGB - Nodl"
+
+  errors:
+    not_found:
+      title: "404 - Seite nicht gefunden - Nodl"
+      icon_label: "Mikrofon aus"
+      badge: "Signal verloren"
+      heading: "Wir haben zugehört. Diese Seite hat nichts gesagt."
+      subheading: "Falsche URL, verschobener Link oder ein Tippfehler lauter als dein Mikrofon."
+      transcript_label: "Transkript dieser Seite"
+      transcript_status: "Leere Aufnahme"
+      transcript_body: "[Stille] … [unverständliches Gemurmel] … [404 — kein Dokument generiert]"
+      hint: "Anders als deine besten Ideen hat es diese Adresse nicht in ein strukturiertes Dokument geschafft."
+      cta_home: "Zur Startseite"
+      cta_dashboard: "Zum Dashboard"
+      cta_try: "Demo ausprobieren"
 
   flash:
     authentication_required: "Bitte melde dich an, um fortzufahren."

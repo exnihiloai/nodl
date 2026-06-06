@@ -53,10 +53,36 @@ en:
       log_out: "Log out"
 
   footer:
-    copyright: "© %{year} Nodl. All rights reserved."
+    copyright: "© %{year} ex-nihilo GmbH. All rights reserved."
     about: "About"
     pricing: "Pricing"
     demo: "Demo"
+    imprint: "Imprint"
+    privacy: "Privacy"
+    terms: "Terms"
+
+  legal_pages:
+    imprint:
+      title: "Imprint - Nodl"
+    privacy:
+      title: "Privacy Policy - Nodl"
+    terms:
+      title: "Terms and Conditions - Nodl"
+
+  errors:
+    not_found:
+      title: "404 - Page not found - Nodl"
+      icon_label: "Microphone off"
+      badge: "Signal lost"
+      heading: "We listened. This page said nothing."
+      subheading: "Wrong URL, moved link, or a typo louder than your microphone."
+      transcript_label: "Transcript of this page"
+      transcript_status: "Empty take"
+      transcript_body: "[silence] … [unintelligible mumbling] … [404 — no document generated]"
+      hint: "Unlike your best ideas, this address didn't make it into a structured document."
+      cta_home: "Back to home"
+      cta_dashboard: "Go to dashboard"
+      cta_try: "Try the demo"
 
   flash:
     authentication_required: "Please sign in to continue."

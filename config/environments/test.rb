@@ -18,12 +18,14 @@ Rails.application.configure do
   # Configure public file server for tests with cache-control for performance.
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
-  # Show full error reports.
-  config.consider_all_requests_local = true
+  # Use production-like error pages in tests (custom 404/500 via exceptions_app).
+  config.consider_all_requests_local = false
   config.cache_store = :null_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
+
+  config.exceptions_app = self.routes
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
