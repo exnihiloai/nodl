@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
+  get "/changelog", to: "changelogs#show", as: :changelog, format: false
+  get "/changelog/:version_slug", to: "changelogs#show", as: :changelog_entry,
+      format: false, constraints: { version_slug: /v[\d.]+/ }
   get "/sitemap.xml", to: "sitemap#show", defaults: { format: :xml }, as: :sitemap
   get "/robots.txt", to: "robots#show", as: :robots
   get "/impressum", to: "legal_pages#imprint", as: :imprint
