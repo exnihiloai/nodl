@@ -6,13 +6,15 @@ This repository uses separate license terms for different kinds of material.
 
 ## Source Code
 
-Unless a file states otherwise, source code in this repository is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`). See `LICENSE`.
+Unless a file states otherwise, source code in this repository is source-available under the **PolyForm Free Trial License 1.0.0**. See `LICENSE`. The licensor is ex-nihilo GmbH.
 
-Commercial or proprietary licenses may be granted separately by ex-nihilo GmbH. Contact ex-nihilo GmbH for dual licensing terms.
+The PolyForm Free Trial License permits **evaluation only**: you may use the software to evaluate whether it suits a particular application for less than 32 consecutive calendar days, on behalf of you or your company. It does **not** permit production use, internal business use, redistribution, or any commercial use.
+
+For any use beyond that free trial, you must obtain a separate **commercial license** from ex-nihilo GmbH. Contact ex-nihilo GmbH for commercial licensing terms.
 
 ## Reserved Material
 
-The AGPL license does not apply to material that is explicitly marked as reserved, proprietary, confidential, commercial, or all rights reserved.
+The PolyForm Free Trial License does not apply to material that is explicitly marked as reserved, proprietary, confidential, commercial, or all rights reserved.
 
 This includes, unless explicitly licensed otherwise:
 
@@ -35,11 +37,11 @@ For reserved files, use this notice near the top of the file:
 Copyright (c) 2026 ex-nihilo GmbH.
 All rights reserved.
 
-This file is not licensed under the AGPL-3.0-or-later license.
+This file is not licensed under the PolyForm Free Trial License 1.0.0.
 You may view this file as part of the public Nodl repository, but you may not copy, modify, redistribute, reuse, sublicense, or create derivative works from it without explicit written permission from ex-nihilo GmbH.
 -->
 ```
 
 ## Trademarks
 
-The Nodl name, logo, and branding are not licensed under the AGPL. See `TRADEMARKS.md`.
+The Nodl name, logo, and branding are not licensed under the PolyForm Free Trial License. See `TRADEMARKS.md`.
