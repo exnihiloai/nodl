@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.3] - 2026-06-06
+
+### Changed
+- **Account Menu Cleanup:** Shortened workspace names in the account menu by removing the redundant "Workspace" suffix (e.g. "Alpha Workspace" becomes "Alpha") and added hover tooltips and text truncation so long email addresses and workspace names no longer distort the dropdown layout.
+- **404 Layout Refinement:** Redesigned the custom 404 page hero graphic to avoid overlapping text and icons on smaller viewports, and improved the transcript box and hint text responsiveness.
+
+### Fixed
+- **Safari Dropdown Focus Issues:** Transitioned dropdowns (language switcher and account navigation) from `:focus-within` CSS-based interactions to robust details/summary components managed via a Stimulus controller, fixing an issue where menus wouldn't reliably close or toggle in Safari.
+- **Standardized Full-Area Click Targets:** Replaced old CSS-focus-based dropdowns with HTML `<details>` and `<summary>` tags coupled with a dedicated Stimulus controller to make sure clicking anywhere inside a highlighted option (for language switches, workspace switches, or logout) acts as a click target, preventing missed clicks.
+
+### Technical
+- Added system tests under `test/system/locale_switching_test.rb` to cover language toggling behavior end-to-end, and updated existing tests to click the details-based account menu correctly.
+- Conformed back-redirection and dashboard redirection in `LocalesController` and `WorkspacesController` to Turbo's 303 redirection behavior by adding `status: :see_other`.
+- Updated UX design guidelines in `doc/design-input/ux/ux-guidelines.md` to establish rules for generous, full-area click targets across the application.
+
+
 ## [0.9.2] - 2026-06-06
 
 ### Security
