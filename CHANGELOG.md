@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.2] - 2026-06-06
+
+### Security
+- **Operator Notifications No Longer Reveal Document Titles:** Internal operator notifications for generated documents now show only the first six characters of the title followed by an ellipsis (e.g. `Begrüß...`), so the notification stream can’t disclose what a recording was about.
+
+### Technical
+- `RecordingSessionProcessor.redacted_title` produces the short preview, and the `nodl.document.generated` notification now carries a `redacted_title` in its payload — the full title never enters the event. Operator notification delivery (in `private/`) consumes that field instead of reading the title.
+
+
 ## [0.9.1] - 2026-06-06
 
 ### Fixed

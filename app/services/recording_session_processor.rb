@@ -7,6 +7,18 @@ class RecordingSessionProcessor
   DEFAULT_TRANSCRIBER_MODEL = "voxtral-mini-latest"
   DEFAULT_TRANSFORMER_MODEL = "gemini-3.1-flash-lite"
 
+  # Privacy: telemetry/notifications must never disclose document content, so we
+  # only ever expose a short preview of the title (first N characters + ellipsis)
+  # in the nodl.document.generated payload. The full title stays out of the event.
+  TITLE_PREVIEW_LENGTH = 6
+
+  def self.redacted_title(title)
+    clean = title.to_s.strip
+    return "Untitled" if clean.empty?
+
+    clean.length > TITLE_PREVIEW_LENGTH ? "#{clean[0, TITLE_PREVIEW_LENGTH]}..." : clean
+  end
+
   def initialize(
     normalizer: Nodl::Audio::Normalizer.new,
     pipeline: Nodl::Pipeline.new,
@@ -48,7 +60,11 @@ class RecordingSessionProcessor
         work_path: result.session_path.to_s,
         generated_title: generated_title_for(recording_session, transcript_text)
       )
-      ActiveSupport::Notifications.instrument("nodl.document.generated", recording_session: recording_session)
+      ActiveSupport::Notifications.instrument(
+        "nodl.document.generated",
+        recording_session: recording_session,
+        redacted_title: self.class.redacted_title(recording_session.title)
+      )
     ensure
       FileUtils.rm_f(normalized.path) if normalized&.converted?
     end
