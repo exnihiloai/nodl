@@ -31,6 +31,7 @@ class SessionsController < ApplicationController
       session[:current_workspace_id] = user.workspaces.order("memberships.created_at ASC").pick(:id)
       clear_failed_login_attempts(email, remote_ip)
       user.update(last_login_at: Time.current)
+      ActiveSupport::Notifications.instrument("nodl.user.logged_in", user: user)
       redirect_to dashboard_path, notice: t("flash.sessions.welcome_back")
       return
     end

@@ -1,6 +1,9 @@
 class PagesController < ApplicationController
   def home
-    return if current_user.blank?
+    if current_user.blank?
+      ActiveSupport::Notifications.instrument("nodl.landing.visited", ip: request.remote_ip, user_agent: request.user_agent)
+      return
+    end
 
     current_workspace
   end

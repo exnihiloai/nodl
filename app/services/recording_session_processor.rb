@@ -19,6 +19,7 @@ class RecordingSessionProcessor
 
   def call(recording_session)
     recording_session.mark_processing!
+    ActiveSupport::Notifications.instrument("nodl.recording.processing_started", recording_session: recording_session)
 
     with_original_audio_file(recording_session) do |audio_path|
       normalized = normalizer.normalize(
@@ -45,6 +46,7 @@ class RecordingSessionProcessor
         work_path: result.session_path.to_s,
         generated_title: generated_title_for(recording_session, transcript_text)
       )
+      ActiveSupport::Notifications.instrument("nodl.document.generated", recording_session: recording_session)
     ensure
       FileUtils.rm_f(normalized.path) if normalized&.converted?
     end
