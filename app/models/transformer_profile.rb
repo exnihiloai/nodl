@@ -57,6 +57,7 @@ class TransformerProfile < ApplicationRecord
   validate :single_default_per_workspace
   validate :example_files_limit
   validate :example_files_content_types
+  validate :workspace_format_limit_not_exceeded, on: :create
 
   scope :active, -> { where(active: true) }
   scope :default_first, -> { order(default: :desc, name: :asc, handle: :asc) }
@@ -101,5 +102,12 @@ class TransformerProfile < ApplicationRecord
 
       errors.add(:example_files, "#{file.filename} has an unsupported format. Supported formats are: .docx, .odt, .pdf, .md, .txt")
     end
+  end
+
+  def workspace_format_limit_not_exceeded
+    return if workspace.blank?
+    return unless workspace.format_limit_reached?
+
+    errors.add(:base, :format_limit_reached, limit: PlanLimits::MAX_FORMATS)
   end
 end

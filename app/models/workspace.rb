@@ -22,6 +22,14 @@ class Workspace < ApplicationRecord
     usage_consumption.fetch(key.to_s, 0).to_i
   end
 
+  def recording_limit_reached?
+    recording_sessions.count >= PlanLimits::MAX_RECORDINGS
+  end
+
+  def format_limit_reached?
+    transformer_profiles.count >= PlanLimits::MAX_FORMATS
+  end
+
   private
 
   def ensure_slug

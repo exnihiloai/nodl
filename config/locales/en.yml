@@ -9,6 +9,16 @@ en:
           attributes:
             password:
               password_complexity: "must include uppercase, lowercase, and a number"
+        recording_session:
+          attributes:
+            base:
+              recording_limit_reached: "You've reached the maximum of %{limit} recordings."
+            original_audio:
+              too_long: "can't be longer than %{limit} minutes"
+        transformer_profile:
+          attributes:
+            base:
+              format_limit_reached: "You've reached the maximum of %{limit} formats."
 
   language_switcher:
     label: "Language"
@@ -300,6 +310,10 @@ en:
       session_error: "Recording session could not be created."
       finalize_error: "We couldn't finalize this recording. Please try recording again."
       preview_stopped: "Live preview stopped; the final transcript will still be generated."
+      duration_limit: "Maximum recording length reached — saving your recording now."
+    limits:
+      recordings_reached: "You've used all %{limit} recordings included in your test plan."
+      formats_reached: "Limit of %{limit} formats reached"
     privacy_note: "Private to your workspace. Nothing is shared."
     formats: "Formats"
     new_format: "+ New format"

@@ -101,6 +101,16 @@ de:
           attributes:
             password:
               password_complexity: "muss Groß- und Kleinbuchstaben sowie eine Zahl enthalten"
+        recording_session:
+          attributes:
+            base:
+              recording_limit_reached: "Du hast das Maximum von %{limit} Recordings erreicht."
+            original_audio:
+              too_long: "darf nicht länger als %{limit} Minuten sein"
+        transformer_profile:
+          attributes:
+            base:
+              format_limit_reached: "Du hast das Maximum von %{limit} Formaten erreicht."
     attributes:
       user:
         email: "E-Mail"
@@ -402,6 +412,10 @@ de:
       session_error: "Die Aufnahme-Session konnte nicht erstellt werden."
       finalize_error: "Diese Aufnahme konnte nicht abgeschlossen werden. Bitte nimm sie erneut auf."
       preview_stopped: "Live-Vorschau gestoppt; das endgültige Transkript wird trotzdem erstellt."
+      duration_limit: "Maximale Aufnahmelänge erreicht — Aufnahme wird gespeichert."
+    limits:
+      recordings_reached: "Du hast alle %{limit} Recordings deines Testplans verbraucht."
+      formats_reached: "Limit von %{limit} Formaten erreicht"
     privacy_note: "Privat für deinen Workspace. Nichts wird geteilt."
     formats: "Formate"
     new_format: "+ Neues Format"

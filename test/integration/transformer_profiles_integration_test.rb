@@ -242,6 +242,40 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "The default format can't be deleted.", flash[:alert]
   end
 
+  test "rejects creating a format when workspace reached format limit" do
+    (PlanLimits::MAX_FORMATS - 1).times do |index|
+      @workspace.transformer_profiles.create!(
+        name: "Format #{index}",
+        handle: "format-#{index}",
+        instructions: "Guidelines #{index}."
+      )
+    end
+
+    assert_no_difference -> { @workspace.transformer_profiles.count } do
+      post transformer_profiles_path, params: {
+        transformer_profile: { name: "Too many", instructions: "No room left." }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, "maximum of #{PlanLimits::MAX_FORMATS} formats"
+  end
+
+  test "redirects new format page when workspace reached format limit" do
+    (PlanLimits::MAX_FORMATS - 1).times do |index|
+      @workspace.transformer_profiles.create!(
+        name: "Format #{index}",
+        handle: "format-#{index}",
+        instructions: "Guidelines #{index}."
+      )
+    end
+
+    get new_transformer_profile_path
+
+    assert_redirected_to dashboard_path
+    assert_equal "Limit of #{PlanLimits::MAX_FORMATS} formats reached", flash[:alert]
+  end
+
   private
 
   def create_custom_profile

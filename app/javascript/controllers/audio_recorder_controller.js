@@ -32,7 +32,9 @@ export default class extends Controller {
     transcriptLabel: String,
     listeningText: String,
     finalizeErrorText: String,
-    previewStoppedText: String
+    previewStoppedText: String,
+    maxDurationSeconds: Number,
+    durationLimitText: String
   }
 
   connect() {
@@ -246,6 +248,10 @@ export default class extends Controller {
     this.timerId = window.setInterval(() => {
       this.seconds += 1
       this.renderTimer()
+      if (this.maxDurationSecondsValue > 0 && this.seconds >= this.maxDurationSecondsValue) {
+        this.updateStatus(this.durationLimitTextValue)
+        this.stop()
+      }
     }, 1000)
   }
 

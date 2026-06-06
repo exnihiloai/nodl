@@ -56,6 +56,26 @@ class TransformerProfileTest < ActiveSupport::TestCase
     assert profile.valid?, profile.errors.full_messages.to_sentence
   end
 
+  test "rejects new format when workspace reached format limit" do
+    workspace = create_user_with_workspace.workspaces.first
+    (PlanLimits::MAX_FORMATS - 1).times do |index|
+      workspace.transformer_profiles.create!(
+        name: "Format #{index}",
+        handle: "format-#{index}",
+        instructions: "Guidelines #{index}."
+      )
+    end
+
+    profile = workspace.transformer_profiles.build(
+      name: "One too many",
+      handle: "one-too-many",
+      instructions: "Too many formats."
+    )
+
+    assert_not profile.valid?
+    assert_includes profile.errors[:base], "You've reached the maximum of #{PlanLimits::MAX_FORMATS} formats."
+  end
+
   private
 
   def build_profile(instructions: "Write a friendly summary.")

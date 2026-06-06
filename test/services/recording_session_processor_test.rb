@@ -190,6 +190,26 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_equal "pipeline failed", recording_session.error_message
   end
 
+  test "marks the session failed when audio exceeds maximum duration" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Too long",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+
+    Nodl::Audio::WaveformExtractor.any_instance.stubs(:extract).returns(
+      Nodl::Audio::WaveformExtractor::Result.new(peaks: [], duration: PlanLimits.max_recording_duration_seconds + 1)
+    )
+
+    assert_raises(Nodl::Error) do
+      RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: FakePipeline.new).call(recording_session)
+    end
+
+    assert_predicate recording_session.reload, :failed?
+    assert_includes recording_session.error_message, "can't be longer than #{PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i} minutes"
+  end
+
   test "triggers telemetry events when processing starts and completes" do
     user = create_user_with_workspace
     workspace = user.workspaces.first
