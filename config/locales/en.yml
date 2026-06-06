@@ -9,6 +9,16 @@ en:
           attributes:
             password:
               password_complexity: "must include uppercase, lowercase, and a number"
+        recording_session:
+          attributes:
+            base:
+              recording_limit_reached: "You've used all %{limit} recordings included in your test plan."
+            original_audio:
+              too_long: "can't be longer than %{limit} minutes"
+        transformer_profile:
+          attributes:
+            base:
+              format_limit_reached: "You've reached the maximum of %{limit} formats."
 
   language_switcher:
     label: "Language"
@@ -27,12 +37,12 @@ en:
     close: "Close"
 
   nav:
-    services: "Services"
+    services: "Features"
     how_it_works: "How it works"
     pricing: "Pricing"
     faq: "FAQ"
-    login: "Login"
-    register: "Register"
+    login: "Sign in"
+    register: "Start free"
     dashboard: "Dashboard"
     admin: "Admin"
     account:
@@ -43,10 +53,36 @@ en:
       log_out: "Log out"
 
   footer:
-    copyright: "© %{year} Nodl. All rights reserved."
+    copyright: "© %{year} ex-nihilo GmbH. All rights reserved."
     about: "About"
     pricing: "Pricing"
     demo: "Demo"
+    imprint: "Imprint"
+    privacy: "Privacy"
+    terms: "Terms"
+
+  legal_pages:
+    imprint:
+      title: "Imprint - Nodl"
+    privacy:
+      title: "Privacy Policy - Nodl"
+    terms:
+      title: "Terms and Conditions - Nodl"
+
+  errors:
+    not_found:
+      title: "404 - Page not found - Nodl"
+      icon_label: "Microphone off"
+      badge: "Signal lost"
+      heading: "We listened. This page said nothing."
+      subheading: "Wrong URL, moved link, or a typo louder than your microphone."
+      transcript_label: "Transcript of this page"
+      transcript_status: "Empty take"
+      transcript_body: "[silence] … [unintelligible mumbling] … [404 — no document generated]"
+      hint: "Unlike your best ideas, this address didn't make it into a structured document."
+      cta_home: "Back to home"
+      cta_dashboard: "Go to dashboard"
+      cta_try: "Try the demo"
 
   flash:
     authentication_required: "Please sign in to continue."
@@ -90,101 +126,164 @@ en:
 
   pages:
     home:
-      title: "Nodl - Rails SaaS Boilerplate"
-      meta_description: "Production-ready SaaS boilerplate built with Rails, Turbo, Tailwind, and DaisyUI."
+      title: "Nodl - Turn voice into structured documents"
+      meta_description: "Speak your thoughts and let Nodl turn recordings into meeting notes, summaries, and polished documents. Start free today."
       hero:
-        badge: "Powered by Rails + Turbo"
-        heading: "Ship production-ready SaaS without a heavy SPA."
-        subheading: "Server-rendered pages with Turbo interactions, Tailwind utilities, and DaisyUI components keep the stack lean and fast."
-        get_started: "Get Started"
-        live_demo: "Live Demo"
-        check_status: "Check Status"
-        status_unchecked: "Service status has not been checked yet."
-      cards:
-        observability:
-          label: "Observability"
-          title: "Observability baked in"
-          body: "Health endpoints, structured logs, and clear extension points for production telemetry."
-        security:
-          label: "Security"
-          title: "Secure by default"
-          body: "CSRF protection, password hashing, and role-aware admin tools ship out of the box."
-        velocity:
-          label: "Developer velocity"
-          title: "Developer velocity"
-          body: "Containerized local setup, Postgres, Turbo streams, and ergonomic Rails conventions."
-      services:
-        badge: "Real-world fits"
-        heading: "Built to stay close to your data model."
-        subheading: "Use it for customer SaaS, internal tooling, or agency client platforms."
-        seed:
-          tab: "Seed-stage SaaS"
-          title: "Seed-stage SaaS"
-          item_1: "Multi-tenant workspace model from day one"
-          item_2: "Email/password auth with secure sessions"
-          item_3: "Stripe checkout placeholder and webhook endpoint"
-        internal:
-          tab: "Internal platforms"
-          title: "Internal platforms"
-          item_1: "Admin user lifecycle controls"
-          item_2: "Audit trail for sensitive user updates"
-          item_3: "Server-driven UI updates through Turbo Frames/Streams"
-        agencies:
-          tab: "Agencies and studios"
-          title: "Agencies and studios"
-          item_1: "DaisyUI design system primitives"
-          item_2: "Easy deploy path with Rails Docker setup"
-          item_3: "Clear Rails conventions for fast onboarding"
+        badge: "Free to start"
+        heading: "Speak your thoughts. Get finished documents."
+        subheading: "Nodl captures what you say, understands the context, and turns it into clean notes, summaries, and documents in the format you choose."
+        get_started: "Start free"
+        secondary_cta: "See how it works"
+        trust_line: "No credit card to start. Explore with a free test — Pro is there when Nodl becomes part of your week."
+        preview:
+          label: "Example flow"
+          live: "Live preview"
+          recording: "You said"
+          quote: "Quick sync with the team — we need to ship the onboarding flow by Friday, Sarah owns design, and I'll follow up with the client tomorrow."
+          output_label: "Meeting notes format"
+          output_title: "Team sync — action items"
+          output_item_1: "Ship onboarding flow by Friday"
+          output_item_2: "Sarah owns design"
+          output_item_3: "Follow up with client tomorrow"
+      benefits:
+        badge: "Why Nodl"
+        heading: "More than transcription. Real understanding."
+        subheading: "Stop losing ideas between thinking and typing. Nodl closes that gap in minutes."
+        capture:
+          label: "Capture"
+          title: "Capture thoughts the moment they appear"
+          body: "Record from your browser or upload audio. Perfect for brain dumps, walks, late-night ideas, and meetings on the go."
+        transform:
+          label: "Transform"
+          title: "Choose a format, not a blank page"
+          body: "Meeting notes, task lists, client summaries, and more — Nodl structures your words into the document you actually need."
+        trust:
+          label: "Trust"
+          title: "Your voice stays yours"
+          body: "Recordings, transcripts, and documents live in your private workspace. Built for professionals who handle sensitive information."
+      how_it_works:
+        badge: "How it works"
+        heading: "From voice to document in four steps"
+        subheading: "No setup marathon. Sign up, record, and get a usable result on your first try."
+        step_1:
+          title: "Record or upload"
+          body: "Hit record in your browser or drop in an audio file. Speak naturally — no script needed."
+        step_2:
+          title: "Get a smart transcript"
+          body: "Nodl transcribes with context, not just words. Speaker labels and timestamps help you scan fast."
+        step_3:
+          title: "Pick your format"
+          body: "Choose what you want to create: meeting notes, a summary, a task list, or your own custom format."
+        step_4:
+          title: "Generate and export"
+          body: "Review your document, refine it, and download Markdown when you are ready to share or publish."
+      use_cases:
+        badge: "Use cases"
+        heading: "Built for people who think faster than they type"
+        subheading: "If you document, delegate, or decide for a living, Nodl gives you back the time typing steals."
+        meetings:
+          title: "Meetings and syncs"
+          body: "Capture decisions while they are fresh instead of reconstructing them from memory an hour later."
+          outcome: "Walk away with action items, owners, and deadlines — already structured."
+        brain_dump:
+          title: "Brain dumps and late-night ideas"
+          body: "When your mind is racing, speaking is easier than typing. Dump everything and let Nodl sort it."
+          outcome: "Turn chaos into clear notes you can act on tomorrow."
+        client_notes:
+          title: "Client calls and consulting"
+          body: "Stay present in the conversation. Nodl handles the documentation so you can focus on the person."
+          outcome: "Send polished summaries without spending another hour writing them up."
+      pricing:
+        badge: "Pricing"
+        heading: "Try it free, upgrade when it sticks"
+        subheading: "Start with a free test — clear limits, no credit card, enough to record, transcribe, and generate real documents. When Nodl becomes part of your routine, Pro is built for that."
+        free:
+          name: "Free Test"
+          price: "$0"
+          period: "Test allowance · no credit card"
+          available_now: "Start here"
+          cta: "Try Nodl free"
+          login_hint: "Already have an account?"
+          login_link: "Sign in"
+          limits_heading: "What's included"
+          limit_recordings: "Up to %{limit} recordings total"
+          limit_formats: "Up to %{limit} formats (including the default)"
+          limit_duration:
+            one: "Up to %{count} hour per recording"
+            other: "Up to %{count} hours per recording"
+          limit_duration_short:
+            one: "up to %{count} hour"
+            other: "up to %{count} hours"
+          feature_1: "Full workflow — record, transcribe, and generate documents"
+          feature_2: "Live transcript preview while you speak"
+          feature_3: "Built-in and custom document formats"
+          feature_4: "Private workspace for your test recordings"
+        paid_coming_soon:
+          badge: "Coming soon"
+          title: "Pro"
+          body: "For the meetings, client calls, and brain dumps you run every week — higher limits, faster processing, and room to grow."
+          feature_1: "Expanded monthly recording allowance"
+          feature_2: "Priority processing"
+          feature_3: "Premium formats and team features"
       faq:
-        badge: "Questions"
-        heading: "What teams ask most often"
-        subheading: "Quick answers as you evaluate the stack."
-        q1: "Is everything server rendered?"
-        a1: "Yes. Rails ERB templates render all views and Turbo adds selective HTML swaps where needed."
-        q2: "Can I use PostgreSQL and multi-tenancy immediately?"
-        a2: "Yes. This boilerplate starts with Postgres, workspaces, memberships, and tenant context switching."
-        q3: "Does it include billing scaffolding?"
-        a3: "Yes. Stripe Checkout and webhook placeholders are wired so you can plug in real products quickly."
+        badge: "FAQ"
+        heading: "Questions before you start"
+        subheading: "Straight answers so you can decide in under a minute."
+        q1: "Can I try Nodl before paying?"
+        a1: "Yes. Create an account with no credit card and use your test allowance to run the full flow — record, transcribe, and generate documents. The limits are shown on the pricing card above; steady daily use is what Pro is for."
+        q2: "What can I create from a recording?"
+        a2: "Choose a format such as meeting notes, a task list, or a client summary. Nodl generates a structured document you can review and download."
+        q3: "Do I need to install anything?"
+        a3: "No. Nodl runs in your browser. Record, upload, and generate documents from any modern device with a microphone."
+        q4: "Is my data private?"
+        a4: "Your recordings, transcripts, and documents stay in your workspace. Nodl is built for professionals who cannot afford to leak sensitive conversations."
+        q5: "What are the limits on the free test?"
+        a5: "The free test includes up to %{recordings} recordings total, up to %{formats} formats in your workspace (including the default), and up to %{duration} per recording. That is enough to try the full workflow before upgrading to Pro."
+      final_cta:
+        heading: "Your next idea is one recording away"
+        subheading: "Try your first recording today — see what a finished document feels like in minutes."
+        cta: "Start free"
+        login: "Sign in"
     about:
       title: "About - Nodl"
-      meta_description: "About this Rails SaaS starter."
-      heading: "About This Platform"
-      intro: "A modern SaaS starter built with Rails, Turbo, Tailwind, and DaisyUI."
+      meta_description: "Learn what Nodl does and how it turns voice into structured documents."
+      heading: "About Nodl"
+      intro: "Nodl helps you capture spoken ideas and turn them into meeting notes, summaries, and polished documents — without the typing."
       backend:
-        title: "Backend"
-        item_1: "Rails 8"
-        item_2: "PostgreSQL"
-        item_3: "Multi-tenant workspaces"
-        item_4: "Built-in secure auth"
+        title: "Capture"
+        item_1: "Record in your browser or upload audio"
+        item_2: "Live transcript preview while you speak"
+        item_3: "Works on any modern device with a microphone"
+        item_4: "No app install required"
       frontend:
-        title: "Frontend"
-        item_1: "ERB server rendering"
-        item_2: "Turbo Frames/Streams"
-        item_3: "Tailwind utilities"
-        item_4: "DaisyUI components"
+        title: "Transform"
+        item_1: "Meeting notes, task lists, and client summaries"
+        item_2: "Built-in and custom document formats"
+        item_3: "Context-aware transcription with speaker labels"
+        item_4: "Download as Markdown when you are ready"
       ops:
-        title: "Ops"
-        item_1: "Dockerized local setup"
-        item_2: "Health/readiness endpoints"
-        item_3: "Stripe webhook placeholder"
-        item_4: "Rails production image"
+        title: "Trust"
+        item_1: "Private workspace for your recordings"
+        item_2: "Transcripts and documents stay yours"
+        item_3: "Built for professionals with sensitive conversations"
+        item_4: "Secure sign-in and workspace isolation"
       version:
         title: "Version information"
         current: "Current app version"
         back_home: "Back to Home"
-        try_demo: "Try the demo"
+        try_demo: "Try Nodl free"
     try_now:
       title: "Try Nodl - Demo"
-      meta_description: "Explore the demo experience."
-      badge: "Interactive demo"
-      heading: "Experience the platform"
-      subheading: "Explore core features and see how this Rails stack accelerates your workflow."
-      features_title: "Demo features"
-      feature_1: "Multi-tenant dashboard"
-      feature_2: "Turbo HTML updates"
-      feature_3: "Admin user lifecycle actions"
-      feature_4: "Stripe checkout placeholder"
-      start_trial: "Start your free trial"
+      meta_description: "Try Nodl free — record, transcribe, and generate structured documents."
+      badge: "Try free"
+      heading: "See Nodl in action"
+      subheading: "Create a free account and turn your first recording into a document in minutes."
+      features_title: "What you can try"
+      feature_1: "Browser recording and audio upload"
+      feature_2: "Live transcript while you speak"
+      feature_3: "Meeting notes, summaries, and custom formats"
+      feature_4: "Download and share your documents"
+      start_trial: "Start free"
       learn_more: "Learn more"
       back_home: "← Back to homepage"
 
@@ -197,27 +296,27 @@ en:
       email_placeholder: "your@email.com"
       password_placeholder: "Enter your password"
       sign_in: "Sign in"
-      new_to_platform: "New to our platform?"
+      new_to_platform: "New to Nodl?"
       create_account: "Create account"
       aside:
-        heading: "Why teams stay"
-        body: "Secure sessions, tenancy-aware data model, and admin tooling are ready from day one."
-        badge_1: "Session security"
-        badge_2: "Audit-friendly admin actions"
-        badge_3: "Turbo-driven UX"
+        heading: "Pick up where you left off"
+        body: "Sign in to access your recordings, transcripts, and generated documents."
+        badge_1: "Live transcript preview"
+        badge_2: "Custom document formats"
+        badge_3: "Private workspace"
 
   registrations_view:
     new:
       title: "Register - Nodl"
-      meta_description: "Create your account and launch quickly."
+      meta_description: "Create your free Nodl account and turn voice into structured documents."
       aside:
         badge: "Welcome"
         heading: "Create your account"
-        body: "Nodl ships with production-ready auth, multi-tenancy, billing placeholders, and a modern UI baseline."
-        item_1: "Email authentication with secure password hashing"
-        item_2: "Workspace created automatically on signup"
-        item_3: "Turbo-ready server-rendered interactions"
-      lead: "Join teams launching faster on Rails."
+        body: "Sign up free and start turning recordings into meeting notes, summaries, and polished documents."
+        item_1: "Record in your browser or upload audio"
+        item_2: "Choose a format — meeting notes, task lists, and more"
+        item_3: "Your workspace keeps recordings and documents private"
+      lead: "No credit card required. Start on the free tier today."
       email_placeholder: "your@email.com"
       email_confirm_placeholder: "Confirm your email"
       password_placeholder: "Create a strong password"
@@ -248,6 +347,10 @@ en:
       session_error: "Recording session could not be created."
       finalize_error: "We couldn't finalize this recording. Please try recording again."
       preview_stopped: "Live preview stopped; the final transcript will still be generated."
+      duration_limit: "Maximum recording length reached — saving your recording now."
+    limits:
+      recordings_reached: "You've used all %{limit} recordings included in your test plan."
+      formats_reached: "Limit of %{limit} formats reached"
     privacy_note: "Private to your workspace. Nothing is shared."
     formats: "Formats"
     new_format: "+ New format"
@@ -363,22 +466,22 @@ en:
 
   payments:
     show:
-      title: "Plans and Checkout"
-      meta_description: "Choose your plan and checkout with Stripe."
-      badge: "Payments preview"
-      heading: "Get ready for Stripe Checkout"
-      subheading: "Launch payments quickly with pre-wired Stripe Checkout flows."
-      charge_note_html: "Charge a one-time payment using Stripe Checkout. Configure prices in Stripe or provide %{code}."
-      managed_in_stripe: "Managed in Stripe"
-      using_price_html: "Using %{code} for hosted checkout."
-      test_defaults: "Using test defaults. Update env vars before going live."
-      start_checkout: "Start secure checkout"
+      title: "Pricing - Nodl"
+      meta_description: "Nodl is free today. Paid plans are coming soon."
+      badge: "Pricing"
+      heading: "Start free today"
+      subheading: "Paid plans are coming soon. Create your account and use Nodl on the free tier — no payment required."
+      charge_note_html: "Pro checkout is on the roadmap. For now, join the free tier and start recording — no payment required."
+      managed_in_stripe: "Stripe price configured"
+      using_price_html: "Checkout will use %{code} when paid plans launch."
+      test_defaults: "Free tier active — no checkout required right now."
+      start_checkout: "Test checkout"
       redirect_note: "You will be redirected to Stripe's hosted checkout page."
       test_card_html: "Test card: %{code}"
-      config_required: "Stripe configuration required"
-      config_hint: "Set these environment variables to enable checkout:"
-      webhooks_title: "Test webhooks"
-      webhooks_hint_html: "Point Stripe CLI to %{path} with %{secret}."
+      config_required: "Checkout not available yet"
+      config_hint: "Paid plans are not live yet. Create a free account from the homepage to start recording."
+      webhooks_title: "For maintainers"
+      webhooks_hint_html: "When billing is enabled, point Stripe CLI to %{path} with %{secret}."
       back_home: "← Back to homepage"
     success:
       title: "Payment Successful"

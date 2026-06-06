@@ -50,8 +50,8 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     with_env("STRIPE_SECRET_KEY" => "sk_test_123") do
       get payments_path
       assert_response :success
-      assert_includes response.body, "Start secure checkout"
-      refute_includes response.body, "Stripe configuration required"
+      assert_includes response.body, "Test checkout"
+      refute_includes response.body, "Checkout not available yet"
     end
   end
 

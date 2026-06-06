@@ -1,3 +1,5 @@
+require "nodl/audio/waveform_extractor"
+
 class RecordingSession < ApplicationRecord
   DEFAULT_TITLE = "Untitled recording".freeze
   MAX_AUDIO_SIZE = 100.megabytes
@@ -30,6 +32,8 @@ class RecordingSession < ApplicationRecord
   validates :title, presence: true
   validates :transformer_handle, presence: true, format: { with: /\A[a-zA-Z0-9][a-zA-Z0-9_-]*\z/ }
   validate :original_audio_is_supported
+  validate :original_audio_duration_within_limit, if: :validate_original_audio_duration?
+  validate :workspace_recording_limit_not_exceeded, on: :create
 
   scope :recent_first, -> { order(created_at: :desc) }
 
@@ -156,6 +160,40 @@ class RecordingSession < ApplicationRecord
     content_type = blob.content_type.to_s.split(";").first
     errors.add(:original_audio, "must be an audio file") unless ALLOWED_AUDIO_CONTENT_TYPES.include?(content_type)
     errors.add(:original_audio, "must be smaller than 100 MB") if blob.byte_size > MAX_AUDIO_SIZE
+  end
+
+  def original_audio_duration_within_limit
+    duration = measured_original_audio_duration
+    return if duration.nil?
+    return if duration <= PlanLimits.max_recording_duration_seconds
+
+    errors.add(:original_audio, :too_long, limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i)
+  end
+
+  def validate_original_audio_duration?
+    return false unless original_audio.attached?
+
+    new_record? || attachment_changes.key?("original_audio")
+  end
+
+  def workspace_recording_limit_not_exceeded
+    return if workspace.blank?
+    return unless workspace.recording_limit_reached?
+
+    errors.add(:base, :recording_limit_reached, limit: PlanLimits::MAX_RECORDINGS)
+  end
+
+  def measured_original_audio_duration
+    return @measured_original_audio_duration if defined?(@measured_original_audio_duration)
+
+    extension = original_audio.filename.extension_with_delimiter.presence || ".audio"
+    Tempfile.create([ "recording-duration", extension ], binmode: true) do |file|
+      file.write(original_audio.download)
+      file.flush
+      @measured_original_audio_duration = Nodl::Audio::WaveformExtractor.new.extract(file.path).duration
+    end
+  rescue Nodl::Error, ActiveStorage::FileNotFoundError
+    @measured_original_audio_duration = nil
   end
 
   def broadcast_live_transcript_panel

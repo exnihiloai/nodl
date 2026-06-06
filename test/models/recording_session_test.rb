@@ -155,4 +155,44 @@ class RecordingSessionTest < ActiveSupport::TestCase
     expected_fallback_dur = recording_session.original_audio.blob.byte_size.to_f / 8000.0
     assert_equal expected_fallback_dur, recording_session.estimated_duration
   end
+
+  test "rejects new recording when workspace reached recording limit" do
+    user = create_user_with_workspace
+    workspace = user.workspaces.first
+
+    PlanLimits::MAX_RECORDINGS.times do |index|
+      workspace.recording_sessions.create!(
+        creator: user,
+        title: "Recording #{index}",
+        transformer_handle: "default",
+        source_kind: :microphone,
+        status: :recording
+      )
+    end
+
+    recording_session = workspace.recording_sessions.build(
+      creator: user,
+      title: "One too many",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording
+    )
+
+    assert_not recording_session.valid?
+    assert_includes recording_session.errors[:base], "You've used all #{PlanLimits::MAX_RECORDINGS} recordings included in your test plan."
+  end
+
+  test "rejects audio longer than the plan maximum" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Long call",
+      transformer_handle: "default"
+    )
+    attach_sample_audio(recording_session)
+    recording_session.stubs(:measured_original_audio_duration).returns(PlanLimits.max_recording_duration_seconds + 1)
+
+    assert_not recording_session.valid?
+    assert_includes recording_session.errors[:original_audio], "can't be longer than #{PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i} minutes"
+  end
 end

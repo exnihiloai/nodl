@@ -19,6 +19,7 @@ class RecordingSessionProcessor
 
   def call(recording_session)
     recording_session.mark_processing!
+    ActiveSupport::Notifications.instrument("nodl.recording.processing_started", recording_session: recording_session)
 
     with_original_audio_file(recording_session) do |audio_path|
       normalized = normalizer.normalize(
@@ -27,6 +28,8 @@ class RecordingSessionProcessor
         original_filename: recording_session.original_audio.filename.to_s
       )
       attach_normalized_audio(recording_session, normalized) if normalized.converted?
+      waveform = Nodl::Audio::WaveformExtractor.new.extract(normalized.path)
+      enforce_recording_duration!(waveform.duration)
       result = pipeline.run(
         audio_path: normalized.path,
         transformer_handle: recording_session.transformer_handle,
@@ -45,6 +48,7 @@ class RecordingSessionProcessor
         work_path: result.session_path.to_s,
         generated_title: generated_title_for(recording_session, transcript_text)
       )
+      ActiveSupport::Notifications.instrument("nodl.document.generated", recording_session: recording_session)
     ensure
       FileUtils.rm_f(normalized.path) if normalized&.converted?
     end
@@ -56,6 +60,15 @@ class RecordingSessionProcessor
   private
 
   attr_reader :normalizer, :pipeline, :title_generator
+
+  def enforce_recording_duration!(duration)
+    return if duration.to_f <= PlanLimits.max_recording_duration_seconds
+
+    raise Nodl::Error, I18n.t(
+      "activerecord.errors.models.recording_session.attributes.original_audio.too_long",
+      limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i
+    )
+  end
 
   def generated_title_for(recording_session, transcript_text)
     return unless recording_session.default_title?

@@ -4,8 +4,8 @@ class PaymentsSystemTest < ApplicationSystemTestCase
   test "payments page shows stripe setup instructions when not configured" do
     visit payments_path
 
-    assert_text "Payments preview"
-    assert_text "Stripe configuration required"
+    assert_text "Pricing"
+    assert_text "Checkout not available yet"
     assert_text "STRIPE_SECRET_KEY"
   end
 

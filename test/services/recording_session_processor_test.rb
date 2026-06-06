@@ -189,4 +189,55 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_predicate recording_session.reload, :failed?
     assert_equal "pipeline failed", recording_session.error_message
   end
+
+  test "marks the session failed when audio exceeds maximum duration" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Too long",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+
+    Nodl::Audio::WaveformExtractor.any_instance.stubs(:extract).returns(
+      Nodl::Audio::WaveformExtractor::Result.new(peaks: [], duration: PlanLimits.max_recording_duration_seconds + 1)
+    )
+
+    assert_raises(Nodl::Error) do
+      RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: FakePipeline.new).call(recording_session)
+    end
+
+    assert_predicate recording_session.reload, :failed?
+    assert_includes recording_session.error_message, "can't be longer than #{PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i} minutes"
+  end
+
+  test "triggers telemetry events when processing starts and completes" do
+    user = create_user_with_workspace
+    workspace = user.workspaces.first
+    recording_session = workspace.recording_sessions.create!(
+      creator: user,
+      title: "Telemetry session",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    normalizer = FakeNormalizer.new
+    pipeline = FakePipeline.new
+
+    started_events = []
+    generated_events = []
+
+    ActiveSupport::Notifications.subscribe("nodl.recording.processing_started") do |*args|
+      started_events << ActiveSupport::Notifications::Event.new(*args)
+    end
+
+    ActiveSupport::Notifications.subscribe("nodl.document.generated") do |*args|
+      generated_events << ActiveSupport::Notifications::Event.new(*args)
+    end
+
+    RecordingSessionProcessor.new(normalizer: normalizer, pipeline: pipeline).call(recording_session)
+
+    assert_equal 1, started_events.size
+    assert_equal recording_session.id, started_events.first.payload[:recording_session].id
+
+    assert_equal 1, generated_events.size
+    assert_equal recording_session.id, generated_events.first.payload[:recording_session].id
+  end
 end

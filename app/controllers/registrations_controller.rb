@@ -32,6 +32,8 @@ class RegistrationsController < ApplicationController
 
       session[:user_id] = user.id
       session[:current_workspace_id] = workspace.id
+
+      ActiveSupport::Notifications.instrument("nodl.user.registered", user: user)
     end
 
     redirect_to dashboard_path, notice: t("flash.registrations.created")

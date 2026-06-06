@@ -9,8 +9,10 @@ Rails.application.configure do
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
-  # Full error reports are disabled.
+  # Hide debug pages from visitors; route exceptions to ErrorsController (see routes /404).
   config.consider_all_requests_local = false
+
+  config.exceptions_app = self.routes
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true

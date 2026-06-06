@@ -32,7 +32,9 @@ export default class extends Controller {
     transcriptLabel: String,
     listeningText: String,
     finalizeErrorText: String,
-    previewStoppedText: String
+    previewStoppedText: String,
+    maxDurationSeconds: Number,
+    durationLimitText: String
   }
 
   connect() {
@@ -66,13 +68,20 @@ export default class extends Controller {
   async start() {
     if (!this.mimeOption) return
 
+    this.chunks = []
+    this.fastPreviewText = ""
+    this.slowPreviewText = ""
+    this.sourceKindTarget.value = "microphone"
+    this.resetLivePanel()
+
     try {
-      this.chunks = []
-      this.fastPreviewText = ""
-      this.slowPreviewText = ""
-      this.sourceKindTarget.value = "microphone"
-      this.resetLivePanel()
       this.liveSession = await this.createRecordingSession()
+    } catch (error) {
+      this.updateStatus(error.message || this.sessionErrorTextValue)
+      return
+    }
+
+    try {
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
       this.showLivePanel()
 
@@ -246,6 +255,10 @@ export default class extends Controller {
     this.timerId = window.setInterval(() => {
       this.seconds += 1
       this.renderTimer()
+      if (this.maxDurationSecondsValue > 0 && this.seconds >= this.maxDurationSecondsValue) {
+        this.updateStatus(this.durationLimitTextValue)
+        this.stop()
+      }
     }, 1000)
   }
 

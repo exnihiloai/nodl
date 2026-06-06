@@ -235,4 +235,34 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     end
     assert_select "strong", text: "bold"
   end
+
+  test "rejects creating a recording when workspace reached recording limit" do
+    user = create_user_with_workspace(email: "recording-limit@example.test")
+    workspace = user.workspaces.first
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    PlanLimits::MAX_RECORDINGS.times do |index|
+      workspace.recording_sessions.create!(
+        creator: user,
+        title: "Recording #{index}",
+        transformer_handle: "default",
+        source_kind: :microphone,
+        status: :recording
+      )
+    end
+
+    assert_no_difference -> { workspace.recording_sessions.count } do
+      post recording_sessions_path,
+           params: {
+             recording_session: {
+               source_kind: "microphone",
+               transformer_handle: "default"
+             }
+           },
+           as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, "recordings included in your test plan"
+  end
 end

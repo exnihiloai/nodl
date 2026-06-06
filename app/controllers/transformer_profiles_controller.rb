@@ -12,6 +12,11 @@ class TransformerProfilesController < ApplicationController
   end
 
   def new
+    if @workspace.format_limit_reached?
+      redirect_to dashboard_path, alert: t("dashboard.limits.formats_reached", limit: PlanLimits::MAX_FORMATS)
+      return
+    end
+
     @transformer_profile = @workspace.transformer_profiles.new
   end
 
