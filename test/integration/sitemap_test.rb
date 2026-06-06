@@ -41,6 +41,17 @@ class SitemapIntegrationTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Allow: /"
   end
 
+  test "sitemap is reachable for search console crawler user agents" do
+    get sitemap_path(format: :xml), headers: {
+      "User-Agent" => "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 " \
+                      "(KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 " \
+                      "(compatible; Google-Site-Verification/1.0)"
+    }
+
+    assert_response :success
+    assert_includes response.body, "<urlset"
+  end
+
   private
 
   def write_legal_page(slug, locale, content)
