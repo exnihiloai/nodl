@@ -21,6 +21,8 @@ gem "jbuilder"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
+# Edge rate limiting + malicious-probe blocking (counters live in Rails.cache).
+gem "rack-attack", "~> 6.7"
 gem "stripe", "~> 13.0"
 gem "kramdown", "~> 2.4.0"
 # Pure-Ruby document export for downloads: PDF (prawn/prawn-html) and Word (htmltoword). No native binaries.
