@@ -106,7 +106,7 @@ Metrics/AbcSize:      { Max: 30 }
 ### Tools I could NOT run (and exact commands to enable them)
 Not in the Gemfile, so not executed — add to `group :development, :test` and run:
 - ✅ **strong_migrations** — added `gem "strong_migrations", "~> 2.8"` (main group); `config/initializers/strong_migrations.rb` grandfathers existing migrations (`start_after`) and targets Postgres 16. Verified: an unsafe `remove_column` aborts `db:migrate` with the `ignored_columns` guidance.
-- ✅ **database_consistency** — added `gem "database_consistency", require: false`; wired into `make lint`. First run surfaced 9 findings (real: `TransformerProfile.instructions` nullable but validated present, `User.password_digest` null-constraint validator; noise: redundant covering indexes), baselined in `.database_consistency.todo.yml` for later triage.
+- ✅ **database_consistency** — added `gem "database_consistency", require: false`; wired into `make lint`. First run surfaced 9 findings; triaged → 1 fixed (`TransformerProfile.instructions` is now NOT NULL), 8 baselined in `.database_consistency.todo.yml` (3 intentional/false-positive, 5 optional redundant-index cleanups).
 - **rubycritic** — `gem "rubycritic", require: false`; `bundle exec rubycritic app lib` for churn-vs-complexity (manual, not a CI gate). *(Still not wired — optional.)*
 - ✅ **SimpleCov** — done (see M4 above); `COVERAGE=1` opt-in via `make coverage`.
 

@@ -24,9 +24,6 @@ TransformerProfile:
   index_transformer_profiles_one_default_per_workspace:
     UniqueIndexChecker:
       enabled: false
-  instructions:
-    ColumnPresenceChecker:
-      enabled: false
 User:
   password_digest:
     NullConstraintChecker:

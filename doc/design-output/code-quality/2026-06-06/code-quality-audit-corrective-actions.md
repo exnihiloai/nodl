@@ -303,7 +303,7 @@ Makefile                                 | lint now also runs database_consisten
 README.md                                | document lint contents + migration safety
 config/initializers/strong_migrations.rb | new — start_after + target_version
 .database_consistency.yml                | new — base config
-.database_consistency.todo.yml           | new — 9-finding baseline (deferred triage)
+.database_consistency.todo.yml           | new — baseline (now 8 entries after the instructions fix)
 ```
 
 ## Round 4 — files touched (make check handoff gate)
@@ -361,22 +361,52 @@ Two config files were added (tracked in git):
 
 - `.database_consistency.yml` — base config (disables ActiveStorage/ActionText
   false positives; auto-loaded).
-- `.database_consistency.todo.yml` — **baseline of the 9 pre-existing findings**,
+- `.database_consistency.todo.yml` — baseline of the pre-existing findings,
   passed via `-c`, so `make lint` is green today and only *new* mismatches fail.
   This is a deferred-triage backlog, not a fix (per the agreed plan).
 
-The 9 baselined findings (to triage later):
+The first run surfaced **9 findings**; they were triaged as follows:
 
-- *Real / worth fixing:* `TransformerProfile.instructions` is validated
-  `presence: true` but the column is nullable; `User.password_digest` is
-  `NOT NULL` without a nil-disallowing validator; `RecordingSession`→`document`
-  association lacks a unique index; the partial unique default-transformer index
-  has no matching uniqueness validator.
-- *Likely noise:* 5 `RedundantIndexChecker` hits where a single-column index is
-  covered by a composite index (often intentional for FK lookups).
+- *Fixed (1):* `TransformerProfile.instructions` was validated `presence: true`
+  but the column was nullable — now `NOT NULL` (see below). Removed from the
+  baseline; **8 findings remain baselined.**
+- *Intentional / false positive (3, keep baselined):* `User.password_digest`
+  has no explicit nil validator but `has_secure_password` enforces it; the
+  partial unique default-transformer index can't map to a plain Rails uniqueness
+  validator (a custom model validation covers it); `RecordingSession`→`document`
+  deliberately has no unique index because the roadmap moves to many-docs-per-
+  recording.
+- *Optional cleanup (5, kept baselined):* `RedundantIndexChecker` hits where a
+  single-column FK index is covered by a composite index's leftmost prefix —
+  safe to drop in a future cleanup migration, low value.
 
-**Verification:** `make lint` exits 0 (RuboCop 135 files / 0 offenses including
-the new initializer; database_consistency loads both configs, no failures).
+### Triage fix: `TransformerProfile.instructions` NOT NULL
+
+`db/migrate/20260606103106_change_transformer_profile_instructions_null.rb` adds
+the constraint using the strong_migrations **safe pattern** so it passes the gate
+on tables of any size (and demonstrates the gate working end-to-end):
+
+```ruby
+disable_ddl_transaction!          # so validate runs outside a txn (no write block)
+
+def up
+  add_check_constraint :transformer_profiles, "instructions IS NOT NULL",
+                       name: "transformer_profiles_instructions_null", validate: false
+  validate_check_constraint :transformer_profiles, name: "transformer_profiles_instructions_null"
+  change_column_null :transformer_profiles, :instructions, false
+  remove_check_constraint :transformer_profiles, name: "transformer_profiles_instructions_null"
+end
+```
+
+Notably, the first attempt (without `disable_ddl_transaction!`) was **aborted by
+strong_migrations** ("Validating a check constraint while writes are blocked is
+dangerous") — the gate caught a real footgun before it shipped. Safe because no
+rows had null instructions (verified: 0 of 21). `db/schema.rb` now shows
+`t.text "instructions", null: false`.
+
+**Verification:** `make check` exits 0 (db-check applies/validates the migration;
+lint clean with the trimmed 8-entry baseline; 150 unit/integration + 26 system
+tests, 0 failures).
 
 ### Operational note
 
@@ -468,12 +498,13 @@ From the pre-launch audit, the following remain open and are recommended next:
 - **M2 — Data migrations reference application models directly.** Acceptable for
   now; prefer raw SQL / inlined classes for future data migrations. (strong_migrations
   now grandfathers these via `start_after`, so they won't be flagged.)
-- **database_consistency baseline triage.** 9 findings are deferred in
-  `.database_consistency.todo.yml`. The real ones to address: nullable
-  `TransformerProfile.instructions` (add NOT NULL), `User.password_digest` nil
-  validator, missing unique index on `RecordingSession`→`document`, and a
-  uniqueness validator for the default-transformer partial index. Remove each
-  from the todo as it's fixed so the gate tightens over time.
+- **database_consistency baseline triage.** After fixing
+  `TransformerProfile.instructions` (NOT NULL), **8 findings remain baselined**
+  in `.database_consistency.todo.yml`. The remaining 8 were triaged as either
+  intentional/false-positive (3) or optional low-value cleanup (5×
+  `RedundantIndexChecker`) — none require action to ship. If you later drop the
+  redundant single-column FK indexes, remove their entries from the todo so the
+  gate tightens.
 
 See [`code-quality-audit-pre.md`](./code-quality-audit-pre.md) §3–§4 for details
 and exact commands.
