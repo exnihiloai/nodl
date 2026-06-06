@@ -4,6 +4,7 @@
 **IMPORTAN MUST FOLLOW** Explore your skills and agents in the .claude or .codex folder in the root of this repo.
 
 ## Orientation
+- Read `doc/agent-orientation.md` first for OSS vs `private/`, env vars, error-page behavior, and common paths.
 - Use information from `README.md` for setup and daily commands.
 - This project is a Rails 8 SaaS boilerplate (not FastAPI anymore). Prefer Rails conventions over custom frameworks.
 

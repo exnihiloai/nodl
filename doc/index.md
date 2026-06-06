@@ -8,6 +8,12 @@ This documentation is organized by document purpose:
 - `design-output/` contains accepted architecture, API, data model, module, security, and ADR documentation.
 - `third-party/` contains copied or curated reference material for external libraries and tools.
 
+## Agent Orientation
+
+| Document | Description |
+|---|---|
+| [agent-orientation.md](agent-orientation.md) | Map for AI agents: OSS vs `private/`, env vars, quality gates, common paths |
+
 ## Design Input
 
 Design input documents describe what should be built, why it matters, and what constraints or domain rules shape the work.
