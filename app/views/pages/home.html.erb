@@ -148,6 +148,23 @@
             <p class="text-4xl font-bold"><%= t("pages.home.pricing.free.price") %></p>
             <p class="text-sm text-base-content/60"><%= t("pages.home.pricing.free.period") %></p>
           </div>
+          <div class="rounded-box bg-base-200/80 p-4 space-y-2">
+            <p class="text-sm font-semibold"><%= t("pages.home.pricing.free.limits_heading") %></p>
+            <ul class="space-y-1 text-sm text-base-content/70">
+              <li class="flex items-start gap-2">
+                <%= icon("check", class: "size-4 text-success mt-0.5 shrink-0", label: t("pages.home.pricing.free.limit_recordings", limit: PlanLimits::MAX_RECORDINGS)) %>
+                <span><%= t("pages.home.pricing.free.limit_recordings", limit: PlanLimits::MAX_RECORDINGS) %></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <%= icon("check", class: "size-4 text-success mt-0.5 shrink-0", label: t("pages.home.pricing.free.limit_formats", limit: PlanLimits::MAX_FORMATS)) %>
+                <span><%= t("pages.home.pricing.free.limit_formats", limit: PlanLimits::MAX_FORMATS) %></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <%= icon("check", class: "size-4 text-success mt-0.5 shrink-0", label: t("pages.home.pricing.free.limit_duration", count: PlanLimits::MAX_RECORDING_DURATION.in_hours.to_i)) %>
+                <span><%= t("pages.home.pricing.free.limit_duration", count: PlanLimits::MAX_RECORDING_DURATION.in_hours.to_i) %></span>
+              </li>
+            </ul>
+          </div>
           <ul class="space-y-2 text-sm text-base-content/80">
             <% 1.upto(4) do |i| %>
               <li class="flex items-start gap-2">
@@ -194,12 +211,19 @@
     </div>
 
     <div class="space-y-4">
-      <% 1.upto(4) do |i| %>
+      <% 1.upto(5) do |i| %>
         <div class="collapse collapse-arrow bg-base-200 shadow">
           <input type="radio" name="faq" <%= "checked" if i == 1 %> />
           <div class="collapse-title text-lg font-semibold"><%= t("pages.home.faq.q#{i}") %></div>
           <div class="collapse-content text-base-content/70">
-            <p><%= t("pages.home.faq.a#{i}") %></p>
+            <% if i == 5 %>
+              <p><%= t("pages.home.faq.a5",
+                        recordings: PlanLimits::MAX_RECORDINGS,
+                        formats: PlanLimits::MAX_FORMATS,
+                        duration: t("pages.home.pricing.free.limit_duration_short", count: PlanLimits::MAX_RECORDING_DURATION.in_hours.to_i)) %></p>
+            <% else %>
+              <p><%= t("pages.home.faq.a#{i}") %></p>
+            <% end %>
           </div>
         </div>
       <% end %>

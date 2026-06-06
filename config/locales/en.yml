@@ -170,7 +170,7 @@ en:
       pricing:
         badge: "Pricing"
         heading: "Try it free, upgrade when it sticks"
-        subheading: "Start with a free test — enough to record, transcribe, and generate real documents. When Nodl becomes part of your routine, Pro is built for that."
+        subheading: "Start with a free test — clear limits, no credit card, enough to record, transcribe, and generate real documents. When Nodl becomes part of your routine, Pro is built for that."
         free:
           name: "Free Test"
           price: "$0"
@@ -179,7 +179,16 @@ en:
           cta: "Try Nodl free"
           login_hint: "Already have an account?"
           login_link: "Sign in"
-          feature_1: "Test allowance to explore the full workflow"
+          limits_heading: "What's included"
+          limit_recordings: "Up to %{limit} recordings total"
+          limit_formats: "Up to %{limit} formats (including the default)"
+          limit_duration:
+            one: "Up to %{count} hour per recording"
+            other: "Up to %{count} hours per recording"
+          limit_duration_short:
+            one: "up to %{count} hour"
+            other: "up to %{count} hours"
+          feature_1: "Full workflow — record, transcribe, and generate documents"
           feature_2: "Live transcript preview while you speak"
           feature_3: "Built-in and custom document formats"
           feature_4: "Private workspace for your test recordings"
@@ -195,13 +204,15 @@ en:
         heading: "Questions before you start"
         subheading: "Straight answers so you can decide in under a minute."
         q1: "Can I try Nodl before paying?"
-        a1: "Yes. Create an account with no credit card and use your test allowance to run the full flow — record, transcribe, and generate documents. It is enough to see whether Nodl fits your workflow; steady daily use is what Pro is for."
+        a1: "Yes. Create an account with no credit card and use your test allowance to run the full flow — record, transcribe, and generate documents. The limits are shown on the pricing card above; steady daily use is what Pro is for."
         q2: "What can I create from a recording?"
         a2: "Choose a format such as meeting notes, a task list, or a client summary. Nodl generates a structured document you can review and download."
         q3: "Do I need to install anything?"
         a3: "No. Nodl runs in your browser. Record, upload, and generate documents from any modern device with a microphone."
         q4: "Is my data private?"
         a4: "Your recordings, transcripts, and documents stay in your workspace. Nodl is built for professionals who cannot afford to leak sensitive conversations."
+        q5: "What are the limits on the free test?"
+        a5: "The free test includes up to %{recordings} recordings total, up to %{formats} formats in your workspace (including the default), and up to %{duration} per recording. That is enough to try the full workflow before upgrading to Pro."
       final_cta:
         heading: "Your next idea is one recording away"
         subheading: "Try your first recording today — see what a finished document feels like in minutes."
