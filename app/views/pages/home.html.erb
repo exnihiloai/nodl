@@ -3,53 +3,40 @@
   <meta name="description" content="<%= t("pages.home.meta_description") %>" />
 <% end %>
 
-<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-300 py-20">
+<section class="bg-gradient-to-br from-primary/10 via-base-100 to-base-200 py-16 sm:py-24">
   <div class="container mx-auto px-4 max-w-6xl">
-    <div class="hero rounded-3xl bg-base-200 shadow-2xl">
-      <div class="hero-content flex-col lg:flex-row gap-12 p-12">
-        <div class="max-w-xl space-y-6">
-          <span class="badge badge-info badge-lg gap-2 uppercase tracking-wide"><%= t("pages.home.hero.badge") %></span>
-          <h1 class="text-4xl sm:text-5xl font-bold leading-tight"><%= t("pages.home.hero.heading") %></h1>
-          <p class="text-lg text-base-content/70">
-            <%= t("pages.home.hero.subheading") %>
-          </p>
-          <div class="flex flex-wrap gap-3">
-            <%= link_to t("pages.home.hero.get_started"), register_path, class: "btn btn-primary btn-lg" %>
-            <%= link_to t("pages.home.hero.live_demo"), try_now_path, class: "btn btn-secondary btn-lg" %>
-            <%= link_to t("pages.home.hero.check_status"), readyz_path(format: :html), class: "btn btn-outline btn-lg", data: { turbo_frame: "status_check" } %>
-          </div>
-          <%= turbo_frame_tag "status_check", class: "text-sm text-base-content/60" do %>
-            <%= t("pages.home.hero.status_unchecked") %>
-          <% end %>
+    <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div class="space-y-6">
+        <span class="badge badge-primary badge-lg gap-2 uppercase tracking-wide"><%= t("pages.home.hero.badge") %></span>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"><%= t("pages.home.hero.heading") %></h1>
+        <p class="text-lg sm:text-xl text-base-content/70 max-w-xl">
+          <%= t("pages.home.hero.subheading") %>
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <%= link_to t("pages.home.hero.get_started"), register_path, class: "btn btn-primary btn-lg", data: { testid: "hero-start-free" } %>
+          <%= link_to t("pages.home.hero.secondary_cta"), root_path(anchor: "how-it-works"), class: "btn btn-outline btn-lg" %>
         </div>
-        <div class="grid gap-4 w-full lg:w-5/12">
-          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
-            <div class="card-body space-y-2">
-              <div class="flex items-center gap-2">
-                <%= icon("activity", class: "size-5 text-primary", label: t("pages.home.cards.observability.label")) %>
-                <h2 class="card-title text-lg"><%= t("pages.home.cards.observability.title") %></h2>
-              </div>
-              <p class="text-base-content/70 text-sm"><%= t("pages.home.cards.observability.body") %></p>
-            </div>
-          </article>
-          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
-            <div class="card-body space-y-2">
-              <div class="flex items-center gap-2">
-                <%= icon("shield-check", class: "size-5 text-success", label: t("pages.home.cards.security.label")) %>
-                <h2 class="card-title text-lg"><%= t("pages.home.cards.security.title") %></h2>
-              </div>
-              <p class="text-base-content/70 text-sm"><%= t("pages.home.cards.security.body") %></p>
-            </div>
-          </article>
-          <article class="card bg-base-100/90 border border-base-200/60 shadow-xl">
-            <div class="card-body space-y-2">
-              <div class="flex items-center gap-2">
-                <%= icon("rocket", class: "size-5 text-accent", label: t("pages.home.cards.velocity.label")) %>
-                <h2 class="card-title text-lg"><%= t("pages.home.cards.velocity.title") %></h2>
-              </div>
-              <p class="text-base-content/70 text-sm"><%= t("pages.home.cards.velocity.body") %></p>
-            </div>
-          </article>
+        <p class="text-sm text-base-content/60"><%= t("pages.home.hero.trust_line") %></p>
+      </div>
+
+      <div class="rounded-3xl border border-base-300 bg-base-100/90 p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between text-sm text-base-content/60">
+          <span><%= t("pages.home.hero.preview.label") %></span>
+          <span class="badge badge-success badge-sm"><%= t("pages.home.hero.preview.live") %></span>
+        </div>
+        <div class="rounded-box bg-base-200 p-4 space-y-3">
+          <p class="text-xs uppercase tracking-wide text-base-content/50"><%= t("pages.home.hero.preview.recording") %></p>
+          <p class="italic text-base-content/80">"<%= t("pages.home.hero.preview.quote") %>"</p>
+        </div>
+        <div class="divider my-1"></div>
+        <div class="rounded-box border border-primary/20 bg-primary/5 p-4 space-y-2">
+          <p class="text-xs uppercase tracking-wide text-primary"><%= t("pages.home.hero.preview.output_label") %></p>
+          <p class="font-medium"><%= t("pages.home.hero.preview.output_title") %></p>
+          <ul class="list-disc list-inside text-sm text-base-content/70 space-y-1">
+            <li><%= t("pages.home.hero.preview.output_item_1") %></li>
+            <li><%= t("pages.home.hero.preview.output_item_2") %></li>
+            <li><%= t("pages.home.hero.preview.output_item_3") %></li>
+          </ul>
         </div>
       </div>
     </div>
@@ -59,40 +46,141 @@
 <section id="services" class="py-20 bg-base-100">
   <div class="container mx-auto px-4 max-w-6xl space-y-10">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <span class="badge badge-outline badge-lg"><%= t("pages.home.services.badge") %></span>
-      <h2 class="text-3xl font-semibold"><%= t("pages.home.services.heading") %></h2>
-      <p class="text-base-content/70"><%= t("pages.home.services.subheading") %></p>
+      <span class="badge badge-outline badge-lg"><%= t("pages.home.benefits.badge") %></span>
+      <h2 class="text-3xl sm:text-4xl font-semibold"><%= t("pages.home.benefits.heading") %></h2>
+      <p class="text-base-content/70 text-lg"><%= t("pages.home.benefits.subheading") %></p>
     </div>
-    <div role="tablist" class="tabs tabs-boxed flex-nowrap overflow-x-auto">
-      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="<%= t("pages.home.services.seed.tab") %>" checked />
-      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
-        <h3 class="text-xl font-semibold"><%= t("pages.home.services.seed.title") %></h3>
-        <ul class="list-disc list-inside text-base-content/70 space-y-1">
-          <li><%= t("pages.home.services.seed.item_1") %></li>
-          <li><%= t("pages.home.services.seed.item_2") %></li>
-          <li><%= t("pages.home.services.seed.item_3") %></li>
-        </ul>
-      </div>
 
-      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="<%= t("pages.home.services.internal.tab") %>" />
-      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
-        <h3 class="text-xl font-semibold"><%= t("pages.home.services.internal.title") %></h3>
-        <ul class="list-disc list-inside text-base-content/70 space-y-1">
-          <li><%= t("pages.home.services.internal.item_1") %></li>
-          <li><%= t("pages.home.services.internal.item_2") %></li>
-          <li><%= t("pages.home.services.internal.item_3") %></li>
-        </ul>
-      </div>
+    <div class="grid gap-6 md:grid-cols-3">
+      <article class="card bg-base-200 border border-base-300 shadow-md">
+        <div class="card-body space-y-3">
+          <div class="flex items-center gap-2">
+            <%= icon("activity", class: "size-5 text-primary", label: t("pages.home.benefits.capture.label")) %>
+            <h3 class="card-title text-lg"><%= t("pages.home.benefits.capture.title") %></h3>
+          </div>
+          <p class="text-base-content/70 text-sm"><%= t("pages.home.benefits.capture.body") %></p>
+        </div>
+      </article>
 
-      <input type="radio" name="use-case" role="tab" class="tab text-sm sm:text-base" aria-label="<%= t("pages.home.services.agencies.tab") %>" />
-      <div role="tabpanel" class="tab-content bg-base-200 border border-base-300 rounded-box p-6 space-y-4">
-        <h3 class="text-xl font-semibold"><%= t("pages.home.services.agencies.title") %></h3>
-        <ul class="list-disc list-inside text-base-content/70 space-y-1">
-          <li><%= t("pages.home.services.agencies.item_1") %></li>
-          <li><%= t("pages.home.services.agencies.item_2") %></li>
-          <li><%= t("pages.home.services.agencies.item_3") %></li>
-        </ul>
-      </div>
+      <article class="card bg-base-200 border border-base-300 shadow-md">
+        <div class="card-body space-y-3">
+          <div class="flex items-center gap-2">
+            <%= icon("square-pen", class: "size-5 text-secondary", label: t("pages.home.benefits.transform.label")) %>
+            <h3 class="card-title text-lg"><%= t("pages.home.benefits.transform.title") %></h3>
+          </div>
+          <p class="text-base-content/70 text-sm"><%= t("pages.home.benefits.transform.body") %></p>
+        </div>
+      </article>
+
+      <article class="card bg-base-200 border border-base-300 shadow-md">
+        <div class="card-body space-y-3">
+          <div class="flex items-center gap-2">
+            <%= icon("shield-check", class: "size-5 text-success", label: t("pages.home.benefits.trust.label")) %>
+            <h3 class="card-title text-lg"><%= t("pages.home.benefits.trust.title") %></h3>
+          </div>
+          <p class="text-base-content/70 text-sm"><%= t("pages.home.benefits.trust.body") %></p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="py-20 bg-base-200">
+  <div class="container mx-auto px-4 max-w-6xl space-y-10">
+    <div class="text-center space-y-3 max-w-2xl mx-auto">
+      <span class="badge badge-outline badge-lg"><%= t("pages.home.how_it_works.badge") %></span>
+      <h2 class="text-3xl sm:text-4xl font-semibold"><%= t("pages.home.how_it_works.heading") %></h2>
+      <p class="text-base-content/70 text-lg"><%= t("pages.home.how_it_works.subheading") %></p>
+    </div>
+
+    <ol class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <% %w[step_1 step_2 step_3 step_4].each_with_index do |step, index| %>
+        <li class="card bg-base-100 border border-base-300 shadow-sm">
+          <div class="card-body space-y-3">
+            <div class="badge badge-primary badge-lg"><%= index + 1 %></div>
+            <h3 class="card-title text-lg"><%= t("pages.home.how_it_works.#{step}.title") %></h3>
+            <p class="text-sm text-base-content/70"><%= t("pages.home.how_it_works.#{step}.body") %></p>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+</section>
+
+<section class="py-20 bg-base-100">
+  <div class="container mx-auto px-4 max-w-6xl space-y-10">
+    <div class="text-center space-y-3 max-w-2xl mx-auto">
+      <span class="badge badge-outline badge-lg"><%= t("pages.home.use_cases.badge") %></span>
+      <h2 class="text-3xl sm:text-4xl font-semibold"><%= t("pages.home.use_cases.heading") %></h2>
+      <p class="text-base-content/70 text-lg"><%= t("pages.home.use_cases.subheading") %></p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <% %w[meetings brain_dump client_notes].each do |use_case| %>
+        <article class="card bg-base-200 border border-base-300">
+          <div class="card-body space-y-3">
+            <h3 class="card-title"><%= t("pages.home.use_cases.#{use_case}.title") %></h3>
+            <p class="text-sm text-base-content/70"><%= t("pages.home.use_cases.#{use_case}.body") %></p>
+            <p class="text-sm font-medium text-primary"><%= t("pages.home.use_cases.#{use_case}.outcome") %></p>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="py-20 bg-base-200">
+  <div class="container mx-auto px-4 max-w-4xl space-y-10">
+    <div class="text-center space-y-3">
+      <span class="badge badge-outline badge-lg"><%= t("pages.home.pricing.badge") %></span>
+      <h2 class="text-3xl sm:text-4xl font-semibold"><%= t("pages.home.pricing.heading") %></h2>
+      <p class="text-base-content/70 text-lg max-w-2xl mx-auto"><%= t("pages.home.pricing.subheading") %></p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <article class="card bg-base-100 border-2 border-primary shadow-xl">
+        <div class="card-body space-y-5">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="card-title text-2xl"><%= t("pages.home.pricing.free.name") %></h3>
+            <span class="badge badge-primary"><%= t("pages.home.pricing.free.available_now") %></span>
+          </div>
+          <div>
+            <p class="text-4xl font-bold"><%= t("pages.home.pricing.free.price") %></p>
+            <p class="text-sm text-base-content/60"><%= t("pages.home.pricing.free.period") %></p>
+          </div>
+          <ul class="space-y-2 text-sm text-base-content/80">
+            <% 1.upto(4) do |i| %>
+              <li class="flex items-start gap-2">
+                <%= icon("check", class: "size-4 text-success mt-0.5 shrink-0", label: t("pages.home.pricing.free.feature_#{i}")) %>
+                <span><%= t("pages.home.pricing.free.feature_#{i}") %></span>
+              </li>
+            <% end %>
+          </ul>
+          <%= link_to t("pages.home.pricing.free.cta"), register_path, class: "btn btn-primary btn-lg w-full", data: { testid: "pricing-start-free" } %>
+          <p class="text-center text-sm text-base-content/60">
+            <%= t("pages.home.pricing.free.login_hint") %>
+            <%= link_to t("pages.home.pricing.free.login_link"), login_path, class: "link link-primary" %>
+          </p>
+        </div>
+      </article>
+
+      <article class="card bg-base-100 border border-base-300 opacity-80">
+        <div class="card-body space-y-4">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="card-title text-2xl"><%= t("pages.home.pricing.paid_coming_soon.title") %></h3>
+            <span class="badge badge-ghost"><%= t("pages.home.pricing.paid_coming_soon.badge") %></span>
+          </div>
+          <p class="text-base-content/70"><%= t("pages.home.pricing.paid_coming_soon.body") %></p>
+          <ul class="space-y-2 text-sm text-base-content/60">
+            <% 1.upto(3) do |i| %>
+              <li class="flex items-start gap-2">
+                <%= icon("lock", class: "size-4 mt-0.5 shrink-0", label: t("pages.home.pricing.paid_coming_soon.feature_#{i}")) %>
+                <span><%= t("pages.home.pricing.paid_coming_soon.feature_#{i}") %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -101,31 +189,31 @@
   <div class="container mx-auto px-4 max-w-4xl space-y-8">
     <div class="text-center space-y-3">
       <span class="badge badge-outline badge-lg"><%= t("pages.home.faq.badge") %></span>
-      <h2 class="text-3xl font-semibold"><%= t("pages.home.faq.heading") %></h2>
+      <h2 class="text-3xl sm:text-4xl font-semibold"><%= t("pages.home.faq.heading") %></h2>
       <p class="text-base-content/70"><%= t("pages.home.faq.subheading") %></p>
     </div>
+
     <div class="space-y-4">
-      <div class="collapse collapse-arrow bg-base-200 shadow">
-        <input type="radio" name="faq" checked />
-        <div class="collapse-title text-lg font-semibold"><%= t("pages.home.faq.q1") %></div>
-        <div class="collapse-content text-base-content/70">
-          <p><%= t("pages.home.faq.a1") %></p>
+      <% 1.upto(4) do |i| %>
+        <div class="collapse collapse-arrow bg-base-200 shadow">
+          <input type="radio" name="faq" <%= "checked" if i == 1 %> />
+          <div class="collapse-title text-lg font-semibold"><%= t("pages.home.faq.q#{i}") %></div>
+          <div class="collapse-content text-base-content/70">
+            <p><%= t("pages.home.faq.a#{i}") %></p>
+          </div>
         </div>
-      </div>
-      <div class="collapse collapse-arrow bg-base-200 shadow">
-        <input type="radio" name="faq" />
-        <div class="collapse-title text-lg font-semibold"><%= t("pages.home.faq.q2") %></div>
-        <div class="collapse-content text-base-content/70">
-          <p><%= t("pages.home.faq.a2") %></p>
-        </div>
-      </div>
-      <div class="collapse collapse-arrow bg-base-200 shadow">
-        <input type="radio" name="faq" />
-        <div class="collapse-title text-lg font-semibold"><%= t("pages.home.faq.q3") %></div>
-        <div class="collapse-content text-base-content/70">
-          <p><%= t("pages.home.faq.a3") %></p>
-        </div>
-      </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="py-20 bg-gradient-to-r from-primary to-secondary text-primary-content">
+  <div class="container mx-auto px-4 max-w-4xl text-center space-y-6">
+    <h2 class="text-3xl sm:text-4xl font-bold"><%= t("pages.home.final_cta.heading") %></h2>
+    <p class="text-lg text-primary-content/90 max-w-2xl mx-auto"><%= t("pages.home.final_cta.subheading") %></p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <%= link_to t("pages.home.final_cta.cta"), register_path, class: "btn btn-neutral btn-lg" %>
+      <%= link_to t("pages.home.final_cta.login"), login_path, class: "btn btn-outline btn-lg border-primary-content text-primary-content hover:bg-primary-content hover:text-primary" %>
     </div>
   </div>
 </section>

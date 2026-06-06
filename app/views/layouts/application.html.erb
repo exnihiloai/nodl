@@ -34,7 +34,7 @@
           <div><%= t("footer.copyright", year: Time.current.year) %></div>
           <div class="flex gap-4">
             <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
-            <%= link_to t("footer.pricing"), payments_path, class: "link link-hover" %>
+            <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
             <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
           </div>
         </div>
