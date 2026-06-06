@@ -14,3 +14,27 @@ AllCops:
     - "log/**/*"
     - "storage/**/*"
     - "app/assets/builds/**/*"
+
+# Omakase disables the Metrics cops entirely. Re-enable a few with deliberately
+# loose thresholds (set with headroom above the current app maxima) so genuine
+# method/class bloat surfaces without fighting the omakase style baseline. These
+# pass on the current codebase; they are regression guards, not a mandate to
+# refactor today. db/migrate (schema DSL) and scripts (build tooling) are
+# excluded because their line/ABC counts are naturally inflated and meaningless.
+Metrics/MethodLength:
+  Enabled: true
+  Max: 45
+  Exclude:
+    - "db/migrate/**/*"
+    - "scripts/**/*"
+
+Metrics/ClassLength:
+  Enabled: true
+  Max: 250
+
+Metrics/AbcSize:
+  Enabled: true
+  Max: 50
+  Exclude:
+    - "db/migrate/**/*"
+    - "scripts/**/*"

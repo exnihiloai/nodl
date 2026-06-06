@@ -79,6 +79,8 @@ group :development do
 end
 
 group :test do
+  # Code coverage map (opt-in via COVERAGE=1). A guide to untested paths, not a grade.
+  gem "simplecov", require: false
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   # Lightweight mocking/stubbing for Minitest (Rails doesn't ship stubs in Minitest 6+).

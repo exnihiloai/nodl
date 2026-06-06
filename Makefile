@@ -7,7 +7,7 @@ NOTIFY_ENV ?= private/notify.env
 MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
 
-.PHONY: help notify build up dev test down logs shell lint seed skill skills skills-check skills-clean skill-new setup
+.PHONY: help notify build up dev test coverage down logs shell lint seed skill skills skills-check skills-clean skill-new setup
 
 help:
 	@echo "Available targets:"
@@ -15,6 +15,7 @@ help:
 	@echo "  make up     # Start local stack in background"
 	@echo "  make dev    # Alias for 'make up'"
 	@echo "  make test   # Run all Rails tests (unit/integration + system)"
+	@echo "  make coverage # Run tests with SimpleCov; report to ./coverage/index.html"
 	@echo "  make seed   # Seed database"
 	@echo "  make lint   # Run rubocop"
 	@echo "  make skill  # Alias for 'make skills'"
@@ -40,6 +41,11 @@ test:
 	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
 	$(COMPOSE) exec $(WEB) bin/rails test
 	$(COMPOSE) exec $(WEB) bin/rails test:system
+
+coverage:
+	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
+	$(COMPOSE) exec -e COVERAGE=1 $(WEB) bin/rails test
+	@echo "Coverage report written to ./coverage/index.html"
 
 seed:
 	$(COMPOSE) exec $(WEB) bin/rails db:seed

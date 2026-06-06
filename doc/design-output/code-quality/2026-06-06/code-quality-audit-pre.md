@@ -34,7 +34,7 @@ The material problems are **operational, not architectural**, and all are pre-la
 
 ### 🟡 Mid (acceptable, improvable)
 
-**M1 — RuboCop is a formatter, not a complexity gate**
+**M1 — RuboCop is a formatter, not a complexity gate** — ✅ **CLEARED (2026-06-06)**: re-enabled `Metrics/MethodLength` (Max 45), `Metrics/AbcSize` (Max 50), and `Metrics/ClassLength` (Max 250) in `.rubocop.yml`, with `db/migrate` and `scripts` excluded. Thresholds set with headroom above current app maxima so they pass today (134 files, 0 offenses) and act as regression guards rather than a refactor mandate.
 - **Evidence:** `.rubocop.yml` inherits `rubocop-rails-omakase`, which sets `Metrics/ClassLength`, `Metrics/MethodLength`, `Metrics/AbcSize`, etc. to `Enabled: false` (confirmed via `--show-cops`). The "0 offenses / 134 files" result reflects style only. `rubocop-performance` and `rubocop-rspec` are not loaded (the latter is correct — this is Minitest, not RSpec).
 - **Consequence (Changeability):** Method/class bloat won't be caught automatically. Today it's fine (largest file `admin/users_controller.rb` at 287 LOC, mostly thin Turbo-stream render helpers), but nothing holds the line.
 - **Recommendation:** Optionally enable a few loose Metrics thresholds (e.g. `Metrics/MethodLength: Max: 25`, `Metrics/ClassLength: Max: 250`) so regressions surface. Low priority given current state — don't over-tighten against omakase.
@@ -49,7 +49,7 @@ The material problems are **operational, not architectural**, and all are pre-la
 - **Consequence (Risk: low):** A signed-in user with zero workspaces would hit `NoMethodError` → 500 instead of a clean redirect. Currently unreachable — registration and admin-create both always create a workspace+membership in a transaction — so this is latent, not live.
 - **Recommendation:** Add a shared `before_action :require_workspace!` in `ApplicationController` (or a concern) for workspace-scoped controllers, mirroring the existing `authenticate_user!` pattern. Defends the invariant rather than relying on it.
 
-**M4 — Coverage tooling absent; coverage is inferred, not measured**
+**M4 — Coverage tooling absent; coverage is inferred, not measured** — ✅ **CLEARED (2026-06-06)**: added `simplecov` (test group, opt-in via `COVERAGE=1`), started before app load in `test_helper.rb` with parallel-worker merging. Baseline from unit/integration run: **Line 54.82% (1006/1835), Branch 61.87% (185/299)** — a map, not a grade (system tests run separately and aren't included).
 - **Evidence:** No SimpleCov in `Gemfile`/`test`. Breadth is strong by inspection (models, 8 integration, 11 system via `rack_test`, 12 lib, 4 services, channel, i18n parity) but there is no untested-path map. Risky paths *are* covered (cross-tenant denial, login throttling, webhook signature, seed safety).
 - **Consequence (Changeability):** Can't see which branches are unexercised; e.g. `RecordingSessionProcessor` failure/`ensure` cleanup paths and `estimated_duration` fallbacks aren't obviously covered.
 - **Recommendation:** Add SimpleCov (dev/test) to produce a map — treat as a guide, not a grade.
@@ -74,7 +74,7 @@ The material problems are **operational, not architectural**, and all are pre-la
 
 **Real investment (half-day to a day):**
 - Stand up the GitHub Actions CI pipeline with hard gates (B1) — the structural fix that makes all the above stay fixed.
-- Add SimpleCov + optional loose Metrics cops (M1, M4).
+- ~~Add SimpleCov + optional loose Metrics cops (M1, M4).~~ ✅ done 2026-06-06
 - Run the tools I could not run locally (not in Gemfile): wire `strong_migrations` and `database_consistency` as ongoing checks.
 
 ---

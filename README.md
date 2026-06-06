@@ -73,6 +73,7 @@ make shell         # Open a shell in the web container
 make seed          # Seed demo data
 make lint          # Run RuboCop inside Docker
 make test          # Prepare the test DB, then run Rails unit/integration and system tests
+make coverage      # Run tests with SimpleCov coverage; report to ./coverage/index.html
 make down          # Stop and remove the local stack
 ```
 
@@ -238,6 +239,22 @@ make test
 - `bin/rails test:system`
 
 Optional JavaScript-specific system tests are guarded by environment flags where noted in the tests, for example `JS_SYSTEM_TESTS=1`.
+
+### Test Coverage
+
+Coverage is measured with SimpleCov and is **opt-in** (off by default so normal runs stay fast). Run it inside the container:
+
+```sh
+make coverage
+```
+
+This runs `COVERAGE=1 bin/rails test` in the `web` container and writes an HTML report to `./coverage/index.html` (git-ignored). The same opt-in works for ad-hoc runs:
+
+```sh
+docker compose exec -e COVERAGE=1 web bin/rails test
+```
+
+Treat the report as a map of untested paths, not a grade. System tests run in a separate process group and are not included in the figure, so real coverage of user-facing flows is higher.
 
 ## Documentation
 
