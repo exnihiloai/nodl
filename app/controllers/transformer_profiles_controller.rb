@@ -62,11 +62,6 @@ class TransformerProfilesController < ApplicationController
 
   private
 
-  def require_workspace!
-    @workspace = current_workspace
-    redirect_to dashboard_path, alert: t("flash.no_workspace") unless @workspace
-  end
-
   def set_transformer_profile
     @transformer_profile = @workspace.transformer_profiles.find(params[:id])
   end

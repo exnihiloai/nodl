@@ -17,17 +17,17 @@ The material problems are **operational, not architectural**, and all are pre-la
 - **Consequence (Changeability + Risk):** For an OSS project inviting outside PRs, nothing prevents a contributor (or you) from merging code that fails RuboCop, Brakeman, bundler-audit, or the test suite. The strong test discipline already in place is unenforced and will erode.
 - **Recommendation:** Add a GitHub Actions workflow running on every push/PR: `bin/rubocop`, `bin/brakeman`, `bundle exec bundle-audit check --update`, `bin/rails db:test:prepare && bin/rails test test:system`. This is the single highest-leverage change. (See §4.)
 
-**B2 — Bundled Puma has two High-severity CVEs**
+**B2 — Bundled Puma has two High-severity CVEs** — ✅ **CLEARED (2026-06-06)**: `bundle update puma` → `8.0.2` in `Gemfile.lock`; `bundle-audit` now reports "No vulnerabilities found". (Restart the running container — `make down && make up` — so the live server picks up the new gem.)
 - **Evidence:** `bundle-audit` → Puma `7.2.0`: `CVE-2026-47736` (PROXY protocol remote memory exhaustion, High) and `CVE-2026-47737` (PROXY header smuggling, High). Fix: `>= 8.0.2` (or `~> 7.2.1`). `Gemfile.lock` pins `puma (7.2.0)`; `Gemfile` only constrains `>= 5.0`.
 - **Consequence (Risk):** Remote DoS / request-smuggling exposure on the public-facing server.
 - **Recommendation:** `bundle update puma` to `>= 8.0.2`, re-run `bundle-audit`, commit the lockfile. Cheap.
 
-**B3 — Production Docker image ships the secret-bearing `private/` directory**
+**B3 — Production Docker image ships the secret-bearing `private/` directory** — ✅ **CLEARED (2026-06-06)**: `.dockerignore` now excludes `private`, `work`, `test`, `doc`. Dev (`Dockerfile.dev`) is unaffected because `docker-compose.yml` bind-mounts `.:/rails`, so `make test` still sees `test/`.
 - **Evidence:** `.dockerignore` excludes `.env`, `config/master.key`, `log/`, `tmp/` — but **not `private/`** (nor `work/`, `doc/`, `test/`). `Dockerfile:48` is `COPY . .`; `Dockerfile:70` copies `/rails` into the final stage with no intervening cleanup. `private/` is, per `README`/`CLAUDE.md`, the reserved home for `private/.env`, deploy config, and a nested companion repo. Note `.env.*` in `.dockerignore` does **not** match `private/.env` (root-anchored glob).
 - **Consequence (Risk):** Any published image (registry push, shared artifact) leaks whatever lives in `private/` — exactly the secrets it was created to keep out of the repo. The repo's careful git-ignoring of `private/` is undone at the image layer.
 - **Recommendation:** Add `private/`, `work/`, `test/`, `doc/`, `.claude/`, `.codex/` to `.dockerignore`. Add a test or CI check asserting `private` is ignored by the build context. Quick win, high payoff.
 
-**B4 — `bin/brakeman` binstub self-disables via `--ensure-latest`**
+**B4 — `bin/brakeman` binstub self-disables via `--ensure-latest`** — ✅ **CLEARED (2026-06-06)**: removed the `ARGV.unshift("--ensure-latest")` line from `bin/brakeman`; it now runs a real scan (verified: 12 controllers, 0 warnings).
 - **Evidence:** `bin/brakeman` prepends `ARGV.unshift("--ensure-latest")`. Running it produced only `Brakeman 8.0.2 is not the latest version 8.0.4` and **exited without scanning** — the actual scan only ran via `bundle exec brakeman`.
 - **Consequence (Risk + Changeability):** A CI step invoking `bin/brakeman` will break (false failure) the moment a newer Brakeman releases, regardless of code health — and locally it silently scans nothing, giving false assurance.
 - **Recommendation:** Drop `--ensure-latest` from the binstub (or invoke `bundle exec brakeman` in CI and keep Brakeman version-pinned via Dependabot/`bundle update`).
@@ -44,7 +44,7 @@ The material problems are **operational, not architectural**, and all are pre-la
 - **Consequence (Changeability):** If `TransformerProfile` is later renamed or its validations change, replaying these old migrations on a fresh DB can break. (Mitigated in practice because new DBs use `schema.rb` load, not migration replay.)
 - **Recommendation:** Acceptable as-is for a young project; for future data migrations prefer raw SQL or an inlined throwaway class. No action required now.
 
-**M3 — `current_workspace` nil-safety is inconsistent across controllers**
+**M3 — `current_workspace` nil-safety is inconsistent across controllers** — ✅ **CLEARED (2026-06-06)**: added a shared `require_workspace!` in `ApplicationController`; wired as `before_action` in `DocumentsController` and `RecordingSessionsController` (dropping the inline nil-check in `#create`), and consolidated `TransformerProfilesController`'s duplicate local copy onto it. `DashboardController` keeps its intentional empty-state guard. Full suite still green (150 runs, 0 failures).
 - **Evidence:** `DashboardController#show` guards `if @workspace`; `TransformerProfilesController` has `require_workspace!`. But `DocumentsController#show/#download` and `RecordingSessionsController#show/#finalize` call `current_workspace.documents…` / `current_workspace.recording_sessions…` with no nil guard (`documents_controller.rb:5`, `recording_sessions_controller.rb:29`).
 - **Consequence (Risk: low):** A signed-in user with zero workspaces would hit `NoMethodError` → 500 instead of a clean redirect. Currently unreachable — registration and admin-create both always create a workspace+membership in a transaction — so this is latent, not live.
 - **Recommendation:** Add a shared `before_action :require_workspace!` in `ApplicationController` (or a concern) for workspace-scoped controllers, mirroring the existing `authenticate_user!` pattern. Defends the invariant rather than relying on it.
@@ -66,11 +66,11 @@ The material problems are **operational, not architectural**, and all are pre-la
 
 ## 3. Quick Wins vs. Real Investment
 
-**Quick wins (minutes to ~1 hour):**
-- `bundle update puma` → clear B2 (both CVEs).
-- Add `private/`, `work/`, `test/`, `doc/` to `.dockerignore` → clear B3.
-- Remove `--ensure-latest` from `bin/brakeman` → clear B4.
-- Add `before_action :require_workspace!` for workspace-scoped controllers → clear M3.
+**Quick wins (minutes to ~1 hour):** — ✅ all four done 2026-06-06
+- [x] `bundle update puma` → clear B2 (both CVEs).
+- [x] Add `private/`, `work/`, `test/`, `doc/` to `.dockerignore` → clear B3.
+- [x] Remove `--ensure-latest` from `bin/brakeman` → clear B4.
+- [x] Add `before_action :require_workspace!` for workspace-scoped controllers → clear M3.
 
 **Real investment (half-day to a day):**
 - Stand up the GitHub Actions CI pipeline with hard gates (B1) — the structural fix that makes all the above stay fixed.

@@ -1,5 +1,6 @@
 class DocumentsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_workspace!
 
   def show
     @document = current_workspace.documents.includes(:recording_session).find(params[:id])

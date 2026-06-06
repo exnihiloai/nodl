@@ -17,6 +17,13 @@ Thumbs.db
 config/master.key
 config/credentials/*.key
 
+# Local-only directories that must never enter an image.
+# private/ is the reserved home for repo-private secrets and a companion repo.
+private
+work
+test
+doc
+
 # Runtime output
 log/*
 tmp/*

@@ -1,10 +1,8 @@
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_workspace!
 
   def create
-    @workspace = current_workspace
-    return redirect_to dashboard_path, alert: t("flash.no_workspace") unless @workspace
-
     @recording_session = @workspace.recording_sessions.build(recording_session_params)
     @recording_session.creator = current_user
     @recording_session.transformer_handle = selected_transformer_handle
