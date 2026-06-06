@@ -207,13 +207,13 @@
   </div>
 </section>
 
-<section class="py-20 bg-gradient-to-r from-primary to-secondary text-primary-content">
+<section class="py-20 bg-primary text-primary-content">
   <div class="container mx-auto px-4 max-w-4xl text-center space-y-6">
-    <h2 class="text-3xl sm:text-4xl font-bold"><%= t("pages.home.final_cta.heading") %></h2>
+    <h2 class="text-3xl sm:text-4xl font-bold text-primary-content"><%= t("pages.home.final_cta.heading") %></h2>
     <p class="text-lg text-primary-content/90 max-w-2xl mx-auto"><%= t("pages.home.final_cta.subheading") %></p>
     <div class="flex flex-wrap justify-center gap-3">
       <%= link_to t("pages.home.final_cta.cta"), register_path, class: "btn btn-neutral btn-lg" %>
-      <%= link_to t("pages.home.final_cta.login"), login_path, class: "btn btn-outline btn-lg border-primary-content text-primary-content hover:bg-primary-content hover:text-primary" %>
+      <%= link_to t("pages.home.final_cta.login"), login_path, class: "btn btn-outline btn-lg border-primary-content text-primary-content hover:border-primary-content hover:bg-primary-content hover:text-primary" %>
     </div>
   </div>
 </section>
