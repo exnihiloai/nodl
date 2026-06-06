@@ -136,6 +136,8 @@ GEM
       fiber-local (~> 1.1)
       json
     crass (1.0.6)
+    database_consistency (3.0.5)
+      activerecord (>= 3.2)
     date (3.5.1)
     debug (1.11.1)
       irb (~> 1.10)
@@ -554,6 +556,8 @@ GEM
       railties (>= 6.0.0)
     stringio (3.2.0)
     stripe (13.5.1)
+    strong_migrations (2.8.0)
+      activerecord (>= 7.2)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -617,6 +621,7 @@ DEPENDENCIES
   brakeman
   bundler-audit
   capybara
+  database_consistency
   debug
   docx (~> 0.8)
   htmltoword (~> 1.0)
@@ -649,6 +654,7 @@ DEPENDENCIES
   solid_queue
   stimulus-rails
   stripe (~> 13.0)
+  strong_migrations (~> 2.8)
   tailwindcss-rails
   thruster
   turbo-rails

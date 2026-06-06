@@ -75,7 +75,7 @@ The material problems are **operational, not architectural**, and all are pre-la
 **Real investment (half-day to a day):**
 - Stand up the GitHub Actions CI pipeline with hard gates (B1) — the structural fix that makes all the above stay fixed.
 - ~~Add SimpleCov + optional loose Metrics cops (M1, M4).~~ ✅ done 2026-06-06
-- Run the tools I could not run locally (not in Gemfile): wire `strong_migrations` and `database_consistency` as ongoing checks.
+- ~~Run the tools I could not run locally (not in Gemfile): wire `strong_migrations` and `database_consistency` as ongoing checks.~~ ✅ done 2026-06-06 — `strong_migrations` runs at `db:migrate` time (existing migrations grandfathered); `database_consistency` is in `make lint` with a `.todo.yml` baseline.
 
 ---
 
@@ -105,9 +105,9 @@ Metrics/AbcSize:      { Max: 30 }
 
 ### Tools I could NOT run (and exact commands to enable them)
 Not in the Gemfile, so not executed — add to `group :development, :test` and run:
-- **strong_migrations** — `gem "strong_migrations"`; then catches unsafe migrations at definition time.
-- **database_consistency** — `gem "database_consistency", require: false`; run `bundle exec database_consistency` to verify validations↔DB-constraints parity (your parity is already good by inspection, but this enforces it).
-- **rubycritic** — `gem "rubycritic", require: false`; `bundle exec rubycritic app lib` for churn-vs-complexity (manual, not a CI gate).
-- **SimpleCov** — `gem "simplecov", require: false` in `:test`, `SimpleCov.start "rails"` at top of `test_helper.rb`.
+- ✅ **strong_migrations** — added `gem "strong_migrations", "~> 2.8"` (main group); `config/initializers/strong_migrations.rb` grandfathers existing migrations (`start_after`) and targets Postgres 16. Verified: an unsafe `remove_column` aborts `db:migrate` with the `ignored_columns` guidance.
+- ✅ **database_consistency** — added `gem "database_consistency", require: false`; wired into `make lint`. First run surfaced 9 findings (real: `TransformerProfile.instructions` nullable but validated present, `User.password_digest` null-constraint validator; noise: redundant covering indexes), baselined in `.database_consistency.todo.yml` for later triage.
+- **rubycritic** — `gem "rubycritic", require: false`; `bundle exec rubycritic app lib` for churn-vs-complexity (manual, not a CI gate). *(Still not wired — optional.)*
+- ✅ **SimpleCov** — done (see M4 above); `COVERAGE=1` opt-in via `make coverage`.
 
 Everything else in the requested sweep was run inside the `web` container: RuboCop (clean), Brakeman (0 warnings, via `bundle exec`), bundler-audit (2 High Puma CVEs), `bundle outdated` (puma, net-ssh, rubocop-rails, opentelemetry-instrumentation-rack), and the full test suite (150/0/0).

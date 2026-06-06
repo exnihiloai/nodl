@@ -2,7 +2,9 @@
 
 **Date:** 2026-06-06
 **Companion to:** [`code-quality-audit-pre.md`](./code-quality-audit-pre.md)
-**Scope:** Implementation of the four "Quick Win" remediations from the pre-launch audit.
+**Scope:** Implementation of the audit remediations — the four "Quick Wins"
+(B2, B3, B4, M3), the two "Mid" tooling items (M1, M4), and wiring the two static
+tools the audit could not run (strong_migrations, database_consistency).
 
 This document records the corrective actions taken against findings raised in the
 pre-launch audit, the verification evidence for each, and what remains open.
@@ -11,10 +13,12 @@ pre-launch audit, the verification evidence for each, and what remains open.
 
 ## Summary
 
-Four findings were remediated and verified: **B2**, **B3**, **B4** (all "Bad /
-needs improvement") and **M3** ("Mid"). All changes are code/config only — no
-schema or behavioral changes to existing features. The full test suite and
-linters were green after the work.
+Six findings were remediated and verified — **B2**, **B3**, **B4** ("Bad /
+needs improvement") and **M3**, **M1**, **M4** ("Mid") — plus two static-analysis
+tools (**strong_migrations**, **database_consistency**) were installed and wired
+as ongoing checks. All changes are code/config only — no schema or behavioral
+changes to existing features. The full test suite and linters are green after the
+work. (Sections below are grouped in the order the work was done.)
 
 | Finding | Severity | Status | Verification |
 |---|---|---|---|
@@ -24,6 +28,7 @@ linters were green after the work.
 | M3 — `current_workspace` nil-safety | 🟡 Mid | ✅ Cleared | RuboCop clean; 150 tests, 0 failures |
 | M1 — RuboCop is not a complexity gate | 🟡 Mid | ✅ Cleared | Metrics cops re-enabled; 134 files, 0 offenses |
 | M4 — No coverage tooling | 🟡 Mid | ✅ Cleared | SimpleCov map: Line 54.82%, Branch 61.87% |
+| Tooling — strong_migrations + database_consistency | (audit §3/§4) | ✅ Wired | unsafe migration aborts; `make lint` green with baseline |
 
 **Files touched** (`git diff --stat`):
 
@@ -289,6 +294,152 @@ Gemfile.lock          | + simplecov, simplecov-html, simplecov_json_formatter, d
 test/test_helper.rb   | SimpleCov boot + parallel merge
 ```
 
+## Round 3 — files touched (strong_migrations, database_consistency)
+
+```
+Gemfile                                  | + strong_migrations, database_consistency
+Gemfile.lock                             | resolved deps
+Makefile                                 | lint now also runs database_consistency
+README.md                                | document lint contents + migration safety
+config/initializers/strong_migrations.rb | new — start_after + target_version
+.database_consistency.yml                | new — base config
+.database_consistency.todo.yml           | new — 9-finding baseline (deferred triage)
+```
+
+## Round 4 — files touched (make check handoff gate)
+
+```
+Makefile  | new targets: check, check-fast, db-check, test-fast (+ help/.PHONY)
+README.md | Quality Gates: require `make check`; update Daily Commands + agent-instruction block
+AGENTS.md | regenerated from README via `make skills` (CLAUDE.md/SKILL.md are gitignored)
+```
+
+---
+
+## Tooling — strong_migrations + database_consistency (audit §3 "real investment", §4 "tools I could not run")
+
+Both gems were verified as actively maintained before adoption: strong_migrations
+2.8.0 (2026-05-14, needs Ruby ≥ 3.3 / AR ≥ 7.2 — both satisfied) and
+database_consistency 3.0.5 (2026-05-23).
+
+### strong_migrations — migration *safety* (runtime hook, NOT in `make lint`)
+
+`gem "strong_migrations", "~> 2.8"` (main group, so it also protects production
+deploys). It is **not** a linter — it has no standalone scan command; it hooks
+into Active Record and raises during `bin/rails db:migrate`. Putting it in
+`make lint` would be meaningless, so it was deliberately left out of lint and
+instead fires wherever migrations run (`make up`'s `db:prepare`, `make test`,
+and a future CI migrate step).
+
+Setup (`rails g strong_migrations:install` + edit):
+
+- `config/initializers/strong_migrations.rb` sets
+  `StrongMigrations.start_after = 20260606100711` — **grandfathers all 12
+  existing migrations** (including the model-referencing data migrations from
+  finding M2), so they are never retroactively flagged.
+- `StrongMigrations.target_version = 16` (matches the `postgres:16` image) so the
+  correct version-specific checks run.
+
+**Verification (end-to-end):** a throwaway migration doing
+`remove_column :users, :last_login_at` aborted `db:migrate` with
+"Dangerous operation detected #strong_migrations" and the `ignored_columns`
+remediation; the column remained intact (operation never applied). Migration
+removed afterwards — no schema change.
+
+### database_consistency — model ↔ DB-constraint parity (in `make lint`)
+
+`gem "database_consistency", require: false` (dev/test). It is a static checker
+that exits non-zero on findings, so it fits `make lint` alongside RuboCop:
+
+```
+lint:
+	$(COMPOSE) exec $(WEB) bin/rubocop
+	$(COMPOSE) exec $(WEB) bundle exec database_consistency -c .database_consistency.todo.yml
+```
+
+Two config files were added (tracked in git):
+
+- `.database_consistency.yml` — base config (disables ActiveStorage/ActionText
+  false positives; auto-loaded).
+- `.database_consistency.todo.yml` — **baseline of the 9 pre-existing findings**,
+  passed via `-c`, so `make lint` is green today and only *new* mismatches fail.
+  This is a deferred-triage backlog, not a fix (per the agreed plan).
+
+The 9 baselined findings (to triage later):
+
+- *Real / worth fixing:* `TransformerProfile.instructions` is validated
+  `presence: true` but the column is nullable; `User.password_digest` is
+  `NOT NULL` without a nil-disallowing validator; `RecordingSession`→`document`
+  association lacks a unique index; the partial unique default-transformer index
+  has no matching uniqueness validator.
+- *Likely noise:* 5 `RedundantIndexChecker` hits where a single-column index is
+  covered by a composite index (often intentional for FK lookups).
+
+**Verification:** `make lint` exits 0 (RuboCop 135 files / 0 offenses including
+the new initializer; database_consistency loads both configs, no failures).
+
+### Operational note
+
+Both gems are installed in the running container; a `make build` will bake them
+into the image for fresh clones. No rebuild is required for current local use
+(the dev container bind-mounts the source).
+
+---
+
+## Enforcement — `make check` handoff gate (local stand-in for B1)
+
+Until a CI pipeline (B1) exists, the practical enforcement point is a single
+command that AI coding agents are *required* to run green before handing work
+back. That is now `make check`.
+
+### New Makefile targets
+
+- **`make check`** — the handoff gate. Runs, in order: `db-check` → `lint` →
+  `test`. Order matters: `db-check` applies migrations so the dev DB that
+  `database_consistency` (inside `lint`) inspects reflects the current schema.
+- **`make check-fast`** — inner-loop variant: `db-check` → `lint` → `test-fast`
+  (skips browser/system tests).
+- **`make db-check`** — applies migrations and asserts schema hygiene. This is
+  the piece that makes `strong_migrations` enforceable: strong_migrations only
+  fires while migrations *run*, and `make test` uses `db:test:prepare` (a schema
+  load) which never runs them. `db-check` runs `bin/rails db:migrate` (so
+  strong_migrations fires) then `cmp`s `db/schema.rb` before/after — failing if
+  an unsafe migration aborts the run **or** if a migration was added but not
+  applied/committed (schema drift).
+- **`make test-fast`** — unit/integration tests only (no system tests).
+
+### Why a hash-compare, not `git diff`
+
+`db-check` snapshots `db/schema.rb`, runs `db:migrate`, and compares. A plain
+`git diff db/schema.rb` would conflate a *legitimately* uncommitted schema change
+(agent ran the migration, hasn't committed yet) with the failure case (migration
+never applied). The before/after compare detects only the latter — "running
+migrations changed the schema," i.e. something wasn't applied.
+
+### Agent instructions updated
+
+The canonical agent-instruction source is the `<!-- BEGIN/END AGENT
+INSTRUCTIONS -->` block in `README.md`, which `make skills` copies into
+`AGENTS.md` and `CLAUDE.md`. The "Quality Gates" section there now requires a
+green `make check` before handoff (and forbids bypassing it). `make skills` was
+run; `make skills-check` confirms `AGENTS.md`/`CLAUDE.md` are in sync.
+
+### Verification
+
+- `make check` — **exit 0** (db-check ok; lint clean; 150 unit/integration +
+  26 system tests, 0 failures, 9 env-guarded skips).
+- `make check-fast` — **exit 0**.
+- Failure path: injecting an unsafe `remove_column` migration made `make db-check`
+  **exit 2** with "Dangerous operation detected #strong_migrations"; the column
+  stayed intact and `db/schema.rb` was unchanged (migration never applied).
+
+### Honest limitation
+
+This is local enforcement, not a hard gate — an agent or human can still hand off
+without running `make check`. Only **B1 (CI on the PR)** rejects a push
+regardless of what ran locally. `make check` is the strongest available
+stand-in until then, and CI can simply call the same target.
+
 ---
 
 ## Post-change verification (full)
@@ -297,9 +448,11 @@ Run inside the `web` container after all six remediations (B2, B3, B4, M3, M1, M
 
 - `bundle-audit` — **No vulnerabilities found**
 - `bin/brakeman` — 12 controllers, **0 security warnings**
-- `bin/rubocop` — **134 files, 0 offenses** (now including the re-enabled Metrics cops)
+- `bin/rubocop` — **135 files, 0 offenses** (re-enabled Metrics cops + new initializer)
+- `make lint` — **exit 0** (RuboCop + database_consistency with baseline)
 - `bin/rails test` — **150 runs, 641 assertions, 0 failures, 0 errors, 0 skips**
 - `COVERAGE=1 bin/rails test` — coverage map generated (Line 54.82%, Branch 61.87%)
+- `strong_migrations` — unsafe `remove_column` aborts `db:migrate` (verified)
 
 ---
 
@@ -313,7 +466,14 @@ From the pre-launch audit, the following remain open and are recommended next:
   prevent regression (e.g. a future PR re-adding a vulnerable gem). Adding
   `COVERAGE=1` to the CI test step would also publish the coverage map per run.
 - **M2 — Data migrations reference application models directly.** Acceptable for
-  now; prefer raw SQL / inlined classes for future data migrations.
+  now; prefer raw SQL / inlined classes for future data migrations. (strong_migrations
+  now grandfathers these via `start_after`, so they won't be flagged.)
+- **database_consistency baseline triage.** 9 findings are deferred in
+  `.database_consistency.todo.yml`. The real ones to address: nullable
+  `TransformerProfile.instructions` (add NOT NULL), `User.password_digest` nil
+  validator, missing unique index on `RecordingSession`→`document`, and a
+  uniqueness validator for the default-transformer partial index. Remove each
+  from the todo as it's fixed so the gate tightens over time.
 
 See [`code-quality-audit-pre.md`](./code-quality-audit-pre.md) §3–§4 for details
 and exact commands.
