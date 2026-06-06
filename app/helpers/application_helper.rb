@@ -1,4 +1,10 @@
 module ApplicationHelper
+  WORKSPACE_NAME_SUFFIX = /\s+Workspace\z/i
+
+  def workspace_display_name(workspace)
+    workspace.name.to_s.sub(WORKSPACE_NAME_SUFFIX, "")
+  end
+
   def render_markdown(content)
     return "" if content.blank?
 

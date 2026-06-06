@@ -5,8 +5,8 @@ class WorkspacesController < ApplicationController
     workspace = current_user.workspaces.find(params[:id])
     session[:current_workspace_id] = workspace.id
 
-    redirect_to dashboard_path, notice: t("flash.workspaces.switched", name: workspace.name)
+    redirect_to dashboard_path, notice: t("flash.workspaces.switched", name: workspace.name), status: :see_other
   rescue ActiveRecord::RecordNotFound
-    redirect_to dashboard_path, alert: t("flash.workspaces.not_found")
+    redirect_to dashboard_path, alert: t("flash.workspaces.not_found"), status: :see_other
   end
 end

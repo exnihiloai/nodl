@@ -21,13 +21,15 @@ class DashboardTenancyTest < ApplicationSystemTestCase
 
     login_via_ui(email: email, password: "Valid123")
 
-    assert_text "Alpha Workspace"
+    find("[data-testid='account-menu']").click
+    assert_text "Alpha"
 
-    click_button "Beta Workspace"
+    click_button "Beta"
 
     assert_current_path dashboard_path, ignore_query: true
     assert_text "Workspace switched to Beta Workspace."
-    assert_text "Beta Workspace"
+    find("[data-testid='account-menu']").click
+    assert_text "Beta"
   end
 
   test "dashboard smoke renders recording hub and empty activity feed" do

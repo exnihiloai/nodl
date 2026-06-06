@@ -239,5 +239,16 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
 
     assert_equal 1, generated_events.size
     assert_equal recording_session.id, generated_events.first.payload[:recording_session].id
+
+    # Privacy: the event must carry only a redacted title preview, never the full title.
+    assert_equal "Teleme...", generated_events.first.payload[:redacted_title]
+  end
+
+  test "redacted_title exposes only a short preview of the title" do
+    assert_equal "Begrüß...", RecordingSessionProcessor.redacted_title("Begrüßung von Lieselotte")
+    assert_equal "Sieben...", RecordingSessionProcessor.redacted_title("Sieben!")
+    assert_equal "Sechs!", RecordingSessionProcessor.redacted_title("Sechs!")
+    assert_equal "Untitled", RecordingSessionProcessor.redacted_title("")
+    assert_equal "Untitled", RecordingSessionProcessor.redacted_title(nil)
   end
 end

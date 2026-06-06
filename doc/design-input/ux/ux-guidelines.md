@@ -8,6 +8,8 @@ The design should respect the user’s attention. Keep screens focused. Remove c
 
 Make the main action clear. Each screen should have a clear purpose and a clear primary action. The user should understand where they are, what they can do, and what will happen next. Important actions should be easy to find. Destructive or risky actions should be visually distinct and harder to trigger by accident.
 
+Ensure interactive elements have generous, fully clickable target areas. When a user hovers over a menu item, dropdown option, list row, or button, the entire highlighted or visual boundary must be active and clickable—never restrict the trigger to just the inner text label. When the visual feedback suggests an entire area is interactive, the actual clickable target must match that expectation perfectly. Providing full-area click targets prevents accidental missed clicks, reduces user frustration, and reinforces a high-quality, professional feel.
+
 Use language that feels human. Labels, buttons, messages, and instructions should be specific, direct, and written from the user’s point of view. Avoid technical jargon unless the users are technical and expect it. Prefer concrete wording like “Save changes”, “Invite team member”, or “Download invoice” instead of vague words like “Submit”, “Proceed”, or “Manage”.
 
 The interface should always give feedback. When users click, save, upload, delete, submit, or change something, the product should respond visibly. Loading, success, failure, empty, disabled, and error states should feel intentional, not like afterthoughts.

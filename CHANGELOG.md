@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.3] - 2026-06-06
+
+### Changed
+- **Account Menu Cleanup:** Shortened workspace names in the account menu by removing the redundant "Workspace" suffix (e.g. "Alpha Workspace" becomes "Alpha") and added hover tooltips and text truncation so long email addresses and workspace names no longer distort the dropdown layout.
+- **404 Layout Refinement:** Redesigned the custom 404 page hero graphic to avoid overlapping text and icons on smaller viewports, and improved the transcript box and hint text responsiveness.
+
+### Fixed
+- **Safari Dropdown Focus Issues:** Transitioned dropdowns (language switcher and account navigation) from `:focus-within` CSS-based interactions to robust details/summary components managed via a Stimulus controller, fixing an issue where menus wouldn't reliably close or toggle in Safari.
+- **Standardized Full-Area Click Targets:** Replaced old CSS-focus-based dropdowns with HTML `<details>` and `<summary>` tags coupled with a dedicated Stimulus controller to make sure clicking anywhere inside a highlighted option (for language switches, workspace switches, or logout) acts as a click target, preventing missed clicks.
+
+### Technical
+- Added system tests under `test/system/locale_switching_test.rb` to cover language toggling behavior end-to-end, and updated existing tests to click the details-based account menu correctly.
+- Conformed back-redirection and dashboard redirection in `LocalesController` and `WorkspacesController` to Turbo's 303 redirection behavior by adding `status: :see_other`.
+- Updated UX design guidelines in `doc/design-input/ux/ux-guidelines.md` to establish rules for generous, full-area click targets across the application.
+
+
+## [0.9.2] - 2026-06-06
+
+### Security
+- **Operator Notifications No Longer Reveal Document Titles:** Internal operator notifications for generated documents now show only the first six characters of the title followed by an ellipsis (e.g. `Begrüß...`), so the notification stream can’t disclose what a recording was about.
+
+### Technical
+- `RecordingSessionProcessor.redacted_title` produces the short preview, and the `nodl.document.generated` notification now carries a `redacted_title` in its payload — the full title never enters the event. Operator notification delivery (in `private/`) consumes that field instead of reading the title.
+
+
+## [0.9.1] - 2026-06-06
+
+### Fixed
+- **Transcription Works in Production Again:** After recording and uploading, your audio now transcribes and turns into a document as expected. A server-side permissions problem that stopped processing with a “permission denied” error has been resolved.
+
+### Technical
+- Dockerfile pre-creates the processing scratch directory (`work/sessions`) with non-root ownership so `Nodl::WorkingDirectory` can write at runtime (fixes `Permission denied @ dir_s_mkdir - /rails/work`).
+- `.dockerignore` selectively bakes `private/legal` and `private/initializers` into the production image (operator legal pages + telemetry initializer) while keeping secrets (`.env`) and heavy test fixtures out.
+- Added `make deploy`: builds the `linux/amd64` image, pushes both `:<version>` and `:latest` to the private DockerHub registry, and triggers the Dokploy redeploy webhook (`DOKPLOY_DEPLOYMENT_HOOK`, read from `private/.env`).
+
+
 ## [0.9.0] - 2026-06-06
 
 ### Added
