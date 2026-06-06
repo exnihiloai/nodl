@@ -5,7 +5,7 @@ class MarketingPagesTest < ApplicationSystemTestCase
     visit root_path
     within("footer") { click_link "About" }
     assert_current_path about_path, ignore_query: true
-    assert_text "About This Platform"
+    assert_text "About Nodl"
 
     visit login_path
     within("footer") { click_link "About" }
