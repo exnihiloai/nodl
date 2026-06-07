@@ -1,0 +1,39 @@
+# Hand-maintained inventory of bundled NON-gem third-party assets.
+#
+# Gems are derived automatically from the locked bundle by
+# ThirdPartyLicenseInventory; the assets below cannot be read from Gemfile.lock,
+# so they live here and are merged into config/third_party_licenses.yml by
+# `bin/rails licenses:generate`.
+#
+# Versions:
+#   - DaisyUI: detected automatically from the vendored CSS banner
+#     (version_source: daisyui_css). Do not set "version" for it.
+#   - Everything else here is a MANUAL version. When you upgrade one of these
+#     assets, bump its "version" in this file and re-run licenses:generate.
+#     (Known gap: @tailwindcss/typography, Inter, and Lucide have no
+#     machine-readable local version, so they are maintained by hand.)
+#
+# Keys are license-family ids that must exist in
+# ThirdPartyLicenseInventory::GROUP_META.
+
+isc:
+  - name: "Lucide (icons)"
+    version: "—"
+    copyright: "Copyright (c) 2020 Lucide Contributors"
+    url: "https://lucide.dev"
+
+ofl-1.1:
+  - name: "Inter (typeface)"
+    version: "—"
+    copyright: "Copyright (c) The Inter Project Authors"
+    url: "https://rsms.me/inter/"
+
+mit:
+  - name: "DaisyUI"
+    version_source: "daisyui_css"
+    copyright: "Copyright (c) Pouya Saadeghi"
+    url: "https://daisyui.com"
+  - name: "@tailwindcss/typography"
+    version: "0.5"
+    copyright: "Copyright (c) Tailwind Labs, Inc."
+    url: "https://github.com/tailwindlabs/tailwindcss-typography"

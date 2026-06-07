@@ -30,6 +30,7 @@ Design input documents describe what should be built, why it matters, and what c
 | [design-input/user-stories/2026-06-04-live-transcription.md](design-input/user-stories/2026-06-04-live-transcription.md) | User story for live transcription with speaker attribution |
 | [design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md](<design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md>) | User story for the audio-to-document prototype |
 | [design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md](<design-input/user-stories/2026-02-21 opentelemetry-export-to-self-hosted-signoz.md>) | User story for OpenTelemetry export to self-hosted SigNoz |
+| [design-input/user-stories/✅ 2026-06-06 uphold-license-obligations.md](<design-input/user-stories/✅ 2026-06-06 uphold-license-obligations.md>) | User story for upholding third-party license obligations (see [design-output/third-party-software.md](design-output/third-party-software.md)) |
 | [design-input/user-stories/YYYY-MM-DD example-user-story.md](<design-input/user-stories/YYYY-MM-DD example-user-story.md>) | User story template/example |
 
 ## Design Output
@@ -38,6 +39,7 @@ Design output documents describe accepted or currently implemented system struct
 
 | Document | Description |
 |---|---|
+| [design-output/third-party-software.md](design-output/third-party-software.md) | Third-party software inventory, licenses, and attribution obligations (backs the `/licenses` page) |
 | [design-output/data-models.md](design-output/data-models.md) | Database schema, Active Record models, relationships |
 | [design-output/api.md](design-output/api.md) | HTTP routes, controllers, request/response contracts |
 | [design-output/modules/auth.md](design-output/modules/auth.md) | Session-based authentication and login throttling |

@@ -96,6 +96,7 @@ en:
     about: "About"
     pricing: "Pricing"
     demo: "Demo"
+    licenses: "Licenses"
     imprint: "Imprint"
     privacy: "Privacy"
     terms: "Terms"
@@ -311,6 +312,19 @@ en:
         current: "Current app version"
         back_home: "Back to Home"
         try_demo: "Try Nodl free"
+      licenses:
+        title: "Open-source licenses"
+        body: "Nodl is built on open-source software. See the licenses and required attributions for the third-party components we use."
+        link: "View open-source licenses"
+    licenses:
+      title: "Open-source licenses - Nodl"
+      meta_description: "The open-source software bundled with Nodl, with copyright notices and license texts."
+      heading: "Open-source licenses"
+      intro: "Nodl is built with open-source software. We are grateful to the maintainers and contributors of the projects below. This page reproduces the copyright notices and license texts whose licenses require us to do so."
+      scope_note: "Listed here are the third-party components distributed as part of Nodl — libraries, fonts, icons, and styles — grouped by license. Operating-system components and development-only tooling are out of scope. A complete inventory is maintained by the Nodl team in the project documentation."
+      components_label: "Components"
+      license_text_label: "License text"
+      back_to_about: "← Back to About"
     try_now:
       title: "Try Nodl - Demo"
       meta_description: "Try Nodl free — record, transcribe, and generate structured documents."
