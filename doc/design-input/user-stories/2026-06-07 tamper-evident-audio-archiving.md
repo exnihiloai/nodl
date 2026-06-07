@@ -1,5 +1,7 @@
 # User Story: Tamper-Evident Audio Archiving
 
+> Design: [../domain/tamper-evident-audio-archiving.md](../domain/tamper-evident-audio-archiving.md)
+
 As a logged-in user who records important conversations in Nodl.
 I want each audio recording to include verifiable proof that it existed at a specific time and has not been altered since, so that I can demonstrate authenticity and integrity if the recording is ever questioned.
 
