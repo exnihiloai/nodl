@@ -236,6 +236,8 @@ deploy:
 	docker buildx inspect "$(BUILDX_BUILDER)" >/dev/null 2>&1 || \
 		docker buildx create --name "$(BUILDX_BUILDER)" --driver docker-container --bootstrap >/dev/null; \
 	docker buildx build --builder "$(BUILDX_BUILDER)" --platform "$(DEPLOY_PLATFORM)" \
+		--cache-from type=registry,ref=$$DEPLOY_IMAGE:buildcache \
+		--cache-to type=registry,ref=$$DEPLOY_IMAGE:buildcache,mode=max \
 		-t "$$DEPLOY_IMAGE:$(VERSION)" -t "$$DEPLOY_IMAGE:latest" --push .; \
 	echo "==> Pushed $$DEPLOY_IMAGE:$(VERSION) and $$DEPLOY_IMAGE:latest"; \
 	echo "==> Triggering Dokploy redeploy webhook"; \
