@@ -16,7 +16,7 @@ VERSION ?= $(shell grep -m1 -oE '\[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -
 MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
 
-.PHONY: help notify build up dev check check-fast db-check test test-fast coverage down logs shell lint seed skill skills skills-check skills-clean skill-new setup deploy
+.PHONY: help notify build up dev check check-fast db-check test test-fast coverage down logs shell lint audit seed skill skills skills-check skills-clean skill-new setup deploy
 
 help:
 	@echo "Available targets:"
@@ -31,6 +31,7 @@ help:
 	@echo "  make coverage # Run tests with SimpleCov; report to ./coverage/index.html"
 	@echo "  make seed   # Seed database"
 	@echo "  make lint   # Run rubocop + database_consistency (model<->DB constraint parity)"
+	@echo "  make audit  # Scan gems for known CVEs (bundler-audit vs rubysec ruby-advisory-db)"
 	@echo "  make skill  # Alias for 'make skills'"
 	@echo "  make skills # Generate Claude/Codex skill outputs from canonical /skills"
 	@echo "  make skills-check # Verify generated skill outputs are up to date"
@@ -96,6 +97,15 @@ seed:
 lint:
 	$(COMPOSE) exec $(WEB) bin/rubocop
 	$(COMPOSE) exec $(WEB) bundle exec database_consistency -c .database_consistency.todo.yml
+
+# Dependency CVE scan. Deliberately NOT part of `make check`: it needs network
+# (to refresh the advisory DB) and a new advisory can fail it without any code
+# change, so it stays a standalone target to run periodically and before deploy.
+# Single source: the local rubysec ruby-advisory-db (no dependency data leaves
+# this machine). Add an `ignore:` entry in config/bundler-audit.yml for any
+# advisory that does not apply.
+audit:
+	$(COMPOSE) exec $(WEB) bundle exec bundler-audit check --update --config config/bundler-audit.yml
 
 skill: skills
 

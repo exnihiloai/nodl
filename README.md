@@ -83,6 +83,7 @@ make logs          # Stream Docker Compose logs
 make shell         # Open a shell in the web container
 make seed          # Seed demo data
 make lint          # Run RuboCop + database_consistency inside Docker
+make audit         # Scan gems for known CVEs (bundler-audit vs rubysec ruby-advisory-db)
 make test          # Prepare the test DB, then run Rails unit/integration and system tests
 make check         # Handoff gate: db-check + lint + full tests (run before handing off work)
 make check-fast    # Inner loop: db-check + lint + unit/integration tests (no system tests)
@@ -271,6 +272,16 @@ make check-fast   # db-check + lint + unit/integration tests only
 Migration safety is enforced by [strong_migrations](https://github.com/ankane/strong_migrations), which runs automatically during `bin/rails db:migrate` and aborts on unsafe operations. It fires wherever migrations actually run — `make up` (`db:prepare`) and `make db-check`. Note that `make test` uses `db:test:prepare` (a schema load), which does **not** run migrations, so `make db-check` is what exercises strong_migrations in the handoff gate. Existing migrations are grandfathered via `start_after` in `config/initializers/strong_migrations.rb`; checks target Postgres 16.
 
 Optional JavaScript-specific system tests are guarded by environment flags where noted in the tests, for example `JS_SYSTEM_TESTS=1`.
+
+### Dependency CVE scanning
+
+```sh
+make audit        # bundler-audit check against the rubysec ruby-advisory-db
+```
+
+`make audit` scans the locked gems for known vulnerabilities using [bundler-audit](https://github.com/rubysec/bundler-audit). It uses a single, reliable source — the community [rubysec/ruby-advisory-db](https://github.com/rubysec/ruby-advisory-db) — which it clones/refreshes locally and matches against `Gemfile.lock`, so **no dependency data leaves your machine**.
+
+It is intentionally **not** part of `make check`: it needs network to refresh the advisory DB, and a newly disclosed advisory can fail it without any code change on your side. Run it periodically and before a deploy. Suppress advisories that genuinely do not apply by adding them to the `ignore:` list in `config/bundler-audit.yml`.
 
 ### Test Coverage
 
