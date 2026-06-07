@@ -26,7 +26,9 @@ Design input documents describe what should be built, why it matters, and what c
 | [design-input/live-transcription/implementation-plan.md](design-input/live-transcription/implementation-plan.md) | ⚠️ **Outdated** plan for the abandoned Gemini approach |
 | [design-input/live-transcription/test-plan.md](design-input/live-transcription/test-plan.md) | ⚠️ **Outdated** test plan for the abandoned Gemini approach |
 | [design-input/domain/domain-model-pipeline.md](design-input/domain/domain-model-pipeline.md) | Audio recording, transcript, transformer, transformation, document, and versioning domain model |
-| [design-input/domain/tamper-evident-audio-archiving.md](design-input/domain/tamper-evident-audio-archiving.md) | Tamper-evident audio archiving: SHA-256 fingerprints and RFC 3161 trusted timestamps for original recordings |
+| [design-input/domain/tamper-evident-audio-archiving.md](design-input/domain/tamper-evident-audio-archiving.md) | Tamper-evident audio archiving (phase 2): SHA-256 + RFC 3161 timestamps; ZIP export with audio and certificate. Requires original download first. |
+| [design-input/user-stories/2026-06-07 obtain-original-audio.md](<design-input/user-stories/2026-06-07 obtain-original-audio.md>) | User story: download original audio from a recording session (implement first) |
+| [design-input/user-stories/2026-06-07 tamper-evident-audio-archiving.md](<design-input/user-stories/2026-06-07 tamper-evident-audio-archiving.md>) | User story: tamper-evident archiving with ZIP proof export (implement second) |
 | [design-input/testing/testing-guidelines.md](design-input/testing/testing-guidelines.md) | Testing philosophy and coverage guidance for trusted product behavior |
 | [design-input/user-stories/2026-06-04-live-transcription.md](design-input/user-stories/2026-06-04-live-transcription.md) | User story for live transcription with speaker attribution |
 | [design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md](<design-input/user-stories/✅ 2026-05-30-audio-to-document-prototype.md>) | User story for the audio-to-document prototype |
