@@ -5,7 +5,7 @@ class PagesController < ApplicationController
       return
     end
 
-    current_workspace
+    redirect_to dashboard_path
   end
 
   def about; end
