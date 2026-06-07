@@ -9,15 +9,15 @@ class ChangelogParserTest < ActiveSupport::TestCase
     entries = Changelog.changelog_entries
     latest = entries.first
 
-    assert_equal "0.9.5", latest.version
+    assert_equal "0.9.6", latest.version
     assert_equal "2026-06-07", latest.date
-    assert_includes latest.sections.map(&:key), :fixed
+    assert_includes latest.sections.map(&:key), :added
 
-    fixed = latest.sections.find { |section| section.key == :fixed }
-    first_item = fixed.items.first
+    added = latest.sections.find { |section| section.key == :added }
+    first_item = added.items.first
 
-    assert_equal "Signed-in Visits Go Straight to the Dashboard", first_item.title
-    assert_includes first_item.html, "directly to your dashboard"
+    assert_equal "Show Password While You Type", first_item.title
+    assert_includes first_item.html, "eye button"
   end
 
   test "groups entries into week columns" do
@@ -31,7 +31,7 @@ class ChangelogParserTest < ActiveSupport::TestCase
   test "entry slug matches deep-link format" do
     entry = Changelog.changelog_entries.first
 
-    assert_equal "v0.9.5", entry.slug
-    assert_equal "cl-v0.9.5", entry.modal_id
+    assert_equal "v0.9.6", entry.slug
+    assert_equal "cl-v0.9.6", entry.modal_id
   end
 end

@@ -265,6 +265,9 @@ de:
       unavailable: "Status: nicht verfügbar"
     theme_toggle:
       label: "Dunkelmodus umschalten"
+    password_field:
+      show: "Passwort anzeigen"
+      hide: "Passwort verbergen"
 
   pages:
     home:
