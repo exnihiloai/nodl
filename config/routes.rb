@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
+  get "/licenses", to: "licenses#show", as: :licenses
   get "/changelog", to: "changelogs#show", as: :changelog, format: false
   get "/changelog/:version_slug", to: "changelogs#show", as: :changelog_entry,
       format: false, constraints: { version_slug: /v[\d.]+/ }

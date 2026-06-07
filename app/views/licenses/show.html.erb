@@ -1,0 +1,67 @@
+<% content_for :title, t("pages.licenses.title") %>
+<% content_for :head do %>
+  <meta name="description" content="<%= t("pages.licenses.meta_description") %>" />
+<% end %>
+
+<section class="hero bg-base-200">
+  <div class="hero-content text-center flex-col gap-4 py-12">
+    <h1 class="text-3xl sm:text-4xl font-bold"><%= t("pages.licenses.heading") %></h1>
+    <p class="max-w-2xl text-base-content/70"><%= t("pages.licenses.intro") %></p>
+  </div>
+</section>
+
+<section class="py-12 bg-base-100">
+  <div class="container mx-auto px-4 max-w-4xl space-y-8">
+    <p class="text-sm text-base-content/60"><%= t("pages.licenses.scope_note") %></p>
+
+    <nav class="flex flex-wrap gap-2" aria-label="<%= t("pages.licenses.heading") %>">
+      <% @groups.each do |group| %>
+        <a href="#license-<%= group.id %>" class="badge badge-outline badge-lg"><%= group.name %></a>
+      <% end %>
+    </nav>
+
+    <% @groups.each do |group| %>
+      <article id="license-<%= group.id %>" class="card bg-base-200 scroll-mt-24" data-testid="license-group-<%= group.id %>">
+        <div class="card-body gap-4">
+          <h2 class="card-title text-2xl"><%= group.name %></h2>
+
+          <div>
+            <h3 class="font-semibold text-sm uppercase tracking-wide text-base-content/60 mb-2">
+              <%= t("pages.licenses.components_label") %>
+            </h3>
+            <ul class="space-y-1 text-sm">
+              <% group.components.each do |component| %>
+                <li class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+                  <span class="font-medium">
+                    <% if component.url.present? %>
+                      <%= link_to component.name, component.url, class: "link link-hover link-primary", rel: "noopener noreferrer", target: "_blank" %>
+                    <% else %>
+                      <%= component.name %>
+                    <% end %>
+                    <% if component.version.present? && component.version != "—" %>
+                      <span class="text-base-content/50"><%= component.version %></span>
+                    <% end %>
+                  </span>
+                  <% if component.copyright.present? %>
+                    <span class="text-base-content/60"><%= component.copyright %></span>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-sm uppercase tracking-wide text-base-content/60 mb-2">
+              <%= t("pages.licenses.license_text_label") %>
+            </h3>
+            <pre class="bg-base-100 rounded-box p-4 text-xs whitespace-pre-wrap break-words overflow-x-auto"><%= group.body %></pre>
+          </div>
+        </div>
+      </article>
+    <% end %>
+
+    <div>
+      <%= link_to t("pages.licenses.back_to_about"), about_path, class: "link link-primary font-semibold" %>
+    </div>
+  </div>
+</section>

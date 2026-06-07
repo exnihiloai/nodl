@@ -1,0 +1,760 @@
+# Third-party software distributed with Nodl, grouped by license family.
+#
+# This file is the source of truth for the public /licenses page. It is
+# generated from the application's runtime dependency tree (Bundler default
+# group) plus bundled web assets (fonts, icons, CSS). Development- and
+# test-only tooling is not redistributed and is therefore not listed here;
+# the full inventory lives in doc/design-output/third-party-software.md.
+#
+# Each group references a canonical license text in
+# config/third_party_licenses/<body_file>. Per-component copyright notices
+# are reproduced alongside each entry.
+#
+# To regenerate after a dependency change, see the design-output document.
+
+groups:
+- id: mit
+  name: MIT License
+  body_file: mit.txt
+  components:
+  - name: "@tailwindcss/typography"
+    version: '0.5'
+    copyright: Copyright (c) Tailwind Labs, Inc.
+    url: https://github.com/tailwindlabs/tailwindcss-typography
+  - name: action_text-trix
+    version: 2.1.19
+    copyright: Copyright (c) 37signals, LLC
+    url: https://github.com/basecamp/trix
+  - name: actioncable
+    version: 8.1.3
+    copyright: Copyright (c) 37signals LLC
+    url: https://rubyonrails.org
+  - name: actionmailbox
+    version: 8.1.3
+    copyright: Copyright (c) 37signals LLC
+    url: https://rubyonrails.org
+  - name: actionmailer
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: actionpack
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: actiontext
+    version: 8.1.3
+    copyright: Copyright (c) 37signals LLC
+    url: https://rubyonrails.org
+  - name: actionview
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: activejob
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: activemodel
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: activerecord
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: activestorage
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson, 37signals LLC
+    url: https://rubyonrails.org
+  - name: activesupport
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: afm
+    version: 1.0.0
+    copyright: Copyright (c) Jan Krutisch
+    url: http://github.com/halfbyte/afm
+  - name: Ascii85
+    version: 2.0.1
+    copyright: Copyright (c) 2009 Johannes Holzfuß
+    url: https://github.com/DataWraith/ascii85gem/
+  - name: ast
+    version: 2.4.3
+    copyright: Copyright (c) 2011-2013  Peter Zotov <whitequark@whitequark.org>
+    url: https://whitequark.github.io/ast/
+  - name: async
+    version: 2.39.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/async
+  - name: async-http
+    version: 0.95.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/async-http
+  - name: async-pool
+    version: 0.11.2
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/async-pool
+  - name: async-websocket
+    version: 0.30.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/async-websocket
+  - name: bcrypt
+    version: 3.1.22
+    copyright: 'Copyright 2007-2011:'
+    url: https://github.com/bcrypt-ruby/bcrypt-ruby
+  - name: bcrypt_pbkdf
+    version: 1.1.2
+    copyright: 'Copyright 2007-2016: Miklós Fazekas <mfazekas@szemafor.com>'
+    url: https://github.com/net-ssh/bcrypt_pbkdf-ruby
+  - name: bootsnap
+    version: 1.24.6
+    copyright: Copyright (c) 2017-2025 Shopify, Inc.
+    url: https://github.com/rails/bootsnap
+  - name: builder
+    version: 3.3.0
+    copyright: Copyright (c) 2003-2012 Jim Weirich (jim.weirich@gmail.com)
+    url: https://github.com/rails/builder
+  - name: bundler
+    version: 2.5.22
+    copyright: Copyright (c) André Arko, Samuel Giddins, Colby Swandale, Hiroshi Shibata,
+      David Rodríguez, Grey Baker, Stephanie Morillo, Chris Morris, James Wen, Tim
+      Moore, André Medeiros, Jessica Lynn Suttles, Terence Lee, Carl Lerche, Yehuda
+      Katz
+    url: https://bundler.io
+  - name: concurrent-ruby
+    version: 1.3.6
+    copyright: Copyright (c) Jerry D'Antonio -- released under the MIT license.
+    url: http://www.concurrent-ruby.com
+  - name: connection_pool
+    version: 3.0.2
+    copyright: Copyright (c) 2011 Mike Perham
+    url: https://github.com/mperham/connection_pool
+  - name: console
+    version: 1.36.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/console
+  - name: crass
+    version: 1.0.6
+    copyright: Copyright (c) 2020 Ryan Grove (ryan@wonko.com)
+    url: https://github.com/rgrove/crass/
+  - name: DaisyUI
+    version: 5.0.34
+    copyright: Copyright (c) Pouya Saadeghi
+    url: https://daisyui.com
+  - name: docx
+    version: 0.13.0
+    copyright: Copyright (c) Marcus Ortiz, http://marcusortiz.com
+    url: https://github.com/chrahunt/docx
+  - name: dotenv
+    version: 3.2.0
+    copyright: Copyright (c) 2012 Brandon Keepers
+    url: https://github.com/bkeepers/dotenv
+  - name: ed25519
+    version: 1.4.0
+    copyright: Copyright (c) 2012-2025 Tony Arcieri
+    url: https://github.com/RubyCrypto/ed25519
+  - name: erubi
+    version: 1.13.1
+    copyright: copyright(c) 2006-2011 kuwata-lab.com all rights reserved.
+    url: https://github.com/jeremyevans/erubi
+  - name: et-orbi
+    version: 1.4.0
+    copyright: Copyright (c) 2017-2025, John Mettraux, jmettraux+flor@gmail.com
+    url: https://github.com/floraison/et-orbi
+  - name: fiber-annotation
+    version: 0.2.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/ioquatix/fiber-annotation
+  - name: fiber-local
+    version: 1.1.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/fiber-local
+  - name: fiber-storage
+    version: 1.0.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/ioquatix/fiber-storage
+  - name: fugit
+    version: 1.12.2
+    copyright: Copyright (c) 2017-2026, John Mettraux, jmettraux+flor@gmail.com
+    url: https://github.com/floraison/fugit
+  - name: globalid
+    version: 1.3.0
+    copyright: Copyright (c) 2014-2023 David Heinemeier Hansson
+    url: http://www.rubyonrails.org
+  - name: htmltoword
+    version: 1.1.1
+    copyright: Copyright (c) Nicholas Frandsen, Cristina Matonte
+    url: http://github.com/karnov/htmltoword
+  - name: i18n
+    version: 1.14.8
+    copyright: Copyright (c) 2008 The Ruby I18n team
+    url: https://github.com/ruby-i18n/i18n
+  - name: image_processing
+    version: 1.14.0
+    copyright: Copyright (c) 2015 Janko Marohnić
+    url: https://github.com/janko/image_processing
+  - name: importmap-rails
+    version: 2.2.3
+    copyright: Copyright (c) 2022 Basecamp
+    url: https://github.com/rails/importmap-rails
+  - name: io-endpoint
+    version: 0.17.2
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/io-endpoint
+  - name: io-event
+    version: 1.16.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/io-event
+  - name: io-stream
+    version: 0.13.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/io-stream
+  - name: jbuilder
+    version: 2.15.1
+    copyright: Copyright (c) 2011-2018 David Heinemeier Hansson, 37signals
+    url: https://github.com/rails/jbuilder
+  - name: kamal
+    version: 2.11.0
+    copyright: Copyright (c) 2023 David Heinemeier Hansson
+    url: https://github.com/basecamp/kamal
+  - name: kramdown
+    version: 2.4.0
+    copyright: Copyright (C) 2009-2013 Thomas Leitner <t_leitner@gmx.at>
+    url: http://kramdown.gettalong.org
+  - name: loofah
+    version: 2.25.1
+    copyright: Copyright (c) 2009 -- 2018 by Mike Dalessio, Bryan Helmkamp
+    url: https://github.com/flavorjones/loofah
+  - name: mail
+    version: 2.9.0
+    copyright: Copyright (c) 2009-2016 Mikel Lindsaar
+    url: https://github.com/mikel/mail
+  - name: marcel
+    version: 1.2.1
+    copyright: Copyright (c) 2017 Tom Ward
+    url: https://github.com/rails/marcel
+  - name: metrics
+    version: 0.15.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/metrics
+  - name: mini_magick
+    version: 5.3.1
+    copyright: Copyright (c) 2005-2013 Corey Johnson probablycorey@gmail.com
+    url: https://github.com/minimagick/minimagick
+  - name: mini_mime
+    version: 1.1.5
+    copyright: Copyright (c) 2016 Discourse Construction Kit, Inc.
+    url: https://github.com/discourse/mini_mime
+  - name: minitest
+    version: 6.0.6
+    copyright: Copyright (c) Ryan Davis, seattle.rb
+    url: https://minite.st/
+  - name: net-scp
+    version: 4.1.0
+    copyright: Copyright © 2008 Jamis Buck
+    url: https://github.com/net-ssh/net-scp
+  - name: net-sftp
+    version: 4.0.0
+    copyright: Copyright © 2008 Jamis Buck
+    url: https://github.com/net-ssh/net-sftp
+  - name: net-ssh
+    version: 7.3.2
+    copyright: Copyright © 2008 Jamis Buck
+    url: https://github.com/net-ssh/net-ssh
+  - name: nio4r
+    version: 2.7.5
+    copyright: Copyright (c) Tony Arcieri, Samuel Williams, Olle Jonsson, Gregory
+      Longtin, Tiago Cardoso, Joao Fernandes, Thomas Dziedzic, Boaz Segev, Logan Bowers,
+      Pedro Paiva, Jun Aruga, Omer Katz, Upekshe Jayasekera, Tim Carey-Smith, Benoit
+      Daloze, Sergey Avseyev, Tomoya Ishida, Usaku Nakamura, Cédric Boutillier, Daniel
+      Berger, Dirkjan Bussink, Hiroshi Shibata, Jesús Burgos Maciá, Luis Lavena, Pavel
+      Rosický, Sadayuki Furuhashi, Stephen von Takach, Vladimir Kochnev, Vít Ondruch,
+      Anatol Pomozov, Bernd Ahlers, Charles Oliver Nutter, Denis Washington, Elad
+      Eyal, Jean byroot Boussier, Jeffrey Martin, John Thornton, Jun Jiang, Lars Kanis,
+      Marek Kowalcze, Maxime Demolin, Orien Madgwick, Pavel Lobashov, Per Lundberg,
+      Phillip Aldridge, Ravil Bayramgalin, Shannon Skipper, Tao Luo, Thomas Kuntz,
+      Tsimnuj Hawj, Zhang Kang
+    url: https://github.com/socketry/nio4r
+  - name: nokogiri
+    version: 1.19.3
+    copyright: Copyright (c) Mike Dalessio, Aaron Patterson, and contributors
+    url: https://nokogiri.org
+  - name: pdf-reader
+    version: 2.15.1
+    copyright: Copyright (c) 2009 Peter Jones
+    url: https://github.com/yob/pdf-reader
+  - name: prawn-html
+    version: 0.7.1
+    copyright: Copyright (c) 2021 Mattia Roccoberton
+    url: https://github.com/blocknotes/prawn-html
+  - name: prism
+    version: 1.9.0
+    copyright: Copyright 2022-present, Shopify Inc.
+    url: https://github.com/ruby/prism
+  - name: propshaft
+    version: 1.3.2
+    copyright: Copyright (c) 2021 Basecamp
+    url: https://github.com/rails/propshaft
+  - name: protocol-hpack
+    version: 1.5.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/http-hpack
+  - name: protocol-http
+    version: 0.62.2
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-http
+  - name: protocol-http1
+    version: 0.39.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-http1
+  - name: protocol-http2
+    version: 0.26.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-http2
+  - name: protocol-rack
+    version: 0.22.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-rack
+  - name: protocol-url
+    version: 0.4.0
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-url
+  - name: protocol-websocket
+    version: 0.21.1
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/protocol-websocket
+  - name: psych
+    version: 5.4.0
+    copyright: Copyright (c) 2009 Aaron Patterson, et al.
+    url: https://github.com/ruby/psych
+  - name: raabro
+    version: 1.4.0
+    copyright: Copyright (c) 2015-2020, John Mettraux, jmettraux@gmail.com
+    url: https://github.com/floraison/raabro
+  - name: rack
+    version: 3.2.6
+    copyright: Copyright (C) 2007-2021 Leah Neukirchen <http://leahneukirchen.org/infopage.html>
+    url: https://github.com/rack/rack
+  - name: rack-attack
+    version: 6.8.0
+    copyright: Copyright (c) 2016 Kickstarter, PBC
+    url: https://github.com/rack/rack-attack
+  - name: rack-session
+    version: 2.1.2
+    copyright: Copyright (c) Samuel Williams, Jeremy Evans, Jon Dufresne, Philip Arndt
+    url: https://github.com/rack/rack-session
+  - name: rack-test
+    version: 2.2.0
+    copyright: Copyright (c) 2008-2009 Bryan Helmkamp, Engine Yard Inc.
+    url: https://github.com/rack/rack-test
+  - name: rackup
+    version: 2.3.1
+    copyright: Copyright (c) Samuel Williams, James Tucker, Leah Neukirchen, Jeremy
+      Evans, Joshua Peek, Megan Batty, Rafael França, Anurag Priyam, Max Cantor, Michael
+      Fellinger, Sophie Deziel, Yoshiyuki Hirano, Aaron Patterson, Jean Boussier,
+      Katsuhiko Yoshida, Konstantin Haase, Krzysztof Rybka, Martin Hrdlicka, Nick
+      LaMuro, Aaron Pfeifer, Akira Matsuda, Andrew Bortz, Andrew Hoglund, Bas Vodde,
+      Blake Mizerany, Carl Lerche, David Celis, Dillon Welch, Genki Takiuchi, Geremia
+      Taglialatela, Hal Brodigan, Hrvoje Šimić, Igor Bochkariov, Jeremy Kemper, Joe
+      Fiorini, John Barnette, John Sumsion, Julik Tarkhanov, Kang Sheng, Kazuya Hotta,
+      Lenny Marks, Loren Segal, Marc-André Cournoyer, Misaki Shioi, Olle Jonsson,
+      Peter Wilmott, Petrik de Heus, Richard Schneeman, Ryunosuke Sato, Sean McGivern,
+      Stephen Paul Weber, Tadashi Saito, Tim Moore, Timur Batyrshin, Trevor Wennblom,
+      Tsutomu Kuroda, Uchio Kondo, Wyatt Pan, Yehuda Katz, Zachary Scott
+    url: https://github.com/rack/rackup
+  - name: rails
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: rails-dom-testing
+    version: 2.3.0
+    copyright: Copyright (c) 2013-2015 Kasper Timm Hansen
+    url: https://github.com/rails/rails-dom-testing
+  - name: rails-html-sanitizer
+    version: 1.7.0
+    copyright: Copyright (c) 2013-2023 Rafael Mendonça França, Kasper Timm Hansen,
+      Mike Dalessio
+    url: https://github.com/rails/rails-html-sanitizer
+  - name: railties
+    version: 8.1.3
+    copyright: Copyright (c) David Heinemeier Hansson
+    url: https://rubyonrails.org
+  - name: rake
+    version: 13.4.2
+    copyright: Copyright (c) Jim Weirich
+    url: https://github.com/ruby/rake
+  - name: ruby-rc4
+    version: 0.1.5
+    copyright: Copyright (C) 2010 Max Prokopiev, Alexandar Simic, Caige Nichols
+    url: http://www.caigenichols.com/
+  - name: ruby-vips
+    version: 2.3.0
+    copyright: Copyright (c) 2014 John Cupitt
+    url: http://github.com/libvips/ruby-vips
+  - name: solid_cable
+    version: 3.0.12
+    copyright: Copyright Nick Pezza
+    url: https://github.com/rails/solid_cable
+  - name: solid_cache
+    version: 1.0.10
+    copyright: Copyright (c) 37signals, LLC
+    url: http://github.com/rails/solid_cache
+  - name: solid_queue
+    version: 1.4.0
+    copyright: Copyright (c) 37signals, LLC
+    url: https://github.com/rails/solid_queue
+  - name: sshkit
+    version: 1.25.0
+    copyright: Copyright (c) 2008- Lee Hambley & Contributors
+    url: http://github.com/capistrano/sshkit
+  - name: stimulus-rails
+    version: 1.3.4
+    copyright: Copyright (c) 2021 Basecamp
+    url: https://stimulus.hotwired.dev
+  - name: stripe
+    version: 13.5.1
+    copyright: Copyright (c) 2011- Stripe, Inc. (https://stripe.com)
+    url: https://stripe.com/docs/api?lang=ruby
+  - name: strong_migrations
+    version: 2.8.0
+    copyright: Copyright (c) 2013 Bob Remeika and David Waller, 2015-2026 Andrew Kane
+    url: https://github.com/ankane/strong_migrations
+  - name: tailwindcss-rails
+    version: 4.4.0
+    copyright: Copyright (c) 2020 David Heinemeier Hansson
+    url: https://github.com/rails/tailwindcss-rails
+  - name: tailwindcss-ruby
+    version: 4.2.0
+    copyright: Copyright (c) Adam Wathan <adam.wathan@gmail.com>
+    url: https://github.com/flavorjones/tailwindcss-ruby
+  - name: thor
+    version: 1.5.0
+    copyright: Copyright (c) 2008 Yehuda Katz, Eric Hodel, et al.
+    url: https://github.com/rails/thor
+  - name: thruster
+    version: 0.1.21
+    copyright: Copyright (c) 37signals, LLC
+    url: https://github.com/basecamp/thruster
+  - name: traces
+    version: 0.18.2
+    copyright: Copyright (c) Samuel Williams and contributors
+    url: https://github.com/socketry/traces
+  - name: turbo-rails
+    version: 2.0.23
+    copyright: Copyright (c) 2020 Basecamp
+    url: https://github.com/hotwired/turbo-rails
+  - name: tzinfo
+    version: 2.0.6
+    copyright: Copyright (c) 2005-2023 Philip Ross
+    url: https://tzinfo.github.io
+  - name: useragent
+    version: 0.16.11
+    copyright: Copyright (c) 2015 Garry Shutler
+    url: https://github.com/gshutler/useragent
+  - name: zeitwerk
+    version: 2.8.2
+    copyright: Copyright (c) 2019–ω Xavier Noria
+    url: https://github.com/fxn/zeitwerk
+- id: bsd-2-clause
+  name: BSD 2-Clause License
+  body_file: bsd-2-clause.txt
+  components:
+  - name: ansi
+    version: 1.6.0
+    copyright: Copyright (c) Rubyworks
+    url: https://github.com/rubyworks/ansi
+  - name: hashery
+    version: 2.1.2
+    copyright: Copyright (c) Rubyworks
+    url: http://rubyworks.github.com/hashery
+  - name: pg
+    version: 1.6.3
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ged/ruby-pg
+  - name: rexml
+    version: 3.4.4
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/rexml
+  - name: rubyzip
+    version: 3.3.1
+    copyright: Copyright (c) 2002-2026, The Rubyzip Developers
+    url: http://github.com/rubyzip/rubyzip
+- id: bsd-3-clause
+  name: BSD 3-Clause License
+  body_file: bsd-3-clause.txt
+  components:
+  - name: ffi
+    version: 1.17.3
+    copyright: Copyright (c) 2008-2016, Ruby FFI project contributors
+    url: https://github.com/ffi/ffi/wiki
+  - name: google-protobuf
+    version: 4.35.0
+    copyright: Copyright (c) 2008 Google Inc.
+    url: https://developers.google.com/protocol-buffers
+  - name: puma
+    version: 8.0.2
+    copyright: Copyright (c) 2019, Evan Phoenix. Some code by Zed Shaw, (c) 2005.
+    url: https://puma.io
+- id: isc
+  name: ISC License
+  body_file: isc.txt
+  components:
+  - name: Lucide (icons)
+    version: "—"
+    copyright: Copyright (c) 2020 Lucide Contributors
+    url: https://lucide.dev
+- id: apache-2.0
+  name: Apache License 2.0
+  body_file: apache-2.0.txt
+  components:
+  - name: googleapis-common-protos-types
+    version: 1.23.0
+    copyright: Copyright (c) Google LLC
+    url: https://github.com/googleapis/common-protos-ruby
+  - name: msgpack
+    version: 1.8.1
+    copyright: Copyright (c) Sadayuki Furuhashi
+    url: https://msgpack.org/
+  - name: opentelemetry-api
+    version: 1.10.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-common
+    version: 0.25.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-exporter-otlp
+    version: 0.34.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-exporter-otlp-logs
+    version: 0.5.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-exporter-otlp-metrics
+    version: 0.9.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-instrumentation-action_mailer
+    version: 0.8.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-action_pack
+    version: 0.18.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-action_view
+    version: 0.13.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-active_job
+    version: 0.12.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-active_record
+    version: 0.13.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-active_storage
+    version: 0.5.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-active_support
+    version: 0.12.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-base
+    version: 0.26.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-concurrent_ruby
+    version: 0.25.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-logger
+    version: 0.4.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-rack
+    version: 0.31.1
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-instrumentation-rails
+    version: 0.42.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby-contrib
+  - name: opentelemetry-logs-api
+    version: 0.4.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-logs-sdk
+    version: 0.6.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-metrics-api
+    version: 0.6.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-metrics-sdk
+    version: 0.14.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-registry
+    version: 0.6.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-sdk
+    version: 1.12.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: opentelemetry-semantic_conventions
+    version: 1.39.0
+    copyright: Copyright The OpenTelemetry Authors
+    url: https://github.com/open-telemetry/opentelemetry-ruby
+  - name: websocket-driver
+    version: 0.8.1
+    copyright: Copyright 2010-2026 James Coglan
+    url: https://github.com/faye/websocket-driver-ruby
+  - name: websocket-extensions
+    version: 0.1.5
+    copyright: Copyright 2014-2020 James Coglan
+    url: https://github.com/faye/websocket-extensions-ruby
+- id: mpl-2.0
+  name: Mozilla Public License 2.0
+  body_file: mpl-2.0.txt
+  components:
+  - name: oga
+    version: '3.4'
+    copyright: Copyright (c) Yorick Peterse
+    url: https://gitlab.com/yorickpeterse/oga/
+  - name: ruby-ll
+    version: 2.1.4
+    copyright: Copyright (c) Yorick Peterse
+    url: https://github.com/yorickpeterse/ruby-ll
+- id: ruby
+  name: Ruby License
+  body_file: ruby.txt
+  components:
+  - name: base64
+    version: 0.3.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/base64
+  - name: bigdecimal
+    version: 3.3.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/bigdecimal
+  - name: date
+    version: 3.5.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/date
+  - name: drb
+    version: 2.2.3
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/drb
+  - name: erb
+    version: 6.0.4
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/erb
+  - name: io-console
+    version: 0.8.2
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/io-console
+  - name: irb
+    version: 1.18.0
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/irb
+  - name: json
+    version: 2.19.8
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/json
+  - name: logger
+    version: 1.7.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/logger
+  - name: matrix
+    version: 0.4.3
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/matrix
+  - name: net-imap
+    version: 0.6.4
+    copyright: Copyright (c) Yukihiro Matsumoto and contributors
+    url: https://github.com/ruby/net-imap
+  - name: net-pop
+    version: 0.1.2
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/net-pop
+  - name: net-protocol
+    version: 0.2.2
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/net-protocol
+  - name: net-smtp
+    version: 0.5.1
+    copyright: Copyright (c) Yukihiro Matsumoto
+    url: https://github.com/ruby/net-smtp
+  - name: ostruct
+    version: 0.6.3
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/ostruct
+  - name: pp
+    version: 0.6.3
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/pp
+  - name: prettyprint
+    version: 0.2.0
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/prettyprint
+  - name: racc
+    version: 1.8.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/racc
+  - name: rdoc
+    version: 7.2.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://ruby.github.io/rdoc
+  - name: reline
+    version: 0.6.3
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/reline
+  - name: securerandom
+    version: 0.4.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/securerandom
+  - name: stringio
+    version: 3.2.0
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/stringio
+  - name: timeout
+    version: 0.6.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/timeout
+  - name: tsort
+    version: 0.2.0
+    copyright: Copyright (C) 1993-2013 Yukihiro Matsumoto. All rights reserved.
+    url: https://github.com/ruby/tsort
+  - name: uri
+    version: 1.1.1
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: https://github.com/ruby/uri
+- id: ofl-1.1
+  name: SIL Open Font License 1.1
+  body_file: ofl-1.1.txt
+  components:
+  - name: Inter (typeface)
+    version: "—"
+    copyright: Copyright (c) The Inter Project Authors
+    url: https://rsms.me/inter/
+- id: prawn
+  name: Prawn License (Ruby / GPLv2 / GPLv3)
+  body_file: prawn.txt
+  components:
+  - name: pdf-core
+    version: 0.10.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: http://prawnpdf.org/
+  - name: prawn
+    version: 2.5.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: http://prawnpdf.org/
+  - name: ttfunk
+    version: 1.8.0
+    copyright: copyright of the software, but belong to whomever generated them,
+    url: http://prawnpdf.org/

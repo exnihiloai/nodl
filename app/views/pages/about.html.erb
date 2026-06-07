@@ -62,5 +62,13 @@
         </div>
       </div>
     </div>
+
+    <div class="card bg-base-200">
+      <div class="card-body items-center text-center gap-3">
+        <h2 class="card-title"><%= t("pages.about.licenses.title") %></h2>
+        <p class="text-base-content/70 max-w-2xl"><%= t("pages.about.licenses.body") %></p>
+        <%= link_to t("pages.about.licenses.link"), licenses_path, class: "link link-primary font-semibold", data: { testid: "about-licenses-link" } %>
+      </div>
+    </div>
   </div>
 </section>
