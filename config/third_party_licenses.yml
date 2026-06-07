@@ -1,16 +1,20 @@
 # Third-party software distributed with Nodl, grouped by license family.
 #
-# This file is the source of truth for the public /licenses page. It is
-# generated from the application's runtime dependency tree (Bundler default
-# group) plus bundled web assets (fonts, icons, CSS). Development- and
-# test-only tooling is not redistributed and is therefore not listed here;
-# the full inventory lives in doc/design-output/third-party-software.md.
+# GENERATED FILE — do not edit by hand. Regenerate with:
+#   bin/rails licenses:generate
+#
+# Gems are derived from the locked dependency tree (Bundler `default`
+# group), so versions track Gemfile.lock. Non-gem assets are merged from
+# config/third_party_assets.yml. Development- and test-only tooling is not
+# redistributed and is therefore not listed here; the full inventory lives
+# in doc/design-output/third-party-software.md.
 #
 # Each group references a canonical license text in
 # config/third_party_licenses/<body_file>. Per-component copyright notices
 # are reproduced alongside each entry.
 #
-# To regenerate after a dependency change, see the design-output document.
+# The drift guard (test/lib/third_party_license_inventory_test.rb) fails
+# `make check` whenever this file no longer matches the installed bundle.
 
 groups:
 - id: mit
@@ -137,7 +141,7 @@ groups:
     copyright: Copyright (c) 2020 Ryan Grove (ryan@wonko.com)
     url: https://github.com/rgrove/crass/
   - name: DaisyUI
-    version: 5.0.34
+    version: 5.0.33
     copyright: Copyright (c) Pouya Saadeghi
     url: https://daisyui.com
   - name: docx
@@ -468,7 +472,7 @@ groups:
     url: http://rubyworks.github.com/hashery
   - name: pg
     version: 1.6.3
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Michael Granger, Lars Kanis
     url: https://github.com/ged/ruby-pg
   - name: rexml
     version: 3.4.4
@@ -636,15 +640,15 @@ groups:
   components:
   - name: base64
     version: 0.3.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Yusuke Endoh
     url: https://github.com/ruby/base64
   - name: bigdecimal
     version: 3.3.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Kenta Murata, Zachary Scott, Shigeo Kobayashi
     url: https://github.com/ruby/bigdecimal
   - name: date
     version: 3.5.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Tadayoshi Funaba
     url: https://github.com/ruby/date
   - name: drb
     version: 2.2.3
@@ -652,11 +656,11 @@ groups:
     url: https://github.com/ruby/drb
   - name: erb
     version: 6.0.4
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Masatoshi SEKI, Takashi Kokubun
     url: https://github.com/ruby/erb
   - name: io-console
     version: 0.8.2
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Nobu Nakada
     url: https://github.com/ruby/io-console
   - name: irb
     version: 1.18.0
@@ -664,15 +668,15 @@ groups:
     url: https://github.com/ruby/irb
   - name: json
     version: 2.19.8
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Florian Frank
     url: https://github.com/ruby/json
   - name: logger
     version: 1.7.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Naotoshi Seo, SHIBATA Hiroshi
     url: https://github.com/ruby/logger
   - name: matrix
     version: 0.4.3
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Marc-Andre Lafortune
     url: https://github.com/ruby/matrix
   - name: net-imap
     version: 0.6.4
@@ -692,11 +696,11 @@ groups:
     url: https://github.com/ruby/net-smtp
   - name: ostruct
     version: 0.6.3
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Marc-Andre Lafortune
     url: https://github.com/ruby/ostruct
   - name: pp
     version: 0.6.3
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Tanaka Akira
     url: https://github.com/ruby/pp
   - name: prettyprint
     version: 0.2.0
@@ -704,19 +708,20 @@ groups:
     url: https://github.com/ruby/prettyprint
   - name: racc
     version: 1.8.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Minero Aoki, Aaron Patterson
     url: https://github.com/ruby/racc
   - name: rdoc
     version: 7.2.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Eric Hodel, Dave Thomas, Phil Hagelberg, Tony Strauss,
+      Zachary Scott, Hiroshi SHIBATA, ITOYANAGI Sakura
     url: https://ruby.github.io/rdoc
   - name: reline
     version: 0.6.3
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) aycabta
     url: https://github.com/ruby/reline
   - name: securerandom
     version: 0.4.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Tanaka Akira
     url: https://github.com/ruby/securerandom
   - name: stringio
     version: 3.2.0
@@ -724,7 +729,7 @@ groups:
     url: https://github.com/ruby/stringio
   - name: timeout
     version: 0.6.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Yukihiro Matsumoto
     url: https://github.com/ruby/timeout
   - name: tsort
     version: 0.2.0
@@ -732,7 +737,7 @@ groups:
     url: https://github.com/ruby/tsort
   - name: uri
     version: 1.1.1
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Akira Yamada
     url: https://github.com/ruby/uri
 - id: ofl-1.1
   name: SIL Open Font License 1.1
@@ -748,13 +753,16 @@ groups:
   components:
   - name: pdf-core
     version: 0.10.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Alexander Mankuta, Gregory Brown, Brad Ediger, Daniel
+      Nelson, Jonathan Greenberg, James Healy
     url: http://prawnpdf.org/
   - name: prawn
     version: 2.5.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Alexander Mankuta, Gregory Brown, Brad Ediger, Daniel
+      Nelson, Jonathan Greenberg, James Healy
     url: http://prawnpdf.org/
   - name: ttfunk
     version: 1.8.0
-    copyright: copyright of the software, but belong to whomever generated them,
+    copyright: Copyright (c) Alexander Mankuta, Gregory Brown, Brad Ediger, Daniel
+      Nelson, Jonathan Greenberg, James Healy, Cameron Dutro
     url: http://prawnpdf.org/

@@ -26,20 +26,26 @@ acknowledgements page at `/licenses`.
   image; they are listed for completeness but do not impose distribution-time
   attribution obligations on the shipped product.
 
-Gem data is derived from the locked dependency tree. To regenerate after a
-dependency change, read each spec's `licenses` and license file from the
-installed bundle:
+Gem data is derived automatically from the locked dependency tree, so the
+`/licenses` page can never silently drift from `Gemfile.lock`:
 
-```ruby
-# bin/rails runner, or inside the web container
-require "bundler"
-Bundler.load.specs.to_a.uniq(&:name).sort_by(&:name).each do |s|
-  puts [s.name, s.version, Array(s.licenses).join("/"), s.homepage].join("\t")
-end
-```
+- **Source of truth:** `ThirdPartyLicenseInventory`
+  (`lib/third_party_license_inventory.rb`) reads Bundler's locked `default`
+  group and extracts each gem's version, license family, and copyright notice
+  from its installed license file.
+- **Generated artifact:** `config/third_party_licenses.yml` is produced by
+  `bin/rails licenses:generate`. **Do not hand-edit it.**
+- **Non-gem assets** (which are not in `Gemfile.lock`) live in
+  `config/third_party_assets.yml` and are merged in during generation. DaisyUI's
+  version is auto-detected from the vendored CSS banner; the typography plugin,
+  Inter, and Lucide carry hand-maintained versions (known gap — no
+  machine-readable local version).
+- **Drift guard:** `test/lib/third_party_license_inventory_test.rb` rebuilds the
+  inventory during `make check` and fails the gate (with copy-pasteable fix
+  instructions) whenever the committed YAML no longer matches the bundle.
 
-Then update `config/third_party_licenses.yml` (the source for the `/licenses`
-page) and this document together.
+This document's tables below are a human-readable copy; regenerate them with the
+snippet in the maintenance checklist when dependencies change.
 
 ## License families in use
 
@@ -317,9 +323,28 @@ part of the production image and are listed for completeness.
 
 ## Maintenance checklist (run on dependency changes)
 
-1. Update `Gemfile` / asset versions and re-resolve.
-2. Re-extract gem licenses (snippet above) and reconcile new/removed entries.
-3. Update the runtime/dev tables in this document.
-4. Update `config/third_party_licenses.yml` and, if a new license family
-   appears, add its canonical text under `config/third_party_licenses/`.
-5. Run `make check` (the licenses request test guards the page + key entries).
+The drift guard makes this mostly mechanical — `make check` tells you when the
+inventory is stale and prints the exact fix steps. The full loop:
+
+1. Change a dependency (`Gemfile`, vendored asset, or `config/third_party_assets.yml`)
+   and re-resolve.
+2. Run `bin/rails licenses:generate` to rewrite `config/third_party_licenses.yml`.
+3. Review `git diff -- config/third_party_licenses.yml`. For any **newly added**
+   component, sanity-check the auto-inferred copyright notice; if a gem's license
+   file leads with boilerplate, add a corrected line to
+   `ThirdPartyLicenseInventory::OVERRIDES`.
+4. If a **new license family** appears, the generator/guard will fail loudly:
+   add its raw license string to `FAMILIES`, its display name + body file to
+   `GROUP_META`, and the canonical text at
+   `config/third_party_licenses/<body_file>`.
+5. Refresh the runtime/dev tables in this document (re-extract with the snippet
+   below).
+6. Run `make check` until green and commit.
+
+```ruby
+# bin/rails runner, or inside the web container — for refreshing the tables here
+require "bundler"
+Bundler.load.specs.to_a.uniq(&:name).sort_by(&:name).each do |s|
+  puts [s.name, s.version, Array(s.licenses).join("/"), s.homepage].join("\t")
+end
+```
