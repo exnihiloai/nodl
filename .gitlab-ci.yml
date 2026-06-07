@@ -1,0 +1,136 @@
+# GitLab CI for nodl. Shell executor on a Docker host; everything runs in
+# Docker via the Makefile.
+#
+# CI/CD variables (Settings > CI/CD > Variables):
+#   MR builds clone the companion repo, so these must reach MR pipelines — NOT Protected:
+#     PRIVATE_REPO_URL    companion repo host/path, e.g. git.example.com/grp/nodl-private.git
+#     PRIVATE_REPO_TOKEN  read-only token for it (Masked). Dedicated + read-only:
+#                         non-protected secrets are reachable from any MR pipeline.
+#   Deploy-only, main only — Masked + Protected:
+#     REGISTRY_USER / REGISTRY_PASSWORD  registry login (password = Docker Hub access token)
+#     DEPLOY_IMAGE                       namespace/repo, e.g. exnihiloai/nodl
+#     DOKPLOY_DEPLOYMENT_HOOK            Dokploy redeploy webhook URL
+#     REGISTRY_HOST (optional)           non-Docker-Hub registry host
+
+# default:
+#   tags: [docker]   # set if your runner is tag-scoped
+
+stages:
+  - build
+  - test
+  - deploy
+  - maintenance
+
+# MRs, main, and scheduled GC only — avoids GitLab's duplicate branch+MR pipelines.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - when: never
+
+# Pull git-ignored prod content (legal/, initializers/) from the companion repo
+# root into the build context. Shared by build-image and deploy via !reference.
+.private_fetch:
+  script:
+    - git clone --depth 1 "https://oauth2:${PRIVATE_REPO_TOKEN}@${PRIVATE_REPO_URL}" private-src
+    - mkdir -p private/legal private/initializers
+    - cp -a private-src/legal/. private/legal/
+    - cp -a private-src/initializers/. private/initializers/
+
+# Build the real prod image (incl. private content) on every MR so a broken
+# deploy build fails the MR, not main. No push.
+build-image:
+  stage: build
+  interruptible: true
+  variables:
+    # Per-commit tag so concurrent MR builds on the shared daemon don't clobber
+    # each other (Makefile reads PROD_IMAGE/PROD_TAG via ?=).
+    PROD_IMAGE: nodl-prod
+    PROD_TAG: "$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - !reference [.private_fetch, script]
+  script:
+    - make build-prod
+  after_script:
+    - docker image rm -f "$PROD_IMAGE:$PROD_TAG" || true # drop tag, keep layer cache
+    - rm -rf private private-src                         # scrub private content
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+.compose_stack:
+  variables:
+    # Unique per job => concurrent MRs don't collide on container/volume names.
+    COMPOSE_PROJECT_NAME: "nodl_ci_${CI_PIPELINE_ID}_${CI_JOB_ID}"
+    COMPOSE: "docker compose -f docker-compose.yml -f docker-compose.ci.yml"
+  interruptible: true
+  before_script:
+    - make build
+    - make up
+    - | # wait for the web container's db:prepare marker; fail fast if it dies
+      for i in $(seq 1 60); do
+        if $COMPOSE exec -T web test -f tmp/ci-web-ready 2>/dev/null; then break; fi
+        if ! $COMPOSE ps --status running --services | grep -qx web; then
+          echo "web exited before ready:"; $COMPOSE logs web; exit 1
+        fi
+        if [ "$i" = "60" ]; then echo "timed out waiting for web:"; $COMPOSE logs web; exit 1; fi
+        sleep 5
+      done
+  after_script:
+    # --rmi local drops this job's Compose-built web image; keeps postgres:16 + cache.
+    - docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v --rmi local --remove-orphans
+
+# The gate: db-check + lint + full test suite.
+check:
+  extends: .compose_stack
+  stage: test
+  needs: [] # different image from build-image; run in parallel
+  script:
+    - make check
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# bundler-audit. Non-blocking: a new advisory can fail it with no code change.
+audit:
+  extends: .compose_stack
+  stage: test
+  needs: []
+  allow_failure: true
+  script:
+    - make audit
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# Build+push linux/amd64 image and trigger the Dokploy redeploy webhook.
+deploy:
+  stage: deploy
+  resource_group: production # never two prod deploys at once
+  environment:
+    name: production
+    url: https://nodl.now
+  before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin ${REGISTRY_HOST:+"$REGISTRY_HOST"}
+    - !reference [.private_fetch, script]
+    - printf 'DEPLOY_IMAGE=%s\nDOKPLOY_DEPLOYMENT_HOOK=%s\n' "$DEPLOY_IMAGE" "$DOKPLOY_DEPLOYMENT_HOOK" > private/.env
+  script:
+    - make deploy
+  after_script:
+    - docker logout ${REGISTRY_HOST:+"$REGISTRY_HOST"} || true
+    - rm -rf private private-src
+  rules:
+    # != schedule so the nightly GC (also on main) never fires a deploy.
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE != "schedule"
+
+# Periodic disk reclaim on the shared host. Age-filtered (>7d) so it never evicts
+# anything used in the last week. Schedule it under CI/CD > Schedules (target main).
+docker-gc:
+  stage: maintenance
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  script:
+    - docker container prune -f --filter "until=168h"
+    - docker image prune -f --filter "until=168h"   # dangling layers
+    - docker builder prune -f --filter "until=168h"
+    - docker buildx prune -f --filter "until=168h" --builder nodlbuilder || true # separate deploy-builder cache
+    - docker system df
