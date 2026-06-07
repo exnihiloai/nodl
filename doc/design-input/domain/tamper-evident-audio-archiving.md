@@ -12,6 +12,8 @@ This design adds **tamper-evident audio archiving**: when enabled for a user, ea
 
 The feature is **opt-in per user**, **off by default**, and **admin-controlled**. It must not position Nodl as a healthcare or medical product; wording stays domain-neutral (recordings, conversations, integrity proof).
 
+**Implementation order:** Ship after [Obtain Original Audio Recording](../user-stories/2026-06-07%20obtain-original-audio.md). That story delivers single-file original audio download; this feature adds sealing plus a ZIP export bundling the same audio with its integrity certificate.
+
 ---
 
 ## 2. Goals
@@ -86,7 +88,7 @@ An external TSA signs the hash together with a trusted clock. Nodl cannot retroa
                            4. upsert RecordingIntegrityRecord
                                             │
                                             ▼
-                         recording session page: status + JSON certificate download
+                         recording session page: integrity status + ZIP download (audio + certificate)
 ```
 
 ### 6.2 When sealing runs
@@ -222,9 +224,18 @@ Enqueue from `RecordingSessionsController#create` (upload path) and `#finalize` 
 
 ## 9. Verification and export
 
-### 9.1 In-app integrity certificate (JSON)
+Depends on original audio download ([obtain-original-audio user story](../user-stories/2026-06-07%20obtain-original-audio.md)) being implemented first. Reuse the same blob read path and filename rules for the audio entry inside the ZIP.
 
-Provide a download on the recording session show page when an integrity record exists:
+### 9.1 Integrity archive (ZIP)
+
+When sealing is enabled and `tsa_status` is `sealed`, provide **Download integrity archive (ZIP)** on the recording session show page. The archive contains:
+
+| Entry | Contents |
+|---|---|
+| Original audio | Same bytes as standalone “Download original audio”; sensible filename with original extension |
+| Integrity certificate | JSON sidecar (e.g. `integrity-certificate.json`) |
+
+Example certificate payload:
 
 ```json
 {
@@ -244,20 +255,20 @@ Provide a download on the recording session show page when an integrity record e
 }
 ```
 
-When generating the JSON at download time, Nodl re-reads the blob, recomputes SHA-256, and sets `integrity_hash_matches_exported_file` to `true`, `false`, or `null` (no stored hash).
+When building the ZIP, Nodl re-reads the blob, recomputes SHA-256, and sets `integrity_hash_matches_exported_file` to `true`, `false`, or `null` (no stored hash). The plain single-file audio download from the prerequisite story remains available separately.
 
 ### 9.2 Manual offline verification
 
 Document for power users (separate guide page, not required for daily use):
 
-1. **Hash check:** `sha256sum exported-audio.webm` must equal `integrity_hash_sha256`.
-2. **Timestamp check:** decode `integrity_tsa_proof_blob` from base64 and verify with OpenSSL against the TSA certificate chain (`openssl ts -verify ...`).
+1. **Hash check:** `sha256sum` on the audio file inside the ZIP must equal `integrity_hash_sha256` in the sidecar.
+2. **Timestamp check:** decode `integrity_tsa_proof_blob` from the sidecar and verify with OpenSSL against the TSA certificate chain (`openssl ts -verify ...`).
 
 Nodl does not need to run full PKIX verification on every page view in phase 1; status display is based on sealing outcome. Optional admin/rake verifier can perform full cryptographic validation.
 
-### 9.3 Future: bulk export
+### 9.3 Future: account-wide data export
 
-If Nodl adds a GDPR-style data export ZIP later, include the same sidecar JSON next to each audio file and set `integrity_hash_matches_exported_file` the same way. Out of scope for phase 1 unless a data-export feature already exists at implementation time.
+If Nodl adds a GDPR-style data export ZIP later, reuse the same sidecar JSON shape next to each audio file. Out of scope for this feature’s MVP.
 
 ---
 
@@ -269,7 +280,7 @@ When the creator has sealing enabled:
 
 | `tsa_status` | UI |
 |---|---|
-| `sealed` | Success badge: “Integrity sealed” + UTC timestamp + link “Download integrity certificate (JSON)” |
+| `sealed` | Success badge: “Integrity sealed” + UTC timestamp + link “Download integrity archive (ZIP)” |
 | `failed` | Warning badge + short message; recording and transcript remain usable |
 | `pending_config` | Neutral info: “Integrity hash recorded; timestamp service not configured” |
 | (no record yet) | Subtle “Sealing pending…” while job runs |
@@ -328,7 +339,7 @@ Add a toggle in `/admin/users/:id`:
 - Upload recording with sealing enabled → integrity record with `sealed` (mock TSA).
 - Upload with sealing disabled → no integrity record.
 - Processing completes with `status: completed` even when mock TSA returns failure.
-- JSON certificate download includes `integrity_hash_matches_exported_file: true` for unchanged blob.
+- ZIP download contains audio and sidecar JSON; sidecar includes `integrity_hash_matches_exported_file: true` when the bundled audio is unchanged.
 
 ### 13.3 System tests (optional, env-guarded)
 
@@ -340,12 +351,16 @@ Follow [testing-guidelines.md](../testing/testing-guidelines.md): prefer fast in
 
 ## 14. Phasing
 
-### Phase 1 (MVP)
+### Prerequisite (separate user story)
+
+- [Obtain Original Audio Recording](../user-stories/2026-06-07%20obtain-original-audio.md): single-file original audio download on the recording session page.
+
+### Phase 1 (MVP — this feature)
 
 - Migration: `recording_integrity_records`, `users.integrity_sealing_enabled`
 - `lib/nodl/integrity/*` + `SealRecordingIntegrityJob`
 - Admin toggle + audit
-- Session page status + JSON certificate download
+- Session page integrity status + ZIP download (original audio + JSON certificate)
 - Unit + integration tests with mocked TSA
 
 ### Phase 2 (hardening)
