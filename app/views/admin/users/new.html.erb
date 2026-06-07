@@ -31,7 +31,7 @@
             <span class="label-text"><%= t("admin.users.new.password") %></span>
             <span class="label-text-alt text-base-content/70"><%= t("admin.users.new.password_optional") %></span>
           <% end %>
-          <%= f.password_field :password, minlength: 8, class: "input input-bordered w-full", placeholder: t("admin.users.new.password_placeholder") %>
+          <%= render "shared/password_field", f:, field: :password, minlength: 8, class: "input input-bordered w-full", placeholder: t("admin.users.new.password_placeholder") %>
         </div>
 
         <div class="form-control mt-6">

@@ -163,6 +163,9 @@ en:
       unavailable: "Status: unavailable"
     theme_toggle:
       label: "Toggle dark mode"
+    password_field:
+      show: "Show password"
+      hide: "Hide password"
 
   pages:
     home:

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.10.0] - 2026-06-07
+
+### Added
+- **Show Password While You Type:** You can now tap the eye button next to any password field — on login, registration, and admin user forms — to reveal or hide what you typed, so you can double-check entries before submitting. Only the display changes in your browser; passwords are never stored in plain text.
+
+
 ## [0.9.5] - 2026-06-07
 
 ### Fixed

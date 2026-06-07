@@ -18,7 +18,7 @@
           </div>
 
           <div class="space-y-1">
-            <%= f.password_field :password, id: "login_password", class: "input input-bordered w-full h-12", placeholder: t("sessions.new.password_placeholder"), required: true %>
+            <%= render "shared/password_field", f:, field: :password, id: "login_password", class: "input input-bordered w-full h-12", placeholder: t("sessions.new.password_placeholder"), required: true %>
           </div>
 
           <div class="pt-2">
