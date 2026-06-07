@@ -19,7 +19,7 @@ VERSION ?= $(shell grep -m1 -oE '\[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -
 MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
 
-.PHONY: help notify build up dev check check-fast db-check test test-fast coverage down logs shell lint audit image-audit seed skill skills skills-check skills-clean skill-new setup deploy
+.PHONY: help notify build build-prod up dev check check-fast db-check test test-fast coverage down logs shell lint audit image-audit seed skill skills skills-check skills-clean skill-new setup deploy
 
 help:
 	@echo "Available targets:"
@@ -50,6 +50,19 @@ help:
 
 build:
 	$(COMPOSE) build
+
+# Build the production image (Dockerfile) locally, no push. CI runs this on
+# every MR to validate the real deployable image before merge: gems installing
+# under BUNDLE_DEPLOYMENT=1, asset precompile, the Dockerfile's
+# `check=error=true` lint, and the presence of the baked-in private/ content
+# (legal pages + initializers). Same Dockerfile and build context `make deploy`
+# ships, so a green build here means the deploy build of this commit compiles
+# too. On an amd64 runner this also matches the deployed architecture. Override
+# the tag via PROD_IMAGE / PROD_TAG.
+PROD_IMAGE ?= nodl-prod
+PROD_TAG ?= ci
+build-prod:
+	docker build -f Dockerfile -t $(PROD_IMAGE):$(PROD_TAG) .
 
 up:
 	$(COMPOSE) up -d

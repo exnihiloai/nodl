@@ -12,9 +12,14 @@ class ChangelogParserTest < ActiveSupport::TestCase
     assert entries.any?
     assert_valid_semver(latest.version)
     assert_match(/\A\d{4}-\d{2}-\d{2}\z/, latest.date)
-    assert_includes latest.sections.map(&:key), :added
 
-    added = latest.sections.find { |section| section.key == :added }
+    # Pin the section/item assertions to a known entry rather than "latest", so
+    # adding a newer release (which may have no Added section) does not break the
+    # parser test.
+    entry = entries.find { |candidate| candidate.version == "0.10.0" }
+    assert_includes entry.sections.map(&:key), :added
+
+    added = entry.sections.find { |section| section.key == :added }
     first_item = added.items.first
 
     assert_equal "Show Password While You Type", first_item.title

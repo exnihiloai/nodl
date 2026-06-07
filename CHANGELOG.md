@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.10.1] - 2026-06-07
+
+### Technical
+- Added a GitLab CI/CD pipeline (`.gitlab-ci.yml`): merge requests build the real production image (including the private companion-repo content) and run `make check` + `make audit`; merges to `main` deploy via `make deploy`; a scheduled job reclaims Docker disk on the runner. Adds `docker-compose.ci.yml` and a `make build-prod` target.
+
+
 ## [0.10.0] - 2026-06-07
 
 ### Added

@@ -1,0 +1,22 @@
+# CI override for the GitLab pipeline (see .gitlab-ci.yml).
+#
+# Layered on top of docker-compose.yml via the `COMPOSE` env var that the
+# pipeline exports:
+#   COMPOSE="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
+# The Makefile picks this up automatically because it declares `COMPOSE ?= ...`.
+#
+# Purpose:
+#   * Drop the published host port so many MR pipelines can run the stack
+#     concurrently on one runner without colliding on :3000 (each pipeline also
+#     gets a unique COMPOSE_PROJECT_NAME). The app is only reached via
+#     `docker compose exec` in CI, so it never needs a host port.
+#   * Replace the dev command (Tailwind watch + Rails server) with a quiet
+#     idle loop. It still runs db:prepare so `make db-check` has a database,
+#     then touches a marker file the pipeline waits on, then idles so the
+#     container stays up for `exec`-based test/lint/audit runs.
+services:
+  web:
+    # `!reset` clears the inherited list instead of appending to it (Compose
+    # merges list-valued keys like `ports` by concatenation otherwise).
+    ports: !reset null
+    command: bash -lc "rm -f tmp/pids/server.pid && bin/rails db:prepare && touch tmp/ci-web-ready && tail -f /dev/null"
