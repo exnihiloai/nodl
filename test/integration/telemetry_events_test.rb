@@ -13,7 +13,7 @@ class TelemetryEventsTest < ActionDispatch::IntegrationTest
     assert_not_nil events.first.payload[:ip]
   end
 
-  test "landing page visit does not trigger nodl.landing.visited event for logged-in users" do
+  test "landing page visit redirects logged-in users to the dashboard without telemetry" do
     user = create_user_with_workspace
     post login_path, params: { email: user.email, password: "Valid123" }
 
@@ -23,7 +23,7 @@ class TelemetryEventsTest < ActionDispatch::IntegrationTest
     end
 
     get root_path
-    assert_response :success
+    assert_redirected_to dashboard_path
     assert_empty events
   end
 
