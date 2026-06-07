@@ -1,13 +1,18 @@
 require "test_helper"
 
 class ChangelogTest < ActionDispatch::IntegrationTest
+  setup do
+    Changelog.reset_cache!
+    @latest_entry = Changelog.changelog_entries.first
+  end
+
   test "changelog page shows grouped entries" do
     get changelog_path
 
     assert_response :success
     assert_includes response.body, 'data-testid="changelog-list"'
     assert_includes response.body, 'data-testid="changelog-entry"'
-    assert_match(/v0\.9\.3/, response.body)
+    assert_includes response.body, @latest_entry.slug
   end
 
   test "about page links to changelog" do
@@ -19,10 +24,10 @@ class ChangelogTest < ActionDispatch::IntegrationTest
   end
 
   test "version slug route renders changelog board" do
-    get changelog_entry_path(version_slug: "v0.9.3")
+    get changelog_entry_path(version_slug: @latest_entry.slug)
 
     assert_response :success
-    assert_includes response.body, 'id="cl-v0.9.3"'
-    assert_includes response.body, 'data-changelog-board-open-slug-value="v0.9.3"'
+    assert_includes response.body, %(id="#{@latest_entry.modal_id}")
+    assert_includes response.body, %(data-changelog-board-open-slug-value="#{@latest_entry.slug}")
   end
 end

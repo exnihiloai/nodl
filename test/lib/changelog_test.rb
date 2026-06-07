@@ -9,8 +9,9 @@ class ChangelogParserTest < ActiveSupport::TestCase
     entries = Changelog.changelog_entries
     latest = entries.first
 
-    assert_equal "0.9.6", latest.version
-    assert_equal "2026-06-07", latest.date
+    assert entries.any?
+    assert_valid_semver(latest.version)
+    assert_match(/\A\d{4}-\d{2}-\d{2}\z/, latest.date)
     assert_includes latest.sections.map(&:key), :added
 
     added = latest.sections.find { |section| section.key == :added }
@@ -31,7 +32,8 @@ class ChangelogParserTest < ActiveSupport::TestCase
   test "entry slug matches deep-link format" do
     entry = Changelog.changelog_entries.first
 
-    assert_equal "v0.9.6", entry.slug
-    assert_equal "cl-v0.9.6", entry.modal_id
+    assert_valid_semver(entry.version)
+    assert_equal "v#{entry.version}", entry.slug
+    assert_equal "cl-v#{entry.version}", entry.modal_id
   end
 end

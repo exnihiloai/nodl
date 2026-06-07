@@ -17,6 +17,8 @@ require "mocha/minitest"
 
 module ActiveSupport
   class TestCase
+    SEMVER_PATTERN = /\A\d+\.\d+\.\d+\z/
+
     # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
 
@@ -37,6 +39,11 @@ module ActiveSupport
 
     def unique_email(prefix = "user")
       "#{prefix}-#{SecureRandom.hex(4)}@example.test"
+    end
+
+    def assert_valid_semver(version, message = nil)
+      assert_predicate version, :present?, message || "expected a version number"
+      assert_match SEMVER_PATTERN, version, message || "expected #{version.inspect} to match semver (major.minor.patch)"
     end
 
     def create_user_with_workspace(email: unique_email, password: "Valid123", role: :user, active: true, workspace_name: nil)
