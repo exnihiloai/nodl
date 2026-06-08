@@ -30,6 +30,8 @@ class RegistrationsController < ApplicationController
 
       Membership.create!(user:, workspace:, role: :owner)
 
+      LegalConsent.record_for(user, request:)
+
       session[:user_id] = user.id
       session[:current_workspace_id] = workspace.id
 
@@ -49,12 +51,13 @@ class RegistrationsController < ApplicationController
       "email" => "",
       "email_confirm" => "",
       "password" => "",
-      "password_confirm" => ""
+      "password_confirm" => "",
+      "accept_legal" => "0"
     }
   end
 
   def registration_params
-    params.permit(:email, :email_confirm, :password, :password_confirm)
+    params.permit(:email, :email_confirm, :password, :password_confirm, :accept_legal)
   end
 
   def validate_registration(form)
@@ -68,6 +71,7 @@ class RegistrationsController < ApplicationController
     errors << t("registrations.errors.email_mismatch") if email != email_confirm
     errors << t("registrations.errors.password_mismatch") if password != password_confirm
     errors << t("registrations.errors.email_taken") if User.exists?(email:)
+    errors << t("registrations.errors.legal_not_accepted") if legal_consent_required? && form["accept_legal"] != "1"
 
     # Validate password complexity via central User model validations
     temp_user = User.new(password: password, password_confirmation: password_confirm)
@@ -84,4 +88,11 @@ class RegistrationsController < ApplicationController
     prefix = email.split("@").first
     "#{prefix.titleize} Workspace"
   end
+
+  # Consent is only enforced when the operator has published the legal documents
+  # (private/legal/). OSS deploys without them register users without a checkbox.
+  def legal_consent_required?
+    LegalConsent::CONSENTABLE_DOCUMENTS.all? { |doc| LegalPage.exists?(doc) }
+  end
+  helper_method :legal_consent_required?
 end

@@ -41,6 +41,17 @@
             <%= render "shared/password_field", f:, field: :password_confirm, id: "password_confirm", class: "input input-bordered w-full h-12", required: true, minlength: 8, placeholder: t("registrations_view.new.password_confirm_placeholder") %>
           </div>
 
+          <% if legal_consent_required? %>
+            <label class="flex items-start gap-3 cursor-pointer select-none text-sm leading-relaxed text-base-content/70">
+              <%= f.check_box :accept_legal, { checked: @form["accept_legal"] == "1", required: true, class: "checkbox checkbox-sm checkbox-primary shrink-0 mt-0.5", data: { testid: "accept-legal" } }, "1", "0" %>
+              <span>
+                <%= t("registrations_view.new.legal.agree_html",
+                      terms: link_to(t("registrations_view.new.legal.terms"), terms_path, target: "_blank", rel: "noopener", class: "link link-primary font-medium"),
+                      privacy: link_to(t("registrations_view.new.legal.privacy"), privacy_path, target: "_blank", rel: "noopener", class: "link link-primary font-medium")) %>
+              </span>
+            </label>
+          <% end %>
+
           <div class="pt-2">
             <%= f.submit t("registrations_view.new.create_account"), class: "btn btn-primary w-full h-12 text-base font-semibold", data: { testid: "register-btn" } %>
           </div>

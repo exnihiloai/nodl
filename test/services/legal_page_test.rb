@@ -31,6 +31,38 @@ class LegalPageTest < ActiveSupport::TestCase
     assert LegalPage.exists?("privacy")
   end
 
+  test "resolve finds markdown by aliased document basename" do
+    path = @legal_root.join("data-protection.md")
+    path.write("# Datenschutz")
+
+    assert_equal path, LegalPage.resolve("privacy", locale: :en)
+    assert LegalPage.exists?("privacy")
+  end
+
+  test "resolve finds markdown named after the slug" do
+    path = @legal_root.join("terms.md")
+    path.write("# Terms")
+
+    assert_equal path, LegalPage.resolve("terms", locale: :en)
+  end
+
+  test "markdown? detects markdown files" do
+    assert LegalPage.markdown?(@legal_root.join("terms.md"))
+    assert_not LegalPage.markdown?(@legal_root.join("imprint.en.html.erb"))
+  end
+
+  test "version extracts the Stand date from a markdown document" do
+    @legal_root.join("terms-of-service.md").write("# AGB\n\n**Stand:** 08. Juni 2026  \n\nText")
+
+    assert_equal "08. Juni 2026", LegalPage.version("terms")
+  end
+
+  test "version is nil when no Stand line is present" do
+    @legal_root.join("terms.md").write("# Terms\n\nNo version marker here.")
+
+    assert_nil LegalPage.version("terms")
+  end
+
   private
 
   def write_legal_page(slug, locale, content)

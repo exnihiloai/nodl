@@ -58,6 +58,33 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Test Privacy"
   end
 
+  test "legal page renders markdown content as html" do
+    @legal_root.join("data-protection.md").write("# Datenschutz\n\nWir schützen **deine** Daten.")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, "<h1"
+    assert_includes response.body, "Datenschutz"
+    assert_includes response.body, "<strong>deine</strong>"
+  end
+
+  test "ai transparency page renders from markdown" do
+    @legal_root.join("ai-transparency.md").write("# AI Transparency\n\nNodl nutzt KI.")
+
+    get ai_transparency_path
+    assert_response :success
+    assert_includes response.body, "AI Transparency"
+  end
+
+  test "footer shows ai transparency link when template exists" do
+    @legal_root.join("ai-transparency.md").write("# AI Transparency")
+
+    get root_path
+    assert_response :success
+    assert_includes response.body, ai_transparency_path
+    assert_includes response.body, I18n.t("footer.ai_transparency", locale: :en)
+  end
+
   private
 
   def write_legal_page(slug, locale, content)

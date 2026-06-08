@@ -37,7 +37,8 @@ class TelemetryEventsTest < ActionDispatch::IntegrationTest
       email: "telemetry-new@example.com",
       email_confirm: "telemetry-new@example.com",
       password: "ValidPassword123",
-      password_confirm: "ValidPassword123"
+      password_confirm: "ValidPassword123",
+      accept_legal: "1"
     }
 
     assert_redirected_to dashboard_path

@@ -11,6 +11,10 @@ class LegalPagesController < ApplicationController
     show("terms")
   end
 
+  def ai_transparency
+    show("ai_transparency")
+  end
+
   private
 
   def show(slug)
@@ -19,6 +23,7 @@ class LegalPagesController < ApplicationController
 
     @page_title = t("legal_pages.#{slug}.title")
     @legal_content = path.read
+    @legal_markdown = LegalPage.markdown?(path)
     render :show
   end
 end

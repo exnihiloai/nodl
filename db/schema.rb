@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_185551) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_185551) do
     t.index ["recording_session_id", "transformer_handle"], name: "index_documents_on_recording_session_id_and_transformer_handle"
     t.index ["recording_session_id"], name: "index_documents_on_recording_session_id", unique: true
     t.index ["workspace_id", "generated_at"], name: "index_documents_on_workspace_id_and_generated_at"
+  end
+
+  create_table "legal_consents", force: :cascade do |t|
+    t.datetime "accepted_at", null: false
+    t.datetime "created_at", null: false
+    t.string "document", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.string "version", null: false
+    t.index ["user_id", "document"], name: "index_legal_consents_on_user_id_and_document"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -148,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_185551) do
   add_foreign_key "admin_audit_events", "users", column: "acting_admin_id"
   add_foreign_key "documents", "recording_sessions"
   add_foreign_key "documents", "workspaces"
+  add_foreign_key "legal_consents", "users"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"
   add_foreign_key "recording_sessions", "users", column: "creator_id"
