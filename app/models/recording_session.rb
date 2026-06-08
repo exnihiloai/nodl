@@ -20,8 +20,19 @@ class RecordingSession < ApplicationRecord
   belongs_to :workspace
   belongs_to :creator, class_name: "User"
   has_one :document, dependent: :destroy
-  has_one_attached :original_audio
-  has_one_attached :normalized_audio
+  # Pinned to the encrypted service (see config.x.attachment_service) so every
+  # blob is stored encrypted at rest with its own key.
+  has_one_attached :original_audio, service: Rails.application.config.x.attachment_service
+  has_one_attached :normalized_audio, service: Rails.application.config.x.attachment_service
+
+  # Encrypt tenant-scoped content at rest with Active Record Encryption. Stored
+  # as ciphertext in Postgres; transparent to the rest of the app. Non-deterministic
+  # (these columns are never queried/ordered by value). transcript_segments is
+  # JSON-serialized first because encrypted attributes persist as a string.
+  serialize :transcript_segments, coder: JSON
+  encrypts :transcript_text
+  encrypts :transcript_segments
+  encrypts :title
 
   enum :status, { pending: 0, processing: 1, completed: 2, failed: 3, recording: 4 }, default: :pending
   enum :source_kind, { upload: 0, microphone: 1 }, default: :upload

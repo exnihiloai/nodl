@@ -41,7 +41,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to dashboard_path
-    profile = @workspace.transformer_profiles.find_by!(name: "Meeting Notes")
+    profile = @workspace.transformer_profiles.find_by!(handle: "meeting-notes")
     assert_equal "meeting-notes", profile.handle
     assert_equal 2, profile.example_files.count
   end
@@ -56,7 +56,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to dashboard_path
-    profile = @workspace.transformer_profiles.find_by!(name: "Pasted")
+    profile = @workspace.transformer_profiles.find_by!(handle: "pasted")
     assert_equal 1, profile.example_files.count
 
     file = profile.example_files.first
@@ -70,7 +70,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
       transformer_profile: { name: "Blank-titled", instructions: "x", example_text: "   \n\nbody text" }
     }
 
-    profile = @workspace.transformer_profiles.find_by!(name: "Blank-titled")
+    profile = @workspace.transformer_profiles.find_by!(handle: "blank-titled")
     assert_equal "body text.txt", profile.example_files.first.filename.to_s
   end
 
@@ -79,7 +79,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
       transformer_profile: { name: "No paste", instructions: "x", example_text: "   \n  " }
     }
 
-    profile = @workspace.transformer_profiles.find_by!(name: "No paste")
+    profile = @workspace.transformer_profiles.find_by!(handle: "no-paste")
     assert_equal 0, profile.example_files.count
   end
 
@@ -96,7 +96,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :unprocessable_entity
-    assert_nil @workspace.transformer_profiles.find_by(name: "Too many")
+    assert_nil @workspace.transformer_profiles.find_by(handle: "too-many")
   end
 
   test "rejects a custom format without guidelines" do
@@ -116,8 +116,8 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
       transformer_profile: { name: "Notes", instructions: "Second one." }
     }
 
-    profile = @workspace.transformer_profiles.where(name: "Notes").order(:created_at).last
-    assert_equal "notes-2", profile.handle
+    profile = @workspace.transformer_profiles.find_by!(handle: "notes-2")
+    assert_equal "Notes", profile.name
   end
 
   test "updating appends example files instead of replacing them" do

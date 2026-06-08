@@ -5,6 +5,10 @@ class Workspace < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :transformer_profiles, dependent: :destroy
 
+  # Encrypt the workspace display name at rest (Active Record Encryption).
+  # `slug` stays plaintext: it is the indexed, queried tenant identifier.
+  encrypts :name
+
   normalizes :name, with: ->(name) { name.to_s.strip }
   normalizes :slug, with: ->(slug) { slug.to_s.parameterize }
 

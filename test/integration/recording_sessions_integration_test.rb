@@ -19,7 +19,9 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to dashboard_path
-    recording_session = user.workspaces.first.recording_sessions.find_by!(title: "Client call")
+    # Title is encrypted (non-deterministic), so locate the row we just created by recency.
+    recording_session = user.workspaces.first.recording_sessions.recent_first.first!
+    assert_equal "Client call", recording_session.title
     assert_equal user, recording_session.creator
     assert_equal "default", recording_session.transformer_handle
     assert_predicate recording_session.original_audio, :attached?

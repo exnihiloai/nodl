@@ -36,5 +36,18 @@ module Nodl
     config.i18n.default_locale = :en
     config.i18n.fallbacks = [ :en ]
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
+
+    # Active Record Encryption rollout: tolerate reading rows whose encrypted
+    # columns still hold plaintext while the backfill (`rails encryption:backfill`)
+    # runs against existing data. New writes are always encrypted regardless.
+    # Flip to false (and redeploy) once every environment has been backfilled, so
+    # unencrypted reads are rejected. See doc/design-output/security/data-encryption.md.
+    config.active_record.encryption.support_unencrypted_data = true
+
+    # Name of the (encrypted) Active Storage service that attachments are pinned
+    # to. active_storage_encryption only generates a per-blob key when the blob
+    # carries an explicit service_name, so each has_*_attached passes this. Test
+    # overrides it to :test for storage isolation (see config/environments/test.rb).
+    config.x.attachment_service = :local
   end
 end

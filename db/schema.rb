@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_210002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_210000) do
     t.string "checksum"
     t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "encryption_key"
     t.string "filename", null: false
     t.string "key", null: false
     t.text "metadata"
@@ -101,7 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_210000) do
     t.integer "status", default: 0, null: false
     t.string "time_zone"
     t.string "title", null: false
-    t.jsonb "transcript_segments"
+    t.text "transcript_segments"
     t.text "transcript_text"
     t.string "transformer_handle", default: "default", null: false
     t.datetime "updated_at", null: false
