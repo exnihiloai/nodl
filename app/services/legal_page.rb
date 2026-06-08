@@ -5,7 +5,13 @@
 # Content may be authored either as Markdown (`*.md`, rendered to HTML at request
 # time) or as ERB/HTML (`*.html.erb`). Filenames are matched against the slug
 # itself and, where the canonical document is named differently, an aliased
-# basename (e.g. the `privacy` slug resolves `data-protection.md`).
+# basename (e.g. the `privacy` slug resolves `data-protection`).
+#
+# Language is selected from the visitor's locale. German is the authoritative
+# language: a missing translation falls back to the German version rather than
+# 404ing, so visitors always see a valid document. Two filename schemes are
+# supported per language: a `-DE`/`-EN` suffix (current authoring convention)
+# and a legacy `.de`/`.en` dotted infix (still used by the imprint).
 class LegalPage
   SLUGS = %w[imprint privacy terms ai_transparency].freeze
 
@@ -17,6 +23,10 @@ class LegalPage
     "terms" => "terms-of-service",
     "ai_transparency" => "ai-transparency"
   }.freeze
+
+  # German is the legally authoritative version and is always present; it is the
+  # final language fallback and the canonical source for consent versioning.
+  AUTHORITATIVE_LOCALE = :de
 
   EXTENSIONS = %w[md html.erb].freeze
   STAND_PATTERN = /\*\*Stand:\*\*\s*(.+?)\s*$/i
@@ -47,9 +57,10 @@ class LegalPage
     end
 
     # Version identifier for a document, used to record and compare consent.
-    # Derived from the "**Stand:** <date>" line so that bumping the date on a
-    # legal update naturally registers as a new version requiring fresh consent.
-    def version(slug, locale: I18n.locale)
+    # Derived from the "**Stand:** <date>" line of the authoritative (German)
+    # version so the identifier is stable across languages: bumping that date on
+    # a legal update registers as a new version requiring fresh consent.
+    def version(slug, locale: AUTHORITATIVE_LOCALE)
       path = resolve(slug, locale: locale)
       return nil unless path
 
@@ -61,13 +72,25 @@ class LegalPage
 
     def candidate_paths(slug, locale)
       bases = [ FILE_BASES[slug.to_s], slug.to_s ].compact.uniq
-      variants = [ "#{locale}.%s", "#{I18n.default_locale}.%s", "%s" ]
 
       bases.flat_map do |base|
-        variants.flat_map do |variant|
-          EXTENSIONS.map { |ext| root.join("#{base}.#{format(variant, ext)}") }
+        filenames(base, locale).map { |name| root.join(name) }
+      end
+    end
+
+    # Filenames for one basename in priority order: the visitor's language first
+    # (suffix scheme, then legacy dotted scheme), then the authoritative German
+    # language, then a language-agnostic generic file.
+    def filenames(base, locale)
+      languages = [ locale.to_s, AUTHORITATIVE_LOCALE.to_s ].uniq
+
+      names = languages.flat_map do |lang|
+        EXTENSIONS.flat_map do |ext|
+          [ "#{base}-#{lang.upcase}.#{ext}", "#{base}.#{lang}.#{ext}" ]
         end
       end
+
+      names + EXTENSIONS.map { |ext| "#{base}.#{ext}" }
     end
   end
 end

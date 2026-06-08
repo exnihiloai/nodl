@@ -17,8 +17,8 @@ class LegalPageTest < ActiveSupport::TestCase
     assert_equal path, LegalPage.resolve("imprint", locale: :de)
   end
 
-  test "resolve falls back to default locale" do
-    path = write_legal_page("imprint", I18n.default_locale, "<p>Default imprint</p>")
+  test "resolve falls back to the authoritative German version for unknown locales" do
+    path = write_legal_page("imprint", :de, "<p>DE imprint</p>")
     assert_equal path, LegalPage.resolve("imprint", locale: :fr)
   end
 
@@ -61,6 +61,31 @@ class LegalPageTest < ActiveSupport::TestCase
     @legal_root.join("terms.md").write("# Terms\n\nNo version marker here.")
 
     assert_nil LegalPage.version("terms")
+  end
+
+  test "resolve serves the language-suffixed document for the visitor locale" do
+    de = @legal_root.join("data-protection-DE.md").write("# DE") && @legal_root.join("data-protection-DE.md")
+    en = @legal_root.join("data-protection-EN.md").write("# EN") && @legal_root.join("data-protection-EN.md")
+
+    assert_equal de, LegalPage.resolve("privacy", locale: :de)
+    assert_equal en, LegalPage.resolve("privacy", locale: :en)
+  end
+
+  test "resolve falls back to the authoritative German version when a translation is missing" do
+    de = @legal_root.join("terms-of-service-DE.md")
+    de.write("# AGB")
+
+    assert_equal de, LegalPage.resolve("terms", locale: :en)
+    assert LegalPage.exists?("terms")
+  end
+
+  test "version reads the authoritative German document regardless of current locale" do
+    @legal_root.join("data-protection-DE.md").write("**Stand:** 08. Juni 2026")
+    @legal_root.join("data-protection-EN.md").write("**Stand:** 01. May 2026")
+
+    I18n.with_locale(:en) do
+      assert_equal "08. Juni 2026", LegalPage.version("privacy")
+    end
   end
 
   private
