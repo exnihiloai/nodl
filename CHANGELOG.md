@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-06-08
+
+### Added
+- **Accept Terms and Privacy When You Sign Up:** When your operator has published legal documents, registration now includes a required checkbox linking to the Terms and Conditions and Privacy Policy. Your agreement is recorded with the document version, timestamp, and request details so there is an auditable consent history when policies are updated.
+- **AI Transparency Page:** A new page at `/ki-transparenz` explains how Nodl uses AI — what data is processed, which models are involved, and your rights. It appears in the “Related documents” section on the Privacy Policy and Terms pages when the operator has published the document.
+- **Subprocessor Register:** A new page at `/subprozessoren` lists third-party subprocessors (hosting, email, AI providers, and similar). It is linked from the Privacy Policy and Security pages when published, so you can see who processes data on the operator’s behalf.
+- **Security Measures (TOMs):** A new page at `/sicherheit` describes technical and organizational security measures. It is linked from the Privacy Policy and Subprocessor Register when published.
+- **Related Documents on Legal Pages:** Privacy, Terms, AI Transparency, Security, and Subprocessor pages now show a “Related documents” section at the bottom, linking to other published legal pages that belong together — without cluttering the site footer.
+
+
 
 ## [0.11.0] - 2026-06-08
 
