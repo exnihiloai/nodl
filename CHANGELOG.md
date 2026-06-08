@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.0] - 2026-06-08
+
+### Added
+- **Your Recordings Now Know the Date and Time:** When you mention "today", "right now", or a day of the week without saying the actual date, your generated documents and titles can now fill it in for you. Nodl remembers exactly when each recording was made — including the weekday — and references it only when your words or your output type call for it, so neutral notes stay clean and untouched.
+
+- **Times Shown in Your Local Time Zone:** New recordings capture your device's time zone, so both the document text and the timestamps on the document and recording pages now show your local time (for example, 21:00 instead of 19:00 UTC). Existing recordings made before this update continue to display in UTC.
+
+
+
 ## [0.10.2] - 2026-06-07
 
 ### Technical
