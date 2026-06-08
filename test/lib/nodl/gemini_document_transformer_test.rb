@@ -31,6 +31,30 @@ class NodlGeminiDocumentTransformerTest < ActiveSupport::TestCase
     assert_includes prompt, "Raw transcript text."
   end
 
+  test "includes the recording date and time when recorded_at is given" do
+    transformer = Nodl::Transformation::Transformer.new(handle: "default", instructions: "Clean it.", templates: [])
+
+    prompt = Nodl::Transformation::GeminiDocumentTransformer.new.build_prompt(
+      transcript: "Today and right now I am speaking these words.",
+      transformer: transformer,
+      recorded_at: Time.utc(2026, 6, 8, 14, 30)
+    )
+
+    assert_includes prompt, "## Recording context"
+    assert_includes prompt, "Monday, 8 June 2026 at 14:30 UTC"
+  end
+
+  test "omits the recording context section when recorded_at is nil" do
+    transformer = Nodl::Transformation::Transformer.new(handle: "default", instructions: "Clean it.", templates: [])
+
+    prompt = Nodl::Transformation::GeminiDocumentTransformer.new.build_prompt(
+      transcript: "Raw transcript text.",
+      transformer: transformer
+    )
+
+    refute_includes prompt, "Recording context"
+  end
+
   test "returns a placeholder document without calling gemini for a blank transcript" do
     [ "", "   ", "\n\t", nil ].each do |blank|
       client = FakeClient.new

@@ -195,4 +195,38 @@ class RecordingSessionTest < ActiveSupport::TestCase
     assert_not recording_session.valid?
     assert_includes recording_session.errors[:original_audio], "can't be longer than #{PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i} minutes"
   end
+
+  test "local_created_at renders created_at in the captured zone" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Vienna note",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording,
+      time_zone: "Europe/Vienna"
+    )
+    recording_session.save!
+    recording_session.update_column(:created_at, Time.utc(2026, 6, 8, 18, 49))
+
+    local = recording_session.reload.local_created_at
+    assert_equal "Europe/Vienna", local.time_zone.name
+    assert_equal "20:49 CEST", local.strftime("%H:%M %Z")
+  end
+
+  test "local_created_at falls back to the default zone and drops bogus zones" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Bad zone",
+      transformer_handle: "default",
+      source_kind: :microphone,
+      status: :recording,
+      time_zone: "Not/AZone"
+    )
+    recording_session.save!
+
+    assert_nil recording_session.time_zone, "unknown zones are normalized away"
+    assert_equal recording_session.created_at, recording_session.local_created_at
+  end
 end

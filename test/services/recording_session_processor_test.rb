@@ -52,17 +52,18 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
   end
 
   class FakeTitleGenerator
-    attr_reader :transcript
+    attr_reader :transcript, :recorded_at
 
     def initialize(title: "Generated Meeting Title", error: nil)
       @title = title
       @error = error
     end
 
-    def generate(transcript:)
+    def generate(transcript:, recorded_at: nil)
       raise @error if @error
 
       @transcript = transcript
+      @recorded_at = recorded_at
       @title
     end
   end

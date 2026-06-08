@@ -26,6 +26,23 @@ class RecordingTitleGeneratorTest < ActiveSupport::TestCase
     assert_equal({ temperature: 0.2 }, client.generation_config)
   end
 
+  test "includes the recording date and time in the prompt when recorded_at is given" do
+    client = FakeClient.new("Daily Standup")
+    RecordingTitleGenerator.new(client: client).generate(
+      transcript: "Today and right now I am speaking these words.",
+      recorded_at: Time.utc(2026, 6, 8, 14, 30)
+    )
+
+    assert_includes client.parts.first.fetch(:text), "Monday, 8 June 2026 at 14:30 UTC"
+  end
+
+  test "omits recording context from the prompt when recorded_at is nil" do
+    client = FakeClient.new("Daily Standup")
+    RecordingTitleGenerator.new(client: client).generate(transcript: "We discussed the roadmap.")
+
+    refute_includes client.parts.first.fetch(:text), "Recording context"
+  end
+
   test "returns nil without calling the model when the transcript is blank" do
     [ "", "   ", "\n\t", nil ].each do |blank|
       client = FakeClient.new("Please provide the transcript you would like me to title")

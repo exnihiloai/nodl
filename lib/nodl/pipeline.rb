@@ -28,7 +28,7 @@ module Nodl
       @waveform_extractor = waveform_extractor
     end
 
-    def run(audio_path:, transformer_handle:, transcriber_model:, transformer_model:, workspace: nil)
+    def run(audio_path:, transformer_handle:, transcriber_model:, transformer_model:, workspace: nil, recorded_at: nil)
       started_at = Time.now.utc
       source_audio = AudioInput.new(audio_path)
       transformer = transformer_repository.fetch(transformer_handle, workspace: workspace)
@@ -44,7 +44,8 @@ module Nodl
       document = document_transformer.transform(
         transcript: transcript.text,
         transformer: transformer,
-        model: transformer_model
+        model: transformer_model,
+        recorded_at: recorded_at
       )
       session.document_path.write("#{document.strip}\n")
       write_metadata(

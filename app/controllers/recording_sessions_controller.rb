@@ -49,7 +49,7 @@ class RecordingSessionsController < ApplicationController
   private
 
   def recording_session_params
-    params.require(:recording_session).permit(:title, :source_kind, :original_audio)
+    params.require(:recording_session).permit(:title, :source_kind, :original_audio, :time_zone)
   end
 
   def selected_transformer_handle

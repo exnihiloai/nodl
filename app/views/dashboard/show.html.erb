@@ -46,6 +46,7 @@
                         "audio-recorder-preview-stopped-text-value": t("dashboard.recorder.preview_stopped")
                       } do |form| %>
           <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
+          <%= form.hidden_field :time_zone, data: { "audio-recorder-target": "timeZone" } %>
 
           <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
 

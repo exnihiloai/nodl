@@ -17,6 +17,7 @@ export default class extends Controller {
     "recordInput",
     "uploadInput",
     "sourceKind",
+    "timeZone",
     "submitButton",
     "stage",
     "livePanelSlot",
@@ -38,6 +39,7 @@ export default class extends Controller {
   }
 
   connect() {
+    this.captureTimeZone()
     this.chunks = []
     this.seconds = 0
     this.smoothedLevel = 0
@@ -49,6 +51,21 @@ export default class extends Controller {
     if (!this.mimeOption) {
       this.recordButtonTarget.disabled = true
       this.updateStatus(this.unsupportedTextValue)
+    }
+  }
+
+  // Record the browser's IANA time zone (e.g. "Europe/Vienna") so generated
+  // documents can resolve "today"/"right now" to the speaker's local wall clock
+  // instead of the server's UTC. Best-effort: a missing API just falls back to
+  // the app default zone server-side.
+  captureTimeZone() {
+    if (!this.hasTimeZoneTarget) return
+
+    try {
+      const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (zone) this.timeZoneTarget.value = zone
+    } catch (_error) {
+      // Leave the field blank; the server falls back to the default zone.
     }
   }
 

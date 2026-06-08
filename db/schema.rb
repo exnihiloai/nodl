@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_130100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_185551) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_130100) do
     t.datetime "processing_started_at"
     t.integer "source_kind", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.string "time_zone"
     t.string "title", null: false
     t.jsonb "transcript_segments"
     t.text "transcript_text"
