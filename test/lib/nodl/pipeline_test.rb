@@ -29,12 +29,13 @@ class NodlPipelineTest < ActiveSupport::TestCase
   end
 
   class FakeDocumentTransformer
-    attr_reader :transcript, :transformer, :model
+    attr_reader :transcript, :transformer, :model, :recorded_at
 
-    def transform(transcript:, transformer:, model:)
+    def transform(transcript:, transformer:, model:, recorded_at: nil)
       @transcript = transcript
       @transformer = transformer
       @model = model
+      @recorded_at = recorded_at
       "# Document\n\nGenerated from transcript."
     end
   end
@@ -68,7 +69,8 @@ class NodlPipelineTest < ActiveSupport::TestCase
         audio_path: Rails.root.join("test", "fixtures", "files", "sample.mp3"),
         transformer_handle: "default",
         transcriber_model: "transcriber-model",
-        transformer_model: "transformer-model"
+        transformer_model: "transformer-model",
+        recorded_at: Time.utc(2026, 6, 8, 14, 30)
       )
 
       assert_predicate result.audio_path, :file?
@@ -83,6 +85,7 @@ class NodlPipelineTest < ActiveSupport::TestCase
       assert_equal 1.5, metadata.fetch("transcript_audio_seconds")
       assert_equal result.audio_path.to_s, transcriber.audio.path.to_s
       assert_equal "Speaker 1: This is the transcript.", document_transformer.transcript
+      assert_equal Time.utc(2026, 6, 8, 14, 30), document_transformer.recorded_at
       assert_equal [ 0.1, 0.5, 1.0 ], result.waveform_peaks
       assert_equal 12.5, result.audio_duration
     end

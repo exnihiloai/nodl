@@ -1,4 +1,5 @@
 require "nodl/providers/gemini_client"
+require "nodl/recording_context"
 
 class RecordingTitleGenerator
   DEFAULT_MODEL = "gemini-3.1-flash-lite".freeze
@@ -20,7 +21,7 @@ class RecordingTitleGenerator
     @client = client
   end
 
-  def generate(transcript:)
+  def generate(transcript:, recorded_at: nil)
     # A recording with no speech has an empty transcript. Asking the model to
     # title nothing makes it reply with a meta-response ("Please provide the
     # transcript..."), so skip the call and let the caller keep its default
@@ -29,7 +30,7 @@ class RecordingTitleGenerator
 
     title = client.generate_text(
       model: ENV.fetch("NODL_GEMINI_TITLE_MODEL", DEFAULT_MODEL),
-      parts: [ { text: "#{PROMPT}\n\nTranscript:\n#{transcript}" } ],
+      parts: [ { text: build_prompt(transcript: transcript, recorded_at: recorded_at) } ],
       generation_config: { temperature: 0.2 }
     )
 
@@ -39,6 +40,16 @@ class RecordingTitleGenerator
   private
 
   attr_reader :client
+
+  def build_prompt(transcript:, recorded_at:)
+    context = Nodl::RecordingContext.describe(recorded_at)
+
+    [
+      PROMPT,
+      ("Recording context:\n#{context}" if context),
+      "Transcript:\n#{transcript}"
+    ].compact.join("\n\n")
+  end
 
   def sanitize(title)
     title.to_s

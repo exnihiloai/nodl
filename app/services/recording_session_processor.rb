@@ -47,7 +47,8 @@ class RecordingSessionProcessor
         transformer_handle: recording_session.transformer_handle,
         workspace: recording_session.workspace,
         transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
-        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL)
+        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL),
+        recorded_at: recording_session.local_created_at
       )
       transcript_text = result.transcript_path.read.strip
       document_content = result.document_path.read.strip
@@ -89,7 +90,10 @@ class RecordingSessionProcessor
   def generated_title_for(recording_session, transcript_text)
     return unless recording_session.default_title?
 
-    (title_generator || RecordingTitleGenerator.new).generate(transcript: transcript_text)
+    (title_generator || RecordingTitleGenerator.new).generate(
+      transcript: transcript_text,
+      recorded_at: recording_session.local_created_at
+    )
   rescue StandardError => error
     Rails.logger.warn(
       "Recording title generation failed " \

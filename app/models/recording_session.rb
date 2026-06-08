@@ -28,6 +28,13 @@ class RecordingSession < ApplicationRecord
 
   normalizes :title, with: ->(title) { title.to_s.strip }
   normalizes :transformer_handle, with: ->(handle) { handle.to_s.strip.presence || TransformerProfile::DEFAULT_HANDLE }
+  # The browser reports an IANA zone (e.g. "Europe/Vienna") at record time. Keep
+  # it only when it names a real zone, so a bogus value silently falls back to
+  # the app default instead of blocking the recording.
+  normalizes :time_zone, with: ->(value) {
+    zone = value.to_s.strip.presence
+    zone if zone && ActiveSupport::TimeZone[zone]
+  }
 
   validates :title, presence: true
   validates :transformer_handle, presence: true, format: { with: /\A[a-zA-Z0-9][a-zA-Z0-9_-]*\z/ }
@@ -101,6 +108,15 @@ class RecordingSession < ApplicationRecord
 
   def default_title?
     title == DEFAULT_TITLE
+  end
+
+  # When the recording was created, expressed in the recorder's local zone when
+  # we captured one (so "today"/"right now" references resolve to the speaker's
+  # wall clock), otherwise the app default zone.
+  def local_created_at
+    return created_at if created_at.nil? || time_zone.blank?
+
+    created_at.in_time_zone(time_zone)
   end
 
   def estimated_duration
