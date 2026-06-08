@@ -13,7 +13,7 @@
 # supported per language: a `-DE`/`-EN` suffix (current authoring convention)
 # and a legacy `.de`/`.en` dotted infix (still used by the imprint).
 class LegalPage
-  SLUGS = %w[imprint privacy terms ai_transparency].freeze
+  SLUGS = %w[imprint privacy terms ai_transparency subprocessors].freeze
 
   # Maps a slug to the canonical document basename used in private/legal/.
   # The slug itself is always tried as a fallback basename too, so operators may

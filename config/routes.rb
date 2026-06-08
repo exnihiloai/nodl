@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "/datenschutz", to: "legal_pages#privacy", as: :privacy
   get "/agb", to: "legal_pages#terms", as: :terms
   get "/ki-transparenz", to: "legal_pages#ai_transparency", as: :ai_transparency
+  get "/subprozessoren", to: "legal_pages#subprocessors", as: :subprocessors
   get "/try-now", to: "pages#try_now"
   get "/healthz", to: "pages#healthz"
   get "/readyz", to: "pages#readyz"

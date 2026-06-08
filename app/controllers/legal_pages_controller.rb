@@ -15,6 +15,10 @@ class LegalPagesController < ApplicationController
     show("ai_transparency")
   end
 
+  def subprocessors
+    show("subprocessors")
+  end
+
   private
 
   def show(slug)

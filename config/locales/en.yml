@@ -101,6 +101,7 @@ en:
     privacy: "Privacy"
     terms: "Terms"
     ai_transparency: "AI Transparency"
+    subprocessors: "Subprocessors"
 
   legal_pages:
     imprint:
@@ -111,6 +112,8 @@ en:
       title: "Terms and Conditions - Nodl"
     ai_transparency:
       title: "AI Transparency - Nodl"
+    subprocessors:
+      title: "Subprocessor Register - Nodl"
 
   errors:
     not_found:

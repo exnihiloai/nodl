@@ -85,6 +85,24 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("footer.ai_transparency", locale: :en)
   end
 
+  test "subprocessors page renders from markdown" do
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessor Register\n\n| Name | Status |\n|---|---|\n| Hetzner | Active |")
+
+    get subprocessors_path
+    assert_response :success
+    assert_includes response.body, "Subprocessor Register"
+    assert_includes response.body, "Hetzner"
+  end
+
+  test "footer shows subprocessors link when template exists" do
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessor Register")
+
+    get root_path
+    assert_response :success
+    assert_includes response.body, subprocessors_path
+    assert_includes response.body, I18n.t("footer.subprocessors", locale: :en)
+  end
+
   private
 
   def write_legal_page(slug, locale, content)

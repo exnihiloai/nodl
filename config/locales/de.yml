@@ -203,6 +203,7 @@ de:
     privacy: "Datenschutz"
     terms: "AGB"
     ai_transparency: "KI-Transparenz"
+    subprocessors: "Subprozessoren"
 
   legal_pages:
     imprint:
@@ -213,6 +214,8 @@ de:
       title: "AGB - Nodl"
     ai_transparency:
       title: "KI-Transparenz - Nodl"
+    subprocessors:
+      title: "Subprozessorenregister - Nodl"
 
   errors:
     not_found:
