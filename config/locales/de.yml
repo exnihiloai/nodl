@@ -198,12 +198,12 @@ de:
     about: "Über uns"
     pricing: "Preise"
     demo: "Demo"
-    licenses: "Lizenzen"
     imprint: "Impressum"
     privacy: "Datenschutz"
     terms: "AGB"
     ai_transparency: "KI-Transparenz"
     subprocessors: "Subprozessoren"
+    security: "Sicherheit"
 
   legal_pages:
     imprint:
@@ -216,6 +216,10 @@ de:
       title: "KI-Transparenz - Nodl"
     subprocessors:
       title: "Subprozessorenregister - Nodl"
+    security:
+      title: "Sicherheitsmaßnahmen (TOMs) - Nodl"
+    related:
+      heading: "Verwandte Dokumente"
 
   errors:
     not_found:

@@ -96,12 +96,12 @@ en:
     about: "About"
     pricing: "Pricing"
     demo: "Demo"
-    licenses: "Licenses"
     imprint: "Imprint"
     privacy: "Privacy"
     terms: "Terms"
     ai_transparency: "AI Transparency"
     subprocessors: "Subprocessors"
+    security: "Security"
 
   legal_pages:
     imprint:
@@ -114,6 +114,10 @@ en:
       title: "AI Transparency - Nodl"
     subprocessors:
       title: "Subprocessor Register - Nodl"
+    security:
+      title: "Security Measures (TOMs) - Nodl"
+    related:
+      heading: "Related documents"
 
   errors:
     not_found:

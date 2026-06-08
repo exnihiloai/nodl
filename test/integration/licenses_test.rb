@@ -41,11 +41,10 @@ class LicensesTest < ActionDispatch::IntegrationTest
     assert_select "a[data-testid='about-licenses-link'][href=?]", licenses_path
   end
 
-  test "footer links to the licenses page" do
+  test "footer does not link to the licenses page (reachable from About instead)" do
     get root_path
     assert_response :success
-    assert_includes response.body, licenses_path
-    assert_includes response.body, I18n.t("footer.licenses", locale: :en)
+    assert_not_includes response.body, licenses_path
   end
 
   test "every component has a name and copyright notice" do

@@ -76,10 +76,11 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "AI Transparency"
   end
 
-  test "footer shows ai transparency link when template exists" do
+  test "privacy page links to ai transparency in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
     @legal_root.join("ai-transparency.md").write("# AI Transparency")
 
-    get root_path
+    get privacy_path
     assert_response :success
     assert_includes response.body, ai_transparency_path
     assert_includes response.body, I18n.t("footer.ai_transparency", locale: :en)
@@ -94,13 +95,47 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Hetzner"
   end
 
-  test "footer shows subprocessors link when template exists" do
+  test "privacy page links to subprocessors in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
     @legal_root.join("subprocessors-EN.md").write("# Subprocessor Register")
 
-    get root_path
+    get privacy_path
     assert_response :success
     assert_includes response.body, subprocessors_path
     assert_includes response.body, I18n.t("footer.subprocessors", locale: :en)
+  end
+
+  test "security page renders from markdown" do
+    @legal_root.join("security-EN.md").write("# Security Measures\n\nTLS and workspace isolation.")
+
+    get security_path
+    assert_response :success
+    assert_includes response.body, "Security Measures"
+    assert_includes response.body, "workspace isolation"
+  end
+
+  test "privacy page links to security in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
+    @legal_root.join("security-EN.md").write("# Security Measures")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, security_path
+    assert_includes response.body, I18n.t("footer.security", locale: :en)
+  end
+
+  test "footer omits detailed compliance pages, keeping only core legal links" do
+    @legal_root.join("terms-of-service.md").write("# Terms")
+    @legal_root.join("ai-transparency.md").write("# AI Transparency")
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessors")
+    @legal_root.join("security-EN.md").write("# Security")
+
+    get root_path
+    assert_response :success
+    assert_includes response.body, terms_path
+    assert_not_includes response.body, ai_transparency_path
+    assert_not_includes response.body, subprocessors_path
+    assert_not_includes response.body, security_path
   end
 
   private

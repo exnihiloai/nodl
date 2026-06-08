@@ -15,6 +15,12 @@ module LegalPagesHelper
     link_to t("footer.#{slug}"), public_send(:"#{slug}_path"), class: "link link-hover"
   end
 
+  # Slugs of the documents contextually related to the given legal page that are
+  # actually published, in their configured order.
+  def legal_related_slugs(current_slug)
+    LegalPage::RELATED.fetch(current_slug.to_s, []).select { |slug| LegalPage.exists?(slug) }
+  end
+
   def render_legal_markdown(content)
     return "" if content.blank?
 
