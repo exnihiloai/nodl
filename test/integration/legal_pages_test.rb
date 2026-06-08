@@ -58,6 +58,86 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "Test Privacy"
   end
 
+  test "legal page renders markdown content as html" do
+    @legal_root.join("data-protection.md").write("# Datenschutz\n\nWir schützen **deine** Daten.")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, "<h1"
+    assert_includes response.body, "Datenschutz"
+    assert_includes response.body, "<strong>deine</strong>"
+  end
+
+  test "ai transparency page renders from markdown" do
+    @legal_root.join("ai-transparency.md").write("# AI Transparency\n\nNodl nutzt KI.")
+
+    get ai_transparency_path
+    assert_response :success
+    assert_includes response.body, "AI Transparency"
+  end
+
+  test "privacy page links to ai transparency in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
+    @legal_root.join("ai-transparency.md").write("# AI Transparency")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, ai_transparency_path
+    assert_includes response.body, I18n.t("footer.ai_transparency", locale: :en)
+  end
+
+  test "subprocessors page renders from markdown" do
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessor Register\n\n| Name | Status |\n|---|---|\n| Hetzner | Active |")
+
+    get subprocessors_path
+    assert_response :success
+    assert_includes response.body, "Subprocessor Register"
+    assert_includes response.body, "Hetzner"
+  end
+
+  test "privacy page links to subprocessors in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessor Register")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, subprocessors_path
+    assert_includes response.body, I18n.t("footer.subprocessors", locale: :en)
+  end
+
+  test "security page renders from markdown" do
+    @legal_root.join("security-EN.md").write("# Security Measures\n\nTLS and workspace isolation.")
+
+    get security_path
+    assert_response :success
+    assert_includes response.body, "Security Measures"
+    assert_includes response.body, "workspace isolation"
+  end
+
+  test "privacy page links to security in related documents" do
+    @legal_root.join("data-protection.md").write("# Datenschutz")
+    @legal_root.join("security-EN.md").write("# Security Measures")
+
+    get privacy_path
+    assert_response :success
+    assert_includes response.body, security_path
+    assert_includes response.body, I18n.t("footer.security", locale: :en)
+  end
+
+  test "footer omits detailed compliance pages, keeping only core legal links" do
+    @legal_root.join("terms-of-service.md").write("# Terms")
+    @legal_root.join("ai-transparency.md").write("# AI Transparency")
+    @legal_root.join("subprocessors-EN.md").write("# Subprocessors")
+    @legal_root.join("security-EN.md").write("# Security")
+
+    get root_path
+    assert_response :success
+    assert_includes response.body, terms_path
+    assert_not_includes response.body, ai_transparency_path
+    assert_not_includes response.body, subprocessors_path
+    assert_not_includes response.body, security_path
+  end
+
   private
 
   def write_legal_page(slug, locale, content)

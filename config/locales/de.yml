@@ -198,10 +198,12 @@ de:
     about: "Über uns"
     pricing: "Preise"
     demo: "Demo"
-    licenses: "Lizenzen"
     imprint: "Impressum"
     privacy: "Datenschutz"
     terms: "AGB"
+    ai_transparency: "KI-Transparenz"
+    subprocessors: "Subprozessoren"
+    security: "Sicherheit"
 
   legal_pages:
     imprint:
@@ -210,6 +212,14 @@ de:
       title: "Datenschutz - Nodl"
     terms:
       title: "AGB - Nodl"
+    ai_transparency:
+      title: "KI-Transparenz - Nodl"
+    subprocessors:
+      title: "Subprozessorenregister - Nodl"
+    security:
+      title: "Sicherheitsmaßnahmen (TOMs) - Nodl"
+    related:
+      heading: "Verwandte Dokumente"
 
   errors:
     not_found:
@@ -258,6 +268,7 @@ de:
       email_mismatch: "E-Mail und Bestätigung müssen übereinstimmen."
       password_mismatch: "Die Passwörter müssen übereinstimmen."
       email_taken: "Diese E-Mail-Adresse ist bereits registriert."
+      legal_not_accepted: "Du musst den AGB und der Datenschutzerklärung zustimmen, um ein Konto zu erstellen."
 
   shared:
     status_check:
@@ -482,6 +493,10 @@ de:
       create_account: "Konto erstellen"
       already_have_account: "Hast du bereits ein Konto?"
       sign_in: "Anmelden"
+      legal:
+        agree_html: "Ich habe die %{terms} und die %{privacy} gelesen und stimme ihnen zu."
+        terms: "AGB"
+        privacy: "Datenschutzerklärung"
 
   dashboard:
     title: "Dashboard - Nodl"

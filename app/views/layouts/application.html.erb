@@ -36,8 +36,7 @@
             <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
             <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
             <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
-            <%= link_to t("footer.licenses"), licenses_path, class: "link link-hover" %>
-            <% LegalPage::SLUGS.each do |slug| %>
+            <% LegalPage::FOOTER_SLUGS.each do |slug| %>
               <%= legal_page_link(slug) %>
             <% end %>
           </div>

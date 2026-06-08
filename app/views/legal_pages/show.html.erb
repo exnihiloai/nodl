@@ -1,3 +1,36 @@
 <% content_for :title, @page_title %>
 
-<%= render inline: @legal_content %>
+<% if @legal_markdown %>
+  <section class="py-16 bg-base-100">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <article class="prose prose-slate max-w-none prose-a:link prose-a:link-primary">
+        <%= render_legal_markdown(@legal_content) %>
+      </article>
+    </div>
+  </section>
+<% else %>
+  <%= render inline: @legal_content %>
+<% end %>
+
+<% related = legal_related_slugs(@legal_slug) %>
+<% if related.any? %>
+  <section class="pb-16 bg-base-100">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <nav aria-label="<%= t("legal_pages.related.heading") %>" class="rounded-box border border-base-300 bg-base-200/40 p-6">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+          <%= t("legal_pages.related.heading") %>
+        </h2>
+        <ul class="mt-4 flex flex-col gap-2">
+          <% related.each do |slug| %>
+            <li>
+              <%= link_to public_send(:"#{slug}_path"), class: "group inline-flex items-center gap-2 text-base-content/80 link link-hover" do %>
+                <span aria-hidden="true" class="text-base-content/30 transition-colors group-hover:text-primary">→</span>
+                <%= t("footer.#{slug}") %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+    </div>
+  </section>
+<% end %>

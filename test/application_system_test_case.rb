@@ -12,6 +12,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     fill_in "email_confirm", with: email
     fill_in "password", with: password
     fill_in "password_confirm", with: password
+    check "accept_legal" if has_field?("accept_legal")
     click_button "Create account"
   end
 

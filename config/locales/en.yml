@@ -96,10 +96,12 @@ en:
     about: "About"
     pricing: "Pricing"
     demo: "Demo"
-    licenses: "Licenses"
     imprint: "Imprint"
     privacy: "Privacy"
     terms: "Terms"
+    ai_transparency: "AI Transparency"
+    subprocessors: "Subprocessors"
+    security: "Security"
 
   legal_pages:
     imprint:
@@ -108,6 +110,14 @@ en:
       title: "Privacy Policy - Nodl"
     terms:
       title: "Terms and Conditions - Nodl"
+    ai_transparency:
+      title: "AI Transparency - Nodl"
+    subprocessors:
+      title: "Subprocessor Register - Nodl"
+    security:
+      title: "Security Measures (TOMs) - Nodl"
+    related:
+      heading: "Related documents"
 
   errors:
     not_found:
@@ -156,6 +166,7 @@ en:
       email_mismatch: "Email and confirmation must match."
       password_mismatch: "Passwords must match."
       email_taken: "This email is already registered."
+      legal_not_accepted: "You must accept the Terms and Conditions and Privacy Policy to create an account."
 
   shared:
     status_check:
@@ -380,6 +391,10 @@ en:
       create_account: "Create account"
       already_have_account: "Already have an account?"
       sign_in: "Sign in"
+      legal:
+        agree_html: "I have read and agree to the %{terms} and the %{privacy}."
+        terms: "Terms and Conditions"
+        privacy: "Privacy Policy"
 
   dashboard:
     title: "Dashboard - Nodl"
