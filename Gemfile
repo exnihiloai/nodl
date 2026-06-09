@@ -62,6 +62,9 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
+# Encrypt Active Storage blobs at rest with per-blob keys (EncryptedDisk service).
+# Supports HTTP Range streaming so audio playback/seek keeps working.
+gem "active_storage_encryption", "~> 0.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

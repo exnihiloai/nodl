@@ -65,4 +65,9 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # Streams decrypted Active Storage blobs (audio playback/download) for the
+  # EncryptedDisk service. `rails_blob_path` redirects here; the token in the URL
+  # is signed/encrypted and never exposes the per-blob key. See config/storage.yml.
+  mount ActiveStorageEncryption::Engine => "/active-storage-encryption"
 end

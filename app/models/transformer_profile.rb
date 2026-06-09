@@ -45,7 +45,13 @@ class TransformerProfile < ApplicationRecord
   MARKDOWN
 
   belongs_to :workspace
-  has_many_attached :example_files
+  # Pinned to the encrypted service (see config.x.attachment_service).
+  has_many_attached :example_files, service: Rails.application.config.x.attachment_service
+
+  # Encrypt the workspace-provided format settings at rest (Active Record
+  # Encryption). `handle` stays plaintext: it is the indexed/queried identifier.
+  encrypts :instructions
+  encrypts :name
 
   normalizes :handle, with: ->(handle) { handle.to_s.strip }
   normalizes :name, with: ->(name) { name.to_s.strip }
@@ -60,7 +66,10 @@ class TransformerProfile < ApplicationRecord
   validate :workspace_format_limit_not_exceeded, on: :create
 
   scope :active, -> { where(active: true) }
-  scope :default_first, -> { order(default: :desc, name: :asc, handle: :asc) }
+  # Default profile first, then a stable order by `handle`. We can't ORDER BY
+  # `name` in SQL anymore because it is encrypted (ciphertext order is meaningless);
+  # `handle` is plaintext and stable.
+  scope :default_first, -> { order(default: :desc, handle: :asc) }
 
   def self.ensure_default_for!(workspace)
     find_or_create_by!(workspace: workspace, handle: DEFAULT_HANDLE) do |profile|

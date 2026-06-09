@@ -1,9 +1,16 @@
+# EncryptedDisk (active_storage_encryption gem) encrypts every blob at rest with
+# a per-blob key (stored encrypted on the blob). `private_url_policy: stream`
+# serves decrypted bytes through the mounted engine controller, preserving HTTP
+# Range requests so audio playback/seek keeps working. Set at the service level
+# so all attachments (audio + example files) are encrypted by default.
 test:
-  service: Disk
+  service: EncryptedDisk
+  private_url_policy: stream
   root: <%= Rails.root.join("tmp/storage") %>
 
 local:
-  service: Disk
+  service: EncryptedDisk
+  private_url_policy: stream
   root: <%= Rails.root.join("storage") %>
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)

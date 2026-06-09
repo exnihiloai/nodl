@@ -31,7 +31,18 @@ Rails.application.configure do
   config.action_controller.allow_forgery_protection = false
 
   # Store uploaded files on the local file system in a temporary directory.
+  # The :test service is an EncryptedDisk (see config/storage.yml) so the suite
+  # exercises blob-at-rest encryption exactly like production.
   config.active_storage.service = :test
+  # Pin attachments to the :test encrypted service (see application.rb).
+  config.x.attachment_service = :test
+
+  # Deterministic, throwaway Active Record Encryption keys for the test suite so
+  # CI never depends on the master key / encrypted credentials. The test database
+  # is scratch space, so fixed keys are safe here and must NOT match any real key.
+  config.active_record.encryption.primary_key = "test_ar_encryption_primary_key_0001"
+  config.active_record.encryption.deterministic_key = "test_ar_encryption_deterministic_0001"
+  config.active_record.encryption.key_derivation_salt = "test_ar_encryption_key_derivation_salt_0001"
 
   # rack_test cannot establish Action Cable connections; tests assert rendered
   # stream sources directly and JS-specific cable behavior belongs in JS drivers.

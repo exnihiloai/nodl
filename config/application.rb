@@ -36,5 +36,40 @@ module Nodl
     config.i18n.default_locale = :en
     config.i18n.fallbacks = [ :en ]
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
+
+    # Active Record Encryption keys come from the environment, never from the
+    # repo: nodl is public, so even the encrypted credentials file must not
+    # carry them. Production requires all three vars (set in Dokploy; canonical
+    # copy lives in private/secrets/production-encryption.env) and fails the
+    # boot fast when they are missing — except during the image build's asset
+    # precompile, which runs without secrets (SECRET_KEY_BASE_DUMMY).
+    # Development falls back to fixed throwaway keys so OSS clones run out of
+    # the box (same philosophy as the dev database password in compose); test
+    # keys are pinned in config/environments/test.rb.
+    if ENV["SECRET_KEY_BASE_DUMMY"].blank? && Rails.env.production?
+      config.active_record.encryption.primary_key = ENV.fetch("NODL_AR_ENCRYPTION_PRIMARY_KEY")
+      config.active_record.encryption.deterministic_key = ENV.fetch("NODL_AR_ENCRYPTION_DETERMINISTIC_KEY")
+      config.active_record.encryption.key_derivation_salt = ENV.fetch("NODL_AR_ENCRYPTION_KEY_DERIVATION_SALT")
+    else
+      config.active_record.encryption.primary_key =
+        ENV.fetch("NODL_AR_ENCRYPTION_PRIMARY_KEY", "nodl-dev-only-insecure-primary-key")
+      config.active_record.encryption.deterministic_key =
+        ENV.fetch("NODL_AR_ENCRYPTION_DETERMINISTIC_KEY", "nodl-dev-only-insecure-deterministic-key")
+      config.active_record.encryption.key_derivation_salt =
+        ENV.fetch("NODL_AR_ENCRYPTION_KEY_DERIVATION_SALT", "nodl-dev-only-insecure-key-derivation-salt")
+    end
+
+    # Encryption rollout: tolerate reading rows whose encrypted columns still
+    # hold plaintext while the backfill (`rails encryption:backfill`) runs
+    # against existing data. New writes are always encrypted regardless. Flip to
+    # false (and redeploy) once every environment has been backfilled, so
+    # unencrypted reads are rejected. See doc/design-output/security/data-encryption.md.
+    config.active_record.encryption.support_unencrypted_data = true
+
+    # Name of the (encrypted) Active Storage service that attachments are pinned
+    # to. active_storage_encryption only generates a per-blob key when the blob
+    # carries an explicit service_name, so each has_*_attached passes this. Test
+    # overrides it to :test for storage isolation (see config/environments/test.rb).
+    config.x.attachment_service = :local
   end
 end

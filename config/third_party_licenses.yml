@@ -53,6 +53,10 @@ groups:
     version: 8.1.3
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
+  - name: active_storage_encryption
+    version: 0.3.0
+    copyright: Copyright Cheddar Payments BV, Julik Tarkhanov, Sebastian van Hesteren
+    url: https://github.com/cheddar-me/active_storage_encryption
   - name: activejob
     version: 8.1.3
     copyright: Copyright (c) David Heinemeier Hansson
@@ -109,6 +113,10 @@ groups:
     version: 1.1.2
     copyright: 'Copyright 2007-2016: Miklós Fazekas <mfazekas@szemafor.com>'
     url: https://github.com/net-ssh/bcrypt_pbkdf-ruby
+  - name: block_cipher_kit
+    version: 0.0.4
+    copyright: Copyright (c) Julik Tarkhanov, Sebastian van Hesteren
+    url: https://github.com/julik/block_cipher_kit
   - name: bootsnap
     version: 1.24.6
     copyright: Copyright (c) 2017-2025 Shopify, Inc.
@@ -394,6 +402,10 @@ groups:
     version: 2.3.0
     copyright: Copyright (c) 2014 John Cupitt
     url: http://github.com/libvips/ruby-vips
+  - name: serve_byte_range
+    version: 1.0.0
+    copyright: Copyright (c) Julik Tarkhanov, Sebastian van Hesteren
+    url: https://github.com/julik/serve_byte_range
   - name: solid_cable
     version: 3.0.12
     copyright: Copyright Nick Pezza
