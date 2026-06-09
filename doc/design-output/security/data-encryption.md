@@ -99,9 +99,11 @@ enough to read any file.
   rows so their columns are encrypted in place (idempotent).
   `rails encryption:reencrypt_blobs` reads each legacy plaintext blob, rewrites it
   encrypted with a fresh per-blob key, and removes the plaintext copy (idempotent).
-  During the rollout `config.active_record.encryption.support_unencrypted_data` is
-  `true` (in `config/application.rb`) so not-yet-encrypted rows stay readable; flip
-  it to `false` and redeploy once every environment has been backfilled.
+  `config.active_record.encryption.support_unencrypted_data` is `false`
+  (in `config/application.rb`): reading a plaintext value from an encrypted column
+  raises instead of being tolerated. Operators upgrading an instance that still
+  holds pre-encryption data set it to `true`, run both backfill tasks, then flip
+  it back and redeploy.
 - **Abandoned/failed uploads.** `PurgeUnattachedBlobsJob` runs daily
   (`config/recurring.yml`) and purges unattached blobs older than one day. On the
   EncryptedDisk service these orphans are ciphertext regardless, so no readable
