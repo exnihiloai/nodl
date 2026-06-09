@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-06-09
+
+### Added
+- **Your Data Is Now Encrypted at Rest:** Everything you store in Nodl — transcripts, generated documents, recording titles, uploaded audio, format instructions, and workspace settings — is now encrypted in the database and on disk. Every uploaded file additionally gets its own encryption key, so even direct access to the storage would not reveal your content. Together with the encrypted connections Nodl already used (HTTPS, secure websockets), your data is protected both in transit and at rest. Playback, downloads, and all everyday features work exactly as before.
+
+
+
 ## [0.12.0] - 2026-06-08
 
 ### Added
