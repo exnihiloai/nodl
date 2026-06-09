@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.1] - 2026-06-10
+
+### Technical
+- Encryption at rest is now strictly enforced: `support_unencrypted_data` is off, so a plaintext value in an encrypted column raises instead of being silently tolerated. All environments were verified fully encrypted beforehand; operators upgrading older instances find the backfill procedure in `doc/design-output/security/data-encryption.md`.
+
+
 ## [0.13.0] - 2026-06-09
 
 ### Added

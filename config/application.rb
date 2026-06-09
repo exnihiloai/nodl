@@ -59,12 +59,13 @@ module Nodl
         ENV.fetch("NODL_AR_ENCRYPTION_KEY_DERIVATION_SALT", "nodl-dev-only-insecure-key-derivation-salt")
     end
 
-    # Encryption rollout: tolerate reading rows whose encrypted columns still
-    # hold plaintext while the backfill (`rails encryption:backfill`) runs
-    # against existing data. New writes are always encrypted regardless. Flip to
-    # false (and redeploy) once every environment has been backfilled, so
-    # unencrypted reads are rejected. See doc/design-output/security/data-encryption.md.
-    config.active_record.encryption.support_unencrypted_data = true
+    # Encrypted columns must hold ciphertext: reading a plaintext value raises
+    # instead of being silently tolerated, so a future bug that writes plaintext
+    # fails loudly. Operators upgrading an instance with pre-encryption data:
+    # set this to true, run `rails encryption:backfill` and
+    # `rails encryption:reencrypt_blobs`, then flip it back. See
+    # doc/design-output/security/data-encryption.md.
+    config.active_record.encryption.support_unencrypted_data = false
 
     # Name of the (encrypted) Active Storage service that attachments are pinned
     # to. active_storage_encryption only generates a per-blob key when the blob
