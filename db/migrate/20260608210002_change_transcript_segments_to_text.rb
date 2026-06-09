@@ -16,9 +16,23 @@ class ChangeTranscriptSegmentsToText < ActiveRecord::Migration[8.1]
   end
 
   def down
+    # Only valid while the column still holds plaintext JSON (i.e. before the
+    # encryption backfill). Encrypted values are themselves valid JSON envelopes
+    # ({"p":...,"h":...}), so the jsonb cast would SUCCEED silently and leave
+    # unreadable ciphertext behind — refuse loudly instead of corrupting data.
+    encrypted_rows = select_value(<<~SQL.squish).to_i
+      SELECT COUNT(*) FROM recording_sessions
+      WHERE transcript_segments LIKE '{"p":%' AND transcript_segments LIKE '%"h":%'
+    SQL
+    if encrypted_rows.positive?
+      raise ActiveRecord::IrreversibleMigration,
+        "#{encrypted_rows} row(s) in recording_sessions.transcript_segments are " \
+        "encrypted (Active Record Encryption envelopes). Casting them to jsonb would " \
+        "silently keep ciphertext. Decrypt first (e.g. re-save with encryption removed " \
+        "from the model) before rolling back this migration."
+    end
+
     safety_assured do
-      # Only valid while the column still holds plaintext JSON (i.e. before the
-      # encryption backfill); ciphertext cannot be cast back to jsonb.
       execute <<~SQL.squish
         ALTER TABLE recording_sessions
         ALTER COLUMN transcript_segments TYPE jsonb

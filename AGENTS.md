@@ -36,6 +36,12 @@
 - Do not hand off with a red gate, and do not bypass it (no `--no-verify`, no skipping `make check`).
 - Optional JS-specific system tests are guarded by env flags (example in README with `JS_SYSTEM_TESTS=1`).
 
+## Enforce Invariants with Checks, not Conventions
+- When a guarantee (security, data integrity, tenancy, billing) depends on a repeating pattern that every future call/declaration site must follow, do not just document the pattern — add an executable check to the gate (lint test, RuboCop rule, CI assertion) that fails when the pattern is violated.
+- The check's failure message must name the fix, so the failure itself teaches the pattern. Example: `test/models/attachment_service_pinning_test.rb` fails when a `has_*_attached` lacks the `service:` pin and says exactly what to add.
+- This principle is already enforced elsewhere in the repo: `strong_migrations` (unsafe migrations abort the gate), `database_consistency` (validations must be backed by DB constraints), `make db-check` (schema sync), `make skills-check` (generated outputs in sync).
+- Scope this to invariants whose violation is silent or costly. Style preferences stay in RuboCop — do not add meta-tests for taste.
+
 ## Coding Guidelines (Rails)
 - Keep controllers thin; move business logic to models/service objects when complexity grows.
 - Prefer RESTful routes and Rails helpers/path helpers.
