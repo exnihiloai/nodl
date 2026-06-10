@@ -1,5 +1,7 @@
+require "nodl/defaults"
+
 class TransformerProfile < ApplicationRecord
-  DEFAULT_HANDLE = "default"
+  DEFAULT_HANDLE = Nodl::Defaults::TRANSFORMER_HANDLE
   DEFAULT_NAME = "Basic Summary"
   MAX_EXAMPLE_FILES = 3
   ALLOWED_EXAMPLE_CONTENT_TYPES = %w[
