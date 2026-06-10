@@ -80,7 +80,7 @@ build-image:
     # --rmi local drops this job's Compose-built web image; keeps postgres:16 + cache.
     - docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v --rmi local --remove-orphans
 
-# The gate: db-check + lint + full test suite.
+# The gate: db-check + lint + full test suite (incl. browser JS system tests).
 check:
   extends: .compose_stack
   stage: test

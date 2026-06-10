@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.2] - 2026-06-10
+
+### Technical
+- The browser JS system tests (microphone recorder, clipboard, theme switcher) are now part of the handoff gate: `make test` runs the system tests with `JS_SYSTEM_TESTS=1`, so `make check` — and the CI `check` job on every merge request — executes them; previously they only ran when started by hand. A `make test-js` convenience target runs the system-test step alone.
+- `config/recurring.yml` is now validated in the test suite: a recurring job entry whose `class:` doesn't resolve, whose `command:` doesn't parse, or whose `schedule:` is invalid fails `make check` with a message naming the bad entry, instead of failing silently at runtime in production.
+- Defaults shared by the CLI and the web pipeline (transcriber/transformer models, default format handle, their env-var overrides) are consolidated into a single definition point, `Nodl::Defaults` (`lib/nodl/defaults.rb`), removing duplicated constants in `lib/nodl/cli.rb`, `app/services/recording_session_processor.rb`, and `app/models/transformer_profile.rb`.
+- New `make reset-dev` resets local development to a clean seeded state in one command (wipes uploads and work sessions, reloads the schema, reseeds).
+- Entries in `.database_consistency.todo.yml` now carry dated rationales.
+- The browser system tests no longer open real websockets to the Mistral realtime API (which streamed test audio and burned quota whenever `MISTRAL_API_KEY` was set locally): the live-transcription client factory is stubbed in the browser test base class, keeping the suite fully offline and removing the async teardown warning at the end of `make test`.
+
+
 ## [0.13.1] - 2026-06-10
 
 ### Technical

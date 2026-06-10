@@ -19,7 +19,7 @@ VERSION ?= $(shell grep -m1 -oE '\[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -
 MSG_WORDS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 MSG ?= $(strip $(foreach w,$(MSG_WORDS),$(w) ))
 
-.PHONY: help notify build build-prod up dev check check-fast db-check test test-fast coverage down logs shell lint audit image-audit seed skill skills skills-check skills-clean skill-new setup deploy
+.PHONY: help notify build build-prod up dev check check-fast db-check test test-fast test-js coverage down logs shell lint audit image-audit seed reset-dev skill skills skills-check skills-clean skill-new setup deploy
 
 help:
 	@echo "Available targets:"
@@ -29,10 +29,12 @@ help:
 	@echo "  make check  # HANDOFF GATE: db-check + lint + full tests (run before handing off)"
 	@echo "  make check-fast # Inner loop: db-check + lint + unit/integration tests (no system tests)"
 	@echo "  make db-check # Apply migrations (runs strong_migrations) + assert db/schema.rb is in sync"
-	@echo "  make test   # Run all Rails tests (unit/integration + system)"
+	@echo "  make test   # Run all Rails tests (unit/integration + system incl. browser JS)"
 	@echo "  make test-fast # Run unit/integration tests only (no system tests)"
+	@echo "  make test-js # Run only the system tests (incl. browser JS via headless Chromium)"
 	@echo "  make coverage # Run tests with SimpleCov; report to ./coverage/index.html"
 	@echo "  make seed   # Seed database"
+	@echo "  make reset-dev # Reset local dev to a clean seeded state (wipes DB data, uploads, work sessions)"
 	@echo "  make lint   # Run rubocop + database_consistency (model<->DB constraint parity)"
 	@echo "  make audit  # Scan gems for known CVEs (bundler-audit vs rubysec ruby-advisory-db)"
 	@echo "  make image-audit [IMAGE=repo:tag] [FORMAT=html|txt] # Trivy scan a built image (OS + gems + secrets)"
@@ -94,14 +96,23 @@ db-check:
 	rm -f /tmp/nodl-schema.pre; \
 	echo "db-check: migrations safe and db/schema.rb in sync."
 
+# System tests run with JS_SYSTEM_TESTS=1 so the browser JS tests (microphone
+# recorder, clipboard, theme switcher — headless Chromium from Dockerfile.dev)
+# are part of the gate; without the flag they silently skip.
 test:
 	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
 	$(COMPOSE) exec $(WEB) bin/rails test
-	$(COMPOSE) exec $(WEB) bin/rails test:system
+	$(COMPOSE) exec -e JS_SYSTEM_TESTS=1 $(WEB) bin/rails test:system
 
 test-fast:
 	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
 	$(COMPOSE) exec $(WEB) bin/rails test
+
+# Convenience: just the system-test step of `make test` (browser JS tests
+# included), without the unit/integration run.
+test-js:
+	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
+	$(COMPOSE) exec -e JS_SYSTEM_TESTS=1 $(WEB) bin/rails test:system
 
 coverage:
 	$(COMPOSE) exec $(WEB) bin/rails db:test:prepare
@@ -110,6 +121,15 @@ coverage:
 
 seed:
 	$(COMPOSE) exec $(WEB) bin/rails db:seed
+
+# One-command reset to a clean seeded dev state, from any dirty state: wipe
+# Active Storage blobs and pipeline work sessions, reload db/schema.rb (drops
+# all data, no migration replay), reseed. Development only — destroys local
+# data. Requires the stack to be up (`make up`).
+reset-dev:
+	$(COMPOSE) exec $(WEB) bash -c 'rm -rf storage/* work/sessions/*'
+	$(COMPOSE) exec $(WEB) bin/rails db:schema:load db:seed
+	@echo "reset-dev: clean schema loaded, storage cleared, seeds applied."
 
 lint:
 	$(COMPOSE) exec $(WEB) bin/rubocop
