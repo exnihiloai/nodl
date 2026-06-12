@@ -1,15 +1,13 @@
 require "optparse"
 require "pathname"
 require_relative "error"
+require_relative "defaults"
 require_relative "pipeline"
 
 module Nodl
   class Cli
     HelpRequested = Class.new(StandardError)
 
-    DEFAULT_TRANSFORMER = "default"
-    DEFAULT_TRANSCRIBER_MODEL = "voxtral-mini-latest"
-    DEFAULT_TRANSFORMER_MODEL = "gemini-3.1-flash-lite"
     COMMANDS = %w[run transcribe].freeze
 
     def initialize(argv, output: $stdout, error_output: $stderr)
@@ -71,10 +69,10 @@ module Nodl
       raise ValidationError, "Command is required." unless COMMANDS.include?(command)
 
       options = {
-        transformer: DEFAULT_TRANSFORMER,
+        transformer: Defaults::TRANSFORMER_HANDLE,
         work_dir: Rails.root.join("work", "sessions"),
-        transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
-        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL)
+        transcriber_model: Defaults.transcriber_model,
+        transformer_model: Defaults.transformer_model
       }
 
       option_parser.parse!(argv)

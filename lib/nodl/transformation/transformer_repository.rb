@@ -1,4 +1,5 @@
 require "pathname"
+require_relative "../defaults"
 require_relative "../error"
 require_relative "template"
 require_relative "transformer"
@@ -65,7 +66,7 @@ module Nodl
       end
 
       def normalize_handle(handle)
-        normalized = handle.to_s.strip.presence || "default"
+        normalized = handle.to_s.strip.presence || Defaults::TRANSFORMER_HANDLE
         return normalized if normalized.match?(/\A[a-zA-Z0-9][a-zA-Z0-9_-]*\z/)
 
         raise ValidationError, "Transformer handle is invalid: #{normalized}"

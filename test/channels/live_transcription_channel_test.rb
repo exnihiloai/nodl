@@ -34,13 +34,14 @@ class LiveTranscriptionChannelTest < ActionCable::Channel::TestCase
 
   setup do
     @clients = []
+    @original_realtime_client_factory = LiveTranscriptionChannel.realtime_client_factory
     LiveTranscriptionChannel.realtime_client_factory = ->(target_streaming_delay_ms:) {
       FakeRealtimeClient.new(target_streaming_delay_ms: target_streaming_delay_ms).tap { |client| @clients << client }
     }
   end
 
   teardown do
-    LiveTranscriptionChannel.realtime_client_factory = -> { Nodl::Providers::MistralRealtimeClient.new }
+    LiveTranscriptionChannel.realtime_client_factory = @original_realtime_client_factory
   end
 
   test "rejects unauthenticated subscriptions" do

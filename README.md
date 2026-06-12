@@ -82,10 +82,12 @@ make dev           # Alias for make up
 make logs          # Stream Docker Compose logs
 make shell         # Open a shell in the web container
 make seed          # Seed demo data
+make reset-dev     # Reset local dev to a clean seeded state (wipes DB data, uploads, work sessions)
 make lint          # Run RuboCop + database_consistency inside Docker
 make audit         # Scan gems for known CVEs (bundler-audit vs rubysec ruby-advisory-db)
 make image-audit   # Trivy-scan a built image (OS packages + gems + secrets)
-make test          # Prepare the test DB, then run Rails unit/integration and system tests
+make test          # Prepare the test DB, then run Rails unit/integration and system tests (incl. browser JS)
+make test-js       # Run only the system tests (incl. browser JS via headless Chromium)
 make check         # Handoff gate: db-check + lint + full tests (run before handing off work)
 make check-fast    # Inner loop: db-check + lint + unit/integration tests (no system tests)
 make db-check      # Apply migrations (runs strong_migrations) + assert db/schema.rb is in sync
@@ -268,11 +270,11 @@ make check-fast   # db-check + lint + unit/integration tests only
 `make test` runs:
 
 - `bin/rails test`
-- `bin/rails test:system`
+- `bin/rails test:system` with `JS_SYSTEM_TESTS=1`
 
 Migration safety is enforced by [strong_migrations](https://github.com/ankane/strong_migrations), which runs automatically during `bin/rails db:migrate` and aborts on unsafe operations. It fires wherever migrations actually run — `make up` (`db:prepare`) and `make db-check`. Note that `make test` uses `db:test:prepare` (a schema load), which does **not** run migrations, so `make db-check` is what exercises strong_migrations in the handoff gate. Existing migrations are grandfathered via `start_after` in `config/initializers/strong_migrations.rb`; checks target Postgres 16.
 
-Optional JavaScript-specific system tests are guarded by environment flags where noted in the tests, for example `JS_SYSTEM_TESTS=1`.
+JavaScript-specific system tests (microphone recorder, clipboard, theme switcher) are guarded by `JS_SYSTEM_TESTS=1` and skip without it. `make test` (and therefore `make check` and the CI `check` job on every merge request) sets the flag, running them against the headless Chromium in the dev image. `make test-js` runs just the system-test step on its own.
 
 ### Dependency CVE scanning
 

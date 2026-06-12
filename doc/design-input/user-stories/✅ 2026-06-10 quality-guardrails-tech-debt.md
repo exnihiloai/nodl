@@ -28,11 +28,6 @@ Resetting local development to a clean seeded state is currently a manual
 multi-step (clear storage, reload schema, seed). Provide a `make reset-dev`
 target and document it in the Makefile help.
 
-### 5. Burn down the database_consistency todo file
-`.database_consistency.todo.yml` parks known model/DB-constraint mismatches
-without context. Resolve each entry, or annotate it with a dated reason why it
-stays parked.
-
 ## Acceptance Criteria
 
 - CI executes the JS system tests (MR pipeline or scheduled) and fails on regressions.

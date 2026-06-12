@@ -1,12 +1,10 @@
 require "tempfile"
 require "fileutils"
 require "nodl/audio/normalizer"
+require "nodl/defaults"
 require "nodl/pipeline"
 
 class RecordingSessionProcessor
-  DEFAULT_TRANSCRIBER_MODEL = "voxtral-mini-latest"
-  DEFAULT_TRANSFORMER_MODEL = "gemini-3.1-flash-lite"
-
   # Privacy: telemetry/notifications must never disclose document content, so we
   # only ever expose a short preview of the title (first N characters + ellipsis)
   # in the nodl.document.generated payload. The full title stays out of the event.
@@ -46,8 +44,8 @@ class RecordingSessionProcessor
         audio_path: normalized.path,
         transformer_handle: recording_session.transformer_handle,
         workspace: recording_session.workspace,
-        transcriber_model: ENV.fetch("NODL_VOXTRAL_MODEL", DEFAULT_TRANSCRIBER_MODEL),
-        transformer_model: ENV.fetch("NODL_GEMINI_TRANSFORMER_MODEL", DEFAULT_TRANSFORMER_MODEL),
+        transcriber_model: Nodl::Defaults.transcriber_model,
+        transformer_model: Nodl::Defaults.transformer_model,
         recorded_at: recording_session.local_created_at
       )
       transcript_text = result.transcript_path.read.strip
