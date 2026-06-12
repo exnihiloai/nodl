@@ -49,6 +49,44 @@ class GoogleOauthIntegrationTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Google did not confirm a verified email address."
   end
 
+  test "oauth failure instruments config error telemetry" do
+    events = []
+    ActiveSupport::Notifications.subscribe("nodl.oauth.config_error") do |*args|
+      events << ActiveSupport::Notifications::Event.new(*args)
+    end
+
+    error = StandardError.new("csrf_detected")
+    get "/users/auth/failure",
+        env: {
+          "omniauth.error" => error,
+          "omniauth.error.type" => :csrf_detected
+        }
+
+    assert_redirected_to login_path
+    assert_equal 1, events.size
+    assert_equal "omniauth_failure", events.first.payload[:reason]
+    assert_equal "csrf_detected", events.first.payload[:error_type]
+  ensure
+    ActiveSupport::Notifications.unsubscribe("nodl.oauth.config_error")
+  end
+
+  test "passthru instruments not configured telemetry when oauth middleware is absent" do
+    skip "OAuth middleware is configured in this environment" if omniauth_middleware_configured?
+
+    events = []
+    ActiveSupport::Notifications.subscribe("nodl.oauth.config_error") do |*args|
+      events << ActiveSupport::Notifications::Event.new(*args)
+    end
+
+    post user_google_oauth2_omniauth_authorize_path
+
+    assert_redirected_to login_path
+    assert_equal 1, events.size
+    assert_equal "not_configured", events.first.payload[:reason]
+  ensure
+    ActiveSupport::Notifications.unsubscribe("nodl.oauth.config_error")
+  end
+
   private
 
   def setup
