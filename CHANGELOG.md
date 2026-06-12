@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-06-12
+
+### Added
+- **Landing Pages for Your Profession:** Nodl now offers dedicated pages for doctors, dentists, coaches, journalists, journal keepers, and overthinkers — each explaining how speech-to-document fits that workflow, with its own examples and calls to action. Find them in the site footer or at paths like `/fuer/aerzte` and `/fuer/coaches`. Available in English and German when your operator has published the marketing content.
+
+- **A Richer Home Page:** The landing page now walks visitors through Nodl's value — before-and-after examples, a trust strip highlighting security and privacy, product features, pricing, and FAQs — so new visitors understand what they get before signing up. An animated hero spectrogram illustrates the journey from raw speech to finished document.
+
+
+### Technical
+- Added `PrivateContent` (`lib/private_content.rb`) to detect mounted private marketing templates and locales; `ApplicationController` prepends `private/views` per request and `private/locales` are loaded into `I18n`.
+- Marketing templates moved from `app/views/pages/` to `private/views/pages/`; marketing translation keys moved from `config/locales/` to `private/locales/`.
+- `.dockerignore` now allows `private/views` and `private/locales` in production image builds (alongside the existing `private/legal` and `private/initializers` exceptions).
+- Sitemap generation includes marketing URLs only when their private templates are present.
+- Landing-page icons are bundled locally (Lucide SVGs); `PagesHelper` centralises product-feature and plan-limit copy for marketing partials.
+- Added `layouts/_theme_boot_script` and a `reveal` Stimulus controller for scroll-in animations on marketing sections.
+
+
 ## [0.13.2] - 2026-06-10
 
 ### Technical
