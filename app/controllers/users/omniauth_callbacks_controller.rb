@@ -29,14 +29,25 @@ module Users
     end
 
     def failure
+      error = request.env["omniauth.error"]
+      Rails.logger.warn("Google OAuth failure: #{oauth_failure_log_line(error)}")
+      OauthTelemetry.instrument_config_failure(reason: "omniauth_failure", request:, error:)
       redirect_to login_path, alert: t("flash.oauth.google_failed")
     end
 
     def passthru
+      OauthTelemetry.instrument_config_failure(reason: "not_configured", request:, force: true)
       redirect_to login_path, alert: t("flash.oauth.google_not_configured")
     end
 
     private
+
+    def oauth_failure_log_line(error)
+      type = request.env["omniauth.error.type"]
+      return "type=#{type}" if error.nil?
+
+      [ error.class.name, type, error.message ].compact.join(" — ")
+    end
 
     def verified_google_email?(auth)
       email = auth&.dig("info", "email").presence

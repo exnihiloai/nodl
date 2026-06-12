@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.2] - 2026-06-12
+
+### Technical
+- **OAuth Config Alerts:** When Google sign-in fails because of configuration (for example `redirect_uri_mismatch`, `invalid_client`, `csrf_detected`, or missing `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`), operators can receive a throttled Telegram alert via the existing telemetry notifier — so misconfigured OAuth shows up before users report it.
+
+## [0.15.1] - 2026-06-12
+
+### Fixed
+- **Marketing Site Restored in Production:** Deployments now bake in the full landing page and marketing copy from the companion repository again, so production shows the real homepage instead of the generic open-source sign-in shell.
+
+### Technical
+- GitLab CI and `make build-prod` now fetch `private/views` and `private/locales` from the companion repo and verify that `private/views/pages/home.html.erb` is present before building the production image.
+
 ## [0.15.0] - 2026-06-12
 
 ### Added
