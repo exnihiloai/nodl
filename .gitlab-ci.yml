@@ -40,7 +40,7 @@ workflow:
     - cp -a private-src/initializers/. private/initializers/
     - cp -a private-src/views/. private/views/
     - cp -a private-src/locales/. private/locales/
-    - test -f private/views/pages/home.html.erb || (echo "ERROR: companion repo is missing private/views/pages/home.html.erb (marketing landing page)." && exit 1)
+    - test -f private/views/pages/home.html.erb
 
 # Build the real prod image (incl. private content) on every MR so a broken
 # deploy build fails the MR, not main. No push.
