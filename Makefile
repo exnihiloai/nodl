@@ -57,13 +57,14 @@ build:
 # every MR to validate the real deployable image before merge: gems installing
 # under BUNDLE_DEPLOYMENT=1, asset precompile, the Dockerfile's
 # `check=error=true` lint, and the presence of the baked-in private/ content
-# (legal pages + initializers). Same Dockerfile and build context `make deploy`
-# ships, so a green build here means the deploy build of this commit compiles
-# too. On an amd64 runner this also matches the deployed architecture. Override
-# the tag via PROD_IMAGE / PROD_TAG.
+# (legal pages, marketing views/locales, and initializers). Same Dockerfile and
+# build context `make deploy` ships, so a green build here means the deploy build
+# of this commit compiles too. On an amd64 runner this also matches the deployed
+# architecture. Override the tag via PROD_IMAGE / PROD_TAG.
 PROD_IMAGE ?= nodl-prod
 PROD_TAG ?= ci
 build-prod:
+	@test -f private/views/pages/home.html.erb || (echo "ERROR: private/views/pages/home.html.erb missing from build context. CI/deploy must fetch marketing templates from the companion repo." && exit 1)
 	docker build -f Dockerfile -t $(PROD_IMAGE):$(PROD_TAG) .
 
 up:

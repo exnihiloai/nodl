@@ -29,14 +29,18 @@ workflow:
     - if: $CI_COMMIT_BRANCH == "main"
     - when: never
 
-# Pull git-ignored prod content (legal/, initializers/) from the companion repo
-# root into the build context. Shared by build-image and deploy via !reference.
+# Pull git-ignored prod content (legal/, initializers/, marketing views/locales)
+# from the companion repo root into the build context. Shared by build-image and
+# deploy via !reference.
 .private_fetch:
   script:
     - git clone --depth 1 "https://oauth2:${PRIVATE_REPO_TOKEN}@${PRIVATE_REPO_URL}" private-src
-    - mkdir -p private/legal private/initializers
+    - mkdir -p private/legal private/initializers private/views private/locales
     - cp -a private-src/legal/. private/legal/
     - cp -a private-src/initializers/. private/initializers/
+    - cp -a private-src/views/. private/views/
+    - cp -a private-src/locales/. private/locales/
+    - test -f private/views/pages/home.html.erb || (echo "ERROR: companion repo is missing private/views/pages/home.html.erb (marketing landing page)." && exit 1)
 
 # Build the real prod image (incl. private content) on every MR so a broken
 # deploy build fails the MR, not main. No push.
