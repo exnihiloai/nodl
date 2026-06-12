@@ -35,10 +35,12 @@ class LicensesTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "SIL OPEN FONT LICENSE"
   end
 
-  test "about page links to the licenses page" do
-    get about_path
-    assert_response :success
-    assert_select "a[data-testid='about-licenses-link'][href=?]", licenses_path
+  test "about page links to the licenses page when private marketing is mounted" do
+    with_private_about_page do
+      get about_path
+      assert_response :success
+      assert_select "a[data-testid='about-licenses-link'][href=?]", licenses_path
+    end
   end
 
   test "footer does not link to the licenses page (reachable from About instead)" do

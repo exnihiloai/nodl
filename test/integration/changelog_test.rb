@@ -15,12 +15,14 @@ class ChangelogTest < ActionDispatch::IntegrationTest
     assert_includes response.body, @latest_entry.slug
   end
 
-  test "about page links to changelog" do
-    get about_path
+  test "about page links to changelog when private marketing is mounted" do
+    with_private_about_page do
+      get about_path
 
-    assert_response :success
-    assert_includes response.body, 'data-testid="about-changelog-link"'
-    assert_includes response.body, changelog_path
+      assert_response :success
+      assert_includes response.body, 'data-testid="about-changelog-link"'
+      assert_includes response.body, changelog_path
+    end
   end
 
   test "version slug route renders changelog board" do
