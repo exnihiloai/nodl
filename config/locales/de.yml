@@ -225,6 +225,10 @@ de:
     authentication_required: Bitte melde dich an, um fortzufahren.
     not_authorized: Du bist für diesen Bereich nicht berechtigt.
     no_workspace: Es ist kein Workspace verfügbar.
+    oauth:
+      google_failed: Die Anmeldung mit Google konnte nicht abgeschlossen werden. Bitte versuche es erneut.
+      google_not_configured: Die Anmeldung mit Google ist noch nicht konfiguriert.
+      google_unverified: Google hat keine verifizierte E-Mail-Adresse bestätigt.
     sessions:
       welcome_back: Willkommen zurück.
       signed_out: Du wurdest abgemeldet.
@@ -253,6 +257,11 @@ de:
       password_mismatch: Die Passwörter müssen übereinstimmen.
       email_taken: Diese E-Mail-Adresse ist bereits registriert.
       legal_not_accepted: Du musst den AGB und der Datenschutzerklärung zustimmen, um ein Konto zu erstellen.
+  auth:
+    or_email: oder
+    google:
+      continue: Mit Google fortfahren
+      legal_html: Wenn du mit Google fortfährst, stimmst du den %{terms} und der %{privacy} zu.
   shared:
     status_check:
       healthy: 'Status: einsatzbereit'
@@ -305,7 +314,7 @@ de:
         item_1: Im Browser aufnehmen oder Audio hochladen
         item_2: 'Format wählen: Meeting Notes, Task Lists und mehr'
         item_3: Dein Workspace hält Recordings und Dokumente privat
-      lead: Starte jetzt im Free Tier.
+      lead: Anmelden oder Registrieren
       email_placeholder: deine@email.com
       email_confirm_placeholder: E-Mail bestätigen
       password_placeholder: Erstelle ein starkes Passwort

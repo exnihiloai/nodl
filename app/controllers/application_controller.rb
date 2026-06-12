@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :current_workspace, :user_signed_in?
+  helper_method :current_user, :current_workspace, :user_signed_in?, :legal_consent_required?
 
   before_action :prepend_private_view_path
   around_action :switch_locale
@@ -85,5 +85,11 @@ class ApplicationController < ActionController::Base
     return if current_user&.admin?
 
     redirect_to dashboard_path, alert: t("flash.not_authorized")
+  end
+
+  # Consent is only enforced when the operator has published the legal documents
+  # (private/legal/). OSS deploys without them register users without a checkbox.
+  def legal_consent_required?
+    LegalConsent::CONSENTABLE_DOCUMENTS.all? { |doc| LegalPage.exists?(doc) }
   end
 end

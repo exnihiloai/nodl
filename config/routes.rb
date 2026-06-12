@@ -32,6 +32,9 @@ Rails.application.routes.draw do
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
   post "/logout", to: "sessions#destroy"
+  post "/users/auth/google_oauth2", to: "users/omniauth_callbacks#passthru", as: :user_google_oauth2_omniauth_authorize
+  match "/users/auth/google_oauth2/callback", to: "users/omniauth_callbacks#google_oauth2", via: %i[get post]
+  match "/users/auth/failure", to: "users/omniauth_callbacks#failure", via: %i[get post]
 
   patch "/locale/:locale", to: "locales#update", as: :locale
 

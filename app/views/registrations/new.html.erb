@@ -24,6 +24,10 @@
           <p class="text-base-content/70"><%= t("registrations_view.new.lead") %></p>
         </div>
 
+        <%= render "shared/google_oauth_button" %>
+
+        <div class="divider text-xs uppercase text-base-content/50"><%= t("auth.or_email") %></div>
+
         <%= form_with url: register_path, class: "space-y-8" do |f| %>
           <div class="space-y-1">
             <%= f.email_field :email, id: "email", class: "input input-bordered w-full h-12", required: true, placeholder: t("registrations_view.new.email_placeholder"), value: @form["email"] %>

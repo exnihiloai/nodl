@@ -12,6 +12,10 @@
           <p class="text-base-content/70"><%= t("sessions.new.subheading") %></p>
         </div>
 
+        <%= render "shared/google_oauth_button" %>
+
+        <div class="divider text-xs uppercase text-base-content/50"><%= t("auth.or_email") %></div>
+
         <%= form_with url: login_path, class: "space-y-8" do |f| %>
           <div class="space-y-1">
             <%= f.email_field :email, id: "login_email", class: "input input-bordered w-full h-12", placeholder: t("sessions.new.email_placeholder"), required: true, value: params[:email] %>
