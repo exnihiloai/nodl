@@ -1,23 +1,29 @@
-<header class="border-b border-base-300 bg-base-100/90 backdrop-blur sticky top-0 z-40">
+<header class="border-b border-base-300/70 bg-base-100/85 backdrop-blur-md sticky top-0 z-40">
   <div class="container mx-auto px-4">
     <div class="navbar px-0">
       <div class="navbar-start">
-        <%= link_to "Nodl", root_path, class: "btn btn-ghost normal-case text-xl font-semibold", data: { testid: "nav-logo" } %>
+        <%= link_to root_path, class: "btn btn-ghost normal-case text-xl font-semibold gap-2 px-2", data: { testid: "nav-logo" } do %>
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-base-300/70 bg-base-200 text-base-content"><%= icon("nodl-mark", class: "w-7 h-4") %></span>
+          Nodl
+        <% end %>
       </div>
-      <div class="navbar-center hidden lg:flex">
-        <ul class="menu menu-horizontal px-1">
-          <li><%= link_to t("nav.services"), root_path(anchor: "services"), class: "rounded-btn" %></li>
-          <li><%= link_to t("nav.how_it_works"), root_path(anchor: "how-it-works"), class: "rounded-btn" %></li>
-          <li><%= link_to t("nav.pricing"), root_path(anchor: "pricing"), class: "rounded-btn" %></li>
-          <li><%= link_to t("nav.faq"), root_path(anchor: "faq"), class: "rounded-btn" %></li>
-        </ul>
-      </div>
+      <% if PrivateContent.marketing? %>
+        <div class="navbar-center hidden lg:flex">
+          <ul class="menu menu-horizontal px-1 gap-0.5">
+            <li><%= link_to t("nav.examples"), root_path(anchor: "vorher-nachher"), class: "rounded-btn font-medium" %></li>
+            <li><%= link_to t("nav.for_whom"), root_path(anchor: "fuer-wen"), class: "rounded-btn font-medium" %></li>
+            <li><%= link_to t("nav.how_it_works"), root_path(anchor: "how-it-works"), class: "rounded-btn font-medium" %></li>
+            <li><%= link_to t("nav.pricing"), root_path(anchor: "pricing"), class: "rounded-btn font-medium" %></li>
+            <li><%= link_to t("nav.faq"), root_path(anchor: "faq"), class: "rounded-btn font-medium" %></li>
+          </ul>
+        </div>
+      <% end %>
       <div class="navbar-end flex items-center gap-2">
         <%= render "shared/language_switcher" %>
         <%= render "shared/theme_toggle" %>
         <div class="hidden lg:flex items-center gap-2">
           <%= link_to t("nav.login"), login_path, class: "btn btn-ghost" %>
-          <%= link_to t("nav.register"), register_path, class: "btn btn-primary" %>
+          <%= link_to t("nav.register"), register_path, class: "btn btn-primary lp-btn-shine shadow-md shadow-primary/20" %>
         </div>
       </div>
     </div>

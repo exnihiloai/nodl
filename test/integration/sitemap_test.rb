@@ -13,13 +13,17 @@ class SitemapIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "sitemap is served as xml with public marketing urls" do
-    get sitemap_path(format: :xml)
+    Dir.mktmpdir do |private_views|
+      with_private_view_root(private_views) do
+        get sitemap_path(format: :xml)
 
-    assert_response :success
-    assert_equal "application/xml; charset=utf-8", response.content_type
-    assert_includes response.body, "<loc>http://www.example.com/</loc>"
-    assert_includes response.body, "<loc>http://www.example.com/about</loc>"
-    assert_includes response.body, "<loc>http://www.example.com/register</loc>"
+        assert_response :success
+        assert_equal "application/xml; charset=utf-8", response.content_type
+        assert_includes response.body, "<loc>http://www.example.com/</loc>"
+        assert_includes response.body, "<loc>http://www.example.com/register</loc>"
+        assert_not_includes response.body, "<loc>http://www.example.com/about</loc>"
+      end
+    end
   end
 
   test "sitemap includes legal pages when private templates exist" do
@@ -30,6 +34,21 @@ class SitemapIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "<loc>http://www.example.com/agb</loc>"
     assert_not_includes response.body, "<loc>http://www.example.com/datenschutz</loc>"
+  end
+
+  test "sitemap includes private marketing pages when private templates exist" do
+    Dir.mktmpdir do |private_views|
+      views = Pathname.new(private_views)
+      views.join("pages").mkpath
+      views.join("pages/about.html.erb").write("<h1>About</h1>")
+
+      with_private_view_root(views) do
+        get sitemap_path(format: :xml)
+
+        assert_response :success
+        assert_includes response.body, "<loc>http://www.example.com/about</loc>"
+      end
+    end
   end
 
   test "robots.txt references the sitemap" do

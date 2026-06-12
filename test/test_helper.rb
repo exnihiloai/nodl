@@ -14,6 +14,7 @@ end
 require_relative "../config/environment"
 require "rails/test_help"
 require "mocha/minitest"
+require "tmpdir"
 
 module ActiveSupport
   class TestCase
@@ -71,6 +72,14 @@ module ActiveSupport
         filename: filename,
         content_type: content_type
       )
+    end
+
+    def with_private_view_root(path)
+      original = PrivateContent.view_root
+      PrivateContent.view_root = Pathname.new(path)
+      yield
+    ensure
+      PrivateContent.view_root = original
     end
   end
 end

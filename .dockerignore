@@ -19,14 +19,18 @@ config/credentials/*.key
 
 # Local-only directories that must never enter an image.
 # private/ is the reserved home for repo-private secrets and a companion repo.
-# Keep ALL of private/ out by default, but bake in the operator-specific content
-# that production requires: the legal pages (Impressum/Privacy/Terms) and the
+# Keep ALL of private/ out by default, but allow the operator-specific content
+# production can mount or bake in: legal pages, marketing views/locales, and
 # private initializers. Secrets (.env, notify.env) and heavy test fixtures
 # (test-data/, external/, internal/) stay excluded because they are direct
 # children matched by `private/*` and are never re-included below.
 private/*
 !private/legal
 !private/initializers
+!private/locales
+!private/locales/**
+!private/views
+!private/views/**
 # Guard: never let stray OS artifacts back in via the negations above.
 private/legal/.DS_Store
 private/initializers/**/.DS_Store

@@ -2,6 +2,12 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
+  get "/fuer/aerzte", to: "pages#for_doctors", as: :for_doctors
+  get "/fuer/zahnaerzte", to: "pages#for_dentists", as: :for_dentists
+  get "/fuer/gedankenkarussell", to: "pages#for_overthinkers", as: :for_overthinkers
+  get "/fuer/tagebuch", to: "pages#for_journaling", as: :for_journaling
+  get "/fuer/interviews", to: "pages#for_interviews", as: :for_interviews
+  get "/fuer/coaches", to: "pages#for_coaches", as: :for_coaches
   get "/licenses", to: "licenses#show", as: :licenses
   get "/changelog", to: "changelogs#show", as: :changelog, format: false
   get "/changelog/:version_slug", to: "changelogs#show", as: :changelog_entry,

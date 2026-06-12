@@ -217,9 +217,11 @@ OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=...
 The app is **English-first** and ships with a complete German translation.
 
 - Supported locales: `en` (source of truth) and `de`. Configured in `config/application.rb`.
-- Translation files: `config/locales/en.yml` and `config/locales/de.yml`. German keeps common anglicisms (Dashboard, Login, Workspace, Checkout, Upload, Demo) and uses the informal "du".
+- Public app-shell translation files: `config/locales/en.yml` and `config/locales/de.yml`.
+- Operator-specific marketing translations live in `private/locales/en.yml` and `private/locales/de.yml` when mounted. Do not put landing, vertical, about, try-now, or marketing footer copy in public locale files.
+- German keeps common anglicisms (Dashboard, Login, Workspace, Checkout, Upload, Demo) and uses the informal "du".
 - Locale resolution (`ApplicationController#switch_locale`): explicit session choice → signed-in user's `preferred_language` → `Accept-Language` header → default (`en`).
-- Switching: a flag-free language switcher (globe icon + language endonyms) lives in the landing-page nav and in the signed-in user dropdown. It posts to `PATCH /locale/:locale`, persisting the choice in the session and on the user's account.
+- Switching: a flag-free language switcher (globe icon + language endonyms) lives in the public nav and in the signed-in user dropdown. It posts to `PATCH /locale/:locale`, persisting the choice in the session and on the user's account.
 - JavaScript copy is localized by passing translated strings into Stimulus controllers via `data-*-value` attributes (no client-side i18n library needed).
 
 Keeping translations in sync — find and fill the **delta** (keys present in `en` but missing from a target locale):

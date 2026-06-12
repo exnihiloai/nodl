@@ -61,4 +61,43 @@ class LocaleParityTest < ActiveSupport::TestCase
     assert_equal %i[en de].sort, I18n.available_locales.sort
     assert_equal :en, I18n.default_locale
   end
+
+  test "public locale files do not contain private marketing copy roots" do
+    forbidden_page_roots = %w[
+      about
+      try_now
+      shared
+      home
+      product_features
+      trust_claims
+      trust_strip
+      vertical_cta
+      plans
+      languages_list
+      examples
+      verticals
+    ]
+    forbidden_footer_keys = %w[
+      copyright
+      verticals_label
+      vertical_doctors
+      vertical_dentists
+      vertical_overthinkers
+      vertical_journaling
+      vertical_interviews
+      vertical_coaches
+      about
+      pricing
+      demo
+    ]
+
+    %w[en de].each do |locale|
+      public_locale = YAML.load_file(Rails.root.join("config/locales/#{locale}.yml")).fetch(locale)
+
+      assert_empty forbidden_page_roots & public_locale.fetch("pages").keys,
+                   "Move marketing page copy from config/locales/#{locale}.yml to private/locales/#{locale}.yml"
+      assert_empty forbidden_footer_keys & public_locale.fetch("footer").keys,
+                   "Move marketing footer copy from config/locales/#{locale}.yml to private/locales/#{locale}.yml"
+    end
+  end
 end

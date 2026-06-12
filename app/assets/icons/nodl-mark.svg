@@ -1,0 +1,29 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="67"
+  height="41"
+  viewBox="0.75 3.75 66.5 40.5"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M2 22v4" />
+  <path d="M6 20.5v7" />
+  <path d="M10 21.5v5" />
+  <path d="M14 19.5v9" />
+  <path d="M18 8v32" />
+  <path d="M22 5v38" />
+  <path d="M26 7v34" />
+  <path d="M30 11.5v10" />
+  <path d="M34 20v8" />
+  <path d="M38 26.5v10" />
+  <path d="M42 7v34" />
+  <path d="M46 5v38" />
+  <path d="M50 8v32" />
+  <path d="M54 19.5v9" />
+  <path d="M58 21.5v5" />
+  <path d="M62 20.5v7" />
+  <path d="M66 22v4" />
+</svg>

@@ -12,7 +12,7 @@ class LocaleSwitchingSystemTest < ApplicationSystemTestCase
     end
 
     assert_text I18n.t("nav.login", locale: :de)
-    assert_text I18n.t("pages.home.hero.get_started", locale: :de)
+    assert_selector "html[lang='de']", visible: :all
   end
 
   test "signed-in user can switch language from the account menu" do

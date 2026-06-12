@@ -9,9 +9,16 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :current_workspace, :user_signed_in?
 
+  before_action :prepend_private_view_path
   around_action :switch_locale
 
   private
+
+  def prepend_private_view_path
+    return unless PrivateContent.view_root.directory?
+
+    prepend_view_path PrivateContent.view_root
+  end
 
   # Resolve the active locale for every request and keep it scoped to the
   # request lifecycle so background threads are never affected.
