@@ -119,6 +119,10 @@ en:
     authentication_required: Please sign in to continue.
     not_authorized: You are not authorized for this section.
     no_workspace: No workspace is available.
+    oauth:
+      google_failed: Google sign-in could not be completed. Please try again.
+      google_not_configured: Google sign-in is not configured yet.
+      google_unverified: Google did not confirm a verified email address.
     sessions:
       welcome_back: Welcome back.
       signed_out: You have been signed out.
@@ -147,6 +151,11 @@ en:
       password_mismatch: Passwords must match.
       email_taken: This email is already registered.
       legal_not_accepted: You must accept the Terms and Conditions and Privacy Policy to create an account.
+  auth:
+    or_email: or
+    google:
+      continue: Continue with Google
+      legal_html: By continuing with Google, you agree to the %{terms} and the %{privacy}.
   shared:
     status_check:
       healthy: 'Status: healthy'
@@ -199,7 +208,7 @@ en:
         item_1: Record in your browser or upload audio
         item_2: 'Choose a format: meeting notes, task lists, and more'
         item_3: Your workspace keeps recordings and documents private
-      lead: No credit card required. Start on the free tier today.
+      lead: Sign in or register
       email_placeholder: your@email.com
       email_confirm_placeholder: Confirm your email
       password_placeholder: Create a strong password

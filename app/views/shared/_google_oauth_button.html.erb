@@ -1,0 +1,20 @@
+<div class="space-y-3">
+  <%= button_to user_google_oauth2_omniauth_authorize_path,
+                method: :post,
+                form: { data: { turbo: false } },
+                class: "btn btn-outline w-full h-12 text-base font-semibold gap-3",
+                data: { testid: "google-oauth-btn" } do %>
+    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" aria-hidden="true" class="shrink-0">
+      <use href="/cdn/assets/sprites-external-a2895b13.svg#8e7aa4" fill="currentColor"></use>
+    </svg>
+    <span><%= t("auth.google.continue") %></span>
+  <% end %>
+
+  <% if legal_consent_required? %>
+    <p class="text-xs leading-5 text-base-content/60 text-center">
+      <%= t("auth.google.legal_html",
+            terms: link_to(t("registrations_view.new.legal.terms"), terms_path, target: "_blank", rel: "noopener", class: "link link-primary font-medium"),
+            privacy: link_to(t("registrations_view.new.legal.privacy"), privacy_path, target: "_blank", rel: "noopener", class: "link link-primary font-medium")) %>
+    </p>
+  <% end %>
+</div>

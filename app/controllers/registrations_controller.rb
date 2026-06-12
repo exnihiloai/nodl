@@ -88,11 +88,4 @@ class RegistrationsController < ApplicationController
     prefix = email.split("@").first
     "#{prefix.titleize} Workspace"
   end
-
-  # Consent is only enforced when the operator has published the legal documents
-  # (private/legal/). OSS deploys without them register users without a checkbox.
-  def legal_consent_required?
-    LegalConsent::CONSENTABLE_DOCUMENTS.all? { |doc| LegalPage.exists?(doc) }
-  end
-  helper_method :legal_consent_required?
 end
