@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-06-12
+
+### Added
+- **Continue with Google:** You can now sign in or create an account with Google on the login and registration pages — one click instead of typing a password. If you already have a Nodl account with the same verified email, Google sign-in links to it automatically. New Google users get a workspace and land on the dashboard right away. Available in English and German when your operator has configured Google OAuth.
+
+### Changed
+- **Login and Registration Layout:** Both pages now lead with a Google button and an “or” divider before the email-and-password form, so you can pick whichever sign-in method you prefer.
+
 ## [0.14.0] - 2026-06-12
 
 ### Added
