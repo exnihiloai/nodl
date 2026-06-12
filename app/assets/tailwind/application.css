@@ -331,6 +331,736 @@
   }
 }
 
+/* ============================================================
+   Landing page design layer ("lp-")
+   ------------------------------------------------------------
+   Shared visual vocabulary for the marketing pages (home + the
+   /fuer/* verticals). Everything is built from the DaisyUI theme
+   tokens so light and dark mode stay in sync, and every animation
+   is gated behind prefers-reduced-motion at the bottom.
+   ============================================================ */
+
+/* --- Below-the-fold sections: skip layout/paint while off-screen ---
+   Applied to every landing section except the hero. The browser only
+   lays out and paints these once they approach the viewport, which
+   keeps resize events (window dragging, iOS toolbar show/hide) cheap.
+   contain-intrinsic-size is a placeholder estimate; `auto` makes the
+   browser remember the real size after the first render. */
+.lp-below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* Hero trust panel: grouped metadata, not outline-button chips. */
+.lp-trust-panel {
+  position: relative;
+  z-index: 1;
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0.875rem 1rem;
+  border-radius: calc(var(--radius-field, 0.75rem) + 0.125rem);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+  background: color-mix(in oklab, var(--color-base-100) 82%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-base-100) 40%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .lp-trust-panel {
+    margin-inline: 0;
+  }
+}
+
+.lp-trust-panel__grid {
+  display: grid;
+  gap: 0.625rem 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .lp-trust-panel__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.lp-trust-panel__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--color-base-content) 72%, transparent);
+  cursor: default;
+}
+
+.lp-trust-panel__item svg {
+  flex: none;
+  margin-top: 0.1rem;
+}
+
+/* --- Eyebrow: small-caps section kicker --- */
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-primary) 85%, var(--color-base-content));
+}
+
+/* --- Gradient headline accent --- */
+.lp-gradient-text {
+  background-image: linear-gradient(105deg,
+    var(--color-primary) 0%,
+    color-mix(in oklab, var(--color-primary) 45%, var(--color-accent)) 55%,
+    var(--color-accent) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Hero stage: aurora blobs + fading dot grid -------------------
+   The hero section gets a calm, slowly breathing colour field made
+   from the brand palette, plus a dot grid that fades toward the
+   content so the stage never competes with the headline. */
+.lp-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Three.js wireframe spectrogram: bottom band only, clear of headline copy. */
+.lp-hero--spectrogram .lp-hero__spectrogram {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  z-index: -4;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 32%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 32%);
+}
+
+@media (min-width: 1024px) {
+  .lp-hero--spectrogram .lp-hero__spectrogram {
+    height: 30%;
+  }
+}
+
+.lp-hero--spectrogram .lp-hero__spectrogram-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-hero--spectrogram::before {
+  -webkit-mask-image: radial-gradient(85% 70% at 50% 35%, #000 0%, transparent 82%);
+          mask-image: radial-gradient(85% 70% at 50% 35%, #000 0%, transparent 82%);
+}
+
+.lp-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-base-content) 11%, transparent) 1px,
+    transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(75% 65% at 50% 30%, #000 0%, transparent 78%);
+          mask-image: radial-gradient(75% 65% at 50% 30%, #000 0%, transparent 78%);
+}
+
+.lp-hero__blob {
+  position: absolute;
+  z-index: -3;
+  width: 44rem;
+  height: 44rem;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.lp-hero__blob--primary {
+  top: -22rem;
+  left: -10rem;
+  background: radial-gradient(circle at 50% 50%,
+    color-mix(in oklab, var(--color-primary) 38%, transparent) 0%, transparent 70%);
+  animation: lp-blob-drift-a 24s ease-in-out infinite;
+}
+
+.lp-hero__blob--accent {
+  top: -16rem;
+  right: -14rem;
+  background: radial-gradient(circle at 50% 50%,
+    color-mix(in oklab, var(--color-accent) 30%, transparent) 0%, transparent 70%);
+  animation: lp-blob-drift-b 30s ease-in-out infinite;
+}
+
+@keyframes lp-blob-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(4%, 6%, 0) scale(1.08); }
+}
+
+@keyframes lp-blob-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%      { transform: translate3d(-5%, 4%, 0) scale(0.96); }
+}
+
+/* --- Scroll reveal -------------------------------------------------
+   Elements carry data-reveal (+ optional --lp-delay for stagger).
+   They are only hidden once the reveal controller has connected
+   (body.lp-reveal-ready), so content stays visible without JS. */
+body.lp-reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+body.lp-reveal-ready [data-reveal].lp-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--lp-delay, 0s);
+}
+
+/* --- Cards ---------------------------------------------------------
+   Marketing card: quiet at rest, lifts on hover with a soft brand
+   shadow and a slightly warmer border. Used for personas, steps,
+   trust claims and pricing. */
+.lp-card {
+  position: relative;
+  border-radius: var(--radius-box, 1.25rem);
+  border: 1px solid var(--color-base-300);
+  background-color: var(--color-base-100);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.lp-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--color-primary) 35%, var(--color-base-300));
+  box-shadow:
+    0 18px 36px -16px color-mix(in oklab, var(--color-primary) 22%, transparent),
+    0 8px 18px -12px oklch(0% 0 0 / 0.18);
+}
+
+/* DaisyUI .card-title is display:flex with min-width:auto, so long German
+   compounds overflow icon+title rows. Let titles wrap inside marketing cards. */
+.lp-card .card-title {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  text-wrap: balance;
+}
+
+.lp-card .card-body > .flex:has(> .card-title) {
+  align-items: flex-start;
+}
+
+.lp-card .card-body > .flex > .card-title {
+  flex: 1 1 0%;
+}
+
+/* Persona cards: a gradient hairline blooms across the top edge on hover. */
+.lp-card--persona::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.lp-card--persona:hover::after {
+  opacity: 1;
+}
+
+/* Icon tile: tinted square derived from currentColor, so callers pick
+   the hue with a text-* class and the background follows. */
+.lp-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: 0.875rem;
+  background: color-mix(in oklab, currentColor 12%, transparent);
+  border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+}
+
+/* --- Steps ("So funktioniert's") ----------------------------------- */
+.lp-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  color: var(--color-primary-content);
+  background: linear-gradient(135deg, var(--color-primary),
+    color-mix(in oklab, var(--color-primary) 55%, var(--color-accent)));
+  box-shadow: 0 6px 14px -6px color-mix(in oklab, var(--color-primary) 55%, transparent);
+}
+
+.lp-step-num--ghost {
+  color: var(--color-base-content);
+  opacity: 0.45;
+  background: transparent;
+  border: 2px dashed var(--color-base-300);
+  box-shadow: none;
+}
+
+/* Oversized watermark numeral behind step cards. */
+.lp-step-watermark {
+  position: absolute;
+  top: -0.5rem;
+  right: 0.75rem;
+  width: 1em;
+  font-size: 5.5rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  background-image: linear-gradient(135deg,
+    color-mix(in oklab, var(--color-primary) 55%, transparent),
+    color-mix(in oklab, var(--color-accent) 40%, transparent));
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.lp-step-watermark--ghost {
+  background-image: none;
+  color: color-mix(in oklab, var(--color-base-content) 10%, transparent);
+  -webkit-text-fill-color: currentColor;
+}
+
+/* --- Before → after example panels --------------------------------- */
+.lp-example-before {
+  border-radius: var(--radius-box, 1.25rem);
+  border: 1px dashed color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  background:
+    repeating-linear-gradient(-45deg,
+      color-mix(in oklab, var(--color-base-content) 2.5%, transparent) 0 10px,
+      transparent 10px 20px),
+    var(--color-base-200);
+}
+
+.lp-example-after {
+  position: relative;
+  border-radius: var(--radius-box, 1.25rem);
+  border: 1px solid color-mix(in oklab, var(--color-primary) 22%, var(--color-base-300));
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--color-primary) 7%, var(--color-base-100)) 0%,
+      var(--color-base-100) 60%);
+  box-shadow: 0 14px 30px -18px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+/* Circular "transform" chip that sits between the two panels. */
+.lp-example-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: 9999px;
+  color: var(--color-primary-content);
+  background: linear-gradient(135deg, var(--color-primary),
+    color-mix(in oklab, var(--color-primary) 50%, var(--color-accent)));
+  box-shadow: 0 8px 18px -8px color-mix(in oklab, var(--color-primary) 60%, transparent);
+}
+
+/* --- Animated equalizer (hero + example "before" headers) ---------- */
+.lp-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 1.1rem;
+}
+
+.lp-eq span {
+  width: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-primary));
+  animation: lp-eq-bounce 1.2s ease-in-out infinite;
+}
+
+.lp-eq span:nth-child(1) { height: 35%; animation-delay: 0s; }
+.lp-eq span:nth-child(2) { height: 80%; animation-delay: 0.15s; }
+.lp-eq span:nth-child(3) { height: 55%; animation-delay: 0.3s; }
+.lp-eq span:nth-child(4) { height: 95%; animation-delay: 0.45s; }
+.lp-eq span:nth-child(5) { height: 45%; animation-delay: 0.6s; }
+.lp-eq span:nth-child(6) { height: 70%; animation-delay: 0.75s; }
+.lp-eq span:nth-child(7) { height: 30%; animation-delay: 0.9s; }
+
+@keyframes lp-eq-bounce {
+  0%, 100% { transform: scaleY(0.55); }
+  50%      { transform: scaleY(1); }
+}
+
+/* --- Hero demo card -------------------------------------------------
+   A small product vignette: recording chip with live equalizer, a
+   beam flowing downward, and a document whose lines write themselves
+   in once. */
+.lp-demo {
+  position: relative;
+  border-radius: calc(var(--radius-box, 1.25rem) + 0.25rem);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+  background: color-mix(in oklab, var(--color-base-100) 88%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 24px 48px -24px oklch(0% 0 0 / 0.25),
+    0 0 0 1px color-mix(in oklab, var(--color-base-100) 50%, transparent) inset;
+}
+
+.lp-demo__flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.lp-demo__beam {
+  width: 2px;
+  flex-shrink: 0;
+  align-self: center;
+  height: 2.25rem;
+  margin-block: -1px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-primary));
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-demo__beam::after {
+  content: "";
+  position: absolute;
+  inset: -100% 0;
+  background: linear-gradient(180deg, transparent 35%,
+    color-mix(in oklab, var(--color-base-100) 85%, transparent) 50%, transparent 65%);
+  animation: lp-beam-flow 1.6s linear infinite;
+}
+
+@keyframes lp-beam-flow {
+  to { transform: translateY(100%); }
+}
+
+/* Document lines fade in one after another, then stay. */
+.lp-demo__line {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  opacity: 0;
+  transform: translateX(6px);
+  animation: lp-line-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--lp-line-delay, 0.8s);
+}
+
+.lp-demo__line--title {
+  height: 0.625rem;
+  width: 55%;
+  background: color-mix(in oklab, var(--color-primary) 55%, transparent);
+}
+
+.lp-demo__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: lp-line-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 2.15s;
+}
+
+.lp-demo__format {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  background: color-mix(in oklab, var(--color-base-200) 65%, transparent);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  color: color-mix(in oklab, var(--color-base-content) 72%, transparent);
+}
+
+.lp-demo__format--pdf {
+  border-color: color-mix(in oklab, var(--color-error) 28%, transparent);
+  background: color-mix(in oklab, var(--color-error) 10%, var(--color-base-100));
+  color: color-mix(in oklab, var(--color-error) 78%, var(--color-base-content));
+}
+
+.lp-demo__format--word {
+  border-color: color-mix(in oklab, var(--color-primary) 28%, transparent);
+  background: color-mix(in oklab, var(--color-primary) 10%, var(--color-base-100));
+  color: color-mix(in oklab, var(--color-primary) 78%, var(--color-base-content));
+}
+
+.lp-demo__format--md {
+  border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 10%, var(--color-base-100));
+  color: color-mix(in oklab, var(--color-accent) 78%, var(--color-base-content));
+}
+
+@keyframes lp-line-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* Floating badge chips around the demo card. */
+.lp-float {
+  animation: lp-float 6s ease-in-out infinite;
+}
+
+.lp-float--late {
+  animation-delay: 3s;
+}
+
+@keyframes lp-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* --- Language marquee ----------------------------------------------
+   Multiple counter-scrolling bands: 3 on mobile (~5/5/4 langs), 2 on
+   desktop (7/7). Badge sizing targets ~4–5 visible items per band on
+   small screens and ~7 on wide screens. */
+.lp-marquee-stack {
+  gap: 0.625rem;
+  width: 100%;
+  margin-top: 2.5rem;
+}
+
+.lp-marquee {
+  overflow: hidden;
+  /* The track is width: max-content, so nothing inside depends on the
+     viewport — containment lets the browser skip re-laying-out the ~8x
+     repeated badge lists on every window resize. */
+  contain: layout paint;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.lp-marquee__track {
+  display: flex;
+  gap: 0.75rem;
+  width: max-content;
+  padding: 0.25rem 0;
+  animation: lp-marquee-scroll 32s linear infinite;
+}
+
+.lp-marquee--reverse .lp-marquee__track {
+  animation-direction: reverse;
+}
+
+.lp-marquee:hover .lp-marquee__track {
+  animation-play-state: paused;
+}
+
+.lp-marquee__badge {
+  font-size: 0.8125rem;
+  padding-inline: 0.75rem;
+  min-height: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .lp-marquee__badge {
+    font-size: 0.9375rem;
+    padding-inline: 1rem;
+    min-height: 2.25rem;
+  }
+
+  .lp-marquee__track {
+    animation-duration: 36s;
+  }
+}
+
+/* Shift by exactly one list copy per cycle; the partial sets
+   --lp-marquee-copies to how many copies it renders. */
+@keyframes lp-marquee-scroll {
+  to { transform: translateX(calc(-100% / var(--lp-marquee-copies, 2))); }
+}
+
+/* --- CTA panel ------------------------------------------------------
+   Contained gradient slab with soft light blooms; replaces the flat
+   full-bleed primary band. */
+.lp-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: calc(var(--radius-box, 1.25rem) + 0.5rem);
+  background:
+    radial-gradient(80% 120% at 15% 0%,
+      color-mix(in oklab, var(--color-accent) 35%, transparent) 0%, transparent 60%),
+    radial-gradient(90% 130% at 90% 100%,
+      color-mix(in oklab, var(--color-primary) 50%, transparent) 0%, transparent 65%),
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--color-primary) 88%, oklch(20% 0.03 270)) 0%,
+      color-mix(in oklab, var(--color-primary) 55%, oklch(22% 0.05 290)) 100%);
+  /* The slab is always a deep blue, in both themes — so the text is always
+     light, independent of what primary-content resolves to. */
+  color: oklch(98% 0.01 260);
+  box-shadow: 0 30px 60px -30px color-mix(in oklab, var(--color-primary) 55%, transparent);
+}
+
+/* In dark mode primary itself is light, which would wash the slab out —
+   anchor the gradient on deeper mixes so white text keeps its contrast. */
+[data-theme="dark"] .lp-cta {
+  background:
+    radial-gradient(80% 120% at 15% 0%,
+      color-mix(in oklab, var(--color-accent) 28%, transparent) 0%, transparent 60%),
+    radial-gradient(90% 130% at 90% 100%,
+      color-mix(in oklab, var(--color-primary) 45%, transparent) 0%, transparent 65%),
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--color-primary) 62%, oklch(18% 0.04 270)) 0%,
+      color-mix(in oklab, var(--color-primary) 34%, oklch(17% 0.05 290)) 100%);
+}
+
+/* Dot grid + shine inside the CTA slab key off this fixed light ink too. */
+.lp-cta .lp-btn-shine::after {
+  background: linear-gradient(90deg, transparent,
+    oklch(98% 0.01 260 / 0.45), transparent);
+}
+
+.lp-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(
+    oklch(98% 0.01 260 / 0.14) 1px,
+    transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(70% 80% at 50% 50%, #000 0%, transparent 80%);
+          mask-image: radial-gradient(70% 80% at 50% 50%, #000 0%, transparent 80%);
+  opacity: 0.5;
+}
+
+/* --- Button shine: a light sweep crosses primary CTAs on hover. ---- */
+.lp-btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -30%;
+  width: 36%;
+  transform: skewX(-20deg) translateX(-120%);
+  background: linear-gradient(90deg, transparent,
+    color-mix(in oklab, var(--color-primary-content) 45%, transparent), transparent);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.lp-btn-shine:hover::after {
+  transform: skewX(-20deg) translateX(420%);
+}
+
+/* --- Violet tone for icon tiles ------------------------------------
+   The theme has no violet token, and secondary/secondary-content are
+   too close to the base colours to read inside an icon tile. */
+.lp-tone-violet {
+  color: oklch(58% 0.16 295);
+}
+
+[data-theme="dark"] .lp-tone-violet {
+  color: oklch(74% 0.13 295);
+}
+
+/* --- Big stat numerals on vertical pages --------------------------- */
+.lp-stat-value {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background-image: linear-gradient(120deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Reduced motion: freeze the decorative layer ------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero__spectrogram {
+    display: none;
+  }
+
+  .lp-hero__blob,
+  .lp-eq span,
+  .lp-demo__beam::after,
+  .lp-float,
+  .lp-marquee__track {
+    animation: none;
+  }
+
+  .lp-demo__line,
+  .lp-demo__formats {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .lp-marquee-stack {
+    align-items: center;
+  }
+
+  .lp-marquee {
+    -webkit-mask-image: none;
+            mask-image: none;
+    width: 100%;
+    max-width: 48rem;
+  }
+
+  .lp-marquee__track {
+    width: auto;
+    justify-content: center;
+  }
+
+  /* The second list only exists to make the scroll loop seamless. */
+  .lp-marquee__track > [aria-hidden="true"] {
+    display: none;
+  }
+
+  .lp-marquee__track > ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  body.lp-reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .lp-card,
+  .lp-card:hover {
+    transform: none;
+  }
+}
+
 /* Vertical grow animation for the newly added dashboard activity row */
 .dashboard-row-grow {
   animation: dashboard-row-grow-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;

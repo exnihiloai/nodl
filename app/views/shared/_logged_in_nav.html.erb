@@ -2,7 +2,10 @@
   <div class="container mx-auto px-4">
     <div class="navbar px-0">
       <div class="navbar-start">
-        <%= link_to "Nodl", dashboard_path, class: "btn btn-ghost normal-case text-xl font-semibold", data: { testid: "nav-logo" } %>
+        <%= link_to dashboard_path, class: "btn btn-ghost normal-case text-xl font-semibold gap-2 px-2", data: { testid: "nav-logo" } do %>
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-base-300/70 bg-base-200 text-base-content"><%= icon("nodl-mark", class: "w-7 h-4") %></span>
+          Nodl
+        <% end %>
       </div>
       <div class="navbar-end flex items-center gap-2">
         <%= render "shared/theme_toggle" %>

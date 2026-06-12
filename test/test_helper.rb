@@ -14,6 +14,7 @@ end
 require_relative "../config/environment"
 require "rails/test_help"
 require "mocha/minitest"
+require "tmpdir"
 
 module ActiveSupport
   class TestCase
@@ -71,6 +72,31 @@ module ActiveSupport
         filename: filename,
         content_type: content_type
       )
+    end
+
+    def with_private_view_root(path)
+      original = PrivateContent.view_root
+      PrivateContent.view_root = Pathname.new(path)
+      yield
+    ensure
+      PrivateContent.view_root = original
+    end
+
+    def with_private_about_page
+      Dir.mktmpdir do |dir|
+        view_root = Pathname.new(dir).join("views")
+        pages = view_root.join("pages")
+        pages.mkpath
+        pages.join("about.html.erb").write(<<~ERB)
+          <section>
+            <h1>Private about fixture</h1>
+            <%= link_to "Changelog", changelog_path, data: { testid: "about-changelog-link" } %>
+            <%= link_to "Licenses", licenses_path, data: { testid: "about-licenses-link" } %>
+          </section>
+        ERB
+
+        with_private_view_root(view_root) { yield }
+      end
     end
   end
 end

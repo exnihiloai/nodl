@@ -132,10 +132,12 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
 
     get root_path
     assert_response :success
-    assert_includes response.body, terms_path
-    assert_not_includes response.body, ai_transparency_path
-    assert_not_includes response.body, subprocessors_path
-    assert_not_includes response.body, security_path
+    assert_select "footer a[href=?]", terms_path
+    # Marketing content may link compliance pages in context (trust sections);
+    # the footer itself stays limited to the core legal links.
+    assert_select "footer a[href=?]", ai_transparency_path, count: 0
+    assert_select "footer a[href=?]", subprocessors_path, count: 0
+    assert_select "footer a[href=?]", security_path, count: 0
   end
 
   private

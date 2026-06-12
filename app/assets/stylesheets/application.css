@@ -21,6 +21,15 @@ html {
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* DaisyUI tabs-lift zeroes start-start radius on the first panel (2nd child).
+   Round all panel corners so every tab matches the rest of the UI. */
+.tabs-lift > .tab-content {
+  --tabcontent-radius-ss: var(--radius-box);
+  --tabcontent-radius-se: var(--radius-box);
+  --tabcontent-radius-es: var(--radius-box);
+  --tabcontent-radius-ee: var(--radius-box);
+}
+
 /* Tactile spotlight button (/button page).
    Selectors are element-qualified (button.btn-bouncy) so they outrank
    DaisyUI's single-class .btn rules. */

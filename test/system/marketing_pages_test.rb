@@ -1,32 +1,30 @@
 require "application_system_test_case"
 
 class MarketingPagesTest < ApplicationSystemTestCase
-  test "about page is reachable from footer on public pages" do
-    visit root_path
-    within("footer") { click_link "About" }
-    assert_current_path about_path, ignore_query: true
-    assert_text "About Nodl"
+  test "oss-only public home renders without private marketing links" do
+    Dir.mktmpdir do |empty_root|
+      with_private_view_root(empty_root) do
+        visit root_path
 
-    visit login_path
-    within("footer") { click_link "About" }
-    assert_current_path about_path, ignore_query: true
-
-    visit register_path
-    within("footer") { click_link "About" }
-    assert_current_path about_path, ignore_query: true
+        assert_text I18n.t("pages.public_home.heading")
+        assert_link I18n.t("nav.login")
+        assert_link I18n.t("nav.register")
+        assert_no_link href: about_path
+        assert_no_link href: try_now_path
+      end
+    end
   end
 
-  test "footer links work on authenticated pages" do
+  test "authenticated pages render with the public footer when private marketing is absent" do
     email = unique_email("footer")
     create_user_with_workspace(email: email, password: "Valid123")
 
-    login_via_ui(email: email, password: "Valid123")
-    assert_current_path dashboard_path, ignore_query: true
-
-    within("footer") { click_link "Pricing" }
-    assert_current_path payments_path, ignore_query: true
-
-    within("footer") { click_link "Demo" }
-    assert_current_path try_now_path, ignore_query: true
+    Dir.mktmpdir do |empty_root|
+      with_private_view_root(empty_root) do
+        login_via_ui(email: email, password: "Valid123")
+        assert_current_path dashboard_path, ignore_query: true
+        assert_no_link href: try_now_path
+      end
+    end
   end
 end

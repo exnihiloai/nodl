@@ -27,7 +27,7 @@ test/
     admin_user_management_test.rb         # Admin CRUD + audit events
     authentication_flow_test.rb           # Register, login, logout flows
     dashboard_tenancy_test.rb             # Workspace switching
-    marketing_pages_test.rb               # Public pages render correctly
+    marketing_pages_test.rb               # Public shell/private marketing fallback
     payments_system_test.rb               # Payments page UI
     theme_switcher_js_test.rb             # Theme toggle (JS only)
 ```

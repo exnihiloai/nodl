@@ -59,3 +59,4 @@ config/credentials/*.key
 # Ignore local vendored artifacts, but keep the placeholder.
 /vendor/*
 !/vendor/.keep
+.claude/*

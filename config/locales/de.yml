@@ -1,783 +1,597 @@
-# German translation. Mirrors every key in en.yml. Tone: informal ("du"),
-# modern SaaS voice; common anglicisms (Dashboard, Login, Workspace, Checkout,
-# Upload, Demo, Status) are kept intentionally.
-#
-# This file also carries the framework-level German data (validation errors,
-# date/time formats, relative time) because the app does not bundle rails-i18n.
+---
 de:
-  # --- Framework-level data (normally provided by rails-i18n) ---------------
   errors:
-    format: "%{attribute} %{message}"
-    messages:
-      blank: "muss ausgefüllt werden"
-      present: "muss leer sein"
-      taken: "ist bereits vergeben"
-      invalid: "ist nicht gültig"
-      confirmation: "stimmt nicht mit %{attribute} überein"
-      accepted: "muss akzeptiert werden"
-      empty: "muss ausgefüllt werden"
-      too_long:
-        one: "ist zu lang (mehr als 1 Zeichen)"
-        other: "ist zu lang (mehr als %{count} Zeichen)"
-      too_short:
-        one: "ist zu kurz (weniger als 1 Zeichen)"
-        other: "ist zu kurz (weniger als %{count} Zeichen)"
-      wrong_length:
-        one: "hat die falsche Länge (muss genau 1 Zeichen haben)"
-        other: "hat die falsche Länge (muss genau %{count} Zeichen haben)"
-      not_a_number: "ist keine Zahl"
-      greater_than: "muss größer als %{count} sein"
-      greater_than_or_equal_to: "muss größer oder gleich %{count} sein"
-      less_than: "muss kleiner als %{count} sein"
-      less_than_or_equal_to: "muss kleiner oder gleich %{count} sein"
-      inclusion: "ist kein gültiger Wert"
-      exclusion: "ist nicht verfügbar"
-
+    not_found:
+      title: 404 - Seite nicht gefunden - Nodl
+      icon_label: Mikrofon aus
+      badge: Signal verloren
+      heading: Wir haben zugehört. Diese Seite hat nichts gesagt.
+      subheading: Falsche URL, verschobener Link oder ein Tippfehler lauter als dein Mikrofon.
+      transcript_label: Transkript dieser Seite
+      transcript_status: Leere Aufnahme
+      transcript_body: "[Stille] … [unverständliches Gemurmel] … [404, kein Dokument generiert]"
+      hint: Anders als deine besten Ideen hat es diese Adresse nicht in ein strukturiertes Dokument geschafft.
+      cta_home: Zur Startseite
+      cta_dashboard: Zum Dashboard
+      cta_try: Demo ausprobieren
   date:
     formats:
       default: "%d.%m.%Y"
       short: "%e. %b"
       long: "%e. %B %Y"
-    abbr_day_names: [So, Mo, Di, Mi, Do, Fr, Sa]
-    abbr_month_names: [~, Jan, Feb, Mär, Apr, Mai, Jun, Jul, Aug, Sep, Okt, Nov, Dez]
-    day_names: [Sonntag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag]
-    month_names: [~, Januar, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
-
+    abbr_day_names:
+    - So
+    - Mo
+    - Di
+    - Mi
+    - Do
+    - Fr
+    - Sa
+    abbr_month_names:
+    -
+    - Jan
+    - Feb
+    - Mär
+    - Apr
+    - Mai
+    - Jun
+    - Jul
+    - Aug
+    - Sep
+    - Okt
+    - Nov
+    - Dez
+    day_names:
+    - Sonntag
+    - Montag
+    - Dienstag
+    - Mittwoch
+    - Donnerstag
+    - Freitag
+    - Samstag
+    month_names:
+    -
+    - Januar
+    - Februar
+    - März
+    - April
+    - Mai
+    - Juni
+    - Juli
+    - August
+    - September
+    - Oktober
+    - November
+    - Dezember
   time:
     formats:
       default: "%A, %d. %B %Y, %H:%M Uhr"
       short: "%d.%m.%Y %H:%M"
       long: "%A, %d. %B %Y, %H:%M Uhr"
-    am: "vormittags"
-    pm: "nachmittags"
-
+    am: vormittags
+    pm: nachmittags
   datetime:
     distance_in_words:
-      half_a_minute: "eine halbe Minute"
+      half_a_minute: eine halbe Minute
       less_than_x_seconds:
-        one: "weniger als 1 Sekunde"
-        other: "weniger als %{count} Sekunden"
+        one: weniger als 1 Sekunde
+        other: weniger als %{count} Sekunden
       x_seconds:
-        one: "1 Sekunde"
+        one: 1 Sekunde
         other: "%{count} Sekunden"
       less_than_x_minutes:
-        one: "weniger als 1 Minute"
-        other: "weniger als %{count} Minuten"
+        one: weniger als 1 Minute
+        other: weniger als %{count} Minuten
       x_minutes:
-        one: "1 Minute"
+        one: 1 Minute
         other: "%{count} Minuten"
       about_x_hours:
-        one: "etwa 1 Stunde"
-        other: "etwa %{count} Stunden"
+        one: etwa 1 Stunde
+        other: etwa %{count} Stunden
       x_days:
-        one: "1 Tag"
+        one: 1 Tag
         other: "%{count} Tagen"
       about_x_months:
-        one: "etwa 1 Monat"
-        other: "etwa %{count} Monaten"
+        one: etwa 1 Monat
+        other: etwa %{count} Monaten
       x_months:
-        one: "1 Monat"
+        one: 1 Monat
         other: "%{count} Monaten"
       about_x_years:
-        one: "etwa 1 Jahr"
-        other: "etwa %{count} Jahren"
+        one: etwa 1 Jahr
+        other: etwa %{count} Jahren
       over_x_years:
-        one: "mehr als 1 Jahr"
-        other: "mehr als %{count} Jahren"
+        one: mehr als 1 Jahr
+        other: mehr als %{count} Jahren
       almost_x_years:
-        one: "fast 1 Jahr"
-        other: "fast %{count} Jahren"
-
+        one: fast 1 Jahr
+        other: fast %{count} Jahren
   support:
     array:
       words_connector: ", "
       two_words_connector: " und "
       last_word_connector: " und "
-
   activerecord:
     errors:
       models:
         user:
           attributes:
             password:
-              password_complexity: "muss Groß- und Kleinbuchstaben sowie eine Zahl enthalten"
+              password_complexity: muss Groß- und Kleinbuchstaben sowie eine Zahl enthalten
         recording_session:
           attributes:
             base:
-              recording_limit_reached: "Du hast alle %{limit} Recordings deines Testplans verbraucht."
+              recording_limit_reached: Du hast alle %{limit} Recordings deines Testplans verbraucht.
             original_audio:
-              too_long: "darf nicht länger als %{limit} Minuten sein"
+              too_long: darf nicht länger als %{limit} Minuten sein
         transformer_profile:
           attributes:
             base:
-              format_limit_reached: "Du hast das Maximum von %{limit} Formaten erreicht."
+              format_limit_reached: Du hast das Maximum von %{limit} Formaten erreicht.
     attributes:
       user:
-        email: "E-Mail"
-        password: "Passwort"
-        password_confirmation: "Passwortbestätigung"
-        preferred_language: "Bevorzugte Sprache"
+        email: E-Mail
+        password: Passwort
+        password_confirmation: Passwortbestätigung
+        preferred_language: Bevorzugte Sprache
       recording_session:
-        title: "Titel"
-        transformer_handle: "Format"
-
-  # --- Application strings --------------------------------------------------
+        title: Titel
+        transformer_handle: Format
   language_switcher:
-    label: "Sprache"
+    label: Sprache
     languages:
-      en: "English"
-      de: "Deutsch"
-
+      en: English
+      de: Deutsch
   clipboard:
-    copy: "Kopieren"
-    copied: "Kopiert"
-
+    copy: Kopieren
+    copied: Kopiert
   confirm_modal:
-    title: "Bist du sicher?"
-    cancel: "Abbrechen"
-    confirm: "Löschen"
-    close: "Schließen"
-
+    title: Bist du sicher?
+    cancel: Abbrechen
+    confirm: Löschen
+    close: Schließen
   nav:
-    services: "Funktionen"
-    how_it_works: "So funktioniert's"
-    pricing: "Preise"
-    faq: "FAQ"
-    login: "Anmelden"
-    register: "Kostenlos starten"
-    dashboard: "Dashboard"
-    admin: "Admin"
+    login: Anmelden
+    register: Kostenlos starten
+    dashboard: Dashboard
+    admin: Admin
     account:
-      signed_in_as: "Angemeldet als"
-      workspace: "Workspace"
-      current: "Aktuell"
-      upgrade_plan: "Plan upgraden"
-      log_out: "Abmelden"
-
+      signed_in_as: Angemeldet als
+      workspace: Workspace
+      current: Aktuell
+      upgrade_plan: Plan upgraden
+      log_out: Abmelden
   changelog:
-    title: "Changelog - Nodl"
-    meta_description: "Produkt-Changelog von Nodl mit allen relevanten Verbesserungen und Fixes."
-    heading: "Changelog"
-    link: "Changelog"
-    close: "Schließen"
-    read_more: "Mehr lesen →"
-    unavailable: "Der Changelog konnte gerade nicht geladen werden."
+    title: Changelog - Nodl
+    meta_description: Produkt-Changelog von Nodl mit allen relevanten Verbesserungen und Fixes.
+    heading: Changelog
+    link: Changelog
+    close: Schließen
+    read_more: Mehr lesen →
+    unavailable: Der Changelog konnte gerade nicht geladen werden.
     week_label: "%{month} %{year} – Woche %{week}"
     column_subtitle:
-      one: "1 Update"
+      one: 1 Update
       other: "%{count} Updates"
     badges:
-      feature: "Feature"
-      fix: "Fix"
-      update: "Update"
-      security: "Sicherheit"
-      technical: "Technisch"
+      feature: Feature
+      fix: Fix
+      update: Update
+      security: Sicherheit
+      technical: Technisch
     sections:
-      added: "Hinzugefügt"
-      fixed: "Behoben"
-      changed: "Geändert"
-      removed: "Entfernt"
-      security: "Sicherheit"
-      technical: "Technisch"
+      added: Hinzugefügt
+      fixed: Behoben
+      changed: Geändert
+      removed: Entfernt
+      security: Sicherheit
+      technical: Technisch
     months:
-      1: "Januar"
-      2: "Februar"
-      3: "März"
-      4: "April"
-      5: "Mai"
-      6: "Juni"
-      7: "Juli"
-      8: "August"
-      9: "September"
-      10: "Oktober"
-      11: "November"
-      12: "Dezember"
-
+      1: Januar
+      2: Februar
+      3: März
+      4: April
+      5: Mai
+      6: Juni
+      7: Juli
+      8: August
+      9: September
+      10: Oktober
+      11: November
+      12: Dezember
   footer:
-    copyright: "© %{year} ex-nihilo GmbH. Alle Rechte vorbehalten."
-    about: "Über uns"
-    pricing: "Preise"
-    demo: "Demo"
-    imprint: "Impressum"
-    privacy: "Datenschutz"
-    terms: "AGB"
-    ai_transparency: "KI-Transparenz"
-    subprocessors: "Subprozessoren"
-    security: "Sicherheit"
-
+    imprint: Impressum
+    privacy: Datenschutz
+    terms: AGB
+    ai_transparency: KI-Transparenz
+    subprocessors: Subprozessoren
+    security: Sicherheit
   legal_pages:
     imprint:
-      title: "Impressum - Nodl"
+      title: Impressum - Nodl
     privacy:
-      title: "Datenschutz - Nodl"
+      title: Datenschutz - Nodl
     terms:
-      title: "AGB - Nodl"
+      title: AGB - Nodl
     ai_transparency:
-      title: "KI-Transparenz - Nodl"
+      title: KI-Transparenz - Nodl
     subprocessors:
-      title: "Subprozessorenregister - Nodl"
+      title: Subprozessorenregister - Nodl
     security:
-      title: "Sicherheitsmaßnahmen (TOMs) - Nodl"
+      title: Sicherheitsmaßnahmen (TOMs) - Nodl
     related:
-      heading: "Verwandte Dokumente"
-
-  errors:
-    not_found:
-      title: "404 - Seite nicht gefunden - Nodl"
-      icon_label: "Mikrofon aus"
-      badge: "Signal verloren"
-      heading: "Wir haben zugehört. Diese Seite hat nichts gesagt."
-      subheading: "Falsche URL, verschobener Link oder ein Tippfehler lauter als dein Mikrofon."
-      transcript_label: "Transkript dieser Seite"
-      transcript_status: "Leere Aufnahme"
-      transcript_body: "[Stille] … [unverständliches Gemurmel] … [404 — kein Dokument generiert]"
-      hint: "Anders als deine besten Ideen hat es diese Adresse nicht in ein strukturiertes Dokument geschafft."
-      cta_home: "Zur Startseite"
-      cta_dashboard: "Zum Dashboard"
-      cta_try: "Demo ausprobieren"
-
+      heading: Verwandte Dokumente
   flash:
-    authentication_required: "Bitte melde dich an, um fortzufahren."
-    not_authorized: "Du bist für diesen Bereich nicht berechtigt."
-    no_workspace: "Es ist kein Workspace verfügbar."
+    authentication_required: Bitte melde dich an, um fortzufahren.
+    not_authorized: Du bist für diesen Bereich nicht berechtigt.
+    no_workspace: Es ist kein Workspace verfügbar.
     sessions:
-      welcome_back: "Willkommen zurück."
-      signed_out: "Du wurdest abgemeldet."
-      invalid_credentials: "Ungültige Anmeldedaten."
-      cache_unavailable: "Der Authentifizierungsdienst ist vorübergehend nicht verfügbar. Bitte versuche es später erneut."
+      welcome_back: Willkommen zurück.
+      signed_out: Du wurdest abgemeldet.
+      invalid_credentials: Ungültige Anmeldedaten.
+      cache_unavailable: Der Authentifizierungsdienst ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.
     registrations:
-      created: "Konto erfolgreich erstellt."
+      created: Konto erfolgreich erstellt.
     recording_sessions:
-      created: "Aufnahme-Session erstellt. Die Verarbeitung hat begonnen."
-      not_ready_to_finalize: "Die Aufnahme-Session ist noch nicht bereit zum Abschließen."
+      created: Aufnahme-Session erstellt. Die Verarbeitung hat begonnen.
+      not_ready_to_finalize: Die Aufnahme-Session ist noch nicht bereit zum Abschließen.
     transformer_profiles:
-      created: 'Format „%{name}" erstellt.'
-      updated: 'Format „%{name}" aktualisiert.'
-      deleted: 'Format „%{name}" gelöscht.'
-      default_undeletable: "Das Standardformat kann nicht gelöscht werden."
-      example_removed: "Beispieldokument entfernt."
+      created: Format „%{name}" erstellt.
+      updated: Format „%{name}" aktualisiert.
+      deleted: Format „%{name}" gelöscht.
+      default_undeletable: Das Standardformat kann nicht gelöscht werden.
+      example_removed: Beispieldokument entfernt.
     workspaces:
-      switched: "Zu Workspace %{name} gewechselt."
-      not_found: "Workspace nicht gefunden."
+      switched: Zu Workspace %{name} gewechselt.
+      not_found: Workspace nicht gefunden.
     payments:
-      not_configured: "Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY."
-      checkout_failed: "Checkout kann derzeit nicht gestartet werden."
-
+      not_configured: Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY.
+      checkout_failed: Checkout kann derzeit nicht gestartet werden.
   registrations:
     errors:
-      email_mismatch: "E-Mail und Bestätigung müssen übereinstimmen."
-      password_mismatch: "Die Passwörter müssen übereinstimmen."
-      email_taken: "Diese E-Mail-Adresse ist bereits registriert."
-      legal_not_accepted: "Du musst den AGB und der Datenschutzerklärung zustimmen, um ein Konto zu erstellen."
-
+      email_mismatch: E-Mail und Bestätigung müssen übereinstimmen.
+      password_mismatch: Die Passwörter müssen übereinstimmen.
+      email_taken: Diese E-Mail-Adresse ist bereits registriert.
+      legal_not_accepted: Du musst den AGB und der Datenschutzerklärung zustimmen, um ein Konto zu erstellen.
   shared:
     status_check:
-      healthy: "Status: einsatzbereit"
-      unavailable: "Status: nicht verfügbar"
+      healthy: 'Status: einsatzbereit'
+      unavailable: 'Status: nicht verfügbar'
     theme_toggle:
-      label: "Dunkelmodus umschalten"
+      label: Dunkelmodus umschalten
     password_field:
-      show: "Passwort anzeigen"
-      hide: "Passwort verbergen"
-
+      show: Passwort anzeigen
+      hide: Passwort verbergen
   pages:
-    home:
-      title: "Nodl – Aus Sprache werden strukturierte Dokumente"
-      meta_description: "Sprich deine Gedanken aus und lass Nodl daraus Meeting Notes, Zusammenfassungen und saubere Dokumente machen. Jetzt kostenlos starten."
-      hero:
-        badge: "Kostenlos starten"
-        heading: "Sprich deine Gedanken. Bekomme fertige Dokumente."
-        subheading: "Nodl erfasst, was du sagst, versteht den Kontext und macht daraus saubere Notes, Zusammenfassungen und Dokumente im Format deiner Wahl."
-        get_started: "Kostenlos starten"
-        secondary_cta: "So funktioniert's"
-        trust_line: "Keine Kreditkarte zum Start. Erkunde Nodl mit einem Gratis Test — Pro ist da, wenn es Teil deiner Woche wird."
-        preview:
-          label: "Beispiel-Ablauf"
-          live: "Live-Vorschau"
-          recording: "Du sagst"
-          quote: "Kurzes Sync mit dem Team — wir müssen den Onboarding-Flow bis Freitag shippen, Sarah übernimmt Design, und ich follow up morgen beim Kunden."
-          output_label: "Meeting-Notes-Format"
-          output_title: "Team-Sync — Action Items"
-          output_item_1: "Onboarding-Flow bis Freitag shippen"
-          output_item_2: "Sarah übernimmt Design"
-          output_item_3: "Morgen Follow-up beim Kunden"
-      benefits:
-        badge: "Warum Nodl"
-        heading: "Mehr als Transkription. Echtes Verstehen."
-        subheading: "Hör auf, Ideen zwischen Denken und Tippen zu verlieren. Nodl schließt diese Lücke in Minuten."
-        capture:
-          label: "Erfassen"
-          title: "Gedanken im Moment festhalten"
-          body: "Nimm im Browser auf oder lade Audio hoch. Perfekt für Brain Dumps, Spaziergänge, späte Ideen und Meetings unterwegs."
-        transform:
-          label: "Transformieren"
-          title: "Format wählen, nicht bei null anfangen"
-          body: "Meeting Notes, Task Lists, Client Summaries und mehr — Nodl strukturiert deine Worte in das Dokument, das du wirklich brauchst."
-        trust:
-          label: "Vertrauen"
-          title: "Deine Stimme bleibt deine"
-          body: "Recordings, Transkripte und Dokumente liegen in deinem privaten Workspace. Gebaut für Professionals mit sensiblen Informationen."
-      how_it_works:
-        badge: "So funktioniert's"
-        heading: "In vier Schritten vom Voice zum Dokument"
-        subheading: "Kein Setup-Marathon. Registrieren, aufnehmen, beim ersten Versuch ein brauchbares Ergebnis."
-        step_1:
-          title: "Aufnehmen oder hochladen"
-          body: "Record im Browser oder zieh eine Audiodatei rein. Sprich natürlich — kein Skript nötig."
-        step_2:
-          title: "Smartes Transkript"
-          body: "Nodl transkribiert mit Kontext, nicht nur Wörter. Speaker Labels und Timestamps helfen beim schnellen Scannen."
-        step_3:
-          title: "Format wählen"
-          body: "Wähle, was du erstellen willst: Meeting Notes, Summary, Task List oder dein eigenes Custom Format."
-        step_4:
-          title: "Generieren und exportieren"
-          body: "Review dein Dokument, verfeinere es und lade Markdown runter, wenn du teilen oder publishen willst."
-      use_cases:
-        badge: "Use Cases"
-        heading: "Für Menschen, die schneller denken als tippen"
-        subheading: "Wenn du dokumentierst, delegierst oder entscheidest, gibt dir Nodl die Zeit zurück, die Tippen frisst."
-        meetings:
-          title: "Meetings und Syncs"
-          body: "Entscheidungen festhalten, solange sie frisch sind — statt sie eine Stunde später aus dem Gedächtnis zu rekonstruieren."
-          outcome: "Action Items, Owner und Deadlines — schon strukturiert."
-        brain_dump:
-          title: "Brain Dumps und späte Ideen"
-          body: "Wenn der Kopf rast, ist Sprechen leichter als Tippen. Dump alles und lass Nodl sortieren."
-          outcome: "Aus Chaos werden klare Notes, mit denen du morgen loslegen kannst."
-        client_notes:
-          title: "Client Calls und Consulting"
-          body: "Bleib im Gespräch präsent. Nodl übernimmt die Dokumentation, du fokussierst dich auf die Person."
-          outcome: "Polierte Summaries senden, ohne noch eine Stunde nachzuschreiben."
-      pricing:
-        badge: "Preise"
-        heading: "Kostenlos testen, upgraden wenn es sitzt"
-        subheading: "Starte mit einem Gratis Test — klare Limits, keine Kreditkarte, genug zum Aufnehmen, Transkribieren und echte Dokumente generieren. Wenn Nodl Teil deiner Routine wird, ist Pro dafür gebaut."
-        free:
-          name: "Gratis Test"
-          price: "0 €"
-          period: "Test-Kontingent · keine Kreditkarte"
-          available_now: "Hier starten"
-          cta: "Nodl kostenlos testen"
-          login_hint: "Schon registriert?"
-          login_link: "Anmelden"
-          limits_heading: "Das ist enthalten"
-          limit_recordings: "Bis zu %{limit} Recordings insgesamt"
-          limit_formats: "Bis zu %{limit} Formate (inkl. Standard)"
-          limit_duration:
-            one: "Bis zu %{count} Stunde pro Recording"
-            other: "Bis zu %{count} Stunden pro Recording"
-          limit_duration_short:
-            one: "bis zu %{count} Stunde"
-            other: "bis zu %{count} Stunden"
-          feature_1: "Kompletter Flow — aufnehmen, transkribieren, Dokumente generieren"
-          feature_2: "Live-Transkript-Vorschau während du sprichst"
-          feature_3: "Built-in- und Custom-Formate"
-          feature_4: "Privater Workspace für deine Test-Recordings"
-        paid_coming_soon:
-          badge: "Coming soon"
-          title: "Pro"
-          body: "Für Meetings, Client Calls und Brain Dumps jede Woche — höhere Limits, schnellere Verarbeitung und Raum zum Wachsen."
-          feature_1: "Erweitertes monatliches Recording-Kontingent"
-          feature_2: "Priority Processing"
-          feature_3: "Premium-Formate und Team-Features"
-      faq:
-        badge: "FAQ"
-        heading: "Fragen vor dem Start"
-        subheading: "Klare Antworten, damit du in unter einer Minute entscheiden kannst."
-        q1: "Kann ich Nodl testen, bevor ich zahle?"
-        a1: "Ja. Erstelle einen Account ohne Kreditkarte und nutze dein Test-Kontingent für den kompletten Flow — aufnehmen, transkribieren, Dokumente generieren. Die Limits stehen in der Preis-Karte oben; regelmäßiger Daily Use ist Sache von Pro."
-        q2: "Was kann ich aus einem Recording machen?"
-        a2: "Wähle ein Format wie Meeting Notes, Task List oder Client Summary. Nodl generiert ein strukturiertes Dokument zum Review und Download."
-        q3: "Muss ich etwas installieren?"
-        a3: "Nein. Nodl läuft im Browser. Aufnehmen, hochladen und Dokumente generieren — auf jedem modernen Gerät mit Mikrofon."
-        q4: "Sind meine Daten privat?"
-        a4: "Recordings, Transkripte und Dokumente bleiben in deinem Workspace. Nodl ist für Professionals gebaut, die sensible Gespräche nicht leaken können."
-        q5: "Welche Limits hat der Gratis Test?"
-        a5: "Der Gratis Test umfasst bis zu %{recordings} Recordings insgesamt, bis zu %{formats} Formate in deinem Workspace (inkl. Standard) und bis zu %{duration} pro Recording. Genug, um den kompletten Flow zu testen, bevor du auf Pro upgradest."
-      final_cta:
-        heading: "Deine nächste Idee ist ein Recording entfernt"
-        subheading: "Probiere dein erstes Recording heute — erlebe in Minuten, wie ein fertiges Dokument sich anfühlt."
-        cta: "Kostenlos starten"
-        login: "Anmelden"
-    about:
-      title: "Über - Nodl"
-      meta_description: "Erfahre, was Nodl macht und wie aus Sprache strukturierte Dokumente werden."
-      heading: "Über Nodl"
-      intro: "Nodl hilft dir, gesprochene Ideen festzuhalten und daraus Meeting Notes, Zusammenfassungen und saubere Dokumente zu machen — ohne Tippen."
-      backend:
-        title: "Erfassen"
-        item_1: "Im Browser aufnehmen oder Audio hochladen"
-        item_2: "Live-Transkript-Vorschau während du sprichst"
-        item_3: "Läuft auf jedem modernen Gerät mit Mikrofon"
-        item_4: "Keine App-Installation nötig"
-      frontend:
-        title: "Transformieren"
-        item_1: "Meeting Notes, Task Lists und Client Summaries"
-        item_2: "Built-in- und Custom-Formate"
-        item_3: "Kontextbewusste Transkription mit Speaker Labels"
-        item_4: "Als Markdown downloaden, wenn du bereit bist"
-      ops:
-        title: "Vertrauen"
-        item_1: "Privater Workspace für deine Recordings"
-        item_2: "Transkripte und Dokumente bleiben deine"
-        item_3: "Gebaut für Professionals mit sensiblen Gesprächen"
-        item_4: "Sicherer Login und Workspace-Isolation"
-      version:
-        title: "Versionsinformationen"
-        current: "Aktuelle App-Version"
-        back_home: "Zurück zur Startseite"
-        try_demo: "Nodl kostenlos testen"
-      licenses:
-        title: "Open-Source-Lizenzen"
-        body: "Nodl baut auf Open-Source-Software auf. Sieh dir die Lizenzen und erforderlichen Hinweise der verwendeten Komponenten von Drittanbietern an."
-        link: "Open-Source-Lizenzen ansehen"
     licenses:
-      title: "Open-Source-Lizenzen - Nodl"
-      meta_description: "Die in Nodl enthaltene Open-Source-Software mit Urheberrechtshinweisen und Lizenztexten."
-      heading: "Open-Source-Lizenzen"
-      intro: "Nodl wird mit Open-Source-Software erstellt. Wir danken den Maintainern und Mitwirkenden der unten aufgeführten Projekte. Diese Seite gibt die Urheberrechtshinweise und Lizenztexte wieder, deren Lizenzen dies von uns verlangen."
-      scope_note: "Aufgeführt sind die als Teil von Nodl verbreiteten Komponenten von Drittanbietern — Bibliotheken, Schriftarten, Icons und Styles — gruppiert nach Lizenz. Betriebssystemkomponenten und reine Entwicklungswerkzeuge sind nicht enthalten. Eine vollständige Übersicht pflegt das Nodl-Team in der Projektdokumentation."
-      components_label: "Komponenten"
-      license_text_label: "Lizenztext"
+      title: Open-Source-Lizenzen - Nodl
+      meta_description: Die in Nodl enthaltene Open-Source-Software mit Urheberrechtshinweisen und Lizenztexten.
+      heading: Open-Source-Lizenzen
+      intro: Nodl wird mit Open-Source-Software erstellt. Wir danken den Maintainern und Mitwirkenden der unten aufgeführten Projekte. Diese Seite gibt die Urheberrechtshinweise und Lizenztexte wieder, deren Lizenzen dies von uns verlangen.
+      scope_note: Aufgeführt sind die als Teil von Nodl verbreiteten Komponenten von Drittanbietern, etwa Bibliotheken, Schriftarten, Icons und Styles, gruppiert nach Lizenz. Betriebssystemkomponenten und reine Entwicklungswerkzeuge sind nicht enthalten. Eine vollständige Übersicht pflegt das Nodl-Team in der Projektdokumentation.
+      components_label: Komponenten
+      license_text_label: Lizenztext
       back_to_about: "← Zurück zu Über uns"
-    try_now:
-      title: "Nodl ausprobieren - Demo"
-      meta_description: "Teste Nodl kostenlos — aufnehmen, transkribieren und strukturierte Dokumente generieren."
-      badge: "Kostenlos testen"
-      heading: "Nodl in Aktion"
-      subheading: "Erstelle einen Free Account und mach aus deinem ersten Recording in Minuten ein Dokument."
-      features_title: "Das kannst du ausprobieren"
-      feature_1: "Browser-Recording und Audio-Upload"
-      feature_2: "Live-Transkript während du sprichst"
-      feature_3: "Meeting Notes, Summaries und Custom-Formate"
-      feature_4: "Dokumente downloaden und teilen"
-      start_trial: "Kostenlos starten"
-      learn_more: "Mehr erfahren"
-      back_home: "← Zurück zur Startseite"
-
+    public_home:
+      title: Nodl
+      meta_description: Nodl Anwendungshülle.
+      heading: Nodl
+      body: Diese Open-Source-Anwendungshülle ist für Login und Registrierung bereit. Betreiber-spezifische öffentliche Seiten werden aus privaten Inhalten geladen, wenn sie eingebunden sind.
   sessions:
     new:
-      title: "Login - Nodl"
-      meta_description: "Melde dich bei deinem Nodl-Konto an."
-      heading: "Willkommen zurück"
-      subheading: "Melde dich bei deinem Konto an."
-      email_placeholder: "deine@email.com"
-      password_placeholder: "Passwort eingeben"
-      sign_in: "Anmelden"
-      new_to_platform: "Neu bei Nodl?"
-      create_account: "Konto erstellen"
+      title: Login - Nodl
+      meta_description: Melde dich bei deinem Nodl-Konto an.
+      heading: Willkommen zurück
+      subheading: Melde dich bei deinem Konto an.
+      email_placeholder: deine@email.com
+      password_placeholder: Passwort eingeben
+      sign_in: Anmelden
+      new_to_platform: Neu bei Nodl?
+      create_account: Konto erstellen
       aside:
-        heading: "Mach da weiter, wo du aufgehört hast"
-        body: "Melde dich an, um auf deine Recordings, Transkripte und generierten Dokumente zuzugreifen."
-        badge_1: "Live-Transkript-Vorschau"
-        badge_2: "Custom-Formate"
-        badge_3: "Privater Workspace"
-
+        heading: Mach da weiter, wo du aufgehört hast
+        body: Melde dich an, um auf deine Recordings, Transkripte und generierten Dokumente zuzugreifen.
+        badge_1: Live-Transkript-Vorschau
+        badge_2: Custom-Formate
+        badge_3: Privater Workspace
   registrations_view:
     new:
-      title: "Registrieren - Nodl"
-      meta_description: "Erstelle dein kostenloses Nodl-Konto und verwandle Sprache in strukturierte Dokumente."
+      title: Registrieren - Nodl
+      meta_description: Erstelle dein kostenloses Nodl-Konto und verwandle Sprache in strukturierte Dokumente.
       aside:
-        badge: "Willkommen"
-        heading: "Erstelle dein Konto"
-        body: "Registriere dich kostenlos und verwandle Aufnahmen in Meeting Notes, Zusammenfassungen und saubere Dokumente."
-        item_1: "Im Browser aufnehmen oder Audio hochladen"
-        item_2: "Format wählen — Meeting Notes, Task Lists und mehr"
-        item_3: "Dein Workspace hält Recordings und Dokumente privat"
-      lead: "Keine Kreditkarte nötig. Starte jetzt im Free Tier."
-      email_placeholder: "deine@email.com"
-      email_confirm_placeholder: "E-Mail bestätigen"
-      password_placeholder: "Erstelle ein starkes Passwort"
-      password_confirm_placeholder: "Passwort bestätigen"
-      create_account: "Konto erstellen"
-      already_have_account: "Hast du bereits ein Konto?"
-      sign_in: "Anmelden"
+        badge: Willkommen
+        heading: Erstelle dein Konto
+        body: Registriere dich kostenlos und verwandle Aufnahmen in Meeting Notes, Zusammenfassungen und saubere Dokumente.
+        item_1: Im Browser aufnehmen oder Audio hochladen
+        item_2: 'Format wählen: Meeting Notes, Task Lists und mehr'
+        item_3: Dein Workspace hält Recordings und Dokumente privat
+      lead: Starte jetzt im Free Tier.
+      email_placeholder: deine@email.com
+      email_confirm_placeholder: E-Mail bestätigen
+      password_placeholder: Erstelle ein starkes Passwort
+      password_confirm_placeholder: Passwort bestätigen
+      create_account: Konto erstellen
+      already_have_account: Hast du bereits ein Konto?
+      sign_in: Anmelden
       legal:
-        agree_html: "Ich habe die %{terms} und die %{privacy} gelesen und stimme ihnen zu."
-        terms: "AGB"
-        privacy: "Datenschutzerklärung"
-
+        agree_html: Ich habe die %{terms} und die %{privacy} gelesen und stimme ihnen zu.
+        terms: AGB
+        privacy: Datenschutzerklärung
   dashboard:
-    title: "Dashboard - Nodl"
-    meta_description: "Sprich einen Gedanken aus und erhalte ein sauberes, strukturiertes Dokument zurück."
+    title: Dashboard - Nodl
+    meta_description: Sprich einen Gedanken aus und erhalte ein sauberes, strukturiertes Dokument zurück.
     no_workspace:
-      heading: "Kein Workspace zugewiesen"
-      body: "Bitte eine:n Administrator:in, dich einem Workspace hinzuzufügen, um mit dem Aufnehmen zu beginnen."
-    start_heading: "Neues Dokument starten"
-    turn_recording_into: "Aufnahme umwandeln in"
+      heading: Kein Workspace zugewiesen
+      body: Bitte eine:n Administrator:in, dich einem Workspace hinzuzufügen, um mit dem Aufnehmen zu beginnen.
+    start_heading: Neues Dokument starten
+    turn_recording_into: Aufnahme umwandeln in
     default_suffix: "%{name} (Standard)"
-    record: "Aufnehmen"
-    stop: "Stopp"
-    upload_audio: "Audio hochladen"
-    create_document: "Dokument erstellen"
-    listening: "Höre zu…"
-    transcript: "Transkript"
+    record: Aufnehmen
+    stop: Stopp
+    upload_audio: Audio hochladen
+    create_document: Dokument erstellen
+    listening: Höre zu…
+    transcript: Transkript
     recorder:
-      unsupported: "Aufnahme wird in diesem Browser nicht unterstützt – nutze stattdessen den Upload."
-      start_error: "Die Aufnahme konnte nicht gestartet werden. Prüfe die Mikrofon-Berechtigungen und versuche es erneut."
-      uploading: "Dein Audio wird hochgeladen…"
-      session_error: "Die Aufnahme-Session konnte nicht erstellt werden."
-      finalize_error: "Diese Aufnahme konnte nicht abgeschlossen werden. Bitte nimm sie erneut auf."
-      preview_stopped: "Live-Vorschau gestoppt; das endgültige Transkript wird trotzdem erstellt."
-      duration_limit: "Maximale Aufnahmelänge erreicht — Aufnahme wird gespeichert."
+      unsupported: Aufnahme wird in diesem Browser nicht unterstützt – nutze stattdessen den Upload.
+      start_error: Die Aufnahme konnte nicht gestartet werden. Prüfe die Mikrofon-Berechtigungen und versuche es erneut.
+      uploading: Dein Audio wird hochgeladen…
+      session_error: Die Aufnahme-Session konnte nicht erstellt werden.
+      finalize_error: Diese Aufnahme konnte nicht abgeschlossen werden. Bitte nimm sie erneut auf.
+      preview_stopped: Live-Vorschau gestoppt; das endgültige Transkript wird trotzdem erstellt.
+      duration_limit: Maximale Aufnahmelänge erreicht, Aufnahme wird gespeichert.
     limits:
-      recordings_reached: "Du hast alle %{limit} Recordings deines Testplans verbraucht."
-      formats_reached: "Limit von %{limit} Formaten erreicht"
-    privacy_note: "Privat für deinen Workspace. Nichts wird geteilt."
-    formats: "Formate"
+      recordings_reached: Du hast alle %{limit} Recordings deines Testplans verbraucht.
+      formats_reached: Limit von %{limit} Formaten erreicht
+    privacy_note: Privat für deinen Workspace. Nichts wird geteilt.
+    formats: Formate
     new_format: "+ Neues Format"
     default_badge: "★ Standard"
-    format_actions: "Format-Aktionen"
-    edit: "Bearbeiten"
-    delete: "Löschen"
-    delete_format_confirm: "Dieses Format löschen? Das kann nicht rückgängig gemacht werden."
+    format_actions: Format-Aktionen
+    edit: Bearbeiten
+    delete: Löschen
+    delete_format_confirm: Dieses Format löschen? Das kann nicht rückgängig gemacht werden.
     activity:
-      recent: "Zuletzt"
+      recent: Zuletzt
       recordings:
         one: "%{count} Aufnahme"
         other: "%{count} Aufnahmen"
-      ready: "Bereit"
-      failed: "Fehlgeschlagen"
-      processing: "Wird verarbeitet"
-      time_ago: "vor %{time}"
-      open_recording: "Aufnahme öffnen"
-      couldnt_process_html: "Konnte nicht verarbeitet werden — %{link}"
-      view: "ansehen"
-      analyzing: "Analysiere..."
-      transcribing: "Transkribiere..."
-      structuring: "Strukturiere..."
-      empty_heading: "Noch keine Aufnahmen"
-      empty_body: "Drücke oben auf Aufnehmen, um deinen ersten Gedanken festzuhalten."
-
+      ready: Bereit
+      failed: Fehlgeschlagen
+      processing: Wird verarbeitet
+      time_ago: vor %{time}
+      open_recording: Aufnahme öffnen
+      couldnt_process_html: 'Konnte nicht verarbeitet werden: %{link}'
+      view: ansehen
+      analyzing: Analysiere...
+      transcribing: Transkribiere...
+      structuring: Strukturiere...
+      empty_heading: Noch keine Aufnahmen
+      empty_body: Drücke oben auf Aufnehmen, um deinen ersten Gedanken festzuhalten.
   recording_sessions:
     statuses:
-      pending: "Ausstehend"
-      processing: "Wird verarbeitet"
-      completed: "Abgeschlossen"
-      failed: "Fehlgeschlagen"
-      recording: "Aufnahme läuft"
+      pending: Ausstehend
+      processing: Wird verarbeitet
+      completed: Abgeschlossen
+      failed: Fehlgeschlagen
+      recording: Aufnahme läuft
     show:
-      back_to_dashboard: "Zurück zum Dashboard"
-      format: "Format: %{name}"
-      transcript: "Transkript"
-      copy: "Kopieren"
-      copy_transcript: "Transkript kopieren"
-      transcript_unavailable: "Das Transkript ist noch nicht verfügbar."
-      document: "Dokument"
-      generated_at: "Erstellt %{time}"
-      open_document: "Dokument öffnen"
-      document_not_finished: "Die Dokumenterstellung ist noch nicht abgeschlossen."
-      play_pause: "Abspielen oder pausieren"
-      volume: "Lautstärke"
+      back_to_dashboard: Zurück zum Dashboard
+      format: 'Format: %{name}'
+      transcript: Transkript
+      copy: Kopieren
+      copy_transcript: Transkript kopieren
+      transcript_unavailable: Das Transkript ist noch nicht verfügbar.
+      document: Dokument
+      generated_at: Erstellt %{time}
+      open_document: Dokument öffnen
+      document_not_finished: Die Dokumenterstellung ist noch nicht abgeschlossen.
+      play_pause: Abspielen oder pausieren
+      volume: Lautstärke
     live:
-      transcript: "Transkript"
-      preview: "Vorschau"
-      final: "Endgültig"
-      failed: "Fehlgeschlagen"
-      final_failed: "Die endgültige Transkription ist fehlgeschlagen."
-      preview_unavailable: "Die Live-Vorschau ist nicht mehr verfügbar."
-      placeholder: "Dein Live-Transkript erscheint hier, während du sprichst."
+      transcript: Transkript
+      preview: Vorschau
+      final: Endgültig
+      failed: Fehlgeschlagen
+      final_failed: Die endgültige Transkription ist fehlgeschlagen.
+      preview_unavailable: Die Live-Vorschau ist nicht mehr verfügbar.
+      placeholder: Dein Live-Transkript erscheint hier, während du sprichst.
     interactive:
       speakers:
         one: "%{count} Sprecher:in"
         other: "%{count} Sprecher:innen"
-      speaker: "Sprecher:in %{number}"
-
+      speaker: Sprecher:in %{number}
   documents:
     show:
       title: "%{title} - Nodl"
-      download: "Herunterladen"
-      pdf: "PDF"
-      docx: "Word (.docx)"
-      markdown: "Markdown"
-      show_recording: "Aufnahme anzeigen"
-      copy: "Kopieren"
-      copy_document: "Dokument kopieren"
-
+      download: Herunterladen
+      pdf: PDF
+      docx: Word (.docx)
+      markdown: Markdown
+      show_recording: Aufnahme anzeigen
+      copy: Kopieren
+      copy_document: Dokument kopieren
   transformer_profiles:
     new:
-      title: "Format erstellen - Nodl"
-      heading: "Erstelle dein eigenes Format"
-      subheading: "Erstelle ein Format für Dokumente, die du oft anfertigst, und sag NODL genau, wie du sie haben möchtest."
+      title: Format erstellen - Nodl
+      heading: Erstelle dein eigenes Format
+      subheading: Erstelle ein Format für Dokumente, die du oft anfertigst, und sag NODL genau, wie du sie haben möchtest.
     edit:
-      title: "Format bearbeiten - Nodl"
-      heading: "Format bearbeiten"
-      view: "Ansehen"
+      title: Format bearbeiten - Nodl
+      heading: Format bearbeiten
+      view: Ansehen
     show:
       title: "%{name} - Nodl"
-      default_description: "Das Standardformat deines Workspace."
-      custom_description: "Ein eigenes Format für deinen Workspace."
-      edit: "Bearbeiten"
-      delete: "Löschen"
-      delete_confirm: "Dieses Format löschen? Das kann nicht rückgängig gemacht werden."
-      guidelines: "Richtlinien"
-      guidelines_hint: "Wie NODL Dokumente in diesem Format schreibt."
-      no_guidelines: "Noch keine Richtlinien hinzugefügt."
-      examples: "Beispiele"
-      examples_hint: "Dokumente, die NODL nutzt, um deine bevorzugte Struktur und deinen Stil zu treffen."
-      preview_unavailable: "Vorschau für diese Datei nicht verfügbar."
-      no_examples: "Keine Beispieldokumente hinzugefügt."
-      back_to_dashboard: "Zurück zum Dashboard"
+      default_description: Das Standardformat deines Workspace.
+      custom_description: Ein eigenes Format für deinen Workspace.
+      edit: Bearbeiten
+      delete: Löschen
+      delete_confirm: Dieses Format löschen? Das kann nicht rückgängig gemacht werden.
+      guidelines: Richtlinien
+      guidelines_hint: Wie NODL Dokumente in diesem Format schreibt.
+      no_guidelines: Noch keine Richtlinien hinzugefügt.
+      examples: Beispiele
+      examples_hint: Dokumente, die NODL nutzt, um deine bevorzugte Struktur und deinen Stil zu treffen.
+      preview_unavailable: Vorschau für diese Datei nicht verfügbar.
+      no_examples: Keine Beispieldokumente hinzugefügt.
+      back_to_dashboard: Zurück zum Dashboard
     form:
-      errors_heading: "Bitte korrigiere Folgendes:"
-      name_label: "Formatname"
-      name_placeholder: "z. B. Meeting-Notizen"
-      guidelines_label: "Richtlinien"
-      guidelines_placeholder: "Schreibe strukturierte Meeting-Notizen mit einer kurzen Zusammenfassung, den wichtigsten Entscheidungen und einer Liste von To-dos mit Verantwortlichen."
-      examples_label: "Beispiele"
-      dropzone_primary: "Dateien hierher ziehen & ablegen"
-      dropzone_secondary: "oder klicken, um Dateien auszuwählen"
-      example_text_label: "Oder Beispieltext einfügen"
-      example_text_placeholder: "Füge den Text eines Dokuments ein, das dir gefällt."
-      save_changes: "Änderungen speichern"
-      create_format: "Format erstellen"
-      cancel: "Abbrechen"
+      errors_heading: 'Bitte korrigiere Folgendes:'
+      name_label: Formatname
+      name_placeholder: z. B. Meeting-Notizen
+      guidelines_label: Richtlinien
+      guidelines_placeholder: Schreibe strukturierte Meeting-Notizen mit einer kurzen Zusammenfassung, den wichtigsten Entscheidungen und einer Liste von To-dos mit Verantwortlichen.
+      examples_label: Beispiele
+      dropzone_primary: Dateien hierher ziehen & ablegen
+      dropzone_secondary: oder klicken, um Dateien auszuwählen
+      example_text_label: Oder Beispieltext einfügen
+      example_text_placeholder: Füge den Text eines Dokuments ein, das dir gefällt.
+      save_changes: Änderungen speichern
+      create_format: Format erstellen
+      cancel: Abbrechen
     example_file:
-      remove: "Entfernen"
-      remove_confirm: "Dieses Beispieldokument entfernen?"
-
+      remove: Entfernen
+      remove_confirm: Dieses Beispieldokument entfernen?
   payments:
     show:
-      title: "Preise - Nodl"
-      meta_description: "Nodl ist aktuell kostenlos. Paid Plans kommen bald."
-      badge: "Preise"
-      heading: "Heute kostenlos starten"
-      subheading: "Paid Plans kommen bald. Erstelle deinen Account und nutze Nodl im Free Tier — ohne Zahlung."
-      charge_note_html: "Pro-Checkout ist auf der Roadmap. Jetzt im Free Tier starten und aufnehmen — keine Zahlung nötig."
-      managed_in_stripe: "Stripe-Preis konfiguriert"
-      using_price_html: "Checkout nutzt %{code}, sobald Paid Plans live sind."
-      test_defaults: "Free Tier aktiv — aktuell kein Checkout nötig."
-      start_checkout: "Checkout testen"
-      redirect_note: "Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet."
-      test_card_html: "Testkarte: %{code}"
-      config_required: "Checkout noch nicht verfügbar"
-      config_hint: "Paid Plans sind noch nicht live. Erstelle einen Free Account auf der Startseite und leg los."
-      webhooks_title: "Für Maintainer"
-      webhooks_hint_html: "Sobald Billing aktiv ist, Stripe CLI auf %{path} mit %{secret} zeigen."
+      title: Preise - Nodl
+      meta_description: Nodl ist aktuell kostenlos. Paid Plans kommen bald.
+      badge: Preise
+      heading: Heute kostenlos starten
+      subheading: Paid Plans kommen bald. Erstelle deinen Account und nutze Nodl im Free Tier, ohne Zahlung.
+      charge_note_html: Pro-Checkout ist auf der Roadmap. Jetzt im Free Tier starten und aufnehmen, keine Zahlung nötig.
+      managed_in_stripe: Stripe-Preis konfiguriert
+      using_price_html: Checkout nutzt %{code}, sobald Paid Plans live sind.
+      test_defaults: Free Tier aktiv, aktuell kein Checkout nötig.
+      start_checkout: Checkout testen
+      redirect_note: Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet.
+      test_card_html: 'Testkarte: %{code}'
+      config_required: Checkout noch nicht verfügbar
+      config_hint: Paid Plans sind noch nicht live. Erstelle einen Free Account auf der Startseite und leg los.
+      webhooks_title: Für Maintainer
+      webhooks_hint_html: Sobald Billing aktiv ist, Stripe CLI auf %{path} mit %{secret} zeigen.
       back_home: "← Zurück zur Startseite"
     success:
-      title: "Zahlung erfolgreich"
-      badge: "Zahlung bestätigt"
-      heading: "Vielen Dank für deinen Einkauf!"
-      body_html: "Deine Zahlung für %{product} wurde erfolgreich verarbeitet."
-      session_id: "Session-ID"
-      go_to_dashboard: "Zum Dashboard"
-      back_to_payments: "Zurück zu den Zahlungen"
+      title: Zahlung erfolgreich
+      badge: Zahlung bestätigt
+      heading: Vielen Dank für deinen Einkauf!
+      body_html: Deine Zahlung für %{product} wurde erfolgreich verarbeitet.
+      session_id: Session-ID
+      go_to_dashboard: Zum Dashboard
+      back_to_payments: Zurück zu den Zahlungen
     cancel:
-      title: "Zahlung abgebrochen"
-      badge: "Checkout abgebrochen"
-      heading: "Die Zahlung wurde abgebrochen"
-      body: "Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist."
-      try_again: "Erneut versuchen"
-      review_details: "Zahlungsdetails prüfen"
-
+      title: Zahlung abgebrochen
+      badge: Checkout abgebrochen
+      heading: Die Zahlung wurde abgebrochen
+      body: Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist.
+      try_again: Erneut versuchen
+      review_details: Zahlungsdetails prüfen
   admin:
     flash:
-      invalid_role: "Ungültige Rolle ausgewählt."
-      user_created: "Nutzer erfolgreich erstellt."
-      email_updated: "E-Mail aktualisiert."
-      role_updated: "Rolle aktualisiert."
-      password_blank: "Das Passwort darf nicht leer sein."
-      password_updated: "Passwort aktualisiert."
-      temp_password_generated: "Temporäres Passwort generiert."
-      user_deactivated: "Nutzer deaktiviert."
-      user_reactivated: "Nutzer reaktiviert."
-      no_workspace: "Dieser Nutzer hat keinen Workspace."
-      usage_updated: "Nutzungslimits aktualisiert."
+      invalid_role: Ungültige Rolle ausgewählt.
+      user_created: Nutzer erfolgreich erstellt.
+      email_updated: E-Mail aktualisiert.
+      role_updated: Rolle aktualisiert.
+      password_blank: Das Passwort darf nicht leer sein.
+      password_updated: Passwort aktualisiert.
+      temp_password_generated: Temporäres Passwort generiert.
+      user_deactivated: Nutzer deaktiviert.
+      user_reactivated: Nutzer reaktiviert.
+      no_workspace: Dieser Nutzer hat keinen Workspace.
+      usage_updated: Nutzungslimits aktualisiert.
     breadcrumbs:
-      dashboard: "Dashboard"
-      admin: "Admin"
-      users: "Nutzer"
+      dashboard: Dashboard
+      admin: Admin
+      users: Nutzer
     roles:
-      admin: "Admin"
-      user: "Nutzer"
+      admin: Admin
+      user: Nutzer
     audit_actions:
-      create_user: "Nutzer erstellt"
-      update_email: "E-Mail aktualisiert"
-      update_role: "Rolle aktualisiert"
-      update_password: "Passwort aktualisiert"
-      generate_password: "Passwort generiert"
-      deactivate: "Deaktiviert"
-      reactivate: "Reaktiviert"
-      update_usage_limits: "Nutzungslimits aktualisiert"
+      create_user: Nutzer erstellt
+      update_email: E-Mail aktualisiert
+      update_role: Rolle aktualisiert
+      update_password: Passwort aktualisiert
+      generate_password: Passwort generiert
+      deactivate: Deaktiviert
+      reactivate: Reaktiviert
+      update_usage_limits: Nutzungslimits aktualisiert
     common:
-      never: "Nie"
+      never: Nie
       none: "-"
-      free: "Free"
-      inactive: "Inaktiv"
+      free: Free
+      inactive: Inaktiv
     users:
       index:
-        title: "Admin - Nutzer"
-        heading: "Nutzerübersicht"
-        subheading: "Überblick über Konten, Rollen und Workspace-Limits."
-        create_user: "Nutzer erstellen"
-        col_user: "Nutzer"
-        col_role: "Rolle"
-        col_created: "Erstellt"
-        col_last_login: "Letzter Login"
-        col_workspace: "Workspace"
-        col_plan: "Tarif"
-        col_usage: "Nutzung"
-        id: "ID %{id}"
-        scans: "Scans: %{used} / %{limit}"
-        storage: "Speicher: %{used} MB / %{limit} MB"
+        title: Admin - Nutzer
+        heading: Nutzerübersicht
+        subheading: Überblick über Konten, Rollen und Workspace-Limits.
+        create_user: Nutzer erstellen
+        col_user: Nutzer
+        col_role: Rolle
+        col_created: Erstellt
+        col_last_login: Letzter Login
+        col_workspace: Workspace
+        col_plan: Tarif
+        col_usage: Nutzung
+        id: ID %{id}
+        scans: 'Scans: %{used} / %{limit}'
+        storage: 'Speicher: %{used} MB / %{limit} MB'
       show:
-        title: "Admin - Nutzerdetails"
-        heading: "Nutzerdetails: %{email}"
-        id: "ID: %{id}"
-        account_information: "Kontoinformationen"
-        created: "Erstellt:"
-        last_login: "Letzter Login:"
-        subscription_and_usage: "Abonnement und Nutzung"
-        subscription_status: "Abonnementstatus"
-        plan_html: "Tarif: %{plan}"
-        billing_cycle_html: "Abrechnungszyklus: %{cycle}"
-        no_workspace: "Kein Workspace zugewiesen."
-        audit_events: "Letzte Audit-Ereignisse"
-        col_action: "Aktion"
-        col_timestamp: "Zeitstempel"
-        col_changes: "Änderungen"
-        col_admin: "Admin"
-        before_after: "Vorher/Nachher"
-        admin_id: "ID %{id}"
-        no_audit_events: "Noch keine Audit-Ereignisse."
+        title: Admin - Nutzerdetails
+        heading: 'Nutzerdetails: %{email}'
+        id: 'ID: %{id}'
+        account_information: Kontoinformationen
+        created: 'Erstellt:'
+        last_login: 'Letzter Login:'
+        subscription_and_usage: Abonnement und Nutzung
+        subscription_status: Abonnementstatus
+        plan_html: 'Tarif: %{plan}'
+        billing_cycle_html: 'Abrechnungszyklus: %{cycle}'
+        no_workspace: Kein Workspace zugewiesen.
+        audit_events: Letzte Audit-Ereignisse
+        col_action: Aktion
+        col_timestamp: Zeitstempel
+        col_changes: Änderungen
+        col_admin: Admin
+        before_after: Vorher/Nachher
+        admin_id: ID %{id}
+        no_audit_events: Noch keine Audit-Ereignisse.
       new:
-        title: "Admin - Nutzer erstellen"
-        create_user: "Nutzer erstellen"
-        email: "E-Mail"
-        email_placeholder: "nutzer@beispiel.com"
-        role: "Rolle"
-        password: "Passwort"
-        password_optional: "Optional"
-        password_placeholder: "Leer lassen für automatische Generierung"
+        title: Admin - Nutzer erstellen
+        create_user: Nutzer erstellen
+        email: E-Mail
+        email_placeholder: nutzer@beispiel.com
+        role: Rolle
+        password: Passwort
+        password_optional: Optional
+        password_placeholder: Leer lassen für automatische Generierung
       email_section:
-        label: "E-Mail"
-        update: "E-Mail aktualisieren"
+        label: E-Mail
+        update: E-Mail aktualisieren
       role_section:
-        label: "Rolle"
-        update: "Rolle aktualisieren"
+        label: Rolle
+        update: Rolle aktualisieren
       password_section:
-        label: "Passwort"
-        generated_label: "Generiertes Passwort"
-        generated_hint: "Kopiere es jetzt. Es wird nicht erneut angezeigt."
-        generate: "Temporäres Passwort generieren"
-        placeholder: "Neues Passwort eingeben"
-        set: "Passwort setzen"
+        label: Passwort
+        generated_label: Generiertes Passwort
+        generated_hint: Kopiere es jetzt. Es wird nicht erneut angezeigt.
+        generate: Temporäres Passwort generieren
+        placeholder: Neues Passwort eingeben
+        set: Passwort setzen
       lifecycle_section:
-        heading: "Lebenszyklus-Verwaltung"
-        deactivate: "Nutzer deaktivieren"
-        deactivate_confirm: "Bist du sicher, dass du diesen Nutzer deaktivieren möchtest?"
-        reactivate: "Nutzer reaktivieren"
+        heading: Lebenszyklus-Verwaltung
+        deactivate: Nutzer deaktivieren
+        deactivate_confirm: Bist du sicher, dass du diesen Nutzer deaktivieren möchtest?
+        reactivate: Nutzer reaktivieren
       usage_section:
-        heading: "Nutzungslimits"
-        scans: "Scans"
-        storage: "Speicher (MB)"
-        scans_limit: "Scan-Limit"
-        storage_limit: "Speicherlimit (MB)"
-        update: "Limits aktualisieren"
-        no_workspace: "Für diesen Nutzer ist kein Workspace zugewiesen."
+        heading: Nutzungslimits
+        scans: Scans
+        storage: Speicher (MB)
+        scans_limit: Scan-Limit
+        storage_limit: Speicherlimit (MB)
+        update: Limits aktualisieren
+        no_workspace: Für diesen Nutzer ist kein Workspace zugewiesen.
       create_result:
-        success: "Nutzer erfolgreich erstellt."
-        generated_password: "Generiertes Passwort:"
-        view_user: "Nutzer ansehen"
+        success: Nutzer erfolgreich erstellt.
+        generated_password: 'Generiertes Passwort:'
+        view_user: Nutzer ansehen

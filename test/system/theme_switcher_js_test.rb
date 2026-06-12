@@ -15,7 +15,7 @@ class ThemeSwitcherJsTest < ApplicationJsSystemTestCase
     stored_theme = page.evaluate_script("window.localStorage.getItem('theme_preference')")
     assert_equal changed_theme, stored_theme
 
-    visit about_path
+    visit licenses_path
     assert_equal changed_theme, page.evaluate_script("document.documentElement.getAttribute('data-theme')")
   end
 end

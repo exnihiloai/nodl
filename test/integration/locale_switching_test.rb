@@ -5,14 +5,14 @@ class LocaleSwitchingTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
     assert_select "html[lang=?]", "en"
-    assert_includes response.body, I18n.t("pages.home.hero.get_started", locale: :en)
+    assert_includes response.body, I18n.t("nav.login", locale: :en)
   end
 
   test "accept language header selects german automatically" do
     get root_path, headers: { "Accept-Language" => "de-DE,de;q=0.9,en;q=0.8" }
     assert_response :success
     assert_select "html[lang=?]", "de"
-    assert_includes response.body, I18n.t("pages.home.hero.get_started", locale: :de)
+    assert_includes response.body, I18n.t("nav.login", locale: :de)
   end
 
   test "landing page exposes a flag-free language switcher" do
@@ -30,7 +30,6 @@ class LocaleSwitchingTest < ActionDispatch::IntegrationTest
 
     get root_path
     assert_select "html[lang=?]", "de"
-    assert_includes response.body, I18n.t("pages.home.hero.get_started", locale: :de)
     assert_includes response.body, I18n.t("nav.login", locale: :de)
   end
 

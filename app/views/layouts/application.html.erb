@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>" data-theme="light">
+<html lang="<%= I18n.locale %>">
   <head>
+    <%= render "layouts/theme_boot_script" %>
     <title><%= content_for?(:title) ? yield(:title) : "Nodl" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +21,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-base-200 text-base-content min-h-screen flex flex-col" data-controller="theme bouncy">
+  <body class="bg-base-200 text-base-content min-h-screen flex flex-col" data-controller="theme bouncy reveal">
     <%= user_signed_in? ? render("shared/logged_in_nav") : render("shared/logged_out_nav") %>
 
     <main class="flex-1">
@@ -29,13 +30,30 @@
     </main>
 
     <footer class="border-t border-base-300 bg-base-100/90 backdrop-blur">
-      <div class="container mx-auto px-4 py-6">
+      <div class="container mx-auto px-4 py-6 space-y-3">
+        <% if PrivateContent.marketing? %>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/70">
+            <span class="font-medium"><%= t("footer.verticals_label") %></span>
+            <%= link_to t("footer.vertical_doctors"), for_doctors_path, class: "link link-hover" %>
+            <%= link_to t("footer.vertical_dentists"), for_dentists_path, class: "link link-hover" %>
+            <%= link_to t("footer.vertical_overthinkers"), for_overthinkers_path, class: "link link-hover" %>
+            <%= link_to t("footer.vertical_journaling"), for_journaling_path, class: "link link-hover" %>
+            <%= link_to t("footer.vertical_interviews"), for_interviews_path, class: "link link-hover" %>
+            <%= link_to t("footer.vertical_coaches"), for_coaches_path, class: "link link-hover" %>
+          </div>
+        <% end %>
         <div class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-base-content/70">
-          <div><%= t("footer.copyright", year: Time.current.year) %></div>
+          <div>
+            <% if PrivateContent.marketing? %>
+              <%= t("footer.copyright", year: Time.current.year) %>
+            <% end %>
+          </div>
           <div class="flex flex-wrap gap-4">
-            <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
-            <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
-            <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
+            <% if PrivateContent.marketing? %>
+              <%= link_to t("footer.about"), about_path, class: "link link-hover" %>
+              <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
+              <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
+            <% end %>
             <% LegalPage::FOOTER_SLUGS.each do |slug| %>
               <%= legal_page_link(slug) %>
             <% end %>

@@ -6,9 +6,9 @@ All routes are defined in [`config/routes.rb`](../config/routes.rb). The applica
 
 | Method | Path | Controller#Action | Notes |
 |---|---|---|---|
-| GET | `/` | `pages#home` | Landing page; loads current_workspace if signed in |
-| GET | `/about` | `pages#about` | Static marketing page |
-| GET | `/try-now` | `pages#try_now` | Static marketing page |
+| GET | `/` | `pages#home` | Generic app shell in OSS; private landing page when `private/views/pages/home.html.erb` is mounted |
+| GET | `/about` | `pages#about` | Private marketing page; 404 when private template is absent |
+| GET | `/try-now` | `pages#try_now` | Private marketing page; 404 when private template is absent |
 | GET | `/healthz` | `pages#healthz` | Returns `{ status: "ok" }` JSON |
 | GET | `/readyz` | `pages#readyz` | DB connectivity check; JSON or HTML partial |
 | GET | `/up` | `rails/health#show` | Rails built-in health check |

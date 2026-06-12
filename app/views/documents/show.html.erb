@@ -6,7 +6,7 @@
       <div class="space-y-3">
         <div>
           <h1 class="text-3xl font-bold"><%= @document.title %></h1>
-          <p class="text-base-content/70"><%= @document.transformer_handle.humanize %> · <%= l(@document.local_generated_at, format: :short) %></p>
+          <p class="text-base-content/70"><%= @document.transformer_handle.humanize %>, <%= l(@document.local_generated_at, format: :short) %></p>
         </div>
 
         <div class="dropdown" data-testid="download-menu">

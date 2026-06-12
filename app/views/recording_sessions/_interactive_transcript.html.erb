@@ -21,7 +21,7 @@
     </div>
   <% end %>
 
-  <%# Only the transcript paragraphs are copyable — the speaker legend above is
+  <%# Only the transcript paragraphs are copyable; the speaker legend above is
       intentionally left outside the clipboard source. %>
   <div data-clipboard-target="source">
     <% segments.chunk { |segment| segment["speaker"] }.each_with_index do |(speaker, run), run_index| %>

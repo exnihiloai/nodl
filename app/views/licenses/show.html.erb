@@ -38,6 +38,7 @@
                     <% else %>
                       <%= component.name %>
                     <% end %>
+                    <%# typography:allow: compares against the em-dash placeholder version emitted by the generated config/third_party_*.yml (see lib/tasks/licenses.rake) %>
                     <% if component.version.present? && component.version != "—" %>
                       <span class="text-base-content/50"><%= component.version %></span>
                     <% end %>

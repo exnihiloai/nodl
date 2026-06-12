@@ -25,10 +25,7 @@
                 <%= link_to truncate(session.title, length: 45), title_path, class: "block font-medium hover:underline" %>
               </div>
               <p class="mt-0.5 text-xs text-base-content/50">
-                <%= t("dashboard.activity.time_ago", time: time_ago_in_words(session.created_at)) %>
-                <% if session.completed? && session.document %>
-                  · <%= session.document.transformer_handle.humanize %>
-                <% end %>
+                <%= t("dashboard.activity.time_ago", time: time_ago_in_words(session.created_at)) %><%= ", #{session.document.transformer_handle.humanize}" if session.completed? && session.document %>
               </p>
             </div>
           </div>

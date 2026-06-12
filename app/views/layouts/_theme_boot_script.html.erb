@@ -1,0 +1,16 @@
+<%# Sync theme before first paint; mirrors theme_controller.js (theme_preference key). %>
+<%= javascript_tag(nonce: true) do %>
+  (function () {
+    var key = "theme_preference";
+    var saved = localStorage.getItem(key);
+    var theme;
+    if (saved === "light" || saved === "dark") {
+      theme = saved;
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      theme = "dark";
+    } else {
+      theme = "light";
+    }
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+<% end %>
