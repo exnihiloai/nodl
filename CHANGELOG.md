@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.15.2] - 2026-06-12
 
 ### Technical
 - **OAuth Config Alerts:** When Google sign-in fails because of configuration (for example `redirect_uri_mismatch`, `invalid_client`, `csrf_detected`, or missing `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`), operators can receive a throttled Telegram alert via the existing telemetry notifier — so misconfigured OAuth shows up before users report it.
