@@ -397,6 +397,7 @@ de:
       generated_at: Erstellt %{time}
       open_document: Dokument öffnen
       document_not_finished: Die Dokumenterstellung ist noch nicht abgeschlossen.
+      audio_actions: Aufnahme-Aktionen
       download_original_audio: Originalaufnahme herunterladen
       download_original_audio_unavailable: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
       play_pause: Abspielen oder pausieren

@@ -291,6 +291,7 @@ en:
       generated_at: Generated %{time}
       open_document: Open Document
       document_not_finished: Document generation is not finished yet.
+      audio_actions: Recording actions
       download_original_audio: Download original audio
       download_original_audio_unavailable: Original audio can be downloaded after recording and processing finish.
       play_pause: Play or pause

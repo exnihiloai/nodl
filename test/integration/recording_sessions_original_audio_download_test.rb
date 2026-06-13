@@ -101,7 +101,7 @@ class RecordingSessionsOriginalAudioDownloadTest < ActionDispatch::IntegrationTe
     assert_equal original, response.body.b
   end
 
-  test "recording session page shows disabled original audio download while processing" do
+  test "recording session page hides original audio download while processing" do
     user = create_user_with_workspace(email: "recording-download-disabled@example.test")
     recording_session = downloadable_recording_session(user: user, status: :processing)
     login(user)
@@ -109,9 +109,8 @@ class RecordingSessionsOriginalAudioDownloadTest < ActionDispatch::IntegrationTe
     get recording_session_path(recording_session)
 
     assert_response :success
-    assert_select "[data-testid='download-original-audio-disabled']", text: "Download original audio"
+    assert_select "[data-testid='audio-actions-menu']", count: 0
     assert_select "[data-testid='download-original-audio']", count: 0
-    assert_select "p", text: "Original audio can be downloaded after recording and processing finish."
   end
 
   private

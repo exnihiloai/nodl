@@ -24,24 +24,6 @@
       </div>
       <div class="flex flex-col items-start gap-2 sm:items-end">
         <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= t("recording_sessions.statuses.#{@recording_session.status}") %></span>
-        <% if @recording_session.original_audio_downloadable? %>
-          <%= link_to download_original_audio_recording_session_path(@recording_session),
-                      class: "btn btn-outline btn-sm gap-2",
-                      data: { testid: "download-original-audio" } do %>
-            <%= icon("download", class: "size-4") %>
-            <span><%= t("recording_sessions.show.download_original_audio") %></span>
-          <% end %>
-        <% elsif @recording_session.original_audio.attached? && (@recording_session.recording? || @recording_session.processing?) %>
-          <button type="button"
-                  class="btn btn-outline btn-sm gap-2"
-                  disabled
-                  data-testid="download-original-audio-disabled"
-                  title="<%= t("recording_sessions.show.download_original_audio_unavailable") %>">
-            <%= icon("download", class: "size-4") %>
-            <span><%= t("recording_sessions.show.download_original_audio") %></span>
-          </button>
-          <p class="max-w-xs text-left text-xs text-base-content/60 sm:text-right"><%= t("recording_sessions.show.download_original_audio_unavailable") %></p>
-        <% end %>
       </div>
     </div>
 
@@ -125,6 +107,26 @@
                    data-audio-player-target="volume"
                    data-action="input->audio-player#setVolume">
           </label>
+
+          <% if @recording_session.original_audio_downloadable? %>
+            <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">
+              <summary class="btn btn-ghost btn-circle btn-sm list-none text-base-content/80 hover:bg-base-200 hover:text-base-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                       data-testid="audio-actions-menu-button"
+                       aria-label="<%= t("recording_sessions.show.audio_actions") %>">
+                <%= icon("ellipsis-vertical", class: "size-5") %>
+              </summary>
+              <ul class="dropdown-content menu z-10 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                <li>
+                  <%= link_to download_original_audio_recording_session_path(@recording_session),
+                              class: "flex items-center gap-2",
+                              data: { testid: "download-original-audio" } do %>
+                    <%= icon("download", class: "size-4") %>
+                    <span><%= t("recording_sessions.show.download_original_audio") %></span>
+                  <% end %>
+                </li>
+              </ul>
+            </details>
+          <% end %>
         </div>
       </section>
     <% end %>
