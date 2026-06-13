@@ -752,7 +752,7 @@ groups:
     copyright: Copyright (c) NARUSE, Yui
     url: https://github.com/ruby/net-http
   - name: net-imap
-    version: 0.6.4
+    version: 0.6.4.1
     copyright: Copyright (c) Yukihiro Matsumoto and contributors
     url: https://github.com/ruby/net-imap
   - name: net-pop

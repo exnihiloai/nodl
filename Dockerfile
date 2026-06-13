@@ -75,7 +75,7 @@ RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
 
 # Remove stale, vulnerable Ruby default-gem copies that linger on disk even
-# though the app loads patched versions from the bundle (net-imap 0.6.4,
+# though the app loads patched versions from the bundle (net-imap >= 0.6.4.1,
 # erb 6.0.4). Done as root before dropping privileges.
 RUN rm -f /usr/local/lib/ruby/gems/*/specifications/net-imap-0.4.21.gemspec \
           /usr/local/lib/ruby/gems/*/specifications/default/erb-*.gemspec

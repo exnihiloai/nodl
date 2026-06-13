@@ -6,6 +6,8 @@ gem "rails", "~> 8.1.2"
 gem "propshaft"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
+# Transitive via mail; pin for CVE-2026-47240/47241/47242 (bundler-audit).
+gem "net-imap", ">= 0.6.4.1"
 # Catch unsafe migrations (locking/blocking operations) at db:migrate time.
 gem "strong_migrations", "~> 2.8"
 # Use the Puma web server [https://github.com/puma/puma]
