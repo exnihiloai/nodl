@@ -1,4 +1,6 @@
 class RecordingSessionsController < ApplicationController
+  include ActiveStorage::Streaming
+
   before_action :authenticate_user!
   before_action :require_workspace!
 
@@ -46,6 +48,15 @@ class RecordingSessionsController < ApplicationController
     end
   end
 
+  def download_original_audio
+    recording_session = current_workspace.recording_sessions.includes(original_audio_attachment: :blob).find(params[:id])
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless recording_session.original_audio.attached?
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_not_ready") unless recording_session.original_audio_downloadable?
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless original_audio_stored?(recording_session)
+
+    stream_original_audio(recording_session)
+  end
+
   private
 
   def recording_session_params
@@ -59,6 +70,27 @@ class RecordingSessionsController < ApplicationController
 
   def microphone_recording_start?
     recording_session_params[:source_kind] == "microphone" && !recording_session_params[:original_audio].present?
+  end
+
+  def original_audio_stored?(recording_session)
+    blob = recording_session.original_audio.blob
+    blob.service.exist?(blob.key)
+  rescue ActiveStorage::FileNotFoundError
+    false
+  end
+
+  def stream_original_audio(recording_session)
+    blob = recording_session.original_audio.blob
+    response.headers["Accept-Ranges"] = "bytes"
+    response.headers["Content-Length"] = blob.byte_size.to_s
+
+    send_stream(
+      filename: recording_session.original_audio_download_filename,
+      disposition: "attachment",
+      type: blob.content_type
+    ) do |stream|
+      blob.download { |chunk| stream.write(chunk) }
+    end
   end
 
   def recording_session_payload(recording_session)

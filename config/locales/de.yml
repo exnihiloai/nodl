@@ -239,6 +239,8 @@ de:
     recording_sessions:
       created: Aufnahme-Session erstellt. Die Verarbeitung hat begonnen.
       not_ready_to_finalize: Die Aufnahme-Session ist noch nicht bereit zum Abschließen.
+      original_audio_not_ready: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
+      original_audio_unavailable: Die Originalaufnahme ist für diese Aufnahme nicht verfügbar.
     transformer_profiles:
       created: Format „%{name}" erstellt.
       updated: Format „%{name}" aktualisiert.
@@ -395,6 +397,8 @@ de:
       generated_at: Erstellt %{time}
       open_document: Dokument öffnen
       document_not_finished: Die Dokumenterstellung ist noch nicht abgeschlossen.
+      download_original_audio: Originalaufnahme herunterladen
+      download_original_audio_unavailable: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
       play_pause: Abspielen oder pausieren
       volume: Lautstärke
     live:

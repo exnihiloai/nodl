@@ -179,6 +179,7 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_select "[data-audio-player-target='cue'][data-color]", count: 0
     # Waveform peaks are embedded so the client draws instantly (no audio download).
     assert_select "[data-controller='audio-player'][data-audio-player-peaks-value*='1.0']"
+    assert_select "[data-testid='download-original-audio']", text: "Download original audio"
   end
 
   test "multi-speaker transcript shows speaker count and per-speaker colors" do
