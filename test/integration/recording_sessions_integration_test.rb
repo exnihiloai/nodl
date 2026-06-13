@@ -173,12 +173,19 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-controller='audio-player']"
     assert_select "[data-testid='audio-player'] audio[data-audio-player-target='audio']"
+    assert_select "[data-audio-player-target='volume'].range-primary"
     assert_select "[data-audio-player-target='cue']", count: 2
     assert_select "[data-audio-player-target='cue'][data-start='0.0']", text: "Hallo Welt."
     # Single speaker: no speaker-count legend, no per-cue color.
     assert_select "[data-audio-player-target='cue'][data-color]", count: 0
     # Waveform peaks are embedded so the client draws instantly (no audio download).
     assert_select "[data-controller='audio-player'][data-audio-player-peaks-value*='1.0']"
+    assert_select "[data-testid='audio-actions-menu']"
+    assert_select "[data-testid='audio-actions-menu-button'].btn-ghost.text-primary\\/70"
+    assert_select "[data-testid='audio-actions-menu-button'] svg"
+    assert_select "[data-testid='audio-actions-menu-button'] svg circle[cx='5'][cy='12']"
+    assert_select "[data-testid='audio-actions-menu-button'] svg circle[cx='19'][cy='12']"
+    assert_select "[data-testid='download-original-audio']", text: "Download original audio"
   end
 
   test "multi-speaker transcript shows speaker count and per-speaker colors" do

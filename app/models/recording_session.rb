@@ -16,6 +16,18 @@ class RecordingSession < ApplicationRecord
     video/mp4
     video/webm
   ].freeze
+  ORIGINAL_AUDIO_DOWNLOAD_EXTENSIONS = {
+    "audio/aac" => ".aac",
+    "audio/flac" => ".flac",
+    "audio/mpeg" => ".mp3",
+    "audio/mp3" => ".mp3",
+    "audio/mp4" => ".m4a",
+    "audio/ogg" => ".ogg",
+    "audio/wav" => ".wav",
+    "audio/webm" => ".webm",
+    "video/mp4" => ".m4a",
+    "video/webm" => ".webm"
+  }.freeze
 
   belongs_to :workspace
   belongs_to :creator, class_name: "User"
@@ -117,6 +129,17 @@ class RecordingSession < ApplicationRecord
     normalized_audio.attached? ? normalized_audio : original_audio
   end
 
+  def original_audio_downloadable?
+    original_audio.attached? && !recording? && !processing?
+  end
+
+  def original_audio_download_filename
+    original_filename = sanitized_original_audio_filename
+    return original_filename if original_filename.present?
+
+    "#{original_audio_download_basename}-#{original_audio_download_timestamp}#{original_audio_download_extension}"
+  end
+
   def default_title?
     title == DEFAULT_TITLE
   end
@@ -173,6 +196,36 @@ class RecordingSession < ApplicationRecord
 
   def assign_default_title
     self.title = DEFAULT_TITLE if title.blank?
+  end
+
+  def sanitized_original_audio_filename
+    return unless original_audio.attached?
+
+    filename = original_audio.filename.to_s.tr("\\", "/").split("/").last.to_s
+    extension = File.extname(filename).downcase.gsub(/[^.a-z0-9]/, "")
+    basename = File.basename(filename, ".*").parameterize
+    return if basename.blank?
+
+    "#{basename}#{extension.presence || original_audio_download_extension}"
+  end
+
+  def original_audio_download_basename
+    title.to_s.parameterize.presence || "recording"
+  end
+
+  def original_audio_download_timestamp
+    timestamp = local_created_at || created_at || Time.current
+    timestamp.strftime("%Y%m%d-%H%M")
+  end
+
+  def original_audio_download_extension
+    return ".audio" unless original_audio.attached?
+
+    filename_extension = original_audio.filename.extension_with_delimiter.to_s.downcase
+    return filename_extension if filename_extension.match?(/\A\.[a-z0-9]+\z/)
+
+    content_type = original_audio.blob.content_type.to_s.split(";").first
+    ORIGINAL_AUDIO_DOWNLOAD_EXTENSIONS.fetch(content_type, ".audio")
   end
 
   def original_audio_is_supported

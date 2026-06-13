@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2026-06-14
+
+### Added
+- **Download Original Audio:** You can now download the original audio file from a completed recording session — useful if you want to keep or edit the raw recording outside Nodl. Open the menu (⋯) on the audio player and choose “Download original audio”.
+
+### Changed
+- **Recording Session Player:** The volume control and audio actions menu now use clearer primary-color styling, so playback controls and the download option are easier to spot at a glance.
+
 ## [0.16.0] - 2026-06-13
 
 ### Changed

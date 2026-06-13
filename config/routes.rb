@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#show"
   resources :recording_sessions, only: %i[create show] do
     post :finalize, on: :member
+    get :download_original_audio, on: :member
   end
   resources :documents, only: %i[show] do
     get :download, on: :member

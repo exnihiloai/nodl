@@ -229,4 +229,35 @@ class RecordingSessionTest < ActiveSupport::TestCase
     assert_nil recording_session.time_zone, "unknown zones are normalized away"
     assert_equal recording_session.created_at, recording_session.local_created_at
   end
+
+  test "original audio download filename preserves and sanitizes the attachment filename" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Client Call",
+      transformer_handle: "default"
+    )
+    attach_sample_audio(recording_session, filename: "../Client Call?.MP3")
+
+    assert_equal "client-call.mp3", recording_session.original_audio_download_filename
+  end
+
+  test "original audio download filename falls back to recording title and timestamp" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.build(
+      creator: user,
+      title: "Strategy Review",
+      transformer_handle: "default",
+      time_zone: "Europe/Vienna"
+    )
+    recording_session.original_audio.attach(
+      io: StringIO.new("webm"),
+      filename: "???",
+      content_type: "audio/webm"
+    )
+    recording_session.save!
+    recording_session.update_column(:created_at, Time.utc(2026, 6, 7, 8, 15))
+
+    assert_equal "strategy-review-20260607-1015.webm", recording_session.reload.original_audio_download_filename
+  end
 end
