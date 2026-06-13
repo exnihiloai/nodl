@@ -100,20 +100,20 @@
             </div>
           </div>
 
-          <label class="flex shrink-0 items-center gap-2 text-base-content/60" aria-label="<%= t("recording_sessions.show.volume") %>">
+          <label class="flex shrink-0 items-center gap-2 text-primary/70" aria-label="<%= t("recording_sessions.show.volume") %>">
             <%= icon("volume-2", class: "size-4") %>
             <input type="range" min="0" max="1" step="0.01" value="1"
-                   class="range range-xs w-24"
+                   class="range range-primary range-xs w-24"
                    data-audio-player-target="volume"
                    data-action="input->audio-player#setVolume">
           </label>
 
           <% if @recording_session.original_audio_downloadable? %>
             <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">
-              <summary class="btn btn-ghost btn-circle btn-sm list-none text-base-content/80 hover:bg-base-200 hover:text-base-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                        data-testid="audio-actions-menu-button"
                        aria-label="<%= t("recording_sessions.show.audio_actions") %>">
-                <%= icon("ellipsis-vertical", class: "size-5") %>
+                <%= icon("ellipsis", class: "size-5") %>
               </summary>
               <ul class="dropdown-content menu z-10 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-1 shadow">
                 <li>
