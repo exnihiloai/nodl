@@ -60,3 +60,4 @@ config/credentials/*.key
 /vendor/*
 !/vendor/.keep
 .claude/*
+.codex/*
