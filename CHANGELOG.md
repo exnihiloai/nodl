@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-06-14
+
+### Added
+- **Tamper-Evident Integrity Proof:** When enabled for your account by an administrator, Nodl seals each completed recording with a SHA-256 fingerprint and an independent RFC 3161 trusted timestamp. On the recording session page, an expandable integrity panel shows whether the original audio is sealed, when the timestamp was issued, and — when ready — lets you download a ZIP archive containing the original audio and a verification certificate you can check outside Nodl.
+
+- **Integrity Proof Help Page:** A new help page at `/help/integrity-proof` (English and German) explains what the integrity certificate proves, what the archive contains, and how to verify a recording independently.
+
+- **Admin: Integrity Sealing Control:** Administrators can enable or disable integrity sealing for individual users from the admin user detail page.
+
+### Changed
+- **Dashboard Recording List:** Microphone captures still in progress no longer appear on the dashboard and no longer count toward your workspace recording limit until you finish recording — so phantom or abandoned sessions cannot crowd out real ones.
+
+### Fixed
+- **Stuck Recording Rows After Mic Permission Denied:** Fixed an issue where denying microphone access could leave a recording session stuck at "Structuring… 99%" on the dashboard forever, consuming a recording slot. Nodl now requests microphone permission before creating the session, and automatically removes captures abandoned for more than two hours.
+
 ## [0.17.1] - 2026-06-14
 
 ### Security
