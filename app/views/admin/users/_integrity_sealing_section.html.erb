@@ -1,0 +1,21 @@
+<div id="integrity_sealing_section" class="mt-6 pt-4 border-t">
+  <h3 class="font-semibold"><%= t("admin.users.integrity_sealing_section.heading") %></h3>
+  <p class="mt-1 text-sm text-base-content/70"><%= t("admin.users.integrity_sealing_section.help") %></p>
+
+  <% if notice.present? %>
+    <div class="alert alert-success mt-2"><span><%= notice %></span></div>
+  <% elsif error.present? %>
+    <div class="alert alert-error mt-2"><span><%= error %></span></div>
+  <% end %>
+
+  <%= form_with url: update_integrity_sealing_admin_user_path(managed_user), method: :patch, class: "mt-3" do |f| %>
+    <label class="label cursor-pointer justify-start gap-3">
+      <%= f.check_box :integrity_sealing_enabled,
+                      { checked: managed_user.integrity_sealing_enabled?, class: "toggle toggle-primary" },
+                      "1",
+                      "0" %>
+      <span class="label-text"><%= t("admin.users.integrity_sealing_section.label") %></span>
+    </label>
+    <%= f.submit t("admin.users.integrity_sealing_section.update"), class: "btn btn-sm mt-2" %>
+  <% end %>
+</div>

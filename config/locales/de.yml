@@ -239,6 +239,7 @@ de:
     recording_sessions:
       created: Aufnahme-Session erstellt. Die Verarbeitung hat begonnen.
       not_ready_to_finalize: Die Aufnahme-Session ist noch nicht bereit zum Abschließen.
+      integrity_archive_unavailable: Das Integritätsarchiv ist für diese Aufnahme nicht verfügbar.
       original_audio_not_ready: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
       original_audio_unavailable: Die Originalaufnahme ist für diese Aufnahme nicht verfügbar.
     transformer_profiles:
@@ -274,6 +275,86 @@ de:
       show: Passwort anzeigen
       hide: Passwort verbergen
   pages:
+    integrity_proof:
+      title: Integritätsnachweis - Nodl
+      meta_description: Wie Nodl Originalaufnahmen mit Fingerabdruck und vertrauenswürdigem Zeitstempel absichert.
+      heading: Integritätsnachweis für Aufnahmen
+      intro: Ein Integritätsnachweis hilft dir zu zeigen, dass eine Originalaufnahme zu einem bestimmten Zeitpunkt existiert hat und seitdem nicht verändert wurde.
+      back_link: Zurück
+      proof_summary:
+        heading: Das beweist Nodl
+        unchanged:
+          title: Die Datei wurde seit der Aufnahme nicht verändert
+          body: Nodl speichert einen digitalen Fingerabdruck der Originaldatei. Jede Änderung würde sofort auffallen.
+        exists_since:
+          title: Die Aufnahme existiert seit dem Zeitstempel-Datum unverändert
+          body: Ein unabhängiger Dienst bestätigt den Zeitpunkt. Das Datum steht im Zertifikat deines Integritätsarchivs.
+      disclaimer:
+        heading: Wichtig zu wissen
+        body: Der Nachweis ist ein technischer Integritätsnachweis, keine Rechtsberatung und keine Garantie für einen bestimmten Streitfall.
+      sections:
+        what:
+          heading: Was das ist
+          body: Wenn diese Funktion für dein Konto aktiviert ist, erstellt Nodl für neue Aufnahmen ein manipulationssicheres Archiv. Das Archiv enthält die Originalaufnahme und eine kleine Zertifikatsdatei mit den Angaben, die später zur Prüfung nötig sind.
+        how:
+          heading: So funktioniert es
+          step_1: Nodl berechnet einen digitalen Fingerabdruck der Originalaufnahme. Schon eine winzige Änderung würde einen anderen Fingerabdruck erzeugen.
+          step_2: Nodl sendet nur diesen Fingerabdruck an einen unabhängigen vertrauenswürdigen Zeitstempel-Service. Die Aufnahme selbst bleibt in Nodl.
+          step_3: Der Zeitstempel-Service signiert den Fingerabdruck und gibt einen Nachweis zurück, der zur Aufnahme gespeichert wird.
+        archive:
+          heading: Was im Archiv enthalten ist
+          body: Das ZIP-Archiv enthält die Originalaufnahme und ein Integritätszertifikat im JSON-Format. Das Zertifikat enthält Fingerabdruck, Zeitstempel-Service, signierten Nachweis und ob die beigelegte Aufnahme noch zum gespeicherten Fingerabdruck passt.
+        verify:
+          heading: Wie geprüft werden kann
+          body: Du kannst den Nachweis unabhängig von Nodl prüfen, mit der Audiodatei und dem JSON-Zertifikat aus dem Integritätsarchiv. Die Schritte unten richten sich an technisch versierte Prüferinnen und Prüfer.
+        technical:
+          heading: Technische Prüfung Schritt für Schritt
+          intro: "Das Integritätsarchiv (ZIP) enthält die Original-Audiodatei und die Datei integrity-certificate.json. Zusammen erlauben sie zwei Prüfungen: ob die Datei unverändert ist und ob ein unabhängiger Dienst den Fingerabdruck zu einem bestimmten Zeitpunkt bestätigt hat."
+          audience_callout:
+            heading: Für technisch versierte Nutzer
+            body: Diese Anleitung richtet sich an Personen mit technischem Hintergrund, die den Nachweis selbst prüfen und eine Beweisführung gegenüber Dritten erbringen möchten.
+          steps:
+            prepare:
+              title: Archiv entpacken
+              body: Entpacke das ZIP. Du findest die Original-Audiodatei (Dateiname steht in original_filename) und integrity-certificate.json.
+            hash:
+              title: Fingerabdruck der Audiodatei prüfen
+              body: Berechne SHA-256 über die Audiodatei und vergleiche den Wert mit integrity_hash_sha256 im Zertifikat. Stimmen beide überein, ist die Datei unverändert. Das Feld integrity_hash_matches_exported_file sollte true sein. Nodl führt diese Prüfung beim Export bereits durch. Ist es false, passt die beigelegte Datei nicht zum gespeicherten Fingerabdruck.
+            proof:
+              title: Zeitstempel-Nachweis extrahieren
+              body: integrity_tsa_proof_blob enthält den RFC-3161-Zeitstempel als Base64-Text. Dekodiere ihn in eine .tsr-Datei, um den Nachweis anzuzeigen oder kryptografisch zu prüfen.
+            timestamp:
+              title: Zeitstempel kryptografisch prüfen
+              body: Mit OpenSSL kannst du den Zeitstempel anzeigen und gegen die Zertifikatskette des in integrity_tsa_authority genannten Dienstes prüfen. Die nötigen CA-Dateien stellst du beim jeweiligen Zeitstempel-Anbieter bereit (z. B. freetsa.org).
+          fields:
+            heading: Wichtige Felder in integrity-certificate.json
+            items:
+              original_filename: Dateiname der beigelegten Original-Audiodatei im Archiv.
+              integrity_hash_sha256: SHA-256-Fingerabdruck der Originaldatei, zum direkten Vergleich mit deiner Berechnung.
+              integrity_hash_algorithm: Hash-Verfahren (derzeit sha256).
+              integrity_tsa_timestamp: Zeitpunkt des vertrauenswürdigen Zeitstempels in UTC.
+              integrity_tsa_authority: Hostname des unabhängigen Zeitstempel-Dienstes.
+              integrity_tsa_proof_blob: Base64-kodierter RFC-3161-Zeitstempel-Nachweis.
+              integrity_hash_matches_exported_file: true, wenn die beigelegte Audiodatei zum gespeicherten Fingerabdruck passt; false bei Abweichung.
+          commands:
+            heading: Beispiel-Befehle
+            note: Ersetze original-call.mp3 durch den tatsächlichen Dateinamen aus deinem Archiv. Für die kryptografische Zeitstempel-Prüfung brauchst du die CA-Zertifikate des genannten Zeitstempel-Anbieters.
+            example: |
+              # 1) Fingerabdruck der Audiodatei berechnen
+              shasum -a 256 original-call.mp3
+
+              # 2) Mit Wert aus integrity_hash_sha256 im Zertifikat vergleichen
+              jq -r '.integrity_hash_sha256' integrity-certificate.json
+
+              # 3) Zeitstempel-Nachweis aus dem Zertifikat extrahieren
+              jq -r '.integrity_tsa_proof_blob' integrity-certificate.json | base64 --decode > proof.tsr
+
+              # 4) Nachweis anzeigen
+              openssl ts -reply -in proof.tsr -text
+
+              # 5) Zeitstempel kryptografisch prüfen (CA-Dateien vom Anbieter)
+              openssl ts -verify -data original-call.mp3 -in proof.tsr -CAfile tsa-root.pem -untrusted tsa-intermediates.pem
+      back_to_dashboard: Zurück zum Dashboard
     licenses:
       title: Open-Source-Lizenzen - Nodl
       meta_description: Die in Nodl enthaltene Open-Source-Software mit Urheberrechtshinweisen und Lizenztexten.
@@ -402,6 +483,22 @@ de:
       download_original_audio_unavailable: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
       play_pause: Abspielen oder pausieren
       volume: Lautstärke
+    integrity:
+      heading: Integritätsnachweis
+      download_archive: Integritätsnachweis herunterladen
+      sealed_at: Originalaufnahme nachweislich unverändert seit %{time} UTC
+      statuses:
+        pending: Versiegelung läuft
+        sealed: Integrität gesichert
+        failed: Zeitstempel fehlgeschlagen
+        pending_config: Fingerabdruck gespeichert
+      statuses_compact:
+        sealed: Gesichert
+      descriptions:
+        pending: Nodl erstellt gerade den Integritätsnachweis für die Originalaufnahme.
+        sealed: Die Originalaufnahme hat einen vertrauenswürdigen Zeitstempel und kann mit Zertifikat exportiert werden.
+        failed: Aufnahme und Dokumenterstellung funktionieren weiter. Nodl versucht den Zeitstempel automatisch erneut.
+        pending_config: Der Fingerabdruck der Originalaufnahme ist gespeichert. Der Zeitstempel wird nachgeholt, sobald der Service konfiguriert ist.
     live:
       transcript: Transkript
       preview: Vorschau
@@ -412,9 +509,9 @@ de:
       placeholder: Dein Live-Transkript erscheint hier, während du sprichst.
     interactive:
       speakers:
-        one: "%{count} Sprecher:in"
-        other: "%{count} Sprecher:innen"
-      speaker: Sprecher:in %{number}
+        one: "%{count} Person"
+        other: "%{count} Personen"
+      speaker: Person %{number}
   documents:
     show:
       title: "%{title} - Nodl"
@@ -513,6 +610,7 @@ de:
       user_reactivated: Nutzer reaktiviert.
       no_workspace: Dieser Nutzer hat keinen Workspace.
       usage_updated: Nutzungslimits aktualisiert.
+      integrity_sealing_updated: Einstellung für Integritätsversiegelung aktualisiert.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -529,6 +627,7 @@ de:
       deactivate: Deaktiviert
       reactivate: Reaktiviert
       update_usage_limits: Nutzungslimits aktualisiert
+      update_integrity_sealing: Integritätsversiegelung aktualisiert
     common:
       never: Nie
       none: "-"
@@ -570,6 +669,11 @@ de:
         before_after: Vorher/Nachher
         admin_id: ID %{id}
         no_audit_events: Noch keine Audit-Ereignisse.
+      integrity_sealing_section:
+        heading: Manipulationssichere Audio-Archivierung
+        help: Wenn aktiviert, erhalten neue Aufnahmen dieses Nutzers einen externen vertrauenswürdigen Zeitstempel für die Originalaufnahme.
+        label: Integritätsversiegelung für neue Aufnahmen aktivieren
+        update: Integritätsversiegelung aktualisieren
       new:
         title: Admin - Nutzer erstellen
         create_user: Nutzer erstellen

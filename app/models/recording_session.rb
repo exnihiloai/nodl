@@ -32,6 +32,7 @@ class RecordingSession < ApplicationRecord
   belongs_to :workspace
   belongs_to :creator, class_name: "User"
   has_one :document, dependent: :destroy
+  has_one :integrity_record, class_name: "RecordingIntegrityRecord", dependent: :destroy
   # Pinned to the encrypted service (see config.x.attachment_service) so every
   # blob is stored encrypted at rest with its own key.
   has_one_attached :original_audio, service: Rails.application.config.x.attachment_service

@@ -16,3 +16,6 @@ production:
   purge_unattached_blobs:
     class: PurgeUnattachedBlobsJob
     schedule: every day at 3am
+  retry_recording_integrity_seals:
+    class: RetryRecordingIntegritySealsJob
+    schedule: every day at 3:30am

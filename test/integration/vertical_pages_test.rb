@@ -33,6 +33,28 @@ class VerticalPagesTest < ActionDispatch::IntegrationTest
     FileUtils.rm_rf(@private_views.dirname)
   end
 
+  test "footer vertical links remain visible for signed-out users when marketing is mounted" do
+    with_private_view_root(@private_views) do
+      get root_path
+
+      assert_response :success
+      assert_select "[data-testid='footer-verticals'] a[href=?]", for_doctors_path
+    end
+  end
+
+  test "footer vertical links are hidden for signed-in users when marketing is mounted" do
+    user = create_user_with_workspace(email: "footer-verticals@example.test")
+
+    with_private_view_root(@private_views) do
+      post login_path, params: { email: user.email, password: "Valid123" }
+      get dashboard_path
+
+      assert_response :success
+      assert_select "[data-testid='footer-verticals']", count: 0
+      assert_select "footer a[href=?]", for_doctors_path, count: 0
+    end
+  end
+
   test "oss-only landing page omits private vertical links" do
     Dir.mktmpdir do |empty_root|
       with_private_view_root(empty_root) do

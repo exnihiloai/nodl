@@ -156,6 +156,26 @@ Dashboard processing requires `MISTRAL_API_KEY` and `GEMINI_API_KEY` in the Rail
 
 Supported upload/recording inputs include MP3 plus common browser/audio formats that `ffmpeg` can decode, such as WebM/Opus, MP4/AAC, OGG, AAC, FLAC, and WAV.
 
+## Tamper-Evident Audio Archiving
+
+Administrators can enable integrity sealing per user. When enabled, every new recording with original audio receives a SHA-256 fingerprint and an RFC 3161 trusted timestamp proof for the original audio bytes. The timestamp service receives only the hash, never the audio content.
+
+Users with the feature enabled see the sealing status on the recording page. Once sealed, they can download an integrity archive ZIP containing the original audio file and `integrity-certificate.json`. The certificate includes the hash, timestamp proof metadata, and an export-time check showing whether the bundled audio still matches the stored hash.
+
+Timestamping is fail-open: recording processing, transcription, and document generation continue even if the timestamp service is unavailable. Failed or pending seals are retried by the scheduled `RetryRecordingIntegritySealsJob`.
+
+Configuration:
+
+```sh
+INTEGRITY_TSA_PROVIDER=rfc3161_freetsa
+INTEGRITY_TSA_URL=https://freetsa.org/tsr
+INTEGRITY_TSA_TIMEOUT_SECONDS=8
+INTEGRITY_TSA_RETRY_COUNT=1
+INTEGRITY_TSA_RETRY_BACKOFF_SECONDS=0.5
+```
+
+`INTEGRITY_TSA_URL` is blank by default in tests to prevent accidental external network calls. In development and production the default URL is FreeTSA unless overridden.
+
 ## Audio-To-Markdown CLI
 
 The repository also includes a console entry point for turning an `.mp3` file into a Markdown document through Voxtral transcription and Gemini document transformation.

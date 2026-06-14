@@ -38,4 +38,21 @@ module RecordingSessionsHelper
       { "start" => start.to_f, "end" => finish.to_f, "speaker" => segment["speaker"].presence }
     end
   end
+
+  def integrity_status_key(integrity_record)
+    integrity_record&.tsa_status || "pending"
+  end
+
+  def integrity_badge_class(integrity_record)
+    case integrity_status_key(integrity_record)
+    when RecordingIntegrityRecord::STATUS_SEALED
+      "badge-success"
+    when RecordingIntegrityRecord::STATUS_FAILED
+      "badge-warning"
+    when RecordingIntegrityRecord::STATUS_PENDING_CONFIG
+      "badge-info"
+    else
+      "badge-neutral"
+    end
+  end
 end

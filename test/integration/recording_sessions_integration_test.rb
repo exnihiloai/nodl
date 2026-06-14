@@ -208,7 +208,7 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     get recording_session_path(recording_session)
 
     assert_response :success
-    assert_select "[data-audio-player-target='transcript']", text: /2 speakers/
+    assert_select "[data-audio-player-target='transcript']", text: /#{Regexp.escape(I18n.t("recording_sessions.interactive.speakers", count: 2))}/
     # Each segment becomes its own paragraph because the speaker changes.
     assert_select "[data-audio-player-target='transcript'] p", count: 2
     # Cues carry their speaker color so the highlight can match it.

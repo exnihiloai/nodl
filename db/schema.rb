@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
     t.index ["workspace_id"], name: "index_memberships_on_workspace_id"
   end
 
+  create_table "recording_integrity_records", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hash_algorithm", limit: 20, null: false
+    t.string "hash_sha256", limit: 64, null: false
+    t.datetime "hashed_at", null: false
+    t.bigint "recording_session_id", null: false
+    t.string "tsa_authority", limit: 255
+    t.string "tsa_error", limit: 500
+    t.text "tsa_proof_blob"
+    t.string "tsa_proof_format", limit: 50
+    t.string "tsa_provider", limit: 80, null: false
+    t.string "tsa_status", limit: 30, null: false
+    t.datetime "tsa_timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["recording_session_id"], name: "index_recording_integrity_records_on_recording_session_id", unique: true
+    t.index ["tsa_status"], name: "index_recording_integrity_records_on_tsa_status"
+  end
+
   create_table "recording_sessions", force: :cascade do |t|
     t.float "audio_duration"
     t.datetime "created_at", null: false
@@ -133,6 +151,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.string "email", null: false
+    t.boolean "integrity_sealing_enabled", default: false, null: false
     t.datetime "last_login_at"
     t.string "name"
     t.string "password_digest", null: false
@@ -169,6 +188,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
   add_foreign_key "legal_consents", "users"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"
+  add_foreign_key "recording_integrity_records", "recording_sessions", on_delete: :cascade
   add_foreign_key "recording_sessions", "users", column: "creator_id"
   add_foreign_key "recording_sessions", "workspaces"
   add_foreign_key "transformer_profiles", "workspaces"

@@ -2,7 +2,7 @@ module Admin
   class UsersController < ApplicationController
     before_action :authenticate_user!
     before_action :require_admin!
-    before_action :set_managed_user, only: %i[show update_email update_role update_password update_usage generate_password deactivate reactivate]
+    before_action :set_managed_user, only: %i[show update_email update_role update_password update_integrity_sealing update_usage generate_password deactivate reactivate]
 
     def index
       @users = User.includes(:memberships, :workspaces).order(created_at: :desc)
@@ -111,6 +111,18 @@ module Admin
       end
     end
 
+    def update_integrity_sealing
+      enabled = ActiveModel::Type::Boolean.new.cast(params[:integrity_sealing_enabled])
+      before_state = { integrity_sealing_enabled: @managed_user.integrity_sealing_enabled }
+
+      if @managed_user.update(integrity_sealing_enabled: enabled)
+        audit!(@managed_user, "update_integrity_sealing", before_state, { integrity_sealing_enabled: @managed_user.integrity_sealing_enabled })
+        render_integrity_sealing_section(notice: t("admin.flash.integrity_sealing_updated"))
+      else
+        render_integrity_sealing_section(error: @managed_user.errors.full_messages.to_sentence, status: :unprocessable_entity)
+      end
+    end
+
     def generate_password
       generated_password = generate_complex_password
 
@@ -210,6 +222,10 @@ module Admin
       "password_section"
     end
 
+    def integrity_sealing_section_id
+      "integrity_sealing_section"
+    end
+
     def lifecycle_section_id
       "lifecycle_section"
     end
@@ -228,6 +244,10 @@ module Admin
 
     def render_password_section(notice: nil, error: nil, generated_password: nil, status: :ok)
       render_section(password_section_id, "admin/users/password_section", { managed_user: @managed_user, notice:, error:, generated_password: }, status)
+    end
+
+    def render_integrity_sealing_section(notice: nil, error: nil, status: :ok)
+      render_section(integrity_sealing_section_id, "admin/users/integrity_sealing_section", { managed_user: @managed_user, notice:, error: }, status)
     end
 
     def render_lifecycle_section(notice: nil, error: nil, status: :ok)

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "/fuer/interviews", to: "pages#for_interviews", as: :for_interviews
   get "/fuer/coaches", to: "pages#for_coaches", as: :for_coaches
   get "/licenses", to: "licenses#show", as: :licenses
+  get "/help/integrity-proof", to: "pages#integrity_proof", as: :integrity_proof_help
   get "/changelog", to: "changelogs#show", as: :changelog, format: false
   get "/changelog/:version_slug", to: "changelogs#show", as: :changelog_entry,
       format: false, constraints: { version_slug: /v[\d.]+/ }
@@ -42,6 +43,7 @@ Rails.application.routes.draw do
   resources :recording_sessions, only: %i[create show] do
     post :finalize, on: :member
     get :download_original_audio, on: :member
+    get :download_integrity_archive, on: :member
   end
   resources :documents, only: %i[show] do
     get :download, on: :member
@@ -66,6 +68,7 @@ Rails.application.routes.draw do
         patch :update_email
         patch :update_role
         patch :update_password
+        patch :update_integrity_sealing
         patch :update_usage
         post :generate_password
         post :deactivate
