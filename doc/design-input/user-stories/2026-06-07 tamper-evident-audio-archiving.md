@@ -35,9 +35,10 @@ so that I can demonstrate authenticity and integrity if the recording is ever qu
 - The plain “Download original audio” action from the prerequisite story remains available; the ZIP is the packaged proof export for verification and dispute scenarios.
 - When the feature is off for the user, no integrity UI or ZIP download is shown.
 
-### User Facing Documentation
+### Documentation
 
-- A separate help page is available in all supported languages (English/German) explaining a user what the integrity certificate is, how it works, and how it is verified / used as a proof in a friendly, non-technical language.
+- User Facing: A separate help page is available in all supported languages (English/German) explaining a user what the integrity certificate is, how it works, and how it is verified / used as a proof in a friendly, non-technical language.
+- Internal Documentation: The detailed design of this feature and its implementation is documented as a design output document in this repo.
 
 ## Out of Scope
 
