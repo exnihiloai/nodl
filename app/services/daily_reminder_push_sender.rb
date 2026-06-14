@@ -52,10 +52,11 @@ class DailyReminderPushSender
   end
 
   def payload
+    # iOS PWAs always render "from {app name}" under the title (manifest short_name).
+    # Use the reminder text as the title so users see the message, not a duplicate "Nodl".
     {
-      title: "Nodl",
+      title: @user.daily_reminder_message_text,
       options: {
-        body: @user.daily_reminder_message_text,
         data: { path: "/dashboard" }
       }
     }
