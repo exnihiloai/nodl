@@ -21,6 +21,8 @@ class PagesController < ApplicationController
 
   def about; end
 
+  def integrity_proof; end
+
   def for_doctors; end
 
   def for_dentists; end

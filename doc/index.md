@@ -45,6 +45,7 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/third-party-software.md](design-output/third-party-software.md) | Third-party software inventory, licenses, and attribution obligations (backs the `/licenses` page) |
 | [design-output/data-models.md](design-output/data-models.md) | Database schema, Active Record models, relationships |
 | [design-output/api.md](design-output/api.md) | HTTP routes, controllers, request/response contracts |
+| [design-output/quality-gates.md](design-output/quality-gates.md) | Handoff gate (`make check`), lint, migration safety, CVE scanning, coverage |
 | [design-output/modules/auth.md](design-output/modules/auth.md) | Session-based authentication and login throttling |
 | [design-output/modules/tenancy.md](design-output/modules/tenancy.md) | Workspace multi-tenancy and membership model |
 | [design-output/modules/admin.md](design-output/modules/admin.md) | Admin namespace, user management, audit events |
@@ -53,6 +54,7 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/modules/audio-pipeline.md](design-output/modules/audio-pipeline.md) | Audio-to-Markdown pipeline used by CLI and dashboard processing |
 | [design-output/modules/live-transcription.md](design-output/modules/live-transcription.md) | Realtime Voxtral live preview, batch diarization, waveform precompute, and the synced audio player |
 | [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
+| [design-output/modules/i18n.md](design-output/modules/i18n.md) | English-first i18n with German translation, locale resolution, delta tooling |
 | [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 
 ## Architecture Decision Records

@@ -91,10 +91,22 @@ export default class extends Controller {
     this.sourceKindTarget.value = "microphone"
     this.resetLivePanel()
 
+    // Acquire the microphone BEFORE creating any server-side session. If the
+    // user denies/revokes the permission, getUserMedia throws here and we bail
+    // without ever creating a row — so a denied prompt can't leave an orphaned
+    // "recording" session stuck on the dashboard.
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    } catch (_error) {
+      this.updateStatus(this.startErrorTextValue)
+      return
+    }
+
     try {
       this.liveSession = await this.createRecordingSession()
     } catch (error) {
       this.updateStatus(error.message || this.sessionErrorTextValue)
+      this.stopStream()
       return
     }
 
@@ -102,7 +114,6 @@ export default class extends Controller {
       this.subscribeToLiveStream(this.liveSession.live_stream_name)
       this.showLivePanel()
 
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.recorder = new MediaRecorder(this.stream, {
         mimeType: this.mimeOption.mimeType,
         audioBitsPerSecond: 64000

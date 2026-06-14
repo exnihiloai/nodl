@@ -165,9 +165,8 @@ class RecordingSessionTest < ActiveSupport::TestCase
         creator: user,
         title: "Recording #{index}",
         transformer_handle: "default",
-        source_kind: :microphone,
-        status: :recording
-      )
+        status: :completed
+      ) { |session| attach_sample_audio(session) }
     end
 
     recording_session = workspace.recording_sessions.build(
@@ -259,5 +258,30 @@ class RecordingSessionTest < ActiveSupport::TestCase
     recording_session.update_column(:created_at, Time.utc(2026, 6, 7, 8, 15))
 
     assert_equal "strategy-review-20260607-1015.webm", recording_session.reload.original_audio_download_filename
+  end
+
+  test "in-progress recording sessions are excluded from finalized scope and the recording limit" do
+    user = create_user_with_workspace
+    workspace = user.workspaces.first
+
+    in_progress = PlanLimits::MAX_RECORDINGS.times.map do |i|
+      workspace.recording_sessions.create!(
+        creator: user,
+        title: "Live #{i}",
+        transformer_handle: "default",
+        source_kind: :microphone,
+        status: :recording
+      )
+    end
+    completed = workspace.recording_sessions.create!(
+      creator: user,
+      title: "Finished",
+      transformer_handle: "default",
+      status: :completed
+    ) { |session| attach_sample_audio(session) }
+
+    assert_equal [ completed ], workspace.recording_sessions.finalized.to_a
+    assert_not_includes workspace.recording_sessions.finalized, in_progress.first
+    assert_not workspace.recording_limit_reached?
   end
 end

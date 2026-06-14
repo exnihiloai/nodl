@@ -1,6 +1,11 @@
 class RecordingSessionsController < ApplicationController
   include ActiveStorage::Streaming
 
+  require "json"
+  require "stringio"
+  require "zip"
+  require "nodl/integrity/recording_integrity_service"
+
   before_action :authenticate_user!
   before_action :require_workspace!
 
@@ -15,6 +20,7 @@ class RecordingSessionsController < ApplicationController
         render json: recording_session_payload(@recording_session), status: :created
       else
         ProcessRecordingSessionJob.perform_later(@recording_session.id)
+        enqueue_integrity_sealing(@recording_session)
         redirect_to dashboard_path, notice: t("flash.recording_sessions.created")
       end
     else
@@ -26,7 +32,7 @@ class RecordingSessionsController < ApplicationController
   end
 
   def show
-    @recording_session = current_workspace.recording_sessions.includes(:document, original_audio_attachment: :blob, normalized_audio_attachment: :blob).find(params[:id])
+    @recording_session = current_workspace.recording_sessions.includes(:creator, :document, :integrity_record, original_audio_attachment: :blob, normalized_audio_attachment: :blob).find(params[:id])
     @document = @recording_session.document
   end
 
@@ -42,6 +48,7 @@ class RecordingSessionsController < ApplicationController
 
     if @recording_session.save
       ProcessRecordingSessionJob.perform_later(@recording_session.id)
+      enqueue_integrity_sealing(@recording_session)
       render json: { status: @recording_session.status, url: recording_session_path(@recording_session) }, status: :accepted
     else
       render json: { error: @recording_session.errors.full_messages.to_sentence }, status: :unprocessable_entity
@@ -57,7 +64,25 @@ class RecordingSessionsController < ApplicationController
     stream_original_audio(recording_session)
   end
 
+  def download_integrity_archive
+    recording_session = current_workspace.recording_sessions.includes(:integrity_record, original_audio_attachment: :blob).find(params[:id])
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.integrity_archive_unavailable") unless recording_session.creator.integrity_sealing_enabled?
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless recording_session.original_audio.attached?
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_not_ready") unless recording_session.original_audio_downloadable?
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless original_audio_stored?(recording_session)
+    return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.integrity_archive_unavailable") unless recording_session.integrity_record&.sealed?
+
+    send_integrity_archive(recording_session)
+  end
+
   private
+
+  def enqueue_integrity_sealing(recording_session)
+    return unless recording_session.creator.integrity_sealing_enabled?
+    return unless recording_session.original_audio.attached?
+
+    SealRecordingIntegrityJob.perform_later(recording_session.id)
+  end
 
   def recording_session_params
     params.require(:recording_session).permit(:title, :source_kind, :original_audio, :time_zone)
@@ -91,6 +116,29 @@ class RecordingSessionsController < ApplicationController
     ) do |stream|
       blob.download { |chunk| stream.write(chunk) }
     end
+  end
+
+  def send_integrity_archive(recording_session)
+    audio_bytes = recording_session.original_audio.download
+    audio_filename = recording_session.original_audio_download_filename
+    certificate = Nodl::Integrity::RecordingIntegrityService.certificate_payload(recording_session, audio_bytes: audio_bytes)
+    archive = Zip::OutputStream.write_buffer(StringIO.new) do |zip|
+      zip.put_next_entry(audio_filename)
+      zip.write(audio_bytes)
+      zip.put_next_entry("integrity-certificate.json")
+      zip.write(JSON.pretty_generate(certificate))
+    end
+    archive.rewind
+
+    send_data archive.string,
+      filename: integrity_archive_filename(recording_session),
+      type: "application/zip",
+      disposition: "attachment"
+  end
+
+  def integrity_archive_filename(recording_session)
+    basename = File.basename(recording_session.original_audio_download_filename, ".*").parameterize.presence || "recording"
+    "#{basename}-integrity-archive.zip"
   end
 
   def recording_session_payload(recording_session)

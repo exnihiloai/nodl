@@ -18,6 +18,7 @@ class User < ApplicationRecord
   validates :preferred_language, inclusion: { in: %w[en de] }
   validates :password, length: { minimum: 8 }, allow_nil: true
   validates :uid, uniqueness: { scope: :provider }, allow_nil: true
+  validates :integrity_sealing_enabled, inclusion: { in: [ true, false ] }
   validate :password_complexity
 
   scope :active_only, -> { where(active: true) }

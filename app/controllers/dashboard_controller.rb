@@ -6,7 +6,7 @@ class DashboardController < ApplicationController
     if @workspace
       TransformerProfile.ensure_default_for!(@workspace)
       @transformer_profiles = @workspace.transformer_profiles.active.default_first
-      @recording_sessions = @workspace.recording_sessions.includes(:document, original_audio_attachment: :blob).recent_first.limit(8)
+      @recording_sessions = @workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(8)
       @recording_session = @workspace.recording_sessions.build(transformer_handle: default_transformer_handle)
       @recording_limit_reached = @workspace.recording_limit_reached?
       @format_limit_reached = @workspace.format_limit_reached?

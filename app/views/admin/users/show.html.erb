@@ -24,6 +24,7 @@
         <%= render "admin/users/email_section", managed_user: @managed_user, notice: nil, error: nil %>
         <%= render "admin/users/role_section", managed_user: @managed_user, notice: nil, error: nil %>
         <%= render "admin/users/password_section", managed_user: @managed_user, notice: nil, error: nil, generated_password: nil %>
+        <%= render "admin/users/integrity_sealing_section", managed_user: @managed_user, notice: nil, error: nil %>
 
         <div class="mt-4 space-y-2 text-sm">
           <p><strong><%= t("admin.users.show.created") %></strong> <%= @managed_user.created_at&.strftime("%Y-%m-%d %H:%M") || t("admin.common.none") %></p>

@@ -36,19 +36,22 @@ class TranscriptCopyTest < ActionDispatch::IntegrationTest
       { "speaker" => "speaker_2", "text" => "Speaker 2: Der Laptop ist neu.", "start" => 2.0, "end" => 4.0 }
     ])
 
+    speakers_label = I18n.t("recording_sessions.interactive.speakers", count: 2)
+    person_one_label = I18n.t("recording_sessions.interactive.speaker", number: 1)
+
     get recording_session_path(session)
 
     assert_response :success
     # The speaker legend renders on the page...
-    assert_select "section", text: /2 speakers/
-    assert_select "section", text: /Speaker 1/
+    assert_select "section", text: /#{Regexp.escape(speakers_label)}/
+    assert_select "section", text: /#{Regexp.escape(person_one_label)}/
 
     # ...but is not inside the copyable source, and the spoken text is.
     assert_select "[data-clipboard-target='source']" do |elements|
       source_html = elements.first.to_s
       assert_includes source_html, "Auf Ostersonntag."
       refute_match(/Speaker\s*1/, source_html)
-      refute_match(/2 speakers/, source_html)
+      refute_match(/#{Regexp.escape(speakers_label)}/, source_html)
     end
   end
 

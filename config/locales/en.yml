@@ -133,6 +133,7 @@ en:
     recording_sessions:
       created: Recording session created. Processing has started.
       not_ready_to_finalize: Recording session is not ready to finalize.
+      integrity_archive_unavailable: Integrity archive is not available for this recording.
       original_audio_not_ready: Original audio can be downloaded after recording and processing finish.
       original_audio_unavailable: Original audio is not available for this recording.
     transformer_profiles:
@@ -168,6 +169,86 @@ en:
       show: Show password
       hide: Hide password
   pages:
+    integrity_proof:
+      title: Integrity proof - Nodl
+      meta_description: How Nodl's integrity proof protects original recordings with a fingerprint and trusted timestamp.
+      heading: Integrity proof for recordings
+      intro: An integrity proof helps you show that an original recording existed at a specific time and has not changed since.
+      back_link: Back
+      proof_summary:
+        heading: What Nodl proves
+        unchanged:
+          title: The file has not been changed since the recording was made
+          body: Nodl stores a digital fingerprint of the original file. Any change would be detected immediately.
+        exists_since:
+          title: The recording has existed unchanged since the timestamp date
+          body: An independent service confirms the point in time. You will find the date in your integrity archive certificate.
+      disclaimer:
+        heading: Good to know
+        body: This is a technical integrity proof, not legal advice and not a guarantee for any specific dispute.
+      sections:
+        what:
+          heading: What it is
+          body: When this feature is enabled for your account, Nodl creates a tamper-evident archive for new recordings. The archive contains the original recording and a small certificate file with the details needed to check it later.
+        how:
+          heading: How it works
+          step_1: Nodl calculates a digital fingerprint of the original recording. Even a tiny change would create a different fingerprint.
+          step_2: Nodl sends only that fingerprint to an independent trusted timestamp service. The recording itself stays in Nodl.
+          step_3: The timestamp service signs the fingerprint and returns a proof that is saved with your recording.
+        archive:
+          heading: What the archive contains
+          body: The ZIP archive contains the original recording and an integrity certificate in JSON format. The certificate lists the fingerprint, timestamp service, signed proof, and whether the bundled recording still matches the stored fingerprint.
+        verify:
+          heading: How it can be checked
+          body: You can verify the proof independently of Nodl, using the audio file and the JSON certificate from the integrity archive. The steps below are for technically minded reviewers.
+        technical:
+          heading: Technical verification step by step
+          intro: "The integrity archive (ZIP) contains the original audio file and integrity-certificate.json. Together they support two checks: whether the file is unchanged and whether an independent service confirmed the fingerprint at a specific point in time."
+          audience_callout:
+            heading: For technically minded users
+            body: This guide is for people with a technical background who want to verify the proof themselves and present evidence to third parties.
+          steps:
+            prepare:
+              title: Extract the archive
+              body: Unzip the archive. You will find the original audio file (see original_filename) and integrity-certificate.json.
+            hash:
+              title: Verify the audio fingerprint
+              body: Calculate SHA-256 over the audio file and compare the result with integrity_hash_sha256 in the certificate. If they match, the file is unchanged. The field integrity_hash_matches_exported_file should be true. Nodl already performs this check when creating the export. If it is false, the bundled file does not match the stored fingerprint.
+            proof:
+              title: Extract the timestamp proof
+              body: integrity_tsa_proof_blob contains the RFC 3161 timestamp as Base64 text. Decode it into a .tsr file to inspect or cryptographically verify the proof.
+            timestamp:
+              title: Verify the timestamp cryptographically
+              body: With OpenSSL you can display the timestamp and verify it against the certificate chain of the service named in integrity_tsa_authority. Download the required CA files from that timestamp provider (for example freetsa.org).
+          fields:
+            heading: Important fields in integrity-certificate.json
+            items:
+              original_filename: Filename of the bundled original audio file in the archive.
+              integrity_hash_sha256: SHA-256 fingerprint of the original file, for direct comparison with your own calculation.
+              integrity_hash_algorithm: Hash algorithm used (currently sha256).
+              integrity_tsa_timestamp: Trusted timestamp time in UTC.
+              integrity_tsa_authority: Hostname of the independent timestamp service.
+              integrity_tsa_proof_blob: Base64-encoded RFC 3161 timestamp proof.
+              integrity_hash_matches_exported_file: true if the bundled audio matches the stored fingerprint; false if it differs.
+          commands:
+            heading: Example commands
+            note: Replace original-call.mp3 with the actual filename from your archive. Cryptographic timestamp verification requires CA certificates from the named timestamp provider.
+            example: |
+              # 1) Calculate the audio fingerprint
+              shasum -a 256 original-call.mp3
+
+              # 2) Compare with integrity_hash_sha256 from the certificate
+              jq -r '.integrity_hash_sha256' integrity-certificate.json
+
+              # 3) Extract the timestamp proof from the certificate
+              jq -r '.integrity_tsa_proof_blob' integrity-certificate.json | base64 --decode > proof.tsr
+
+              # 4) Display the proof
+              openssl ts -reply -in proof.tsr -text
+
+              # 5) Verify the timestamp cryptographically (CA files from the provider)
+              openssl ts -verify -data original-call.mp3 -in proof.tsr -CAfile tsa-root.pem -untrusted tsa-intermediates.pem
+      back_to_dashboard: Back to dashboard
     licenses:
       title: Open-source licenses - Nodl
       meta_description: The open-source software bundled with Nodl, with copyright notices and license texts.
@@ -296,6 +377,22 @@ en:
       download_original_audio_unavailable: Original audio can be downloaded after recording and processing finish.
       play_pause: Play or pause
       volume: Volume
+    integrity:
+      heading: Integrity proof
+      download_archive: Download integrity proof
+      sealed_at: Original recording verifiably unchanged since %{time} UTC
+      statuses:
+        pending: Sealing pending
+        sealed: Integrity sealed
+        failed: Timestamp failed
+        pending_config: Hash recorded
+      statuses_compact:
+        sealed: secured
+      descriptions:
+        pending: Nodl is creating the integrity proof for the original recording.
+        sealed: The original recording has a trusted timestamp and can be exported with its certificate.
+        failed: Recording and document generation still work. Nodl will retry timestamping automatically.
+        pending_config: The original recording fingerprint is saved. Timestamping will be retried when the service is configured.
     live:
       transcript: Transcript
       preview: Preview
@@ -306,9 +403,9 @@ en:
       placeholder: Your live transcript will appear here as you speak.
     interactive:
       speakers:
-        one: "%{count} speaker"
-        other: "%{count} speakers"
-      speaker: Speaker %{number}
+        one: "%{count} person"
+        other: "%{count} people"
+      speaker: Person %{number}
   documents:
     show:
       title: "%{title} - Nodl"
@@ -407,6 +504,7 @@ en:
       user_reactivated: User reactivated.
       no_workspace: This user has no workspace.
       usage_updated: Usage limits updated.
+      integrity_sealing_updated: Integrity sealing setting updated.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -423,6 +521,7 @@ en:
       deactivate: Deactivate
       reactivate: Reactivate
       update_usage_limits: Update usage limits
+      update_integrity_sealing: Update integrity sealing
     common:
       never: Never
       none: "-"
@@ -464,6 +563,11 @@ en:
         before_after: Before/After
         admin_id: ID %{id}
         no_audit_events: No audit events yet.
+      integrity_sealing_section:
+        heading: Tamper-evident audio archiving
+        help: When enabled, new recordings for this user receive an external trusted timestamp for the original audio file.
+        label: Enable integrity sealing for new recordings
+        update: Update integrity sealing
       new:
         title: Admin - Create User
         create_user: Create User

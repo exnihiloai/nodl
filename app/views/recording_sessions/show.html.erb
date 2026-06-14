@@ -22,14 +22,78 @@
         <h1 class="mt-2 text-3xl font-bold"><%= @recording_session.title %></h1>
         <p class="text-base-content/70"><%= t("recording_sessions.show.format", name: @recording_session.transformer_handle.humanize) %></p>
       </div>
-      <div class="flex flex-col items-start gap-2 sm:items-end">
-        <span class="badge badge-lg <%= @recording_session.completed? ? "badge-success" : @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= t("recording_sessions.statuses.#{@recording_session.status}") %></span>
-      </div>
+      <% unless @recording_session.completed? %>
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+          <span class="badge badge-lg <%= @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= t("recording_sessions.statuses.#{@recording_session.status}") %></span>
+        </div>
+      <% end %>
     </div>
 
     <% if @recording_session.failed? %>
       <div class="alert alert-error">
         <span><%= @recording_session.error_message %></span>
+      </div>
+    <% end %>
+
+    <% if @recording_session.creator.integrity_sealing_enabled? %>
+      <% integrity_record = @recording_session.integrity_record %>
+      <% integrity_panel_id = "integrity-status-panel-#{@recording_session.id}" %>
+      <div class="integrity-status rounded-box border border-base-300 bg-base-100 shadow-sm"
+           data-controller="disclosure"
+           data-disclosure-open-class="is-open"
+           data-testid="integrity-status">
+        <button type="button"
+                id="<%= integrity_panel_id %>-trigger"
+                class="integrity-status-trigger flex w-full cursor-pointer list-none select-none items-center gap-3 rounded-box p-4 text-left transition-colors hover:bg-base-200/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                data-disclosure-target="trigger"
+                data-action="disclosure#toggle"
+                aria-expanded="false"
+                aria-controls="<%= integrity_panel_id %>">
+          <span class="flex size-5 shrink-0 items-center justify-center" aria-hidden="true">
+            <%= icon("chevron-right", class: "integrity-status-chevron size-4 text-base-content/50") %>
+          </span>
+          <span class="flex size-5 shrink-0 items-center justify-center text-primary" aria-hidden="true">
+            <%= icon("shield-check", class: "size-5") %>
+          </span>
+          <span class="min-w-0 flex-1 font-semibold"><%= t("recording_sessions.integrity.heading") %></span>
+          <% if integrity_record&.sealed? %>
+            <span class="integrity-sealed-badge shrink-0" data-testid="integrity-status-badge">
+              <span class="integrity-sealed-badge__icon" aria-hidden="true">
+                <%= icon("check", class: "size-3") %>
+              </span>
+              <span class="integrity-sealed-badge__label"><%= t("recording_sessions.integrity.statuses_compact.sealed") %></span>
+            </span>
+          <% else %>
+            <span class="badge <%= integrity_badge_class(integrity_record) %>" data-testid="integrity-status-badge">
+              <%= t("recording_sessions.integrity.statuses.#{integrity_status_key(integrity_record)}") %>
+            </span>
+          <% end %>
+        </button>
+
+        <div id="<%= integrity_panel_id %>"
+             class="integrity-status-panel"
+             data-disclosure-target="panel"
+             inert>
+          <div class="integrity-status-panel-inner">
+            <div class="integrity-status-panel-content flex flex-col gap-3 border-t border-base-300 px-4 pb-4 pt-3 sm:flex-row sm:items-center sm:justify-between" data-testid="integrity-status-details">
+              <p class="text-sm text-base-content/70">
+                <% if integrity_record&.sealed? && integrity_record.tsa_timestamp.present? %>
+                  <%= t("recording_sessions.integrity.sealed_at", time: l(integrity_record.tsa_timestamp.utc, format: :short)) %>
+                <% else %>
+                  <%= t("recording_sessions.integrity.descriptions.#{integrity_status_key(integrity_record)}") %>
+                <% end %>
+              </p>
+              <% if integrity_record&.sealed? && @recording_session.original_audio_downloadable? %>
+                <%= link_to download_integrity_archive_recording_session_path(@recording_session),
+                            class: "btn btn-sm gap-2 shrink-0",
+                            data: { testid: "download-integrity-archive" } do %>
+                  <%= icon("download", class: "size-4") %>
+                  <span><%= t("recording_sessions.integrity.download_archive") %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     <% end %>
 
@@ -124,6 +188,16 @@
                     <span><%= t("recording_sessions.show.download_original_audio") %></span>
                   <% end %>
                 </li>
+                <% if @recording_session.creator.integrity_sealing_enabled? && @recording_session.integrity_record&.sealed? %>
+                  <li>
+                    <%= link_to download_integrity_archive_recording_session_path(@recording_session),
+                                class: "flex items-center gap-2",
+                                data: { testid: "download-integrity-archive-menu" } do %>
+                      <%= icon("shield-check", class: "size-4") %>
+                      <span><%= t("recording_sessions.integrity.download_archive") %></span>
+                    <% end %>
+                  </li>
+                <% end %>
               </ul>
             </details>
           <% end %>
