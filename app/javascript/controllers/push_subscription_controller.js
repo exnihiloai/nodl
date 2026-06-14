@@ -6,6 +6,7 @@ export default class extends Controller {
     "timeZone",
     "timeField",
     "messageField",
+    "optionsPanel",
     "error",
     "submitButton"
   ]
@@ -22,6 +23,37 @@ export default class extends Controller {
   connect() {
     this.skipPushFlow = false
     this.captureTimeZone()
+    this.toggleOptions()
+  }
+
+  toggleOptions() {
+    const enabled = this.enabledTarget.checked
+
+    if (this.hasTimeFieldTarget) {
+      this.timeFieldTarget.disabled = !enabled
+    }
+
+    if (this.hasMessageFieldTarget) {
+      this.messageFieldTarget.disabled = !enabled
+    }
+
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.disabled = !enabled
+    }
+
+    if (this.hasOptionsPanelTarget) {
+      this.optionsPanelTarget.classList.toggle("opacity-50", !enabled)
+    }
+  }
+
+  enabledChanged() {
+    this.toggleOptions()
+
+    if (!this.enabledTarget.checked) {
+      this.captureTimeZone()
+      this.skipPushFlow = true
+      this.element.requestSubmit()
+    }
   }
 
   captureTimeZone() {

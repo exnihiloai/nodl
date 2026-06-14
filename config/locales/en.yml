@@ -462,17 +462,13 @@ en:
     show:
       title: Settings - Nodl
       heading: Settings
-      subheading: Manage your account preferences.
     daily_reminder:
       heading: Daily reminder
-      help: Receive a push notification at the time you choose to keep your Nodl habit.
-      iphone_hint: On iPhone, add Nodl to your Home Screen via Safari and allow notifications when prompted.
-      enabled_label: Enable daily reminder
-      time_label: Reminder time
-      message_label: Notification text
-      message_hint: Up to 30 characters. Leave blank for the default message.
+      enabled_label: Receive daily reminder
+      time_label: Time
+      message_label: Notification
       default_message: Already nodeled today?
-      save: Save settings
+      save: Save
       permission_denied: Notifications were blocked. Allow notifications in your browser settings and try again.
       unsupported: Push notifications are not supported in this browser.
       subscribe_failed: Could not register for push notifications. Please try again.
