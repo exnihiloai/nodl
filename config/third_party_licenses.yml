@@ -523,6 +523,10 @@ groups:
     version: 1.1.11
     copyright: Copyright (c) Peter H. Boling, Aboling0
     url: https://github.com/ruby-oauth/version_gem
+  - name: web-push
+    version: 3.1.0
+    copyright: Copyright (c) 2016 Hiroyuki Sakuraba
+    url: https://github.com/pushpad/web-push
   - name: zeitwerk
     version: 2.8.2
     copyright: Copyright (c) 2019–ω Xavier Noria
@@ -767,6 +771,11 @@ groups:
     version: 0.5.1
     copyright: Copyright (c) Yukihiro Matsumoto
     url: https://github.com/ruby/net-smtp
+  - name: openssl
+    version: 4.0.2
+    copyright: Copyright (c) Martin Bosslet, SHIBATA Hiroshi, Zachary Scott, Kazuki
+      Yamaguchi
+    url: https://github.com/ruby/openssl
   - name: ostruct
     version: 0.6.3
     copyright: Copyright (c) Marc-Andre Lafortune

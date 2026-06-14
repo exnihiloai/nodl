@@ -1,0 +1,73 @@
+<% content_for :title, t("settings.show.title") %>
+
+<section class="container mx-auto px-4 py-10 max-w-2xl">
+  <header class="mb-8 space-y-2">
+    <h1 class="text-3xl font-semibold"><%= t("settings.show.heading") %></h1>
+    <p class="text-base-content/70"><%= t("settings.show.subheading") %></p>
+  </header>
+
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body space-y-6">
+      <section>
+        <h2 class="card-title text-xl"><%= t("settings.daily_reminder.heading") %></h2>
+        <p class="text-sm text-base-content/70"><%= t("settings.daily_reminder.help") %></p>
+        <p class="text-sm text-base-content/70 mt-2"><%= t("settings.daily_reminder.iphone_hint") %></p>
+      </section>
+
+      <%= form_with model: @user,
+                    url: settings_path,
+                    method: :patch,
+                    class: "space-y-4",
+                    data: {
+                      controller: "push-subscription",
+                      action: "submit->push-subscription#submit",
+                      "push-subscription-vapid-public-key-value": WebPushConfig.public_key.to_s,
+                      "push-subscription-subscribe-url-value": push_subscriptions_path,
+                      "push-subscription-permission-denied-text-value": t("settings.daily_reminder.permission_denied"),
+                      "push-subscription-unsupported-text-value": t("settings.daily_reminder.unsupported"),
+                      "push-subscription-subscribe-failed-text-value": t("settings.daily_reminder.subscribe_failed")
+                    } do |form| %>
+        <p class="hidden text-sm text-error" data-push-subscription-target="error"></p>
+
+        <%= form.hidden_field :time_zone, data: { "push-subscription-target": "timeZone" } %>
+
+        <label class="label cursor-pointer justify-start gap-3">
+          <%= form.check_box :daily_reminder_enabled,
+                             {
+                               checked: @user.daily_reminder_enabled?,
+                               class: "toggle toggle-primary",
+                               data: { "push-subscription-target": "enabled" }
+                             },
+                             "1",
+                             "0" %>
+          <span class="label-text"><%= t("settings.daily_reminder.enabled_label") %></span>
+        </label>
+
+        <div class="form-control w-full max-w-xs">
+          <%= form.label :daily_reminder_at, t("settings.daily_reminder.time_label"), class: "label" %>
+          <%= form.time_field :daily_reminder_at,
+                              value: (@user.daily_reminder_at || Time.zone.parse("21:00")).strftime("%H:%M"),
+                              step: 60,
+                              class: "input input-bordered w-full max-w-xs",
+                              data: { "push-subscription-target": "timeField" } %>
+        </div>
+
+        <div class="form-control w-full">
+          <%= form.label :daily_reminder_message, t("settings.daily_reminder.message_label"), class: "label" %>
+          <%= form.text_field :daily_reminder_message,
+                              maxlength: 30,
+                              placeholder: t("settings.daily_reminder.default_message"),
+                              class: "input input-bordered w-full",
+                              data: { "push-subscription-target": "messageField" } %>
+          <label class="label">
+            <span class="label-text-alt text-base-content/60"><%= t("settings.daily_reminder.message_hint") %></span>
+          </label>
+        </div>
+
+        <%= form.submit t("settings.daily_reminder.save"),
+                        class: "btn btn-primary",
+                        data: { "push-subscription-target": "submitButton" } %>
+      <% end %>
+    </div>
+  </div>
+</section>

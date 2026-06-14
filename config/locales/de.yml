@@ -160,6 +160,7 @@ de:
       workspace: Workspace
       current: Aktuell
       upgrade_plan: Plan upgraden
+      settings: Einstellungen
       log_out: Abmelden
   changelog:
     title: Changelog - Nodl
@@ -563,6 +564,27 @@ de:
     example_file:
       remove: Entfernen
       remove_confirm: Dieses Beispieldokument entfernen?
+  settings:
+    show:
+      title: Einstellungen - Nodl
+      heading: Einstellungen
+      subheading: Verwalte deine Kontoeinstellungen.
+    daily_reminder:
+      heading: Tägliche Erinnerung
+      help: Erhalte eine Push-Benachrichtigung zur gewählten Zeit, damit deine Nodl-Gewohnheit nicht vergessen wird.
+      iphone_hint: Auf dem iPhone Nodl in Safari über „Zum Home-Bildschirm“ hinzufügen und Benachrichtigungen erlauben.
+      enabled_label: Tägliche Erinnerung aktivieren
+      time_label: Erinnerungszeit
+      message_label: Benachrichtigungstext
+      message_hint: Maximal 30 Zeichen. Leer lassen für die Standardnachricht.
+      default_message: Heute schon genodelt?
+      save: Einstellungen speichern
+      permission_denied: Benachrichtigungen wurden blockiert. Erlaube Benachrichtigungen in den Browser-Einstellungen und versuche es erneut.
+      unsupported: Push-Benachrichtigungen werden in diesem Browser nicht unterstützt.
+      subscribe_failed: Push-Benachrichtigungen konnten nicht registriert werden. Bitte erneut versuchen.
+    flash:
+      updated: Einstellungen gespeichert.
+      invalid: Einstellungen konnten nicht gespeichert werden. Bitte Formular prüfen.
   payments:
     show:
       title: Preise - Nodl

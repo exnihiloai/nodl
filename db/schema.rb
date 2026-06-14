@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
     t.index ["workspace_id"], name: "index_memberships_on_workspace_id"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth_key", null: false
+    t.datetime "created_at", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh_key", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
   create_table "recording_integrity_records", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "hash_algorithm", limit: 20, null: false
@@ -150,6 +162,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
     t.boolean "active", default: true, null: false
     t.string "avatar_url"
     t.datetime "created_at", null: false
+    t.time "daily_reminder_at"
+    t.boolean "daily_reminder_enabled", default: false, null: false
+    t.date "daily_reminder_last_sent_on"
+    t.string "daily_reminder_message", limit: 30
     t.string "email", null: false
     t.boolean "integrity_sealing_enabled", default: false, null: false
     t.datetime "last_login_at"
@@ -158,6 +174,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
     t.string "preferred_language", default: "en", null: false
     t.string "provider"
     t.integer "role", default: 0, null: false
+    t.string "time_zone"
     t.string "uid"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -188,6 +205,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_120100) do
   add_foreign_key "legal_consents", "users"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"
+  add_foreign_key "push_subscriptions", "users", on_delete: :cascade
   add_foreign_key "recording_integrity_records", "recording_sessions", on_delete: :cascade
   add_foreign_key "recording_sessions", "users", column: "creator_id"
   add_foreign_key "recording_sessions", "workspaces"

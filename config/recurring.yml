@@ -22,3 +22,6 @@ production:
   reap_stale_recording_sessions:
     class: ReapStaleRecordingSessionsJob
     schedule: every hour at minute 42
+  dispatch_daily_reminders:
+    class: DispatchDailyRemindersJob
+    schedule: every 15 minutes

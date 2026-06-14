@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include DailyReminder
+
   has_secure_password
 
   attr_accessor :oauth_new_user
@@ -11,6 +13,7 @@ class User < ApplicationRecord
   has_many :admin_audit_events, dependent: :destroy
   has_many :legal_consents, dependent: :destroy
   has_many :acting_admin_audit_events, class_name: "AdminAuditEvent", foreign_key: :acting_admin_id, inverse_of: :acting_admin, dependent: :destroy
+  has_many :push_subscriptions, dependent: :destroy
 
   normalizes :email, with: ->(email) { email.to_s.strip.downcase }
 
