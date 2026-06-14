@@ -21,6 +21,24 @@ class DispatchDailyRemindersJobTest < ActiveJob::TestCase
     @user&.destroy
   end
 
+  test "does not enqueue when sweep runs between reminder minutes" do
+    @user.update!(daily_reminder_at: "23:34")
+    between = Time.utc(2026, 6, 14, 23, 30, 0)
+
+    assert_no_enqueued_jobs(only: SendDailyReminderPushJob) do
+      DispatchDailyRemindersJob.perform_now(now: between)
+    end
+  end
+
+  test "enqueues at exact reminder minute" do
+    @user.update!(daily_reminder_at: "23:34")
+    due_at = Time.utc(2026, 6, 14, 23, 34, 0)
+
+    assert_enqueued_with(job: SendDailyReminderPushJob, args: [ @user.id, due_at.iso8601 ]) do
+      DispatchDailyRemindersJob.perform_now(now: due_at)
+    end
+  end
+
   test "enqueues send job when reminder is due and user has not nodled today" do
     due_at = Time.utc(2026, 6, 14, 21, 0, 0)
 

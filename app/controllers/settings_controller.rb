@@ -8,6 +8,12 @@ class SettingsController < ApplicationController
   def update
     @user = current_user
 
+    if enabling_daily_reminder? && !WebPushConfig.configured?
+      flash.now[:alert] = t("settings.daily_reminder.push_not_configured")
+      render :show, status: :unprocessable_entity
+      return
+    end
+
     if @user.update(settings_params)
       redirect_to settings_path, notice: t("settings.flash.updated")
     else
@@ -33,5 +39,9 @@ class SettingsController < ApplicationController
     end
 
     permitted
+  end
+
+  def enabling_daily_reminder?
+    ActiveModel::Type::Boolean.new.cast(settings_params[:daily_reminder_enabled])
   end
 end

@@ -24,4 +24,4 @@ production:
     schedule: every hour at minute 42
   dispatch_daily_reminders:
     class: DispatchDailyRemindersJob
-    schedule: every 15 minutes
+    schedule: every minute

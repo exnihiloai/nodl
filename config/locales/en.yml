@@ -476,6 +476,7 @@ en:
       permission_denied: Notifications were blocked. Allow notifications in your browser settings and try again.
       unsupported: Push notifications are not supported in this browser.
       subscribe_failed: Could not register for push notifications. Please try again.
+      push_not_configured: Push notifications are not configured on this server yet. Please try again later.
     flash:
       updated: Settings saved.
       invalid: Settings could not be saved. Please check the form.

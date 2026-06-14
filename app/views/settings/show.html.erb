@@ -12,6 +12,11 @@
         <h2 class="card-title text-xl"><%= t("settings.daily_reminder.heading") %></h2>
         <p class="text-sm text-base-content/70"><%= t("settings.daily_reminder.help") %></p>
         <p class="text-sm text-base-content/70 mt-2"><%= t("settings.daily_reminder.iphone_hint") %></p>
+        <% unless WebPushConfig.configured? %>
+          <div class="alert alert-warning mt-4 text-sm">
+            <span><%= t("settings.daily_reminder.push_not_configured") %></span>
+          </div>
+        <% end %>
       </section>
 
       <%= form_with model: @user,
@@ -25,7 +30,8 @@
                       "push-subscription-subscribe-url-value": push_subscriptions_path,
                       "push-subscription-permission-denied-text-value": t("settings.daily_reminder.permission_denied"),
                       "push-subscription-unsupported-text-value": t("settings.daily_reminder.unsupported"),
-                      "push-subscription-subscribe-failed-text-value": t("settings.daily_reminder.subscribe_failed")
+                      "push-subscription-subscribe-failed-text-value": t("settings.daily_reminder.subscribe_failed"),
+                      "push-subscription-push-not-configured-text-value": t("settings.daily_reminder.push_not_configured")
                     } do |form| %>
         <p class="hidden text-sm text-error" data-push-subscription-target="error"></p>
 

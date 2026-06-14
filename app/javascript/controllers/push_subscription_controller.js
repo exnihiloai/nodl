@@ -15,10 +15,12 @@ export default class extends Controller {
     subscribeUrl: String,
     permissionDeniedText: String,
     unsupportedText: String,
-    subscribeFailedText: String
+    subscribeFailedText: String,
+    pushNotConfiguredText: String
   }
 
   connect() {
+    this.skipPushFlow = false
     this.captureTimeZone()
   }
 
@@ -33,7 +35,11 @@ export default class extends Controller {
     }
   }
 
-  async submit(event) {
+  submit(event) {
+    if (this.skipPushFlow) {
+      return
+    }
+
     if (!this.enabledTarget.checked) {
       return
     }
@@ -44,13 +50,76 @@ export default class extends Controller {
       return
     }
 
+    const vapidPublicKey = this.vapidPublicKeyValue?.trim()
+    if (!vapidPublicKey) {
+      event.preventDefault()
+      this.showError(this.pushNotConfiguredTextValue)
+      return
+    }
+
     event.preventDefault()
     this.clearError()
     this.setSubmitting(true)
 
+    // iOS requires Notification.requestPermission() to start synchronously inside
+    // the submit event handler; awaiting other work first breaks user activation.
+    const permissionPromise = this.requestNotificationPermission()
+
+    this.registerPushSubscription(permissionPromise, vapidPublicKey)
+  }
+
+  requestNotificationPermission() {
+    if (Notification.permission === "granted") {
+      return Promise.resolve("granted")
+    }
+
+    if (Notification.permission === "denied") {
+      return Promise.resolve("denied")
+    }
+
+    return Notification.requestPermission()
+  }
+
+  async registerPushSubscription(permissionPromise, vapidPublicKey) {
     try {
-      await this.ensurePushSubscription()
-      this.element.requestSubmit()
+      if (await this.hasRegisteredSubscription()) {
+        this.submitSettingsForm()
+        return
+      }
+
+      const permission = await permissionPromise
+      if (permission !== "granted") {
+        throw new Error(this.permissionDeniedTextValue)
+      }
+
+      const registration = await navigator.serviceWorker.register("/service-worker")
+      await navigator.serviceWorker.ready
+
+      let subscription = await registration.pushManager.getSubscription()
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey)
+        })
+      }
+
+      const response = await fetch(this.subscribeUrlValue, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken()
+        },
+        body: JSON.stringify({
+          push_subscription: this.serializeSubscription(subscription)
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(this.subscribeFailedTextValue)
+      }
+
+      this.submitSettingsForm()
     } catch (error) {
       this.showError(error.message || this.subscribeFailedTextValue)
     } finally {
@@ -58,42 +127,24 @@ export default class extends Controller {
     }
   }
 
-  pushSupported() {
-    return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window
+  submitSettingsForm() {
+    this.captureTimeZone()
+    this.skipPushFlow = true
+    this.element.requestSubmit()
   }
 
-  async ensurePushSubscription() {
-    const permission = await Notification.requestPermission()
-    if (permission !== "granted") {
-      throw new Error(this.permissionDeniedTextValue)
-    }
+  async hasRegisteredSubscription() {
+    if (Notification.permission !== "granted") return false
 
-    const registration = await navigator.serviceWorker.register("/service-worker")
-    await navigator.serviceWorker.ready
+    const registration = await navigator.serviceWorker.getRegistration("/service-worker")
+    if (!registration) return false
 
-    let subscription = await registration.pushManager.getSubscription()
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKeyValue)
-      })
-    }
+    const subscription = await registration.pushManager.getSubscription()
+    return !!subscription
+  }
 
-    const response = await fetch(this.subscribeUrlValue, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-CSRF-Token": this.csrfToken()
-      },
-      body: JSON.stringify({
-        push_subscription: this.serializeSubscription(subscription)
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(this.subscribeFailedTextValue)
-    }
+  pushSupported() {
+    return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window
   }
 
   serializeSubscription(subscription) {

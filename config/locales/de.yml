@@ -582,6 +582,7 @@ de:
       permission_denied: Benachrichtigungen wurden blockiert. Erlaube Benachrichtigungen in den Browser-Einstellungen und versuche es erneut.
       unsupported: Push-Benachrichtigungen werden in diesem Browser nicht unterstützt.
       subscribe_failed: Push-Benachrichtigungen konnten nicht registriert werden. Bitte erneut versuchen.
+      push_not_configured: Push-Benachrichtigungen sind auf diesem Server noch nicht eingerichtet. Bitte später erneut versuchen.
     flash:
       updated: Einstellungen gespeichert.
       invalid: Einstellungen konnten nicht gespeichert werden. Bitte Formular prüfen.

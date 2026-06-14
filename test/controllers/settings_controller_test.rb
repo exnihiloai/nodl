@@ -39,17 +39,19 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Time to nodl", @user.daily_reminder_message
   end
 
-  test "rejects reminder message longer than 30 characters" do
+  test "rejects enabling reminder when push is not configured" do
+    WebPushConfig.stubs(:configured?).returns(false)
+
     patch settings_path, params: {
       user: {
         daily_reminder_enabled: "1",
         daily_reminder_at: "21:00",
-        daily_reminder_message: "a" * 31,
         time_zone: "Europe/Vienna"
       }
     }
 
     assert_response :unprocessable_entity
     assert_not @user.reload.daily_reminder_enabled?
+    assert_includes response.body, I18n.t("settings.daily_reminder.push_not_configured")
   end
 end
