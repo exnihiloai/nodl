@@ -112,147 +112,17 @@ Demo users are only created in development or when `ALLOW_DEMO_SEEDS=1` is set. 
 make seed
 ```
 
-## Stripe Placeholder
+## Features
 
-The payment flow is intentionally placeholder-level. It provides a hosted Stripe Checkout redirect and webhook endpoint, but does not activate real subscriptions yet.
+Feature details live with the module documentation under `doc/design-output/`:
 
-Supported routes:
+- **Audio dashboard & pipeline** — authenticated `/dashboard` for uploading or recording audio, normalized with `ffmpeg` and turned into a Markdown document via Voxtral transcription + Gemini transformation. Requires `MISTRAL_API_KEY` and `GEMINI_API_KEY` in the container environment (set them in `.env` or `private/.env`). See [dashboard.md](doc/design-output/modules/dashboard.md) and [audio-pipeline.md](doc/design-output/modules/audio-pipeline.md).
+- **Audio-to-Markdown CLI** — the same pipeline from a console entry point (`bin/nodl run …`). See [audio-pipeline.md](doc/design-output/modules/audio-pipeline.md).
+- **Tamper-evident audio archiving** — optional per-user integrity sealing with SHA-256 + RFC 3161 trusted timestamps and a downloadable proof ZIP. See [tamper-evident-audio-archiving.md](doc/design-output/modules/tamper-evident-audio-archiving.md).
+- **Stripe checkout (placeholder)** — hosted Checkout redirect and webhook endpoint, not yet activating real subscriptions. See [payments.md](doc/design-output/modules/payments.md).
+- **Internationalization** — English-first with a complete German translation. See [i18n.md](doc/design-output/modules/i18n.md).
 
-- `GET /payments`
-- `POST /payments/checkout`
-- `GET /payments/success`
-- `GET /payments/cancel`
-- `POST /payments/webhook`
-
-Environment variables:
-
-```sh
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_ID=price_...
-STRIPE_PRODUCT_NAME="Nodl Starter Plan"
-STRIPE_DEFAULT_AMOUNT=1900
-STRIPE_CURRENCY=usd
-```
-
-`STRIPE_PRICE_ID` is optional. Without it, the checkout flow creates inline `price_data` from `STRIPE_PRODUCT_NAME`, `STRIPE_DEFAULT_AMOUNT`, and `STRIPE_CURRENCY`.
-
-## Audio Dashboard And Pipeline
-
-Authenticated users can use `/dashboard` to create audio recording sessions, either by uploading an audio file or recording from the browser microphone. Browser recordings are stored as compact browser-native audio and normalized server-side with `ffmpeg` to MP3 for processing.
-
-Each dashboard session stores:
-
-- the original uploaded or recorded audio via Active Storage;
-- a normalized MP3 copy when conversion is required;
-- the generated transcript;
-- structured transcript segments with timestamps and speaker labels when available;
-- the generated Markdown document;
-- the selected transformer handle.
-
-Processing runs asynchronously through Active Job. Transcription uses Mistral Voxtral for both live preview and the authoritative batch pass. Document transformation still uses Gemini and filesystem transformer folders.
-
-Dashboard processing requires `MISTRAL_API_KEY` and `GEMINI_API_KEY` in the Rails container environment. For local Docker development, set them in `.env` or `private/.env`, then restart the stack with `make down && make up`.
-
-Supported upload/recording inputs include MP3 plus common browser/audio formats that `ffmpeg` can decode, such as WebM/Opus, MP4/AAC, OGG, AAC, FLAC, and WAV.
-
-## Tamper-Evident Audio Archiving
-
-Administrators can enable integrity sealing per user. When enabled, every new recording with original audio receives a SHA-256 fingerprint and an RFC 3161 trusted timestamp proof for the original audio bytes. The timestamp service receives only the hash, never the audio content.
-
-Users with the feature enabled see the sealing status on the recording page. Once sealed, they can download an integrity archive ZIP containing the original audio file and `integrity-certificate.json`. The certificate includes the hash, timestamp proof metadata, and an export-time check showing whether the bundled audio still matches the stored hash.
-
-Timestamping is fail-open: recording processing, transcription, and document generation continue even if the timestamp service is unavailable. Failed or pending seals are retried by the scheduled `RetryRecordingIntegritySealsJob`.
-
-Configuration:
-
-```sh
-INTEGRITY_TSA_PROVIDER=rfc3161_freetsa
-INTEGRITY_TSA_URL=https://freetsa.org/tsr
-INTEGRITY_TSA_TIMEOUT_SECONDS=8
-INTEGRITY_TSA_RETRY_COUNT=1
-INTEGRITY_TSA_RETRY_BACKOFF_SECONDS=0.5
-```
-
-`INTEGRITY_TSA_URL` is blank by default in tests to prevent accidental external network calls. In development and production the default URL is FreeTSA unless overridden.
-
-## Audio-To-Markdown CLI
-
-The repository also includes a console entry point for turning an `.mp3` file into a Markdown document through Voxtral transcription and Gemini document transformation.
-
-Run the full pipeline inside the Docker web container:
-
-```sh
-MISTRAL_API_KEY=... GEMINI_API_KEY=... docker compose exec -e MISTRAL_API_KEY -e GEMINI_API_KEY web bin/nodl run path/to/audio.mp3 --transformer default
-```
-
-`transcribe` is accepted as an alias for the same happy-path run:
-
-```sh
-MISTRAL_API_KEY=... GEMINI_API_KEY=... docker compose exec -e MISTRAL_API_KEY -e GEMINI_API_KEY web bin/nodl transcribe path/to/audio.mp3 --transformer default
-```
-
-Required environment:
-
-```sh
-GEMINI_API_KEY=...
-MISTRAL_API_KEY=...
-```
-
-Optional model overrides:
-
-```sh
-NODL_VOXTRAL_MODEL=voxtral-mini-latest
-NODL_VOXTRAL_REALTIME_MODEL=voxtral-mini-transcribe-realtime-2602
-NODL_VOXTRAL_REALTIME_FAST_DELAY_MS=240
-NODL_VOXTRAL_REALTIME_SLOW_DELAY_MS=2400
-NODL_GEMINI_TRANSFORMER_MODEL=gemini-3.1-flash-lite
-```
-
-Transformers are local folders:
-
-```text
-transformers/
-  default/
-    instructions.md
-    templates/
-      example.md
-```
-
-Each run writes a session under `work/sessions/<run-id>/` containing `audio.mp3`, `transcript.md`, `transcript.segments.json`, `document.md`, and `metadata.json`. Dashboard processing stores the database records separately and keeps the generated `work/` directory ignored by git.
-
-## Observability
-
-OpenTelemetry export can be enabled with environment variables:
-
-```sh
-OTEL_SERVICE_NAME=nodl
-OTEL_INGEST_TOKEN=...
-OTEL_EXPORTER_OTLP_ENDPOINT=...
-OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=...
-```
-
-## Internationalization (i18n)
-
-The app is **English-first** and ships with a complete German translation.
-
-- Supported locales: `en` (source of truth) and `de`. Configured in `config/application.rb`.
-- Public app-shell translation files: `config/locales/en.yml` and `config/locales/de.yml`.
-- Operator-specific marketing translations live in `private/locales/en.yml` and `private/locales/de.yml` when mounted. Do not put landing, vertical, about, try-now, or marketing footer copy in public locale files.
-- German keeps common anglicisms (Dashboard, Login, Workspace, Checkout, Upload, Demo) and uses the informal "du".
-- Locale resolution (`ApplicationController#switch_locale`): explicit session choice → signed-in user's `preferred_language` → `Accept-Language` header → default (`en`).
-- Switching: a flag-free language switcher (globe icon + language endonyms) lives in the public nav and in the signed-in user dropdown. It posts to `PATCH /locale/:locale`, persisting the choice in the session and on the user's account.
-- JavaScript copy is localized by passing translated strings into Stimulus controllers via `data-*-value` attributes (no client-side i18n library needed).
-
-Keeping translations in sync — find and fill the **delta** (keys present in `en` but missing from a target locale):
-
-```sh
-ruby skills/i18n-translate/scripts/i18n_delta.rb        # report all locales
-ruby skills/i18n-translate/scripts/i18n_delta.rb de     # German only
-ruby skills/i18n-translate/scripts/i18n_delta.rb --emit de  # YAML skeleton to translate
-```
-
-The `i18n-translate` skill (under `skills/`) guides an agent through translating the delta. `test/i18n/locale_parity_test.rb` enforces that every locale defines the same application keys with matching interpolation placeholders.
+OpenTelemetry export can be enabled via `OTEL_*` environment variables (`OTEL_SERVICE_NAME`, `OTEL_INGEST_TOKEN`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`).
 
 ## Skills And Agents
 
@@ -270,68 +140,12 @@ Before handing off significant changes, run the single handoff gate — it must 
 
 ```sh
 make check        # db-check + lint + full tests (unit/integration + system)
+make check-fast   # inner loop: db-check + lint + unit/integration tests only (no system tests)
 ```
 
-For the inner development loop, a faster variant skips the browser/system tests:
+`make check` aggregates `make db-check` (migration safety via [strong_migrations](https://github.com/ankane/strong_migrations) + schema sync), `make lint` (RuboCop + `database_consistency`), and `make test` (Rails unit/integration + JS system tests). Separate, independently runnable checks cover dependency CVE scanning (`make audit`, `make image-audit`) and coverage (`make coverage`).
 
-```sh
-make check-fast   # db-check + lint + unit/integration tests only
-```
-
-`make check` is the aggregate of three steps, each runnable on its own:
-
-- `make db-check` — applies pending migrations (so [strong_migrations](https://github.com/ankane/strong_migrations) actually runs and aborts on unsafe operations) and asserts `db/schema.rb` is in sync (fails if a migration was added but not applied/committed).
-- `make lint` — see below.
-- `make test` — see below.
-
-`make lint` runs, inside the container:
-
-- `bin/rubocop` — style + a few loose complexity cops.
-- `bundle exec database_consistency` — checks that model validations/associations are backed by DB constraints (FKs, NOT NULL, unique indexes). Pre-existing findings are baselined in `.database_consistency.todo.yml`; only *new* mismatches fail the check. Triage that baseline over time.
-
-`make test` runs:
-
-- `bin/rails test`
-- `bin/rails test:system` with `JS_SYSTEM_TESTS=1`
-
-Migration safety is enforced by [strong_migrations](https://github.com/ankane/strong_migrations), which runs automatically during `bin/rails db:migrate` and aborts on unsafe operations. It fires wherever migrations actually run — `make up` (`db:prepare`) and `make db-check`. Note that `make test` uses `db:test:prepare` (a schema load), which does **not** run migrations, so `make db-check` is what exercises strong_migrations in the handoff gate. Existing migrations are grandfathered via `start_after` in `config/initializers/strong_migrations.rb`; checks target Postgres 16.
-
-JavaScript-specific system tests (microphone recorder, clipboard, theme switcher) are guarded by `JS_SYSTEM_TESTS=1` and skip without it. `make test` (and therefore `make check` and the CI `check` job on every merge request) sets the flag, running them against the headless Chromium in the dev image. `make test-js` runs just the system-test step on its own.
-
-### Dependency CVE scanning
-
-```sh
-make audit        # bundler-audit check against the rubysec ruby-advisory-db
-```
-
-`make audit` scans the locked gems for known vulnerabilities using [bundler-audit](https://github.com/rubysec/bundler-audit). It uses a single, reliable source — the community [rubysec/ruby-advisory-db](https://github.com/rubysec/ruby-advisory-db) — which it clones/refreshes locally and matches against `Gemfile.lock`, so **no dependency data leaves your machine**.
-
-It is intentionally **not** part of `make check`: it needs network to refresh the advisory DB, and a newly disclosed advisory can fail it without any code change on your side. Run it periodically and before a deploy. Suppress advisories that genuinely do not apply by adding them to the `ignore:` list in `config/bundler-audit.yml`.
-
-`make audit` only sees declared gems (`Gemfile.lock`). To scan a **built image** — the OS layer (Debian packages such as `openssl`), the gems actually on disk, and leaked secrets — use [Trivy](https://github.com/aquasecurity/trivy):
-
-```sh
-make image-audit IMAGE=repo:tag             # styled HTML report (or just `make image-audit` to use DEPLOY_IMAGE from private/.env)
-make image-audit IMAGE=repo:tag FORMAT=txt  # plain-text table instead
-```
-
-It runs Trivy as a container, downloads its vulnerability DB into a local cache volume (so nothing about the image leaves your machine), and reports HIGH/CRITICAL findings that have a fix available. Instead of flooding the terminal it writes a timestamped report to `tmp/security/image-audit-<timestamp>.{html,txt}` (git-ignored) and prints just a one-line summary and the path. `FORMAT=html` (default) is a styled report you can open in a browser and print to PDF; `FORMAT=txt` is a plain table. It is **informational** — it does not fail — and is kept separate from `make audit` because an image scan is only meaningful against a freshly built image. OS-layer findings are cleared by rebuilding the image (a fresh `apt-get` pulls patched packages); run it before a deploy.
-
-### Test Coverage
-
-Coverage is measured with SimpleCov and is **opt-in** (off by default so normal runs stay fast). Run it inside the container:
-
-```sh
-make coverage
-```
-
-This runs `COVERAGE=1 bin/rails test` in the `web` container and writes an HTML report to `./coverage/index.html` (git-ignored). The same opt-in works for ad-hoc runs:
-
-```sh
-docker compose exec -e COVERAGE=1 web bin/rails test
-```
-
-Treat the report as a map of untested paths, not a grade. System tests run in a separate process group and are not included in the figure, so real coverage of user-facing flows is higher.
+See [doc/design-output/quality-gates.md](doc/design-output/quality-gates.md) for the full breakdown of each step and security scan.
 
 ## Documentation
 
