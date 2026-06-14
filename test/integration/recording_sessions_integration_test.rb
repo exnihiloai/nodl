@@ -255,9 +255,8 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
         creator: user,
         title: "Recording #{index}",
         transformer_handle: "default",
-        source_kind: :microphone,
-        status: :recording
-      )
+        status: :completed
+      ) { |session| attach_sample_audio(session) }
     end
 
     assert_no_difference -> { workspace.recording_sessions.count } do

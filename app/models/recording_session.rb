@@ -67,6 +67,11 @@ class RecordingSession < ApplicationRecord
   validate :workspace_recording_limit_not_exceeded, on: :create
 
   scope :recent_first, -> { order(created_at: :desc) }
+  # A microphone session sits in :recording only between hitting record and the
+  # audio being finalized — until then it has no content. Exclude those rows so
+  # an abandoned/in-progress capture never shows as a stuck "Structuring..."
+  # row in the dashboard list or counts against the workspace recording quota.
+  scope :finalized, -> { where.not(status: :recording) }
 
   before_validation :assign_default_title, on: :create
 
@@ -192,7 +197,7 @@ class RecordingSession < ApplicationRecord
   end
 
   def dashboard_recording_sessions
-    workspace.recording_sessions.includes(:document, original_audio_attachment: :blob).recent_first.limit(DASHBOARD_RECENT_LIMIT)
+    workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(DASHBOARD_RECENT_LIMIT)
   end
 
   def assign_default_title

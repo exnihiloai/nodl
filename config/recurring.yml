@@ -19,3 +19,6 @@ production:
   retry_recording_integrity_seals:
     class: RetryRecordingIntegritySealsJob
     schedule: every day at 3:30am
+  reap_stale_recording_sessions:
+    class: ReapStaleRecordingSessionsJob
+    schedule: every hour at minute 42

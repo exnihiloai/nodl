@@ -27,7 +27,7 @@ class Workspace < ApplicationRecord
   end
 
   def recording_limit_reached?
-    recording_sessions.count >= PlanLimits::MAX_RECORDINGS
+    recording_sessions.finalized.count >= PlanLimits::MAX_RECORDINGS
   end
 
   def format_limit_reached?
