@@ -79,6 +79,12 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+
+  resource :settings, only: %i[show update]
+  resources :push_subscriptions, only: %i[create destroy]
+
   # Streams decrypted Active Storage blobs (audio playback/download) for the
   # EncryptedDisk service. `rails_blob_path` redirects here; the token in the URL
   # is signed/encrypted and never exposes the per-blob key. See config/storage.yml.

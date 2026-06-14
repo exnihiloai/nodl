@@ -16,6 +16,13 @@ require "rails/test_help"
 require "mocha/minitest"
 require "tmpdir"
 
+unless WebPushConfig.configured?
+  vapid_key = WebPush.generate_key
+  ENV["VAPID_PUBLIC_KEY"] = vapid_key.public_key
+  ENV["VAPID_PRIVATE_KEY"] = vapid_key.private_key
+  ENV["VAPID_SUBJECT"] = "mailto:push@test.example"
+end
+
 module ActiveSupport
   class TestCase
     SEMVER_PATTERN = /\A\d+\.\d+\.\d+\z/

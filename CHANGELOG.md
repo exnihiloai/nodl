@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-06-15
+
+### Added
+- **Daily Push Reminder:** You can now turn on a daily reminder from **Settings** (account menu). Choose a time and an optional short message — Nodl sends a push notification when you have not recorded yet that day, so your habit does not slip. Works in supported browsers and as a home-screen web app (PWA); on iPhone, add Nodl to your Home Screen and allow notifications when prompted.
+
+
 ## [0.18.0] - 2026-06-14
 
 ### Added

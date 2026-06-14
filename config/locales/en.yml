@@ -40,6 +40,7 @@ en:
       workspace: Workspace
       current: Current
       upgrade_plan: Upgrade plan
+      settings: Settings
       log_out: Log out
   changelog:
     title: Changelog - Nodl
@@ -457,6 +458,24 @@ en:
     example_file:
       remove: Remove
       remove_confirm: Remove this example document?
+  settings:
+    show:
+      title: Settings - Nodl
+      heading: Settings
+    daily_reminder:
+      heading: Daily reminder
+      enabled_label: Receive daily reminder
+      time_label: Time
+      message_label: Notification
+      default_message: Already nodeled today?
+      save: Save
+      permission_denied: Notifications were blocked. Allow notifications in your browser settings and try again.
+      unsupported: Push notifications are not supported in this browser.
+      subscribe_failed: Could not register for push notifications. Please try again.
+      push_not_configured: Push notifications are not configured on this server yet. Please try again later.
+    flash:
+      updated: Settings saved.
+      invalid: Settings could not be saved. Please check the form.
   payments:
     show:
       title: Pricing - Nodl

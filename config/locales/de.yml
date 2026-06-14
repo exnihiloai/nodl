@@ -160,6 +160,7 @@ de:
       workspace: Workspace
       current: Aktuell
       upgrade_plan: Plan upgraden
+      settings: Einstellungen
       log_out: Abmelden
   changelog:
     title: Changelog - Nodl
@@ -563,6 +564,24 @@ de:
     example_file:
       remove: Entfernen
       remove_confirm: Dieses Beispieldokument entfernen?
+  settings:
+    show:
+      title: Einstellungen - Nodl
+      heading: Einstellungen
+    daily_reminder:
+      heading: Tägliche Erinnerung
+      enabled_label: Tägliche Erinnerung erhalten
+      time_label: Uhrzeit
+      message_label: Nachricht
+      default_message: Heute schon genodelt?
+      save: Speichern
+      permission_denied: Benachrichtigungen wurden blockiert. Erlaube Benachrichtigungen in den Browser-Einstellungen und versuche es erneut.
+      unsupported: Push-Benachrichtigungen werden in diesem Browser nicht unterstützt.
+      subscribe_failed: Push-Benachrichtigungen konnten nicht registriert werden. Bitte erneut versuchen.
+      push_not_configured: Push-Benachrichtigungen sind auf diesem Server noch nicht eingerichtet. Bitte später erneut versuchen.
+    flash:
+      updated: Einstellungen gespeichert.
+      invalid: Einstellungen konnten nicht gespeichert werden. Bitte Formular prüfen.
   payments:
     show:
       title: Preise - Nodl

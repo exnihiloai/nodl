@@ -88,6 +88,12 @@
             <div class="divider my-1"></div>
             <ul class="menu menu-sm w-full">
               <li>
+                <%= link_to settings_path, class: "flex items-center gap-2", data: { testid: "settings-link" } do %>
+                  <%= icon("settings", class: "size-4 shrink-0", label: t("nav.account.settings")) %>
+                  <%= t("nav.account.settings") %>
+                <% end %>
+              </li>
+              <li>
                 <%= link_to payments_path, class: "flex items-center gap-2" do %>
                   <%= icon("sparkles", class: "size-4 shrink-0", label: t("nav.account.upgrade_plan")) %>
                   <%= t("nav.account.upgrade_plan") %>
