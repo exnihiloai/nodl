@@ -11,11 +11,15 @@ so that I can demonstrate authenticity and integrity if the recording is ever qu
 
 - **Obtain Original Audio Recording** is implemented: users can download the original audio file from a recording session. This story adds sealing and a packaged proof download; it does not introduce original-audio delivery from scratch.
 
+## Additional Information (Context)
+- This feature is a premium feature, that can be purchased and enabled by upgrading to a premium plan. (Future User Story)
+
 ## Acceptance Criteria
 
 ### Enablement
 - The feature can be turned on or off per user; default is **off**.
 - Only an administrator can change this setting; ordinary users cannot toggle it.
+
 
 ### Sealing
 - When enabled, each new recording session with original audio receives an integrity proof for the **original** file (not the normalized playback version).
@@ -30,6 +34,10 @@ so that I can demonstrate authenticity and integrity if the recording is ever qu
   - an **integrity certificate** (JSON sidecar) with hash, timestamp, proof blob, and whether the bundled audio still matches the stored hash.
 - The plain “Download original audio” action from the prerequisite story remains available; the ZIP is the packaged proof export for verification and dispute scenarios.
 - When the feature is off for the user, no integrity UI or ZIP download is shown.
+
+### User Facing Documentation
+
+- A separate help page is available in all supported languages (English/German) explaining a user what the integrity certificate is, how it works, and how it is verified / used as a proof in a friendly, non-technical language.
 
 ## Out of Scope
 
