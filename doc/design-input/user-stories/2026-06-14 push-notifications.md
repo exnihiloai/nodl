@@ -12,3 +12,4 @@ As a user who wants to speak into their diary every day, I want to receive a pus
 - A user can set the notification time using a simple time picker with HH:MM (24 hour format)
 - A user can chose the Notification text with up to 30 chars. 
   - Default german : "Heute schon genodelt?", english: "Already nodeled today?"
+- When the option is enabled, a user will receive a push notification on their mobile device.
