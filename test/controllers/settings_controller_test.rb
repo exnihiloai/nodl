@@ -54,4 +54,44 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_not @user.reload.daily_reminder_enabled?
     assert_includes response.body, I18n.t("settings.daily_reminder.push_not_configured")
   end
+
+  test "clears last sent date when reminder time changes" do
+    @user.update!(
+      daily_reminder_enabled: true,
+      daily_reminder_at: "21:00",
+      time_zone: "Europe/Vienna",
+      daily_reminder_last_sent_on: Date.current
+    )
+
+    patch settings_path, params: {
+      user: {
+        daily_reminder_enabled: "1",
+        daily_reminder_at: "22:00",
+        time_zone: "Europe/Vienna"
+      }
+    }
+
+    assert_redirected_to settings_path
+    assert_nil @user.reload.daily_reminder_last_sent_on
+  end
+
+  test "clears last sent date when reminder time zone changes" do
+    @user.update!(
+      daily_reminder_enabled: true,
+      daily_reminder_at: "21:00",
+      time_zone: "Europe/Vienna",
+      daily_reminder_last_sent_on: Date.current
+    )
+
+    patch settings_path, params: {
+      user: {
+        daily_reminder_enabled: "1",
+        daily_reminder_at: "21:00",
+        time_zone: "UTC"
+      }
+    }
+
+    assert_redirected_to settings_path
+    assert_nil @user.reload.daily_reminder_last_sent_on
+  end
 end

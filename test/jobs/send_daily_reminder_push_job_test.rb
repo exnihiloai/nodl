@@ -17,6 +17,7 @@ class SendDailyReminderPushJobTest < ActiveJob::TestCase
   end
 
   teardown do
+    @user.created_recording_sessions.destroy_all
     @user&.destroy
   end
 
@@ -35,5 +36,40 @@ class SendDailyReminderPushJobTest < ActiveJob::TestCase
     assert_difference -> { PushSubscription.count }, -1 do
       SendDailyReminderPushJob.perform_now(@user.id)
     end
+  end
+
+  test "skips when user already nodled after dispatch" do
+    workspace = @user.workspaces.first
+    workspace.recording_sessions.create!(
+      creator: @user,
+      title: "Done",
+      transformer_handle: "default",
+      status: :completed,
+      time_zone: "UTC"
+    ) { |recording| attach_sample_audio(recording) }
+
+    WebPush.expects(:payload_send).never
+
+    SendDailyReminderPushJob.perform_now(@user.id)
+
+    assert_nil @user.reload.daily_reminder_last_sent_on
+  end
+
+  test "skips when reminder was already sent after dispatch" do
+    @user.update!(daily_reminder_last_sent_on: Date.current)
+    WebPush.expects(:payload_send).never
+
+    SendDailyReminderPushJob.perform_now(@user.id)
+
+    assert_equal Date.current, @user.reload.daily_reminder_last_sent_on
+  end
+
+  test "skips when subscriptions were removed after dispatch" do
+    @user.push_subscriptions.destroy_all
+    WebPush.expects(:payload_send).never
+
+    SendDailyReminderPushJob.perform_now(@user.id)
+
+    assert_nil @user.reload.daily_reminder_last_sent_on
   end
 end

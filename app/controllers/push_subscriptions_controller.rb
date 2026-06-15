@@ -2,8 +2,10 @@ class PushSubscriptionsController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    subscription = current_user.push_subscriptions.find_or_initialize_by(endpoint: subscription_params[:endpoint])
-    subscription.assign_attributes(subscription_params.merge(user_agent: request.user_agent))
+    subscription = PushSubscription.find_or_initialize_by(endpoint: subscription_params[:endpoint])
+    subscription.assign_attributes(
+      subscription_params.merge(user: current_user, user_agent: request.user_agent)
+    )
 
     if subscription.save
       head :created

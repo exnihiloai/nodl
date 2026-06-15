@@ -47,6 +47,24 @@ class DispatchDailyRemindersJobTest < ActiveJob::TestCase
     end
   end
 
+  test "skips users without push subscriptions" do
+    @user.push_subscriptions.destroy_all
+    due_at = Time.utc(2026, 6, 14, 21, 0, 0)
+
+    assert_no_enqueued_jobs(only: SendDailyReminderPushJob) do
+      DispatchDailyRemindersJob.perform_now(now: due_at)
+    end
+  end
+
+  test "skips inactive users" do
+    @user.update!(active: false)
+    due_at = Time.utc(2026, 6, 14, 21, 0, 0)
+
+    assert_no_enqueued_jobs(only: SendDailyReminderPushJob) do
+      DispatchDailyRemindersJob.perform_now(now: due_at)
+    end
+  end
+
   test "skips users who already nodled today" do
     workspace = @user.workspaces.first
     due_at = Time.utc(2026, 6, 14, 21, 0, 0)
