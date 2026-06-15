@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   patch "/locale/:locale", to: "locales#update", as: :locale
 
   get "/dashboard", to: "dashboard#show"
-  resources :recording_sessions, only: %i[create show] do
+  resources :recording_sessions, only: %i[create show destroy] do
     post :finalize, on: :member
     get :download_original_audio, on: :member
     get :download_integrity_archive, on: :member

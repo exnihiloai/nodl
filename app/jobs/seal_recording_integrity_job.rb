@@ -4,7 +4,9 @@ class SealRecordingIntegrityJob < ApplicationJob
   queue_as :default
 
   def perform(recording_session_id)
-    recording_session = RecordingSession.includes(:creator, original_audio_attachment: :blob).find(recording_session_id)
+    recording_session = RecordingSession.includes(:creator, original_audio_attachment: :blob).find_by(id: recording_session_id)
+    return unless recording_session
+
     return unless recording_session.creator.integrity_sealing_enabled?
     return unless recording_session.original_audio.attached?
 

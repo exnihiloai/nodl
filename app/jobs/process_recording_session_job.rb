@@ -4,7 +4,9 @@ class ProcessRecordingSessionJob < ApplicationJob
   queue_as :default
 
   def perform(recording_session_id)
-    recording_session = RecordingSession.find(recording_session_id)
+    recording_session = RecordingSession.find_by(id: recording_session_id)
+    return unless recording_session
+
     RecordingSessionProcessor.new.call(recording_session)
   rescue StandardError => error
     recording_session&.mark_failed!(error.message)

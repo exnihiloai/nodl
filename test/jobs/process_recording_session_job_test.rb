@@ -31,4 +31,12 @@ class ProcessRecordingSessionJobTest < ActiveJob::TestCase
     assert_predicate recording_session.reload, :failed?
     assert_includes recording_session.error_message, "uninitialized constant RecordingSessionProcessor"
   end
+
+  test "exits when the recording session has been deleted" do
+    RecordingSessionProcessor.expects(:new).never
+
+    assert_nothing_raised do
+      ProcessRecordingSessionJob.perform_now(-1)
+    end
+  end
 end

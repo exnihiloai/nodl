@@ -342,6 +342,15 @@
   transform: translateY(0);
 }
 
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"] svg {
+  transition: transform 180ms ease;
+}
+
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"]:hover svg,
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"]:focus-visible svg {
+  transform: translateY(-0.125rem) rotate(-8deg);
+}
+
 .integrity-sealed-badge {
   display: inline-flex;
   align-items: center;
@@ -1173,4 +1182,3 @@ body.lp-reveal-ready [data-reveal].lp-in {
     padding-bottom: 1rem;
   }
 }
-

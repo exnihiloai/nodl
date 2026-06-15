@@ -9,49 +9,82 @@
   <% if recording_sessions.any? %>
     <ul class="rounded-box border border-base-300 bg-base-100">
       <% recording_sessions.each do |session| %>
-        <li id="<%= dom_id(session, :dashboard_row) %>" class="flex flex-col gap-2 border-t border-base-300 p-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between" data-testid="dashboard-activity-item" data-status="<%= session.status %>">
-          <div class="flex min-w-0 items-start gap-3">
-            <% if session.completed? %>
-              <span class="mt-1 text-success" title="<%= t("dashboard.activity.ready") %>" aria-hidden="true">●</span>
-            <% elsif session.failed? %>
-              <span class="mt-1 text-error" title="<%= t("dashboard.activity.failed") %>" aria-hidden="true">⚠</span>
-            <% else %>
-              <span class="mt-1 text-warning motion-safe:animate-pulse" title="<%= t("dashboard.activity.processing") %>" aria-hidden="true">◐</span>
-            <% end %>
-            <div class="min-w-0">
-              <% is_truncated = session.title.to_s.length > 45 %>
-              <% title_path = session.completed? && session.document ? document_path(session.document) : recording_session_path(session) %>
-              <div class="<%= 'tooltip tooltip-top' if is_truncated %> max-w-full text-left" <%= "data-tip=\"#{ERB::Util.html_escape(session.title)}\"".html_safe if is_truncated %>>
-                <%= link_to truncate(session.title, length: 45), title_path, class: "block font-medium hover:underline" %>
-              </div>
-              <p class="mt-0.5 text-xs text-base-content/50">
-                <%= t("dashboard.activity.time_ago", time: time_ago_in_words(session.created_at)) %><%= ", #{session.document.transformer_handle.humanize}" if session.completed? && session.document %>
-              </p>
-            </div>
+        <li id="<%= dom_id(session, :dashboard_row) %>"
+            class="relative overflow-hidden border-t border-base-300 first:border-t-0 sm:overflow-visible"
+            data-controller="swipe-delete"
+            data-swipe-delete-threshold-value="96"
+            data-swipe-delete-reveal-value="112"
+            data-action="pointerdown->swipe-delete#start pointermove->swipe-delete#move pointerup->swipe-delete#end pointercancel->swipe-delete#cancel"
+            data-testid="dashboard-activity-item"
+            data-status="<%= session.status %>">
+          <div class="absolute inset-y-0 right-0 flex w-24 items-stretch justify-end bg-error text-error-content sm:hidden">
+            <%= render "recording_sessions/delete_button",
+                       recording_session: session,
+                       form_class: "h-full w-full",
+                       button_class: "flex h-full w-full flex-col items-center justify-center gap-1 text-xs font-semibold",
+                       data: { "swipe-delete-target": "deleteButton", testid: "dashboard-delete-recording-mobile" } %>
           </div>
 
-          <div class="shrink-0 pl-7 sm:pl-0">
-            <% if session.completed? && session.document %>
-              <%= link_to t("dashboard.activity.open_recording"), recording_session_path(session), class: "btn btn-sm" %>
-            <% elsif session.failed? %>
-              <span class="text-sm text-base-content/60"><%= t("dashboard.activity.couldnt_process_html", link: link_to(t("dashboard.activity.view"), recording_session_path(session), class: "link")) %></span>
-            <% else %>
-              <div class="flex flex-col items-end gap-1 w-44"
-                   data-controller="processing-progress"
-                   data-processing-progress-started-at-value="<%= session.processing_started_at&.iso8601 || session.created_at.iso8601 %>"
-                   data-processing-progress-duration-value="<%= session.estimated_duration %>"
-                   data-processing-progress-analyzing-text-value="<%= t("dashboard.activity.analyzing") %>"
-                   data-processing-progress-transcribing-text-value="<%= t("dashboard.activity.transcribing") %>"
-                   data-processing-progress-structuring-text-value="<%= t("dashboard.activity.structuring") %>">
-                <div class="flex items-center justify-between w-full text-xs">
-                  <span class="text-base-content/60" data-processing-progress-target="label"><%= t("dashboard.activity.structuring") %></span>
-                  <span class="font-semibold text-primary" data-processing-progress-target="percentage">0%</span>
+          <div class="relative z-10 flex flex-col gap-2 bg-base-100 p-4 transition-transform duration-200 ease-out sm:flex-row sm:items-center sm:justify-between"
+               data-swipe-delete-target="surface">
+            <div class="flex min-w-0 items-start gap-3">
+              <% if session.completed? %>
+                <span class="mt-1 text-success" title="<%= t("dashboard.activity.ready") %>" aria-hidden="true">●</span>
+              <% elsif session.failed? %>
+                <span class="mt-1 text-error" title="<%= t("dashboard.activity.failed") %>" aria-hidden="true">⚠</span>
+              <% else %>
+                <span class="mt-1 text-warning motion-safe:animate-pulse" title="<%= t("dashboard.activity.processing") %>" aria-hidden="true">◐</span>
+              <% end %>
+              <div class="min-w-0">
+                <% is_truncated = session.title.to_s.length > 45 %>
+                <% title_path = session.completed? && session.document ? document_path(session.document) : recording_session_path(session) %>
+                <div class="<%= 'tooltip tooltip-top' if is_truncated %> max-w-full text-left" <%= "data-tip=\"#{ERB::Util.html_escape(session.title)}\"".html_safe if is_truncated %>>
+                  <%= link_to truncate(session.title, length: 45), title_path, class: "block font-medium hover:underline" %>
                 </div>
-                <div class="w-full h-1.5 bg-base-300 rounded-full overflow-hidden">
-                  <div class="h-full bg-primary rounded-full transition-[width] duration-300 ease-out" style="width: 0%" data-processing-progress-target="bar"></div>
-                </div>
+                <p class="mt-0.5 text-xs text-base-content/50">
+                  <%= t("dashboard.activity.time_ago", time: time_ago_in_words(session.created_at)) %><%= ", #{session.document.transformer_handle.humanize}" if session.completed? && session.document %>
+                </p>
               </div>
-            <% end %>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2 pl-7 sm:pl-0">
+              <% if session.completed? && session.document %>
+                <%= link_to t("dashboard.activity.open_recording"), recording_session_path(session), class: "btn btn-sm" %>
+              <% elsif session.failed? %>
+                <span class="text-sm text-base-content/60"><%= t("dashboard.activity.couldnt_process_html", link: link_to(t("dashboard.activity.view"), recording_session_path(session), class: "link")) %></span>
+              <% else %>
+                <div class="flex w-44 flex-col items-end gap-1"
+                     data-controller="processing-progress"
+                     data-processing-progress-started-at-value="<%= session.processing_started_at&.iso8601 || session.created_at.iso8601 %>"
+                     data-processing-progress-duration-value="<%= session.estimated_duration %>"
+                     data-processing-progress-analyzing-text-value="<%= t("dashboard.activity.analyzing") %>"
+                     data-processing-progress-transcribing-text-value="<%= t("dashboard.activity.transcribing") %>"
+                     data-processing-progress-structuring-text-value="<%= t("dashboard.activity.structuring") %>">
+                  <div class="flex w-full items-center justify-between text-xs">
+                    <span class="text-base-content/60" data-processing-progress-target="label"><%= t("dashboard.activity.structuring") %></span>
+                    <span class="font-semibold text-primary" data-processing-progress-target="percentage">0%</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-base-300">
+                    <div class="h-full rounded-full bg-primary transition-[width] duration-300 ease-out" style="width: 0%" data-processing-progress-target="bar"></div>
+                  </div>
+                </div>
+              <% end %>
+
+              <details class="dropdown dropdown-end hidden sm:block" data-controller="dropdown" data-testid="dashboard-recording-actions-menu">
+                <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                         data-testid="dashboard-recording-actions-menu-button"
+                         aria-label="<%= t("recording_sessions.actions.menu") %>">
+                  <%= icon("ellipsis", class: "size-5") %>
+                </summary>
+                <ul class="dropdown-content menu z-10 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                  <li>
+                    <%= render "recording_sessions/delete_button",
+                               recording_session: session,
+                               data: { testid: "dashboard-delete-recording" } %>
+                  </li>
+                </ul>
+              </details>
+            </div>
           </div>
         </li>
       <% end %>

@@ -55,4 +55,9 @@ module RecordingSessionsHelper
       "badge-neutral"
     end
   end
+
+  def recording_delete_confirm(recording_session)
+    key = recording_session.integrity_record&.sealed? ? :delete_confirm_sealed : :delete_confirm
+    t("recording_sessions.actions.#{key}", title: recording_session.title)
+  end
 end

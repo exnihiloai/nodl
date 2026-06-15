@@ -36,6 +36,18 @@ class RecordingSessionsController < ApplicationController
     @document = @recording_session.document
   end
 
+  def destroy
+    recording_session = current_workspace.recording_sessions.finalized.find_by(id: params[:id])
+    return handle_missing_destroy unless recording_session
+
+    title = recording_session.title
+    if recording_session.destroy
+      respond_to_destroy(:notice, t("flash.recording_sessions.deleted", title: title), status: :see_other)
+    else
+      respond_to_destroy(:alert, t("flash.recording_sessions.delete_failed", title: title), status: :unprocessable_entity)
+    end
+  end
+
   def finalize
     @recording_session = current_workspace.recording_sessions.find(params[:id])
     return render json: { error: t("flash.recording_sessions.not_ready_to_finalize") }, status: :unprocessable_entity unless @recording_session.recording?
@@ -76,6 +88,42 @@ class RecordingSessionsController < ApplicationController
   end
 
   private
+
+  def handle_missing_destroy
+    raise ActiveRecord::RecordNotFound if RecordingSession.exists?(id: params[:id])
+
+    respond_to_destroy(:notice, t("flash.recording_sessions.already_deleted"), status: :see_other)
+  end
+
+  def respond_to_destroy(type, message, status:)
+    if redirect_after_destroy?
+      redirect_to dashboard_path, { type => message, status: :see_other }
+      return
+    end
+
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[type] = message
+        render turbo_stream: [
+          turbo_stream.replace(
+            "dashboard_activity",
+            partial: "dashboard/activity",
+            locals: { recording_sessions: dashboard_recording_sessions }
+          ),
+          turbo_stream.replace("flash", partial: "shared/flash")
+        ], status: status
+      end
+      format.html { redirect_to dashboard_path, { type => message, status: :see_other } }
+    end
+  end
+
+  def redirect_after_destroy?
+    ActiveModel::Type::Boolean.new.cast(params[:redirect_to_dashboard])
+  end
+
+  def dashboard_recording_sessions
+    current_workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(RecordingSession::DASHBOARD_RECENT_LIMIT)
+  end
 
   def enqueue_integrity_sealing(recording_session)
     return unless recording_session.creator.integrity_sealing_enabled?

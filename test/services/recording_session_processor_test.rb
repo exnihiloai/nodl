@@ -191,6 +191,27 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
     assert_equal "pipeline failed", recording_session.error_message
   end
 
+  test "does not write completion results when recording is deleted during pipeline work" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Deleted mid-pipeline",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    pipeline = FakePipeline.new
+    pipeline.define_singleton_method(:run) do |**kwargs|
+      recording_session.destroy!
+      FakePipeline.new.run(**kwargs)
+    end
+
+    assert_nothing_raised do
+      RecordingSessionProcessor.new(normalizer: FakeNormalizer.new, pipeline: pipeline).call(recording_session)
+    end
+
+    assert_not RecordingSession.exists?(recording_session.id)
+    assert_empty Document.where(recording_session_id: recording_session.id)
+  end
+
   test "marks the session failed when audio exceeds maximum duration" do
     user = create_user_with_workspace
     recording_session = user.workspaces.first.recording_sessions.create!(
