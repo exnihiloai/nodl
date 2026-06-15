@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 // Crossing the threshold clicks the real delete button, so Turbo confirm and
 // form submission stay on the standard Rails path.
 export default class extends Controller {
-  static targets = ["surface", "deleteButton"]
+  static targets = ["surface", "deleteButton", "deleteReveal"]
   static values = {
     threshold: { type: Number, default: 96 },
     reveal: { type: Number, default: 112 },
@@ -76,6 +76,7 @@ export default class extends Controller {
     const offset = Math.min(Math.max(deltaX, 0), this.revealValue)
     this.dragging = offset > 0
     this.currentOffset = offset
+    this.setRevealVisible(offset > 0)
     this.surfaceTarget.style.transform = `translateX(-${offset}px)`
   }
 
@@ -122,8 +123,17 @@ export default class extends Controller {
   }
 
   snapBack() {
+    this.setRevealVisible(false)
     this.surfaceTarget.style.transition = ""
     this.surfaceTarget.style.transform = ""
+  }
+
+  setRevealVisible(visible) {
+    if (!this.hasDeleteRevealTarget) return
+
+    this.deleteRevealTarget.classList.toggle("opacity-0", !visible)
+    this.deleteRevealTarget.classList.toggle("pointer-events-none", !visible)
+    this.element.classList.toggle("is-revealing-delete", visible)
   }
 
   resetState() {

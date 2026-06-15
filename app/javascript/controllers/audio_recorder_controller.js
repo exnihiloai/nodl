@@ -600,25 +600,28 @@ export default class extends Controller {
     this.rowObserver = new MutationObserver((mutations) => {
       const targetRow = document.getElementById(targetId)
       if (targetRow && !targetRow.dataset.animated) {
+        const surface = targetRow.querySelector("[data-swipe-delete-target='surface']")
+        if (!surface) return
+
         // Mark it as animated so we don't process it multiple times
         targetRow.dataset.animated = "true"
 
         const elapsed = Date.now() - (this.stopClickedTime || Date.now())
         const remainingCollapseTime = Math.max(0, 1000 - elapsed)
 
-        // Make sure the row is hidden initially (before repaint)
-        targetRow.style.opacity = "0"
-        targetRow.style.maxHeight = "0"
-        targetRow.style.paddingTop = "0"
-        targetRow.style.paddingBottom = "0"
+        // Make sure the surface is hidden initially (before repaint)
+        surface.style.opacity = "0"
+        surface.style.maxHeight = "0"
+        surface.style.paddingTop = "0"
+        surface.style.paddingBottom = "0"
 
         // Delay the grow animation until the vertical collapse of the live transcript panel finishes
         setTimeout(() => {
-          targetRow.style.opacity = ""
-          targetRow.style.maxHeight = ""
-          targetRow.style.paddingTop = ""
-          targetRow.style.paddingBottom = ""
-          targetRow.classList.add("dashboard-row-grow")
+          surface.style.opacity = ""
+          surface.style.maxHeight = ""
+          surface.style.paddingTop = ""
+          surface.style.paddingBottom = ""
+          surface.classList.add("dashboard-row-grow")
         }, remainingCollapseTime)
 
         // We found our target, so disconnect the observer

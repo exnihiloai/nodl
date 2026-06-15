@@ -356,6 +356,16 @@ html {
   transform: translateY(0);
 }
 
+[data-controller~="swipe-delete"] [data-swipe-delete-target="deleteReveal"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-controller~="swipe-delete"].is-revealing-delete [data-swipe-delete-target="deleteReveal"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 [data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"] svg {
   transition: transform 180ms ease;
 }
@@ -1176,7 +1186,7 @@ body.lp-reveal-ready [data-reveal].lp-in {
   }
 }
 
-/* Vertical grow animation for the newly added dashboard activity row */
+/* Vertical grow animation for the newly added dashboard activity row surface */
 .dashboard-row-grow {
   animation: dashboard-row-grow-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   overflow: hidden;

@@ -42,7 +42,7 @@ class RecordingSessionsController < ApplicationController
 
     title = recording_session.title
     if recording_session.destroy
-      respond_to_destroy(:notice, t("flash.recording_sessions.deleted", title: title), status: :see_other)
+      respond_to_destroy(:notice, t("flash.recording_sessions.deleted", title: title))
     else
       respond_to_destroy(:alert, t("flash.recording_sessions.delete_failed", title: title), status: :unprocessable_entity)
     end
@@ -92,10 +92,10 @@ class RecordingSessionsController < ApplicationController
   def handle_missing_destroy
     raise ActiveRecord::RecordNotFound if RecordingSession.exists?(id: params[:id])
 
-    respond_to_destroy(:notice, t("flash.recording_sessions.already_deleted"), status: :see_other)
+    respond_to_destroy(:notice, t("flash.recording_sessions.already_deleted"))
   end
 
-  def respond_to_destroy(type, message, status:)
+  def respond_to_destroy(type, message, status: :ok)
     if redirect_after_destroy?
       redirect_to dashboard_path, { type => message, status: :see_other }
       return
@@ -104,14 +104,7 @@ class RecordingSessionsController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         flash.now[type] = message
-        render turbo_stream: [
-          turbo_stream.replace(
-            "dashboard_activity",
-            partial: "dashboard/activity",
-            locals: { recording_sessions: dashboard_recording_sessions }
-          ),
-          turbo_stream.replace("flash", partial: "shared/flash")
-        ], status: status
+        render turbo_stream: destroy_turbo_streams, status: status
       end
       format.html { redirect_to dashboard_path, { type => message, status: :see_other } }
     end
@@ -123,6 +116,37 @@ class RecordingSessionsController < ApplicationController
 
   def dashboard_recording_sessions
     current_workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(RecordingSession::DASHBOARD_RECENT_LIMIT)
+  end
+
+  def destroy_turbo_streams
+    [
+      turbo_stream.replace(
+        "dashboard_record_hero",
+        partial: "dashboard/record_hero",
+        locals: record_hero_locals
+      ),
+      turbo_stream.replace(
+        "dashboard_activity",
+        partial: "dashboard/activity",
+        locals: { recording_sessions: dashboard_recording_sessions }
+      ),
+      turbo_stream.replace("flash", partial: "shared/flash")
+    ]
+  end
+
+  def record_hero_locals
+    workspace = current_workspace
+    TransformerProfile.ensure_default_for!(workspace)
+
+    {
+      recording_limit_reached: workspace.recording_limit_reached?,
+      recording_session: workspace.recording_sessions.build(transformer_handle: default_transformer_handle),
+      transformer_profiles: workspace.transformer_profiles.active.default_first
+    }
+  end
+
+  def default_transformer_handle
+    current_workspace.transformer_profiles.find_by(default: true)&.handle || TransformerProfile::DEFAULT_HANDLE
   end
 
   def enqueue_integrity_sealing(recording_session)

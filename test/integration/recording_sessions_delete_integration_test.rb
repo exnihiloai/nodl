@@ -140,6 +140,31 @@ class RecordingSessionsDeleteIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal %(Recording "Detail delete" was permanently deleted.), flash[:notice]
   end
 
+  test "dashboard delete turbo stream restores record hero when quota opens up" do
+    user = create_user_with_workspace(email: "recording-delete-quota@example.test")
+    workspace = user.workspaces.first
+    PlanLimits::MAX_RECORDINGS.times do |index|
+      workspace.recording_sessions.create!(
+        creator: user,
+        title: "Quota #{index}",
+        transformer_handle: "default",
+        status: :completed
+      ) { |session| attach_sample_audio(session) }
+    end
+    recording_session = workspace.recording_sessions.finalized.order(:created_at).last
+    post login_path, params: { email: user.email, password: "Valid123" }
+
+    assert workspace.reload.recording_limit_reached?
+
+    delete recording_session_path(recording_session), as: :turbo_stream
+
+    assert_response :success
+    assert_not workspace.reload.recording_limit_reached?
+    assert_includes response.body, 'data-testid="recording-form"'
+    assert_not_includes response.body, 'data-testid="recording-limit-reached"'
+    assert_includes response.body, 'target="dashboard_record_hero"'
+  end
+
   private
 
   def assert_destroy_removes_recording_data(recording_session, document, integrity_record)
