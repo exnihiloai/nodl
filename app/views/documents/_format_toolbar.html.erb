@@ -1,6 +1,6 @@
 <%# B I S | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
 <div
-  class="flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
+  class="document-editor-toolbar flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
   role="toolbar"
   aria-label="<%= t("documents.show.format.toolbar") %>"
   data-document-editor-target="toolbar"
@@ -38,7 +38,7 @@
     </button>
   </div>
 
-  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
 
   <details class="dropdown" data-controller="dropdown" data-testid="document-block-type-menu">
     <summary
@@ -46,7 +46,7 @@
       aria-label="<%= t("documents.show.format.block_type_menu") %>"
     >
       <span data-document-editor-target="blockTypeLabel"><%= t("documents.show.format.paragraph") %></span>
-      <%= icon "chevron-down", class: "size-3 opacity-60" %>
+      <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
     </summary>
     <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
       <% {
@@ -72,7 +72,7 @@
     </ul>
   </details>
 
-  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
 
   <div class="join">
     <button
@@ -83,7 +83,7 @@
       aria-label="<%= t("documents.show.format.ul") %>"
       title="<%= t("documents.show.format.ul") %>"
     >
-      <%= icon "list", class: "size-4" %>
+      <%= icon "list", class: "toolbar-icon" %>
     </button>
     <button
       type="button"
@@ -93,11 +93,11 @@
       aria-label="<%= t("documents.show.format.ol") %>"
       title="<%= t("documents.show.format.ol") %>"
     >
-      <%= icon "list-ordered", class: "size-4" %>
+      <%= icon "list-ordered", class: "toolbar-icon" %>
     </button>
   </div>
 
-  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
 
   <button
     type="button"
@@ -107,10 +107,10 @@
     aria-label="<%= t("documents.show.format.link") %>"
     title="<%= t("documents.show.format.link") %>"
   >
-    <%= icon "link", class: "size-4" %>
+    <%= icon "link", class: "toolbar-icon" %>
   </button>
 
-  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
 
   <details class="dropdown" data-controller="dropdown" data-testid="document-insert-menu">
     <summary
@@ -118,7 +118,7 @@
       aria-label="<%= t("documents.show.format.insert_menu") %>"
     >
       <%= t("documents.show.format.insert_menu") %>
-      <%= icon "chevron-down", class: "size-3 opacity-60" %>
+      <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
     </summary>
     <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
       <% { hr: t("documents.show.format.hr") }.each do |command, label| %>
@@ -137,7 +137,7 @@
     </ul>
   </details>
 
-  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
 
   <div class="join">
     <% %i[undo redo].each do |command| %>
@@ -149,7 +149,7 @@
         aria-label="<%= t("documents.show.format.#{command}") %>"
         title="<%= t("documents.show.format.#{command}") %>"
       >
-        <%= icon command.to_s, class: "size-4" %>
+        <%= icon command.to_s, class: "toolbar-icon" %>
       </button>
     <% end %>
   </div>

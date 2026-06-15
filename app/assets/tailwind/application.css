@@ -456,6 +456,42 @@ html {
   }
 }
 
+/* Document editor toolbar: 20% larger hit targets and icons for touch/desktop editing. */
+@layer components {
+  .document-editor-toolbar {
+    gap: calc(0.25rem * 1.2);
+    padding: calc(0.25rem * 1.2);
+  }
+
+  .document-editor-toolbar .btn.btn-sm {
+    min-height: calc(2rem * 1.2);
+    height: calc(2rem * 1.2);
+    min-width: calc(2.25rem * 1.2);
+    padding-inline: calc(0.5rem * 1.2);
+    font-size: calc(0.875rem * 1.2);
+  }
+
+  .document-editor-toolbar .toolbar-icon {
+    width: calc(1rem * 1.2);
+    height: calc(1rem * 1.2);
+  }
+
+  .document-editor-toolbar .toolbar-chevron {
+    width: calc(0.75rem * 1.2);
+    height: calc(0.75rem * 1.2);
+  }
+
+  .document-editor-toolbar .toolbar-separator {
+    height: calc(1.5rem * 1.2);
+  }
+
+  .document-editor-toolbar .menu button,
+  .document-editor-toolbar .menu a {
+    padding: calc(0.375rem * 1.2) calc(0.75rem * 1.2);
+    font-size: calc(0.875rem * 1.2);
+  }
+}
+
 /* ============================================================
    Landing page design layer ("lp-")
    ------------------------------------------------------------
