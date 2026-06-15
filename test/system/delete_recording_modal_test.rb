@@ -33,6 +33,18 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
     assert_not RecordingSession.exists?(recording_session.id)
   end
 
+  test "first row actions menu stays visible when another recording is below it" do
+    create_completed_recording(title: "Bottom recording")
+    create_completed_recording(title: "Top recording", login: false)
+
+    visit dashboard_path
+
+    within("[data-testid='dashboard-activity-item']", text: "Top recording") do
+      find("[data-testid='dashboard-recording-actions-menu-button']").click
+      assert_selector "[data-testid='dashboard-delete-recording']", visible: :visible
+    end
+  end
+
   test "detail delete uses styled modal and redirects to dashboard" do
     recording_session = create_completed_recording(title: "Detail delete")
 
@@ -68,7 +80,7 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
 
   private
 
-  def create_completed_recording(title:)
+  def create_completed_recording(title:, login: true)
     email = unique_email("delete-recording")
     @user ||= create_user_with_workspace(email: email, password: "Valid123")
     workspace = @user.workspaces.first
@@ -83,7 +95,7 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
       work_path: "/tmp/#{title.parameterize}"
     )
 
-    login_via_ui(email: @user.email, password: "Valid123")
+    login_via_ui(email: @user.email, password: "Valid123") if login
     assert_selector "[data-testid='account-menu']"
     recording_session
   end

@@ -10,7 +10,7 @@
     <ul class="rounded-box border border-base-300 bg-base-100">
       <% recording_sessions.each do |session| %>
         <li id="<%= dom_id(session, :dashboard_row) %>"
-            class="relative overflow-hidden border-t border-base-300 first:border-t-0 sm:overflow-visible"
+            class="relative overflow-hidden border-t border-base-300 first:border-t-0 has-[:open]:z-20 sm:overflow-visible"
             data-controller="swipe-delete"
             data-swipe-delete-threshold-value="96"
             data-swipe-delete-reveal-value="112"

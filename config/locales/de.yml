@@ -468,8 +468,7 @@ de:
     actions:
       menu: Aufnahme-Aktionen
       delete: Löschen
-      delete_confirm: 'Aufnahme „%{title}" löschen? Dadurch werden Audio, Transkript, Dokument und ein vorhandener Integritätsnachweis dauerhaft entfernt.'
-      delete_confirm_sealed: 'Aufnahme „%{title}" löschen? Dadurch werden Audio, Transkript, Dokument und der versiegelte Integritätsnachweis dauerhaft entfernt. Der Nachweis kann nicht wiederhergestellt werden.'
+      delete_confirm: '„%{title}" löschen? Entfernt unwiderruflich Audio, Transkript, Dokument.'
     statuses:
       pending: Ausstehend
       processing: Wird verarbeitet

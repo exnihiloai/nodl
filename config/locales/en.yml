@@ -362,8 +362,7 @@ en:
     actions:
       menu: Recording actions
       delete: Delete
-      delete_confirm: 'Delete "%{title}"? This permanently removes the audio, transcript, document, and any integrity proof.'
-      delete_confirm_sealed: 'Delete "%{title}"? This permanently removes the audio, transcript, document, and sealed integrity proof. The proof cannot be recovered.'
+      delete_confirm: 'Delete "%{title}"? Removes: audio, transcript, document. Permanent.'
     statuses:
       pending: Pending
       processing: Processing
