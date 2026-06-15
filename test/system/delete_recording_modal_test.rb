@@ -75,7 +75,22 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
     swipe_recording_row(offset: 130)
     assert_selector "dialog.modal[open]"
     assert_text 'Delete "Swipe delete"?'
+    assert_swipe_row_awaiting_confirm
+
     within("dialog.modal") { click_button "Cancel" }
+    assert_no_selector "dialog.modal[open]"
+    assert_swipe_row_snapped_back
+  end
+
+  test "mobile swipe keeps row revealed while delete confirm modal is open" do
+    create_completed_recording(title: "Swipe hold")
+    page.driver.browser.manage.window.resize_to(390, 900)
+
+    visit dashboard_path
+
+    swipe_recording_row(offset: 130)
+    assert_selector "dialog.modal[open]"
+    assert_swipe_row_awaiting_confirm
   end
 
   test "mobile fast swipe without move events still opens confirm modal" do
@@ -131,9 +146,34 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
       const startX = rect.right - 20;
       const y = rect.top + rect.height / 2;
       const options = { bubbles: true, pointerId: 7, pointerType: "touch", clientY: y };
-      surface.dispatchEvent(new PointerEvent("pointerdown", { ...options, clientX: startX }));
-      surface.dispatchEvent(new PointerEvent("pointermove", { ...options, clientX: startX - offset }));
-      surface.dispatchEvent(new PointerEvent("pointerup", { ...options, clientX: startX - offset }));
+      row.dispatchEvent(new PointerEvent("pointerdown", { ...options, clientX: startX }));
+      row.dispatchEvent(new PointerEvent("pointermove", { ...options, clientX: startX - offset }));
+      row.dispatchEvent(new PointerEvent("pointerup", { ...options, clientX: startX - offset }));
+    JS
+  end
+
+  def assert_swipe_row_awaiting_confirm
+    assert page.evaluate_script(<<~JS), "Expected swiped row to stay revealed while confirm modal is open"
+      (() => {
+        const row = document.querySelector("[data-testid='dashboard-activity-item']");
+        const surface = row?.querySelector("[data-swipe-delete-target='surface']");
+        return Boolean(
+          row?.classList.contains("is-awaiting-delete-confirm") &&
+          surface?.style.transform.includes("translateX(-")
+        );
+      })()
+    JS
+  end
+
+  def assert_swipe_row_snapped_back
+    assert_no_selector "[data-testid='dashboard-activity-item'].is-awaiting-delete-confirm", wait: 2
+
+    assert page.evaluate_script(<<~JS), "Expected swiped row to snap back after canceling confirm modal"
+      (() => {
+        const surface = document.querySelector("[data-testid='dashboard-activity-item'] [data-swipe-delete-target='surface']");
+        const transform = surface?.style.transform || "";
+        return !transform || transform === "none" || transform === "translateX(0px)";
+      })()
     JS
   end
 end

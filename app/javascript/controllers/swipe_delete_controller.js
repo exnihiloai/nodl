@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Reveals a destructive action behind a list row on touch-size screens.
-// Crossing the threshold clicks the real delete button, so Turbo confirm and
-// form submission stay on the standard Rails path.
+// Crossing the threshold opens the app confirm modal while keeping the row
+// revealed until the user confirms or cancels.
 export default class extends Controller {
   static targets = ["surface", "deleteButton", "deleteReveal"]
   static values = {
@@ -34,10 +34,11 @@ export default class extends Controller {
     this.element.removeEventListener("pointerup", this.onPointerUp)
     this.element.removeEventListener("pointercancel", this.onPointerCancel)
     this.element.removeEventListener("lostpointercapture", this.onLostPointerCapture)
+    this.clearConfirmDialogListener()
   }
 
   start(event) {
-    if (!this.mobileQuery.matches || this.interactiveTarget(event.target)) return
+    if (!this.mobileQuery.matches || this.confirmPending || this.interactiveTarget(event.target)) return
 
     this.pointerId = event.pointerId
     this.startX = event.clientX
@@ -88,16 +89,18 @@ export default class extends Controller {
     const absX = Math.abs(deltaX)
     const absY = Math.abs(deltaY)
 
-    let shouldDelete = false
+    let offset = 0
     const horizontalSwipe = this.axis === "x" || (absX >= this.axisLockValue && absX > absY)
     if (horizontalSwipe) {
-      const offset = Math.min(Math.max(deltaX, 0), this.revealValue)
-      shouldDelete = offset >= this.thresholdValue
+      offset = Math.min(Math.max(deltaX, 0), this.revealValue)
+    }
+
+    if (horizontalSwipe && offset >= this.thresholdValue) {
+      this.openDeleteConfirm(event.pointerId, offset)
+      return
     }
 
     this.abort(event.pointerId)
-
-    if (shouldDelete) this.deleteButtonTarget.click()
   }
 
   cancel(event) {
@@ -109,23 +112,81 @@ export default class extends Controller {
   onLostPointerCapture(event) {
     if (event.pointerId !== this.pointerId) return
 
-    this.snapBack()
-    this.resetState()
-  }
-
-  abort(pointerId) {
-    if (this.element.hasPointerCapture?.(pointerId)) {
-      this.element.releasePointerCapture(pointerId)
+    if (this.confirmPending) {
+      this.resetState()
+      return
     }
 
     this.snapBack()
     this.resetState()
   }
 
+  openDeleteConfirm(pointerId, offset) {
+    this.releasePointer(pointerId)
+    this.resetState()
+    this.lockRevealed(offset)
+    this.watchConfirmDialog()
+    this.deleteButtonTarget.click()
+  }
+
+  lockRevealed(offset) {
+    this.confirmPending = true
+    const lockedOffset = Math.min(Math.max(offset, this.thresholdValue), this.revealValue)
+
+    this.setRevealVisible(true)
+    this.surfaceTarget.style.transition = ""
+    this.surfaceTarget.style.transform = `translateX(-${lockedOffset}px)`
+    this.element.classList.add("is-awaiting-delete-confirm")
+  }
+
+  watchConfirmDialog() {
+    this.clearConfirmDialogListener()
+
+    this.confirmDialog = document.querySelector('[data-confirm-modal-target="dialog"]')
+    if (!this.confirmDialog) return
+
+    this.onConfirmDialogClose = (event) => this.handleConfirmDialogClose(event)
+    this.confirmDialog.addEventListener("close", this.onConfirmDialogClose, { once: true })
+  }
+
+  handleConfirmDialogClose(event) {
+    const confirmed = event.target.returnValue === "confirm"
+
+    this.confirmPending = false
+    this.element.classList.remove("is-awaiting-delete-confirm")
+    this.clearConfirmDialogListener()
+
+    if (!confirmed) this.snapBack()
+  }
+
+  clearConfirmDialogListener() {
+    if (this.confirmDialog && this.onConfirmDialogClose) {
+      this.confirmDialog.removeEventListener("close", this.onConfirmDialogClose)
+    }
+
+    this.confirmDialog = null
+    this.onConfirmDialogClose = null
+  }
+
+  abort(pointerId) {
+    this.releasePointer(pointerId)
+    this.snapBack()
+    this.resetState()
+  }
+
+  releasePointer(pointerId) {
+    if (this.element.hasPointerCapture?.(pointerId)) {
+      this.element.releasePointerCapture(pointerId)
+    }
+  }
+
   snapBack() {
     this.setRevealVisible(false)
-    this.surfaceTarget.style.transition = ""
+    this.surfaceTarget.style.transition = "none"
     this.surfaceTarget.style.transform = ""
+    this.surfaceTarget.getBoundingClientRect()
+    this.surfaceTarget.style.transition = ""
+    this.element.classList.remove("is-awaiting-delete-confirm")
   }
 
   setRevealVisible(visible) {
