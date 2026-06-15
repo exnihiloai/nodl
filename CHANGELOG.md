@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Edit Documents:** You can now edit the text of a generated document directly on the document page. Tap **Edit**, fix wording in a visual editor with formatting tools (headings, lists, bold, links, and more), and save — your changes show up in the document view and in PDF, Word, and Markdown downloads.
 
-### Improved
+### Changed
 - **Audio Player Volume Control:** The volume slider now opens as a vertical popup above the volume icon — click the icon to reveal it. The slider also uses a perceptual (quadratic) volume curve so that moving it feels linear to the ear.
 
 ## [0.20.0] - 2026-06-15
