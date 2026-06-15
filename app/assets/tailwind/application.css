@@ -107,6 +107,20 @@
   outline-offset: 0;
 }
 
+/* Prevent accidental horizontal page scroll on touch devices. */
+html {
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
+[data-controller~="swipe-delete"] {
+  touch-action: pan-y;
+}
+
+[data-controller~="swipe-delete"] [data-swipe-delete-target="surface"] {
+  touch-action: pan-y;
+}
+
 /* Controls: stronger consistent focus with subtle glow */
 .input:focus,
 .input:focus-within,

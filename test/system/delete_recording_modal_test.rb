@@ -78,6 +78,28 @@ class DeleteRecordingModalTest < ApplicationJsSystemTestCase
     within("dialog.modal") { click_button "Cancel" }
   end
 
+  test "mobile fast swipe without move events still opens confirm modal" do
+    create_completed_recording(title: "Fast swipe delete")
+    page.driver.browser.manage.window.resize_to(390, 900)
+
+    visit dashboard_path
+
+    page.execute_script(<<~JS)
+      const row = document.querySelector("[data-testid='dashboard-activity-item']");
+      const surface = row.querySelector("[data-swipe-delete-target='surface']");
+      const rect = surface.getBoundingClientRect();
+      const startX = rect.right - 20;
+      const endX = startX - 130;
+      const y = rect.top + rect.height / 2;
+      const options = { bubbles: true, pointerId: 9, pointerType: "touch", clientY: y };
+      row.dispatchEvent(new PointerEvent("pointerdown", { ...options, clientX: startX }));
+      row.dispatchEvent(new PointerEvent("pointerup", { ...options, clientX: endX }));
+    JS
+
+    assert_selector "dialog.modal[open]"
+    assert_text 'Delete "Fast swipe delete"?'
+  end
+
   private
 
   def create_completed_recording(title:, login: true)

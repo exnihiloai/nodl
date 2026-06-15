@@ -8,13 +8,16 @@
 
   <% if recording_sessions.any? %>
     <ul class="rounded-box border border-base-300 bg-base-100">
-      <% recording_sessions.each do |session| %>
+      <% recording_sessions.each_with_index do |session, index| %>
+        <% row_corner_classes = [
+             ("rounded-t-box" if index.zero?),
+             ("rounded-b-box" if index == recording_sessions.size - 1)
+           ].compact.join(" ") %>
         <li id="<%= dom_id(session, :dashboard_row) %>"
-            class="relative overflow-hidden border-t border-base-300 first:border-t-0 has-[:open]:z-20 sm:overflow-visible"
+            class="relative overflow-hidden border-t border-base-300 first:border-t-0 has-[:open]:z-20 sm:overflow-visible <%= row_corner_classes %>"
             data-controller="swipe-delete"
             data-swipe-delete-threshold-value="96"
             data-swipe-delete-reveal-value="112"
-            data-action="pointerdown->swipe-delete#start pointermove->swipe-delete#move pointerup->swipe-delete#end pointercancel->swipe-delete#cancel"
             data-testid="dashboard-activity-item"
             data-status="<%= session.status %>">
           <div class="absolute inset-y-0 right-0 flex w-24 items-stretch justify-end bg-error text-error-content sm:hidden">
@@ -25,7 +28,7 @@
                        data: { "swipe-delete-target": "deleteButton", testid: "dashboard-delete-recording-mobile" } %>
           </div>
 
-          <div class="relative z-10 flex flex-col gap-2 bg-base-100 p-4 transition-transform duration-200 ease-out sm:flex-row sm:items-center sm:justify-between"
+          <div class="relative z-10 flex flex-col gap-2 bg-base-100 p-4 transition-transform duration-200 ease-out sm:flex-row sm:items-center sm:justify-between <%= row_corner_classes %>"
                data-swipe-delete-target="surface">
             <div class="flex min-w-0 items-start gap-3">
               <% if session.completed? %>
@@ -53,7 +56,7 @@
               <% elsif session.failed? %>
                 <span class="text-sm text-base-content/60"><%= t("dashboard.activity.couldnt_process_html", link: link_to(t("dashboard.activity.view"), recording_session_path(session), class: "link")) %></span>
               <% else %>
-                <div class="flex w-44 flex-col items-end gap-1"
+                <div class="flex w-full max-w-44 flex-col items-end gap-1 sm:w-44"
                      data-controller="processing-progress"
                      data-processing-progress-started-at-value="<%= session.processing_started_at&.iso8601 || session.created_at.iso8601 %>"
                      data-processing-progress-duration-value="<%= session.estimated_duration %>"
