@@ -239,6 +239,9 @@ de:
       created: Konto erfolgreich erstellt.
     recording_sessions:
       created: Aufnahme-Session erstellt. Die Verarbeitung hat begonnen.
+      deleted: Aufnahme „%{title}" wurde dauerhaft gelöscht.
+      delete_failed: Aufnahme „%{title}" konnte nicht gelöscht werden. Bitte versuche es erneut.
+      already_deleted: Diese Aufnahme existiert nicht mehr.
       not_ready_to_finalize: Die Aufnahme-Session ist noch nicht bereit zum Abschließen.
       integrity_archive_unavailable: Das Integritätsarchiv ist für diese Aufnahme nicht verfügbar.
       original_audio_not_ready: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
@@ -462,6 +465,10 @@ de:
       empty_heading: Noch keine Aufnahmen
       empty_body: Drücke oben auf Aufnehmen, um deinen ersten Gedanken festzuhalten.
   recording_sessions:
+    actions:
+      menu: Aufnahme-Aktionen
+      delete: Löschen
+      delete_confirm: '„%{title}" löschen? Entfernt unwiderruflich Audio, Transkript, Dokument.'
     statuses:
       pending: Ausstehend
       processing: Wird verarbeitet

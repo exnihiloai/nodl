@@ -100,6 +100,7 @@ Do **not** build these unless a user story explicitly requires them:
 - Hint text under inputs for maxlength, format, or optional defaults
 - iPhone / PWA / Safari instructions on the form instead of in error states or docs
 - Long compound labels when one word plus context is enough
+- Menu or dropdown row where only the inner text or icon is clickable while the highlighted row looks fully interactive
 
 ## Screen space and mobile-first
 
@@ -122,6 +123,36 @@ Interactive elements must have generous, fully clickable target areas. When a us
 
 When visual feedback suggests an entire area is interactive, the actual clickable target must match that expectation.
 
+### Dropdown and menu items
+
+DaisyUI `menu` rows often look fully clickable while only the label text responds — users assume the control is broken.
+
+**Rule:** the `<form>` or `<a>` must fill the full row width and height. Padding and hover/active styles belong on that full-width control, not on a narrow inner label.
+
+**Canonical Rails pattern** (same as language switcher and account menu):
+
+```erb
+<li class="p-0">
+  <%= button_to path,
+                form_class: "w-full flex !p-0",
+                class: "flex w-full items-center gap-2 px-3 py-1.5 rounded-[inherit] …" %>
+</li>
+```
+
+- Use `<li class="p-0">` so DaisyUI menu padding does not shrink the hit area.
+- `form_class: "w-full flex !p-0"` — the form spans the row.
+- Button/link classes include `w-full`, horizontal padding (`px-3 py-1.5`), and `rounded-[inherit]` so hover matches the row shape.
+
+**Reference implementations in this repo:**
+
+- `app/views/shared/_language_switcher.html.erb`
+- `app/views/shared/_logged_in_nav.html.erb` (workspace switch, language)
+- `app/views/recording_sessions/_delete_button.html.erb` (destructive menu action)
+
+Prefer a shared partial for repeated menu actions instead of one-off markup per screen.
+
+**Gate:** recurring patterns like full-row menu clicks should be backed by a reference partial or an executable check (integration test, lint), not this prose alone — so regressions fail the build with a fix hint.
+
 ## Feedback and errors
 
 When users click, save, upload, delete, submit, or change something, the product should respond visibly. Loading, success, failure, empty, disabled, and error states should feel intentional, not like afterthoughts.
@@ -137,6 +168,8 @@ Users should be able to go back, undo, cancel, edit, retry, or recover whenever 
 ## Consistency
 
 Similar things should look and behave similarly. The same words should mean the same things everywhere. Buttons, forms, navigation, icons, spacing, and states should follow a coherent system (DaisyUI + Tailwind patterns in this codebase).
+
+Dropdown and menu rows — links, `button_to`, destructive actions — must use the same full-width row pattern documented under **Click targets → Dropdown and menu items**. Do not invent a slimmer click target per screen.
 
 ## Accessibility
 

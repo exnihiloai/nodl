@@ -26,24 +26,29 @@
     </div>
 
     <article
-      class="prose dark:prose-invert relative max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
+      class="prose dark:prose-invert max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
       data-controller="clipboard"
       data-clipboard-copy-text-value="<%= t("clipboard.copy") %>"
       data-clipboard-copied-text-value="<%= t("clipboard.copied") %>"
     >
-      <button
-        type="button"
-        class="not-prose btn btn-ghost btn-sm absolute right-4 top-4 gap-2"
-        data-action="clipboard#copy"
-        data-testid="copy-document"
-        aria-label="<%= t("documents.show.copy_document") %>"
-      >
-        <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
-        <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
-        <span data-clipboard-target="label"><%= t("documents.show.copy") %></span>
-      </button>
+      <div class="mb-4 flex justify-end">
+        <button
+          type="button"
+          class="not-prose btn btn-ghost btn-sm gap-2"
+          data-action="clipboard#copy"
+          data-testid="copy-document"
+          aria-label="<%= t("documents.show.copy_document") %>"
+        >
+          <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
+          <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
+          <span data-clipboard-target="label"><%= t("documents.show.copy") %></span>
+        </button>
+      </div>
 
-      <div data-clipboard-target="source">
+      <div
+        class="min-w-0 break-words hyphens-auto [overflow-wrap:anywhere]"
+        data-clipboard-target="source"
+      >
         <%= render_markdown(@document.content) %>
       </div>
     </article>

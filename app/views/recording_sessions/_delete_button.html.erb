@@ -1,0 +1,18 @@
+<% button_data = local_assigns.fetch(:data, {}).merge(turbo_confirm_button: t("recording_sessions.actions.delete")) %>
+<% form_classes = local_assigns.fetch(:form_class, "w-full flex !p-0") %>
+<% button_classes = local_assigns.fetch(:button_class, "flex w-full items-center gap-2 px-3 py-1.5 rounded-[inherit] text-error") %>
+
+<%= button_to recording_session_path(recording_session),
+              method: :delete,
+              params: local_assigns[:params],
+              class: button_classes,
+              form_class: form_classes,
+              form: {
+                data: {
+                  turbo_confirm: recording_delete_confirm(recording_session)
+                }
+              },
+              data: button_data do %>
+  <%= icon("trash-2", class: "size-4") %>
+  <span><%= t("recording_sessions.actions.delete") %></span>
+<% end %>

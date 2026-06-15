@@ -55,4 +55,8 @@ module RecordingSessionsHelper
       "badge-neutral"
     end
   end
+
+  def recording_delete_confirm(recording_session)
+    t("recording_sessions.actions.delete_confirm", title: recording_session.title)
+  end
 end

@@ -49,6 +49,14 @@ class SealRecordingIntegrityJobTest < ActiveJob::TestCase
     assert_nil recording_session.integrity_record
   end
 
+  test "exits when the recording session has been deleted" do
+    Nodl::Integrity::RecordingIntegrityService.expects(:seal_blob).never
+
+    assert_nothing_raised do
+      SealRecordingIntegrityJob.perform_now(-1)
+    end
+  end
+
   private
 
   def seal_result

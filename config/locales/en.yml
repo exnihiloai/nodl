@@ -133,6 +133,9 @@ en:
       created: Account created successfully.
     recording_sessions:
       created: Recording session created. Processing has started.
+      deleted: Recording "%{title}" was permanently deleted.
+      delete_failed: Recording "%{title}" could not be deleted. Please try again.
+      already_deleted: Recording no longer exists.
       not_ready_to_finalize: Recording session is not ready to finalize.
       integrity_archive_unavailable: Integrity archive is not available for this recording.
       original_audio_not_ready: Original audio can be downloaded after recording and processing finish.
@@ -356,6 +359,10 @@ en:
       empty_heading: No recordings yet
       empty_body: Press Record above to capture your first thought.
   recording_sessions:
+    actions:
+      menu: Recording actions
+      delete: Delete
+      delete_confirm: 'Delete "%{title}"? Removes: audio, transcript, document. Permanent.'
     statuses:
       pending: Pending
       processing: Processing

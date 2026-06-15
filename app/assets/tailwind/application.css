@@ -107,6 +107,20 @@
   outline-offset: 0;
 }
 
+/* Prevent accidental horizontal page scroll on touch devices. */
+html {
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
+[data-controller~="swipe-delete"] {
+  touch-action: pan-y;
+}
+
+[data-controller~="swipe-delete"] [data-swipe-delete-target="surface"] {
+  touch-action: pan-y;
+}
+
 /* Controls: stronger consistent focus with subtle glow */
 .input:focus,
 .input:focus-within,
@@ -340,6 +354,25 @@
 .integrity-status.is-open .integrity-status-panel-content {
   opacity: 1;
   transform: translateY(0);
+}
+
+[data-controller~="swipe-delete"] [data-swipe-delete-target="deleteReveal"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-controller~="swipe-delete"].is-revealing-delete [data-swipe-delete-target="deleteReveal"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"] svg {
+  transition: transform 180ms ease;
+}
+
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"]:hover svg,
+[data-controller~="swipe-delete"] [data-testid="dashboard-delete-recording-mobile"]:focus-visible svg {
+  transform: translateY(-0.125rem) rotate(-8deg);
 }
 
 .integrity-sealed-badge {
@@ -1153,7 +1186,7 @@ body.lp-reveal-ready [data-reveal].lp-in {
   }
 }
 
-/* Vertical grow animation for the newly added dashboard activity row */
+/* Vertical grow animation for the newly added dashboard activity row surface */
 .dashboard-row-grow {
   animation: dashboard-row-grow-anim 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   overflow: hidden;
@@ -1173,4 +1206,3 @@ body.lp-reveal-ready [data-reveal].lp-in {
     padding-bottom: 1rem;
   }
 }
-

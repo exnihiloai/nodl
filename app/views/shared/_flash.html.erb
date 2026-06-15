@@ -1,13 +1,15 @@
-<% if flash.any? %>
-  <div class="container mx-auto px-4 mt-4 space-y-2">
-    <% flash.each do |type, message| %>
-      <% is_error = type.to_s == "alert" %>
-      <%# Success/notice flashes auto-dismiss; errors stay so they can be read. %>
-      <%= tag.div class: "alert #{is_error ? "alert-error" : "alert-success"} transition-opacity duration-500",
-                  role: "alert",
-                  data: (is_error ? {} : { controller: "flash" }) do %>
-        <span><%= message %></span>
+<div id="flash">
+  <% if flash.any? %>
+    <div class="container mx-auto px-4 mt-4 space-y-2">
+      <% flash.each do |type, message| %>
+        <% is_error = type.to_s == "alert" %>
+        <%# Success/notice flashes auto-dismiss; errors stay so they can be read. %>
+        <%= tag.div class: "alert #{is_error ? "alert-error" : "alert-success"} transition-opacity duration-500",
+                    role: "alert",
+                    data: (is_error ? {} : { controller: "flash" }) do %>
+          <span><%= message %></span>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
-<% end %>
+    </div>
+  <% end %>
+</div>

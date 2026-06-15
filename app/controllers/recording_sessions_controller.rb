@@ -36,6 +36,18 @@ class RecordingSessionsController < ApplicationController
     @document = @recording_session.document
   end
 
+  def destroy
+    recording_session = current_workspace.recording_sessions.finalized.find_by(id: params[:id])
+    return handle_missing_destroy unless recording_session
+
+    title = recording_session.title
+    if recording_session.destroy
+      respond_to_destroy(:notice, t("flash.recording_sessions.deleted", title: title))
+    else
+      respond_to_destroy(:alert, t("flash.recording_sessions.delete_failed", title: title), status: :unprocessable_entity)
+    end
+  end
+
   def finalize
     @recording_session = current_workspace.recording_sessions.find(params[:id])
     return render json: { error: t("flash.recording_sessions.not_ready_to_finalize") }, status: :unprocessable_entity unless @recording_session.recording?
@@ -76,6 +88,66 @@ class RecordingSessionsController < ApplicationController
   end
 
   private
+
+  def handle_missing_destroy
+    raise ActiveRecord::RecordNotFound if RecordingSession.exists?(id: params[:id])
+
+    respond_to_destroy(:notice, t("flash.recording_sessions.already_deleted"))
+  end
+
+  def respond_to_destroy(type, message, status: :ok)
+    if redirect_after_destroy?
+      redirect_to dashboard_path, { type => message, status: :see_other }
+      return
+    end
+
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[type] = message
+        render turbo_stream: destroy_turbo_streams, status: status
+      end
+      format.html { redirect_to dashboard_path, { type => message, status: :see_other } }
+    end
+  end
+
+  def redirect_after_destroy?
+    ActiveModel::Type::Boolean.new.cast(params[:redirect_to_dashboard])
+  end
+
+  def dashboard_recording_sessions
+    current_workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(RecordingSession::DASHBOARD_RECENT_LIMIT)
+  end
+
+  def destroy_turbo_streams
+    [
+      turbo_stream.replace(
+        "dashboard_record_hero",
+        partial: "dashboard/record_hero",
+        locals: record_hero_locals
+      ),
+      turbo_stream.replace(
+        "dashboard_activity",
+        partial: "dashboard/activity",
+        locals: { recording_sessions: dashboard_recording_sessions }
+      ),
+      turbo_stream.replace("flash", partial: "shared/flash")
+    ]
+  end
+
+  def record_hero_locals
+    workspace = current_workspace
+    TransformerProfile.ensure_default_for!(workspace)
+
+    {
+      recording_limit_reached: workspace.recording_limit_reached?,
+      recording_session: workspace.recording_sessions.build(transformer_handle: default_transformer_handle),
+      transformer_profiles: workspace.transformer_profiles.active.default_first
+    }
+  end
+
+  def default_transformer_handle
+    current_workspace.transformer_profiles.find_by(default: true)&.handle || TransformerProfile::DEFAULT_HANDLE
+  end
 
   def enqueue_integrity_sealing(recording_session)
     return unless recording_session.creator.integrity_sealing_enabled?

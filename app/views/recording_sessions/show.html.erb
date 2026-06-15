@@ -22,9 +22,28 @@
         <h1 class="mt-2 text-3xl font-bold"><%= @recording_session.title %></h1>
         <p class="text-base-content/70"><%= t("recording_sessions.show.format", name: @recording_session.transformer_handle.humanize) %></p>
       </div>
-      <% unless @recording_session.completed? %>
+      <% if !@recording_session.completed? || !@recording_session.recording? %>
         <div class="flex flex-col items-start gap-2 sm:items-end">
+          <% unless @recording_session.completed? %>
           <span class="badge badge-lg <%= @recording_session.failed? ? "badge-error" : "badge-warning" %>"><%= t("recording_sessions.statuses.#{@recording_session.status}") %></span>
+          <% end %>
+          <% unless @recording_session.recording? %>
+            <details class="dropdown dropdown-end" data-controller="dropdown" data-testid="recording-actions-menu">
+              <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                       data-testid="recording-actions-menu-button"
+                       aria-label="<%= t("recording_sessions.actions.menu") %>">
+                <%= icon("ellipsis", class: "size-5") %>
+              </summary>
+              <ul class="dropdown-content menu z-10 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                <li class="p-0">
+                  <%= render "recording_sessions/delete_button",
+                             recording_session: @recording_session,
+                             params: { redirect_to_dashboard: true },
+                             data: { testid: "recording-delete-button" } %>
+                </li>
+              </ul>
+            </details>
+          <% end %>
         </div>
       <% end %>
     </div>

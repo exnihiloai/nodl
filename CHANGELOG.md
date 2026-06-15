@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-06-15
+
+### Added
+- **Delete Recordings:** You can now permanently delete recordings from the dashboard **Recent** list and from the recording detail page. On desktop and tablet, open the actions menu (⋯) and choose **Delete**; on mobile, swipe a row left to reveal the delete action. A short confirmation tells you what will be removed before anything is deleted. Deleting frees a slot in your recording quota.
+
+### Fixed
+
+- **Long Document Titles on Mobile:** Fixed an issue where very long document titles could overflow the page layout on small screens.
+
 ## [0.19.1] - 2026-06-15
 
 ### Fixed

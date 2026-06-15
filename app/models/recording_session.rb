@@ -1,9 +1,12 @@
+require "fileutils"
+require "pathname"
 require "nodl/audio/waveform_extractor"
 
 class RecordingSession < ApplicationRecord
   DEFAULT_TITLE = "Untitled recording".freeze
   MAX_AUDIO_SIZE = 100.megabytes
   DASHBOARD_RECENT_LIMIT = 8
+  WORK_SESSIONS_ROOT = Rails.root.join("work", "sessions").freeze
   ALLOWED_AUDIO_CONTENT_TYPES = %w[
     audio/aac
     audio/flac
@@ -74,6 +77,7 @@ class RecordingSession < ApplicationRecord
   scope :finalized, -> { where.not(status: :recording) }
 
   before_validation :assign_default_title, on: :create
+  after_destroy_commit :remove_work_path
 
   def mark_processing!
     update!(
@@ -198,6 +202,16 @@ class RecordingSession < ApplicationRecord
 
   def dashboard_recording_sessions
     workspace.recording_sessions.finalized.includes(:document, original_audio_attachment: :blob).recent_first.limit(DASHBOARD_RECENT_LIMIT)
+  end
+
+  def remove_work_path
+    return if work_path.blank?
+
+    path = Pathname.new(work_path).cleanpath
+    root = WORK_SESSIONS_ROOT.cleanpath
+    return unless path.to_s.start_with?("#{root}/")
+
+    FileUtils.rm_rf(path)
   end
 
   def assign_default_title

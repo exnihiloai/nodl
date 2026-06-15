@@ -50,25 +50,12 @@ class RecordingSessionProcessor
       )
       transcript_text = result.transcript_path.read.strip
       document_content = result.document_path.read.strip
-      recording_session.mark_completed!(
-        transcript_text: transcript_text,
-        transcript_segments: result.transcript_segments,
-        waveform_peaks: result.waveform_peaks,
-        audio_duration: result.audio_duration,
-        document_content: document_content,
-        work_path: result.session_path.to_s,
-        generated_title: generated_title_for(recording_session, transcript_text)
-      )
-      ActiveSupport::Notifications.instrument(
-        "nodl.document.generated",
-        recording_session: recording_session,
-        redacted_title: self.class.redacted_title(recording_session.title)
-      )
+      persist_completed_recording(recording_session, result, transcript_text, document_content)
     ensure
       FileUtils.rm_f(normalized.path) if normalized&.converted?
     end
   rescue StandardError => error
-    recording_session.mark_failed!(error.message)
+    RecordingSession.find_by(id: recording_session.id)&.mark_failed!(error.message)
     raise
   end
 
@@ -82,6 +69,26 @@ class RecordingSessionProcessor
     raise Nodl::Error, I18n.t(
       "activerecord.errors.models.recording_session.attributes.original_audio.too_long",
       limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i
+    )
+  end
+
+  def persist_completed_recording(recording_session, result, transcript_text, document_content)
+    fresh_recording_session = RecordingSession.find_by(id: recording_session.id)
+    return unless fresh_recording_session
+
+    fresh_recording_session.mark_completed!(
+      transcript_text: transcript_text,
+      transcript_segments: result.transcript_segments,
+      waveform_peaks: result.waveform_peaks,
+      audio_duration: result.audio_duration,
+      document_content: document_content,
+      work_path: result.session_path.to_s,
+      generated_title: generated_title_for(fresh_recording_session, transcript_text)
+    )
+    ActiveSupport::Notifications.instrument(
+      "nodl.document.generated",
+      recording_session: fresh_recording_session,
+      redacted_title: self.class.redacted_title(fresh_recording_session.title)
     )
   end
 
