@@ -15,6 +15,7 @@ class SettingsController < ApplicationController
     end
 
     if @user.update(settings_params)
+      clear_daily_reminder_last_sent_if_schedule_changed
       redirect_to settings_path, notice: t("settings.flash.updated")
     else
       flash.now[:alert] = t("settings.flash.invalid")
@@ -43,5 +44,17 @@ class SettingsController < ApplicationController
 
   def enabling_daily_reminder?
     ActiveModel::Type::Boolean.new.cast(settings_params[:daily_reminder_enabled])
+  end
+
+  def clear_daily_reminder_last_sent_if_schedule_changed
+    return unless @user.daily_reminder_enabled?
+
+    schedule_changed = @user.saved_change_to_daily_reminder_at? ||
+      @user.saved_change_to_time_zone? ||
+      (@user.saved_change_to_daily_reminder_enabled? && @user.daily_reminder_enabled?)
+
+    return unless schedule_changed
+
+    @user.update_column(:daily_reminder_last_sent_on, nil)
   end
 end

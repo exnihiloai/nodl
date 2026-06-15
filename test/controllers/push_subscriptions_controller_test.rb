@@ -36,6 +36,23 @@ class PushSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "updated-key", @user.push_subscriptions.find_by!(endpoint: @subscription_params[:endpoint]).p256dh_key
   end
 
+  test "reassigns a browser endpoint from another user to the current user" do
+    other = create_user_with_workspace
+    other.push_subscriptions.create!(@subscription_params)
+
+    assert_difference -> { @user.push_subscriptions.count }, 1 do
+      assert_difference -> { other.push_subscriptions.count }, -1 do
+        post push_subscriptions_path, params: { push_subscription: @subscription_params }, as: :json
+      end
+    end
+
+    assert_response :created
+    assert_equal @user.id, PushSubscription.find_by!(endpoint: @subscription_params[:endpoint]).user_id
+  ensure
+    other.push_subscriptions.destroy_all
+    other&.destroy
+  end
+
   test "destroys the current user subscription by endpoint" do
     subscription = @user.push_subscriptions.create!(@subscription_params)
 

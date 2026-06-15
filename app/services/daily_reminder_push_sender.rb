@@ -39,9 +39,12 @@ class DailyReminderPushSender
       auth: subscription.auth_key,
       vapid: WebPushConfig.vapid_options
     )
+    instrument_delivery(subscription, success: true)
     true
   rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription, WebPush::ResponseError => error
-    subscription.destroy! if expired_subscription?(error)
+    expired = expired_subscription?(error)
+    instrument_delivery(subscription, success: false, error: error, expired: expired)
+    subscription.destroy! if expired
     false
   end
 
@@ -66,5 +69,28 @@ class DailyReminderPushSender
     tz = ActiveSupport::TimeZone[@user.time_zone]
     sent_on = tz ? tz.now.to_date : Date.current
     @user.update_column(:daily_reminder_last_sent_on, sent_on)
+  end
+
+  def instrument_delivery(subscription, success:, error: nil, expired: false)
+    ActiveSupport::Notifications.instrument(
+      "daily_reminders.send",
+      user_id: @user.id,
+      subscription_id: subscription.id,
+      endpoint_host: endpoint_host(subscription.endpoint),
+      success: success,
+      expired: expired,
+      error_class: error&.class&.name,
+      status: response_status(error)
+    )
+  end
+
+  def endpoint_host(endpoint)
+    URI.parse(endpoint).host
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  def response_status(error)
+    error.respond_to?(:response) ? error.response&.code&.to_i : nil
   end
 end

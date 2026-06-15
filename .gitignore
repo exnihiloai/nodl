@@ -61,3 +61,4 @@ config/credentials/*.key
 !/vendor/.keep
 .claude/*
 .codex/*
+.cursor/*

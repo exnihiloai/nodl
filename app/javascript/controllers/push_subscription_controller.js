@@ -114,11 +114,6 @@ export default class extends Controller {
 
   async registerPushSubscription(permissionPromise, vapidPublicKey) {
     try {
-      if (await this.hasRegisteredSubscription()) {
-        this.submitSettingsForm()
-        return
-      }
-
       const permission = await permissionPromise
       if (permission !== "granted") {
         throw new Error(this.permissionDeniedTextValue)
@@ -135,22 +130,7 @@ export default class extends Controller {
         })
       }
 
-      const response = await fetch(this.subscribeUrlValue, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "X-CSRF-Token": this.csrfToken()
-        },
-        body: JSON.stringify({
-          push_subscription: this.serializeSubscription(subscription)
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(this.subscribeFailedTextValue)
-      }
-
+      await this.persistSubscription(subscription)
       this.submitSettingsForm()
     } catch (error) {
       this.showError(error.message || this.subscribeFailedTextValue)
@@ -159,20 +139,28 @@ export default class extends Controller {
     }
   }
 
+  async persistSubscription(subscription) {
+    const response = await fetch(this.subscribeUrlValue, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-CSRF-Token": this.csrfToken()
+      },
+      body: JSON.stringify({
+        push_subscription: this.serializeSubscription(subscription)
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(this.subscribeFailedTextValue)
+    }
+  }
+
   submitSettingsForm() {
     this.captureTimeZone()
     this.skipPushFlow = true
     this.element.requestSubmit()
-  }
-
-  async hasRegisteredSubscription() {
-    if (Notification.permission !== "granted") return false
-
-    const registration = await navigator.serviceWorker.getRegistration("/service-worker")
-    if (!registration) return false
-
-    const subscription = await registration.pushManager.getSubscription()
-    return !!subscription
   }
 
   pushSupported() {
