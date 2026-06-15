@@ -236,7 +236,7 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a.btn", text: "Show Recording", href: recording_session_path(recording_session)
     assert_select "a", text: "Back to session", count: 0
-    assert_select "article.prose"
+    assert_select "article .prose"
     assert_select "h1", text: "Title Header"
     assert_select "ul" do
       assert_select "li", text: "Item 1"

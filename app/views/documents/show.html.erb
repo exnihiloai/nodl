@@ -15,9 +15,24 @@
             <%= t("documents.show.download") %>
           </label>
           <ul tabindex="0" class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-            <li><%= link_to t("documents.show.pdf"), download_document_path(@document, format: "pdf"), data: { testid: "download-pdf" } %></li>
-            <li><%= link_to t("documents.show.docx"), download_document_path(@document, format: "docx"), data: { testid: "download-docx" } %></li>
-            <li><%= link_to t("documents.show.markdown"), download_document_path(@document, format: "md"), data: { testid: "download-md" } %></li>
+            <li class="p-0">
+              <%= link_to t("documents.show.pdf"),
+                          download_document_path(@document, format: "pdf"),
+                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                          data: { testid: "download-pdf" } %>
+            </li>
+            <li class="p-0">
+              <%= link_to t("documents.show.docx"),
+                          download_document_path(@document, format: "docx"),
+                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                          data: { testid: "download-docx" } %>
+            </li>
+            <li class="p-0">
+              <%= link_to t("documents.show.markdown"),
+                          download_document_path(@document, format: "md"),
+                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                          data: { testid: "download-md" } %>
+            </li>
           </ul>
         </div>
       </div>
@@ -26,30 +41,83 @@
     </div>
 
     <article
-      class="prose dark:prose-invert max-w-none rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
-      data-controller="clipboard"
+      class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
+      data-controller="document-editor clipboard"
+      data-document-editor-editing-value="<%= @editing ? "true" : "false" %>"
+      data-document-editor-link-prompt-value="<%= t("documents.show.format.link_prompt") %>"
       data-clipboard-copy-text-value="<%= t("clipboard.copy") %>"
       data-clipboard-copied-text-value="<%= t("clipboard.copied") %>"
     >
-      <div class="mb-4 flex justify-end">
-        <button
-          type="button"
-          class="not-prose btn btn-ghost btn-sm gap-2"
-          data-action="clipboard#copy"
-          data-testid="copy-document"
-          aria-label="<%= t("documents.show.copy_document") %>"
-        >
-          <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
-          <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
-          <span data-clipboard-target="label"><%= t("documents.show.copy") %></span>
-        </button>
+      <div class="mb-4 flex flex-wrap items-center justify-end gap-2">
+        <div class="flex flex-wrap items-center gap-2" data-document-editor-target="viewActions">
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm gap-2"
+            data-action="document-editor#edit"
+            data-testid="edit-document"
+          >
+            <%= icon "square-pen", class: "h-4 w-4" %>
+            <%= t("documents.show.edit") %>
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm gap-2"
+            data-action="clipboard#copy"
+            data-testid="copy-document"
+            aria-label="<%= t("documents.show.copy_document") %>"
+          >
+            <span data-clipboard-target="copyIcon"><%= icon "copy", class: "h-4 w-4" %></span>
+            <span data-clipboard-target="checkIcon" class="hidden text-success"><%= icon "check", class: "h-4 w-4" %></span>
+            <span data-clipboard-target="label"><%= t("documents.show.copy") %></span>
+          </button>
+        </div>
       </div>
 
-      <div
-        class="min-w-0 break-words hyphens-auto [overflow-wrap:anywhere]"
-        data-clipboard-target="source"
-      >
-        <%= render_markdown(@document.content) %>
+      <div data-document-editor-target="viewPanel" class="<%= "hidden" if @editing %>">
+        <div
+          class="prose dark:prose-invert max-w-none min-w-0 break-words hyphens-auto [overflow-wrap:anywhere]"
+          data-clipboard-target="source"
+        >
+          <%= render_markdown(@document.content) %>
+        </div>
+      </div>
+
+      <div data-document-editor-target="editPanel" class="<%= "hidden" unless @editing %>">
+        <%= form_with model: @document,
+                      url: document_path(@document),
+                      method: :patch,
+                      class: "space-y-4",
+                      data: { action: "submit->document-editor#syncBeforeSubmit" } do |form| %>
+          <% if @document.errors.any? %>
+            <div class="alert alert-error" role="alert">
+              <span><%= @document.errors.full_messages.to_sentence %></span>
+            </div>
+          <% end %>
+
+          <%= render "documents/format_toolbar" %>
+
+          <div
+            contenteditable="true"
+            class="prose dark:prose-invert max-w-none min-h-[50vh] w-full rounded-box border border-base-300 bg-base-100 px-4 py-3 text-base leading-relaxed focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            data-document-editor-target="surface"
+            data-testid="document-content-editor"
+          ></div>
+
+          <%= form.text_area :content,
+                             class: "hidden",
+                             data: {
+                               document_editor_target: "content",
+                               testid: "document-content-input"
+                             } %>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <%= form.submit t("documents.show.save"), class: "btn btn-primary", data: { testid: "save-document" } %>
+            <button type="button" class="btn btn-ghost" data-action="document-editor#cancel" data-testid="cancel-document-edit">
+              <%= t("documents.show.cancel") %>
+            </button>
+          </div>
+        <% end %>
       </div>
     </article>
   </div>

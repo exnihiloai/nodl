@@ -45,7 +45,7 @@ Rails.application.routes.draw do
     get :download_original_audio, on: :member
     get :download_integrity_archive, on: :member
   end
-  resources :documents, only: %i[show] do
+  resources :documents, only: %i[show update] do
     get :download, on: :member
   end
   resources :transformer_profiles, only: %i[show new create edit update destroy] do

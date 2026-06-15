@@ -23,6 +23,27 @@ class DocumentCopyDownloadTest < ApplicationJsSystemTestCase
     assert_link "Markdown", href: download_document_path(document, format: "md"), visible: :all
   end
 
+  test "user can edit document text and see the updated content" do
+    document = create_document_for_ui
+
+    visit document_path(document)
+
+    assert_selector "[data-testid='edit-document']", text: "Edit"
+    find("[data-testid='edit-document']").click
+
+    assert_selector "[data-testid='document-content-editor']", visible: :visible
+    page.execute_script(<<~JS)
+      const surface = document.querySelector("[data-testid='document-content-editor']");
+      surface.innerHTML = "<h1>Revised title</h1><p>Corrected paragraph.</p>";
+    JS
+    find("[data-testid='save-document']").click
+
+    assert_selector ".alert-success", text: "Document saved"
+    assert_text "Revised title"
+    assert_text "Corrected paragraph."
+    assert_no_selector "[data-testid='document-content-editor']", visible: :visible
+  end
+
   private
 
   def create_document_for_ui

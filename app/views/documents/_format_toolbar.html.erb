@@ -1,0 +1,115 @@
+<%# Inline formatting | block type | lists | blocks | history %>
+<div
+  class="flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
+  role="toolbar"
+  aria-label="<%= t("documents.show.format.toolbar") %>"
+  data-document-editor-target="toolbar"
+>
+  <div class="join">
+    <% %i[bold italic strikethrough code link].each do |command| %>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm join-item px-2"
+        data-action="mousedown->document-editor#keepFocus document-editor#format"
+        data-document-editor-command-param="<%= command %>"
+        aria-label="<%= t("documents.show.format.#{command}") %>"
+        title="<%= t("documents.show.format.#{command}") %>"
+      >
+        <%= icon command.to_s, class: "size-4" %>
+      </button>
+    <% end %>
+  </div>
+
+  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <details class="dropdown" data-controller="dropdown" data-testid="document-block-type-menu">
+    <summary
+      class="btn btn-ghost btn-sm list-none gap-1 px-2"
+      aria-label="<%= t("documents.show.format.block_type_menu") %>"
+      title="<%= t("documents.show.format.block_type_menu") %>"
+    >
+      <%= icon "pilcrow", class: "size-4" %>
+      <%= icon "chevron-down", class: "size-3 opacity-60" %>
+    </summary>
+    <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+      <% {
+        paragraph: t("documents.show.format.paragraph"),
+        h1: t("documents.show.format.h1"),
+        h2: t("documents.show.format.h2"),
+        h3: t("documents.show.format.h3"),
+        code_block: t("documents.show.format.code_block")
+      }.each do |command, label| %>
+        <li class="p-0">
+          <button
+            type="button"
+            class="flex w-full items-center px-3 py-1.5 text-left rounded-[inherit] hover:bg-base-200"
+            data-action="mousedown->document-editor#keepFocus document-editor#format"
+            data-document-editor-command-param="<%= command %>"
+            data-testid="document-block-type-<%= command %>"
+          >
+            <%= label %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+
+  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <div class="join">
+    <% { ul: "list", ol: "list-ordered" }.each do |command, icon_name| %>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm join-item px-2"
+        data-action="mousedown->document-editor#keepFocus document-editor#format"
+        data-document-editor-command-param="<%= command %>"
+        aria-label="<%= t("documents.show.format.#{command}") %>"
+        title="<%= t("documents.show.format.#{command}") %>"
+      >
+        <%= icon icon_name, class: "size-4" %>
+      </button>
+    <% end %>
+  </div>
+
+  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <div class="join">
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item px-2"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="blockquote"
+      aria-label="<%= t("documents.show.format.blockquote") %>"
+      title="<%= t("documents.show.format.blockquote") %>"
+    >
+      <%= icon "quote", class: "size-4" %>
+    </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item px-2"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="hr"
+      aria-label="<%= t("documents.show.format.hr") %>"
+      title="<%= t("documents.show.format.hr") %>"
+    >
+      <%= icon "minus", class: "size-4" %>
+    </button>
+  </div>
+
+  <span class="mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <div class="join">
+    <% %i[undo redo].each do |command| %>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm join-item px-2"
+        data-action="mousedown->document-editor#keepFocus document-editor#format"
+        data-document-editor-command-param="<%= command %>"
+        aria-label="<%= t("documents.show.format.#{command}") %>"
+        title="<%= t("documents.show.format.#{command}") %>"
+      >
+        <%= icon command.to_s, class: "size-4" %>
+      </button>
+    <% end %>
+  </div>
+</div>
