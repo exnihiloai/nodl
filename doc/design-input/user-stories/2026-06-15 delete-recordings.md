@@ -1,23 +1,42 @@
 # User Story: Delete Recordings
 
-As a user, who creates voice notes using Nodl, I want to be able to delete recordings from the dash board, so that I can remove unwanted recordings and keep my data clean.
-
+As a logged-in user who creates voice notes in Nodl,
+I want to delete unwanted recordings from my dashboard,
+so that I can keep my workspace tidy and free up recording quota.
 
 ## Acceptance Criteria
 
-- The delete function is available for the "Recent" recordings on the dashboard.
-- Each entry in that list has an ellipsis menu on the right side of each entry.
-  - The menu has a tooltip "Actions".
-  - Clicking on the ellipsis icon opens a menu which has one entry "Delete" with a trashcan icon.
-  - A confirmation modal asks the user to confirm before the deletion.
-- When the user is on mobile: Swiping left will delete the recoding. 
-  - A red backdrop and a animated trashcan icon signal the user that they are about to delete something.
-  - A user can abort the deletion by stopping the swipe until a stop point or by undoing the swipe.
-  - A confirmation modal asks the user to confirm before the deletion.
-- When a recording is deleted, it deletes
-  - The original audio and all derives audio files.
-  - The transcript and any derived information from it.
-  - Integrity certificates associated with it.
-  - The document associated with it.
-  - All other information that is derives from the recording.
-  - The deletion is permanent, and not just a soft delete.
+### Scope & permissions
+- Delete for every session in dashboard **Recent** (`completed`, `failed`, `processing`, `pending`).
+- Live-capture sessions (`recording`) are not listed and not deletable here.
+- Any workspace member who can view the session may delete it (`current_workspace` scope).
+- **Permanent** hard delete — no trash, undo, or restore.
+
+### Desktop & tablet (≥ `sm`)
+- Ellipsis **Actions** menu per row (same dropdown pattern as recording detail page).
+- One item: **Delete** (trash icon, `text-error`).
+- Opens app-wide confirm modal (`data-turbo-confirm`) naming the recording title; warns that audio, transcript, document, and integrity proof (if any) are permanently removed.
+- **Sealed** integrity → stronger warning copy.
+- Success: Turbo Stream row removal + notice. Failure: row stays + error notice.
+
+### Mobile (< `sm`)
+- Swipe left reveals red delete affordance with animated trash icon.
+- Cancel by swiping back or releasing before the stop threshold.
+- Threshold reached or tap on revealed control → same confirm modal (swipe alone does not delete).
+
+### Data removed
+`RecordingSession` hard delete including encrypted fields, `original_audio`/`normalized_audio` blobs, `document`, `recording_integrity_record`, and `work_path` artifacts. In-flight jobs become no-ops.
+
+### Side effects
+- Frees one `PlanLimits::MAX_RECORDINGS` slot.
+- Open detail page → redirect to dashboard (“recording no longer exists”).
+- Last item deleted → empty Recent state.
+- Same Delete action on `recording_sessions#show` (phase 1).
+
+## Out of Scope
+Bulk delete, soft delete/undo, admin audit log, delete via push/email, legal hold.
+
+## Edge Cases
+- Delete while processing → job exits cleanly; no stuck progress UI.
+- Failed and sealed sessions deletable (sealed: extra warning).
+- Repeat delete → safe “already deleted” outcome.
