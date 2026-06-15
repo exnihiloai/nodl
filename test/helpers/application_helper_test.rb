@@ -12,6 +12,13 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_match "<strong>bold</strong>", result
   end
 
+  test "render_markdown renders GFM strikethrough" do
+    result = render_markdown("# ~~Waldemar~~ Antons Weg\n")
+
+    assert_match "<del>Waldemar</del>", result
+    refute_match "~~", result
+  end
+
   test "render_markdown sanitizes unsafe HTML tags" do
     markdown = "# Header\n\n<script>alert('XSS')</script>\n\n[untrusted](javascript:alert('XSS'))"
     result = render_markdown(markdown)

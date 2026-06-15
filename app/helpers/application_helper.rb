@@ -9,7 +9,7 @@ module ApplicationHelper
     return "" if content.blank?
 
     begin
-      html = Kramdown::Document.new(content).to_html
+      html = MarkdownRenderer.to_html(content)
       sanitize(html)
     rescue StandardError => e
       Rails.logger.error("Markdown rendering failed: #{e.message}")
