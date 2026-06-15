@@ -45,6 +45,14 @@
       data-controller="document-editor clipboard"
       data-document-editor-editing-value="<%= @editing ? "true" : "false" %>"
       data-document-editor-link-prompt-value="<%= t("documents.show.format.link_prompt") %>"
+      data-document-editor-block-type-labels-value="<%= {
+        paragraph: t("documents.show.format.paragraph"),
+        h1: t("documents.show.format.h1"),
+        h2: t("documents.show.format.h2"),
+        h3: t("documents.show.format.h3"),
+        blockquote: t("documents.show.format.blockquote"),
+        code_block: t("documents.show.format.code_block")
+      }.to_json %>"
       data-clipboard-copy-text-value="<%= t("clipboard.copy") %>"
       data-clipboard-copied-text-value="<%= t("clipboard.copied") %>"
     >

@@ -437,7 +437,8 @@ en:
         code: Inline code
         link: Link
         link_prompt: Link URL
-        block_type_menu: Block type
+        block_type_menu: Paragraph style
+        insert_menu: Insert
         paragraph: Paragraph
         h1: Heading 1
         h2: Heading 2

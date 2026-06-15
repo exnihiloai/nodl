@@ -543,7 +543,8 @@ de:
         code: Inline-Code
         link: Link
         link_prompt: Link-URL
-        block_type_menu: Blocktyp
+        block_type_menu: Absatzformat
+        insert_menu: Einfügen
         paragraph: Absatz
         h1: Überschrift 1
         h2: Überschrift 2

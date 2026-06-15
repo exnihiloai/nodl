@@ -91,10 +91,12 @@ class DocumentsUpdateTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='edit-document']", text: /Edit/i
     assert_select "[data-testid='document-content-input']"
     assert_select "[data-testid='document-content-editor']"
-    assert_select "[data-document-editor-command-param='code']"
     assert_select "[data-document-editor-command-param='link']"
-    assert_select "[data-testid='document-block-type-menu']"
+    assert_select "[data-document-editor-target='blockTypeLabel']"
     assert_select "[data-testid='document-block-type-h2']"
+    assert_select "[data-testid='document-block-type-blockquote']"
+    assert_select "[data-testid='document-insert-menu']", text: /Insert/i
+    assert_select "[data-testid='document-insert-hr']"
     assert_select "[data-document-editor-command-param='undo']"
   end
 end

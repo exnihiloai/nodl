@@ -2,11 +2,13 @@ import { Controller } from "@hotwired/stimulus"
 import { marked } from "marked"
 import TurndownService from "turndown"
 
+const BLOCK_TYPE_COMMANDS = new Set([ "paragraph", "h1", "h2", "h3", "blockquote", "code_block" ])
+
 // WYSIWYG document editor: contenteditable surface with a formatting toolbar.
 // Persists Markdown in a hidden textarea so exports and rendering stay unchanged.
 export default class extends Controller {
-  static targets = ["viewPanel", "editPanel", "viewActions", "content", "surface", "toolbar"]
-  static values = { editing: Boolean, linkPrompt: String }
+  static targets = [ "viewPanel", "editPanel", "viewActions", "content", "surface", "toolbar", "blockTypeLabel" ]
+  static values = { editing: Boolean, linkPrompt: String, blockTypeLabels: Object }
 
   connect() {
     this.turndown = new TurndownService({ headingStyle: "atx", bulletListMarker: "-" })
@@ -16,11 +18,20 @@ export default class extends Controller {
     })
     marked.setOptions({ gfm: true, breaks: false })
 
+    this.boundUpdateBlockTypeLabel = this.updateBlockTypeLabel.bind(this)
+    this.surfaceTarget.addEventListener("keyup", this.boundUpdateBlockTypeLabel)
+    this.surfaceTarget.addEventListener("mouseup", this.boundUpdateBlockTypeLabel)
+
     if (this.editingValue) {
       this.populateEditor()
     }
 
     this.sync()
+  }
+
+  disconnect() {
+    this.surfaceTarget.removeEventListener("keyup", this.boundUpdateBlockTypeLabel)
+    this.surfaceTarget.removeEventListener("mouseup", this.boundUpdateBlockTypeLabel)
   }
 
   edit() {
@@ -101,6 +112,12 @@ export default class extends Controller {
       default:
         break
     }
+
+    if (BLOCK_TYPE_COMMANDS.has(command)) {
+      this.setBlockTypeLabel(command)
+    } else {
+      this.updateBlockTypeLabel()
+    }
   }
 
   wrapSelection(tagName) {
@@ -121,11 +138,45 @@ export default class extends Controller {
   populateEditor() {
     const markdown = this.contentTarget.value
     this.surfaceTarget.innerHTML = markdown.trim() === "" ? "<p></p>" : marked.parse(markdown)
+    this.updateBlockTypeLabel()
   }
 
   syncMarkdownToInput() {
     const markdown = this.turndown.turndown(this.surfaceTarget.innerHTML).trim()
     this.contentTarget.value = markdown
+  }
+
+  currentBlockType() {
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return "paragraph"
+
+    let node = selection.anchorNode
+    if (!node) return "paragraph"
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentElement
+
+    while (node && node !== this.surfaceTarget) {
+      const tag = node.tagName?.toUpperCase()
+      if (tag === "H1") return "h1"
+      if (tag === "H2") return "h2"
+      if (tag === "H3") return "h3"
+      if (tag === "BLOCKQUOTE") return "blockquote"
+      if (tag === "PRE") return "code_block"
+      if (tag === "P") return "paragraph"
+      node = node.parentElement
+    }
+
+    return "paragraph"
+  }
+
+  setBlockTypeLabel(blockType) {
+    if (!this.hasBlockTypeLabelTarget) return
+
+    const label = this.blockTypeLabelsValue[blockType] || this.blockTypeLabelsValue.paragraph
+    this.blockTypeLabelTarget.textContent = label
+  }
+
+  updateBlockTypeLabel() {
+    this.setBlockTypeLabel(this.currentBlockType())
   }
 
   editingValueChanged() {
@@ -141,6 +192,7 @@ export default class extends Controller {
 
     if (editing) {
       this.surfaceTarget.focus()
+      this.updateBlockTypeLabel()
     }
   }
 }
