@@ -246,6 +246,8 @@ de:
       integrity_archive_unavailable: Das Integritätsarchiv ist für diese Aufnahme nicht verfügbar.
       original_audio_not_ready: Die Originalaufnahme kann heruntergeladen werden, sobald Aufnahme und Verarbeitung abgeschlossen sind.
       original_audio_unavailable: Die Originalaufnahme ist für diese Aufnahme nicht verfügbar.
+    documents:
+      updated: Dokument gespeichert.
     transformer_profiles:
       created: Format „%{name}" erstellt.
       updated: Format „%{name}" aktualisiert.
@@ -530,6 +532,30 @@ de:
       show_recording: Aufnahme anzeigen
       copy: Kopieren
       copy_document: Dokument kopieren
+      edit: Bearbeiten
+      save: Speichern
+      cancel: Abbrechen
+      format:
+        toolbar: Formatierung
+        bold: Fett
+        italic: Kursiv
+        strikethrough: Durchgestrichen
+        code: Inline-Code
+        link: Link
+        link_prompt: Link-URL
+        block_type_menu: Absatzformat
+        insert_menu: Einfügen
+        paragraph: Absatz
+        h1: Überschrift 1
+        h2: Überschrift 2
+        h3: Überschrift 3
+        code_block: Codeblock
+        ul: Aufzählung
+        ol: Nummerierte Liste
+        blockquote: Zitat
+        hr: Trennlinie
+        undo: Rückgängig
+        redo: Wiederholen
   transformer_profiles:
     new:
       title: Format erstellen - Nodl

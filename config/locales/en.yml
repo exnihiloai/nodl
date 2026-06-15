@@ -140,6 +140,8 @@ en:
       integrity_archive_unavailable: Integrity archive is not available for this recording.
       original_audio_not_ready: Original audio can be downloaded after recording and processing finish.
       original_audio_unavailable: Original audio is not available for this recording.
+    documents:
+      updated: Document saved.
     transformer_profiles:
       created: Format "%{name}" created.
       updated: Format "%{name}" updated.
@@ -424,6 +426,30 @@ en:
       show_recording: Show Recording
       copy: Copy
       copy_document: Copy document
+      edit: Edit
+      save: Save
+      cancel: Cancel
+      format:
+        toolbar: Formatting
+        bold: Bold
+        italic: Italic
+        strikethrough: Strikethrough
+        code: Inline code
+        link: Link
+        link_prompt: Link URL
+        block_type_menu: Paragraph style
+        insert_menu: Insert
+        paragraph: Paragraph
+        h1: Heading 1
+        h2: Heading 2
+        h3: Heading 3
+        code_block: Code block
+        ul: Bullet list
+        ol: Numbered list
+        blockquote: Quote
+        hr: Divider
+        undo: Undo
+        redo: Redo
   transformer_profiles:
     new:
       title: Create a format - Nodl

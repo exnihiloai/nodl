@@ -183,13 +183,19 @@
             </div>
           </div>
 
-          <label class="flex shrink-0 items-center gap-2 text-primary/70" aria-label="<%= t("recording_sessions.show.volume") %>">
-            <%= icon("volume-2", class: "size-4") %>
-            <input type="range" min="0" max="1" step="0.01" value="1"
-                   class="range range-primary range-xs w-24"
-                   data-audio-player-target="volume"
-                   data-action="input->audio-player#setVolume">
-          </label>
+          <details class="dropdown dropdown-top dropdown-end shrink-0" data-controller="dropdown">
+            <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                     aria-label="<%= t("recording_sessions.show.volume") %>">
+              <%= icon("volume-2", class: "size-4") %>
+            </summary>
+            <div class="dropdown-content mb-2 flex flex-col items-center rounded-box border border-base-300 bg-base-100 px-3 py-3 shadow">
+              <input type="range" min="0" max="1" step="0.01" value="1"
+                     class="h-24 cursor-pointer accent-primary"
+                     style="writing-mode: vertical-lr; direction: rtl;"
+                     data-audio-player-target="volume"
+                     data-action="input->audio-player#setVolume">
+            </div>
+          </details>
 
           <% if @recording_session.original_audio_downloadable? %>
             <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">

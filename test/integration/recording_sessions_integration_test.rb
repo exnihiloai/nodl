@@ -173,7 +173,7 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-controller='audio-player']"
     assert_select "[data-testid='audio-player'] audio[data-audio-player-target='audio']"
-    assert_select "[data-audio-player-target='volume'].range-primary"
+    assert_select "[data-audio-player-target='volume'].accent-primary"
     assert_select "[data-audio-player-target='cue']", count: 2
     assert_select "[data-audio-player-target='cue'][data-start='0.0']", text: "Hallo Welt."
     # Single speaker: no speaker-count legend, no per-cue color.
@@ -236,7 +236,7 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a.btn", text: "Show Recording", href: recording_session_path(recording_session)
     assert_select "a", text: "Back to session", count: 0
-    assert_select "article.prose"
+    assert_select "article .prose"
     assert_select "h1", text: "Title Header"
     assert_select "ul" do
       assert_select "li", text: "Item 1"

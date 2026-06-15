@@ -1,0 +1,156 @@
+<%# B I S | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
+<div
+  class="document-editor-toolbar flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
+  role="toolbar"
+  aria-label="<%= t("documents.show.format.toolbar") %>"
+  data-document-editor-target="toolbar"
+>
+  <div class="join">
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item min-w-9 px-2 font-bold"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="bold"
+      aria-label="<%= t("documents.show.format.bold") %>"
+      title="<%= t("documents.show.format.bold") %>"
+    >
+      B
+    </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item min-w-9 px-2 font-serif italic"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="italic"
+      aria-label="<%= t("documents.show.format.italic") %>"
+      title="<%= t("documents.show.format.italic") %>"
+    >
+      I
+    </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item min-w-9 px-2 line-through"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="strikethrough"
+      aria-label="<%= t("documents.show.format.strikethrough") %>"
+      title="<%= t("documents.show.format.strikethrough") %>"
+    >
+      S
+    </button>
+  </div>
+
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <details class="dropdown" data-controller="dropdown" data-testid="document-block-type-menu">
+    <summary
+      class="btn btn-ghost btn-sm list-none gap-1 px-2 normal-case"
+      aria-label="<%= t("documents.show.format.block_type_menu") %>"
+    >
+      <span data-document-editor-target="blockTypeLabel"><%= t("documents.show.format.paragraph") %></span>
+      <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
+    </summary>
+    <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+      <% {
+        paragraph: t("documents.show.format.paragraph"),
+        h1: t("documents.show.format.h1"),
+        h2: t("documents.show.format.h2"),
+        h3: t("documents.show.format.h3"),
+        blockquote: t("documents.show.format.blockquote"),
+        code_block: t("documents.show.format.code_block")
+      }.each do |command, label| %>
+        <li class="p-0">
+          <button
+            type="button"
+            class="flex w-full items-center px-3 py-1.5 text-left rounded-[inherit] hover:bg-base-200"
+            data-action="mousedown->document-editor#keepFocus document-editor#format"
+            data-document-editor-command-param="<%= command %>"
+            data-testid="document-block-type-<%= command %>"
+          >
+            <%= label %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <div class="join">
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item px-2"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="ul"
+      aria-label="<%= t("documents.show.format.ul") %>"
+      title="<%= t("documents.show.format.ul") %>"
+    >
+      <%= icon "list", class: "toolbar-icon" %>
+    </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item px-2"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="ol"
+      aria-label="<%= t("documents.show.format.ol") %>"
+      title="<%= t("documents.show.format.ol") %>"
+    >
+      <%= icon "list-ordered", class: "toolbar-icon" %>
+    </button>
+  </div>
+
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <button
+    type="button"
+    class="btn btn-ghost btn-sm px-2"
+    data-action="mousedown->document-editor#keepFocus document-editor#format"
+    data-document-editor-command-param="link"
+    aria-label="<%= t("documents.show.format.link") %>"
+    title="<%= t("documents.show.format.link") %>"
+  >
+    <%= icon "link", class: "toolbar-icon" %>
+  </button>
+
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <details class="dropdown" data-controller="dropdown" data-testid="document-insert-menu">
+    <summary
+      class="btn btn-ghost btn-sm list-none gap-1 px-2 normal-case"
+      aria-label="<%= t("documents.show.format.insert_menu") %>"
+    >
+      <%= t("documents.show.format.insert_menu") %>
+      <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
+    </summary>
+    <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+      <% { hr: t("documents.show.format.hr") }.each do |command, label| %>
+        <li class="p-0">
+          <button
+            type="button"
+            class="flex w-full items-center px-3 py-1.5 text-left rounded-[inherit] hover:bg-base-200"
+            data-action="mousedown->document-editor#keepFocus document-editor#format"
+            data-document-editor-command-param="<%= command %>"
+            data-testid="document-insert-<%= command %>"
+          >
+            <%= label %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+
+  <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
+
+  <div class="join">
+    <% %i[undo redo].each do |command| %>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm join-item px-2"
+        data-action="mousedown->document-editor#keepFocus document-editor#format"
+        data-document-editor-command-param="<%= command %>"
+        aria-label="<%= t("documents.show.format.#{command}") %>"
+        title="<%= t("documents.show.format.#{command}") %>"
+      >
+        <%= icon command.to_s, class: "toolbar-icon" %>
+      </button>
+    <% end %>
+  </div>
+</div>

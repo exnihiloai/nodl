@@ -50,7 +50,10 @@ export default class extends Controller {
     this.audioTarget.addEventListener("pause", this.onPlayState)
     this.audioTarget.addEventListener("ended", this.onPlayState)
 
-    if (this.hasVolumeTarget) this.audioTarget.volume = parseFloat(this.volumeTarget.value)
+    if (this.hasVolumeTarget) {
+      const linear = parseFloat(this.volumeTarget.value)
+      this.audioTarget.volume = linear * linear
+    }
 
     this.resizeObserver = new ResizeObserver(() => this.renderWaveform())
     this.resizeObserver.observe(this.waveformTarget)
@@ -79,7 +82,8 @@ export default class extends Controller {
   }
 
   setVolume() {
-    this.audioTarget.volume = parseFloat(this.volumeTarget.value)
+    const linear = parseFloat(this.volumeTarget.value)
+    this.audioTarget.volume = linear * linear
   }
 
   seekToCue(event) {

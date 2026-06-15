@@ -34,7 +34,7 @@ module DocumentExporters
     # PDF and Word exporters. The title is included as a top-level heading so it
     # appears in the exported file.
     def document_html
-      body = Kramdown::Document.new(document.content.to_s).to_html
+      body = MarkdownRenderer.to_html(document.content)
       heading = ERB::Util.html_escape(document.title)
       "<h1>#{heading}</h1>\n#{body}"
     end
