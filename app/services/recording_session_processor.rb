@@ -9,6 +9,7 @@ class RecordingSessionProcessor
   # only ever expose a short preview of the title (first N characters + ellipsis)
   # in the nodl.document.generated payload. The full title stays out of the event.
   TITLE_PREVIEW_LENGTH = 6
+  INVALID_AUDIO_MESSAGE = "The recording was interrupted before a valid audio file could be saved. Please try recording again.".freeze
 
   def self.redacted_title(title)
     clean = title.to_s.strip
@@ -55,13 +56,27 @@ class RecordingSessionProcessor
       FileUtils.rm_f(normalized.path) if normalized&.converted?
     end
   rescue StandardError => error
-    RecordingSession.find_by(id: recording_session.id)&.mark_failed!(error.message)
+    RecordingSession.find_by(id: recording_session.id)&.mark_failed!(failure_message_for(error))
     raise
   end
 
   private
 
   attr_reader :normalizer, :pipeline, :title_generator
+
+  def failure_message_for(error)
+    return INVALID_AUDIO_MESSAGE if interrupted_audio_error?(error)
+
+    error.message
+  end
+
+  def interrupted_audio_error?(error)
+    message = error.message.to_s
+    message == Nodl::Audio::Normalizer::INVALID_AUDIO_MESSAGE ||
+      message.include?("Audio could not be normalized") ||
+      message.include?("ffmpeg waveform extraction failed") ||
+      message.include?("Invalid data found when processing input")
+  end
 
   def enforce_recording_duration!(duration)
     return if duration.to_f <= PlanLimits.max_recording_duration_seconds

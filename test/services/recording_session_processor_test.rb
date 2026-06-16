@@ -12,11 +12,14 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
   class FakeNormalizer
     attr_reader :input_path
 
-    def initialize(converted: false)
+    def initialize(converted: false, error: nil)
       @converted = converted
+      @error = error
     end
 
     def normalize(input_path:, **)
+      raise @error if @error
+
       @input_path = input_path
       NormalizedAudio.new(path: input_path, converted: @converted, content_type: "audio/mpeg", filename: "normalized.mp3")
     end
@@ -189,6 +192,25 @@ class RecordingSessionProcessorTest < ActiveSupport::TestCase
 
     assert_predicate recording_session.reload, :failed?
     assert_equal "pipeline failed", recording_session.error_message
+  end
+
+  test "stores a friendly failure when audio decoding fails" do
+    user = create_user_with_workspace
+    recording_session = user.workspaces.first.recording_sessions.create!(
+      creator: user,
+      title: "Interrupted",
+      transformer_handle: "default"
+    ) { |session| attach_sample_audio(session) }
+    normalizer = FakeNormalizer.new(
+      error: Nodl::ValidationError.new("Audio could not be normalized with ffmpeg: ffmpeg version 7.1.4")
+    )
+
+    assert_raises(Nodl::ValidationError) do
+      RecordingSessionProcessor.new(normalizer: normalizer, pipeline: FakePipeline.new).call(recording_session)
+    end
+
+    assert_predicate recording_session.reload, :failed?
+    assert_equal RecordingSessionProcessor::INVALID_AUDIO_MESSAGE, recording_session.error_message
   end
 
   test "does not write completion results when recording is deleted during pipeline work" do

@@ -12,6 +12,8 @@ en:
             base:
               recording_limit_reached: You've used all %{limit} recordings included in your test plan.
             original_audio:
+              empty: must contain recorded audio
+              invalid_or_interrupted: was interrupted before a valid audio file could be saved
               too_long: can't be longer than %{limit} minutes
         transformer_profile:
           attributes:
@@ -331,6 +333,9 @@ en:
       session_error: Recording session could not be created.
       finalize_error: We couldn't finalize this recording. Please try recording again.
       preview_stopped: Live preview stopped; the final transcript will still be generated.
+      wake_lock_unavailable: Keep this screen awake while recording.
+      interrupted_saving: Recording was interrupted. Saving what was captured…
+      interrupted_no_audio: Recording was interrupted before audio could be saved. Please try again.
       duration_limit: Maximum recording length reached, saving your recording now.
     limits:
       recordings_reached: You've used all %{limit} recordings included in your test plan.

@@ -73,9 +73,9 @@ module ActiveSupport
       user
     end
 
-    def attach_sample_audio(recording_session, filename: "sample.mp3", content_type: "audio/mpeg")
+    def attach_sample_audio(recording_session, filename: "sample.mp3", content_type: "audio/mpeg", fixture: "sample.mp3")
       recording_session.original_audio.attach(
-        io: File.open(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "rb"),
+        io: File.open(Rails.root.join("test", "fixtures", "files", fixture), "rb"),
         filename: filename,
         content_type: content_type
       )

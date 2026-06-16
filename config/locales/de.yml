@@ -123,6 +123,8 @@ de:
             base:
               recording_limit_reached: Du hast alle %{limit} Recordings deines Testplans verbraucht.
             original_audio:
+              empty: muss aufgezeichnetes Audio enthalten
+              invalid_or_interrupted: wurde unterbrochen, bevor eine gültige Audiodatei gespeichert werden konnte
               too_long: darf nicht länger als %{limit} Minuten sein
         transformer_profile:
           attributes:
@@ -437,6 +439,9 @@ de:
       session_error: Die Aufnahme-Session konnte nicht erstellt werden.
       finalize_error: Diese Aufnahme konnte nicht abgeschlossen werden. Bitte nimm sie erneut auf.
       preview_stopped: Live-Vorschau gestoppt; das endgültige Transkript wird trotzdem erstellt.
+      wake_lock_unavailable: Bitte halte diesen Bildschirm während der Aufnahme aktiv.
+      interrupted_saving: Die Aufnahme wurde unterbrochen. Das bisher Aufgezeichnete wird gespeichert…
+      interrupted_no_audio: Die Aufnahme wurde unterbrochen, bevor Audio gespeichert werden konnte. Bitte versuche es erneut.
       duration_limit: Maximale Aufnahmelänge erreicht, Aufnahme wird gespeichert.
     limits:
       recordings_reached: Du hast alle %{limit} Recordings deines Testplans verbraucht.

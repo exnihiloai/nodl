@@ -90,7 +90,7 @@ class RecordingSessionsOriginalAudioDownloadTest < ActionDispatch::IntegrationTe
       filename: "normalized.mp3",
       content_type: "audio/mpeg"
     )
-    original = File.binread(Rails.root.join("test", "fixtures", "files", "sample.mp3"))
+    original = File.binread(Rails.root.join("test", "fixtures", "files", "sample.webm"))
     login(user)
 
     get download_original_audio_recording_session_path(recording_session)
@@ -126,7 +126,11 @@ class RecordingSessionsOriginalAudioDownloadTest < ActionDispatch::IntegrationTe
       transformer_handle: "default",
       status: status
     ) do |session|
-      attach_sample_audio(session, filename: filename, content_type: content_type)
+      attach_sample_audio(session, filename: filename, content_type: content_type, fixture: fixture_for(content_type))
     end
+  end
+
+  def fixture_for(content_type)
+    content_type == "audio/webm" ? "sample.webm" : "sample.mp3"
   end
 end
