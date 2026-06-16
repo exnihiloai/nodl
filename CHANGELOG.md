@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2026-06-16
+
+### Added
+- **Keep Screen Awake While Recording:** While you record on your phone or tablet, Nodl now keeps the screen from dimming or locking when your browser supports it — so auto-lock no longer cuts off your take mid-sentence.
+
+### Changed
+- **Interrupted Recordings:** If you switch apps, lock the screen, or lose microphone access during recording, Nodl now stops cleanly and saves whatever audio was already captured instead of leaving the session stuck or failing with a technical error.
+
+### Fixed
+- **Empty or Broken Recordings:** Fixed an issue where recordings interrupted before any valid audio was saved could show a long, cryptic ffmpeg error on the dashboard. You now get a clear message to try recording again.
+
 ## [0.21.0] - 2026-06-15
 
 ### Added
