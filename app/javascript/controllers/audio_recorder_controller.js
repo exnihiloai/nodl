@@ -7,6 +7,7 @@ const MIME_OPTIONS = [
   { mimeType: "audio/mp4", extension: "m4a" },
   { mimeType: "audio/aac", extension: "aac" }
 ]
+const RECORDING_CHUNK_MS = 1000
 
 export default class extends Controller {
   static targets = [
@@ -34,6 +35,9 @@ export default class extends Controller {
     listeningText: String,
     finalizeErrorText: String,
     previewStoppedText: String,
+    wakeLockUnavailableText: String,
+    interruptedSavingText: String,
+    interruptedNoAudioText: String,
     maxDurationSeconds: Number,
     durationLimitText: String
   }
@@ -46,6 +50,14 @@ export default class extends Controller {
     this.fastPreviewText = ""
     this.slowPreviewText = ""
     this.isRecording = false
+    this.stopContext = { interrupted: false }
+    this.handleVisibilityChange = () => this.visibilityChanged()
+    this.handlePageHide = () => this.interruptRecording()
+    this.handleWakeLockRelease = () => this.wakeLockReleased()
+    this.handleTrackMute = () => this.trackMuted()
+    this.handleTrackUnmute = () => this.clearTrackMuteTimer()
+    this.handleTrackEnded = () => this.interruptRecording()
+    this.handleRecorderError = () => this.interruptRecording()
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     this.mimeOption = this.supportedMimeOption()
     if (!this.mimeOption) {
@@ -74,6 +86,8 @@ export default class extends Controller {
     this.stopVisualizer()
     this.stopRealtimeTranscription()
     this.cancelLivePreviewRender()
+    this.removeRecordingGuards()
+    this.releaseWakeLock()
     this.stopStream()
     this.unsubscribeFromLiveStream()
     if (this.rowObserver) {
@@ -122,8 +136,15 @@ export default class extends Controller {
         if (event.data.size > 0) this.chunks.push(event.data)
       })
       this.recorder.addEventListener("stop", () => this.finishRecording())
-      this.recorder.start()
+      this.recorder.addEventListener("error", this.handleRecorderError)
+      if (this.chunkedRecordingSupported()) {
+        this.recorder.start(RECORDING_CHUNK_MS)
+      } else {
+        this.recorder.start()
+      }
       this.isRecording = true
+      this.installRecordingGuards()
+      const wakeLockAcquired = await this.requestWakeLock()
       this.recordButtonTarget.classList.add("hidden")
       this.stopButtonTarget.classList.remove("hidden")
       this.stopButtonTarget.disabled = false
@@ -132,11 +153,13 @@ export default class extends Controller {
       this.startTimer()
       this.startVisualizer()
       await this.startRealtimeTranscription()
-      this.updateStatus("")
+      if (wakeLockAcquired) this.updateStatus("")
     } catch (_error) {
       this.updateStatus(this.startErrorTextValue)
       this.isRecording = false
       this.stopRealtimeTranscription()
+      this.removeRecordingGuards()
+      this.releaseWakeLock()
       this.stopStream()
       if (this.hasLivePanelSlotTarget) this.livePanelSlotTarget.classList.add("hidden")
       this.unsubscribeFromLiveStream()
@@ -147,10 +170,15 @@ export default class extends Controller {
     if (!this.recorder || this.recorder.state === "inactive") return
 
     this.isRecording = false
+    this.stopContext = { interrupted: this.interruptedStopRequested === true }
+    this.interruptedStopRequested = false
+    this.flushRecorderData()
     this.stopRealtimeTranscription()
     this.recorder.stop()
     this.stopTimer()
     this.stopVisualizer()
+    this.removeRecordingGuards()
+    this.releaseWakeLock()
     this.stopStream()
 
     // Disable and show record button, hide stop button and timer
@@ -201,9 +229,14 @@ export default class extends Controller {
 
   finishRecording() {
     const blob = new Blob(this.chunks, { type: this.mimeOption.mimeType })
+    if (!this.usableRecordingBlob(blob)) {
+      this.updateStatus(this.interruptedNoAudioTextValue)
+      return
+    }
+
     const filename = `microphone-recording-${Date.now()}.${this.mimeOption.extension}`
     const file = new File([blob], filename, { type: this.mimeOption.mimeType })
-    this.finalizeRecording(file)
+    this.finalizeRecording(file, this.stopContext)
   }
 
   submit() {
@@ -236,7 +269,7 @@ export default class extends Controller {
     return response.json()
   }
 
-  async finalizeRecording(file) {
+  async finalizeRecording(file, context = { interrupted: false }) {
     if (!this.liveSession) {
       this.finishRecordingWithForm(file)
       return
@@ -257,9 +290,17 @@ export default class extends Controller {
         body: formData
       })
 
-      if (!response.ok) throw new Error("Finalize failed.")
-    } catch (_error) {
-      this.updateStatus(this.finalizeErrorTextValue)
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}))
+        throw new Error(payload.error || this.finalizeErrorTextValue)
+      }
+    } catch (error) {
+      this.updateStatus(error.message || this.finalizeErrorTextValue)
+      return
+    }
+
+    if (context.interrupted) {
+      this.updateStatus(this.interruptedSavingTextValue)
     }
   }
 
@@ -297,6 +338,25 @@ export default class extends Controller {
     this.timerId = null
   }
 
+  flushRecorderData() {
+    if (!this.recorder || this.recorder.state === "inactive") return
+    if (!this.chunkedRecordingSupported()) return
+
+    try {
+      this.recorder.requestData()
+    } catch (_error) {
+      // Some WebKit builds throw if requestData races with a pending stop.
+    }
+  }
+
+  usableRecordingBlob(blob) {
+    return blob && blob.size > 0
+  }
+
+  chunkedRecordingSupported() {
+    return this.mimeOption && /audio\/(webm|ogg)/.test(this.mimeOption.mimeType)
+  }
+
   renderTimer() {
     const minutes = Math.floor(this.seconds / 60).toString().padStart(2, "0")
     const seconds = (this.seconds % 60).toString().padStart(2, "0")
@@ -308,6 +368,101 @@ export default class extends Controller {
 
     this.stream.getTracks().forEach((track) => track.stop())
     this.stream = null
+  }
+
+  installRecordingGuards() {
+    document.addEventListener("visibilitychange", this.handleVisibilityChange)
+    window.addEventListener("pagehide", this.handlePageHide)
+    this.guardedAudioTracks = this.stream ? this.stream.getAudioTracks() : []
+    this.guardedAudioTracks.forEach((track) => {
+      track.addEventListener("mute", this.handleTrackMute)
+      track.addEventListener("unmute", this.handleTrackUnmute)
+      track.addEventListener("ended", this.handleTrackEnded)
+    })
+  }
+
+  removeRecordingGuards() {
+    document.removeEventListener("visibilitychange", this.handleVisibilityChange)
+    window.removeEventListener("pagehide", this.handlePageHide)
+    this.clearTrackMuteTimer()
+    if (this.guardedAudioTracks) {
+      this.guardedAudioTracks.forEach((track) => {
+        track.removeEventListener("mute", this.handleTrackMute)
+        track.removeEventListener("unmute", this.handleTrackUnmute)
+        track.removeEventListener("ended", this.handleTrackEnded)
+      })
+    }
+    this.guardedAudioTracks = []
+  }
+
+  visibilityChanged() {
+    if (!this.isRecording) return
+
+    if (document.visibilityState === "hidden") {
+      this.interruptRecording()
+    } else {
+      this.requestWakeLock({ reportUnavailable: false })
+    }
+  }
+
+  trackMuted() {
+    this.clearTrackMuteTimer()
+    this.trackMuteTimer = window.setTimeout(() => {
+      if (this.isRecording) this.interruptRecording()
+    }, 1000)
+  }
+
+  clearTrackMuteTimer() {
+    if (!this.trackMuteTimer) return
+
+    window.clearTimeout(this.trackMuteTimer)
+    this.trackMuteTimer = null
+  }
+
+  interruptRecording() {
+    if (!this.recorder || this.recorder.state === "inactive") return
+
+    this.interruptedStopRequested = true
+    this.updateStatus(this.interruptedSavingTextValue)
+    this.stop()
+  }
+
+  async requestWakeLock({ reportUnavailable = true } = {}) {
+    if (this.wakeLock) return true
+
+    if (!("wakeLock" in navigator)) {
+      if (reportUnavailable) this.updateStatus(this.wakeLockUnavailableTextValue)
+      return false
+    }
+
+    try {
+      this.wakeLock = await navigator.wakeLock.request("screen")
+      this.wakeLock.addEventListener("release", this.handleWakeLockRelease)
+      return true
+    } catch (_error) {
+      if (reportUnavailable) this.updateStatus(this.wakeLockUnavailableTextValue)
+      return false
+    }
+  }
+
+  wakeLockReleased() {
+    this.wakeLock = null
+    if (!this.isRecording) return
+
+    if (document.visibilityState === "visible") {
+      this.requestWakeLock({ reportUnavailable: false })
+    } else {
+      this.interruptRecording()
+    }
+  }
+
+  releaseWakeLock() {
+    if (!this.wakeLock) return
+
+    const lock = this.wakeLock
+    this.wakeLock = null
+    lock.removeEventListener("release", this.handleWakeLockRelease)
+    lock.release().catch(() => {})
   }
 
   startVisualizer() {

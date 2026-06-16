@@ -53,4 +53,32 @@ class NodlAudioNormalizerTest < ActiveSupport::TestCase
 
     assert_includes error.message, "Unsupported audio format"
   end
+
+  test "hides ffmpeg diagnostics behind a user-facing interrupted recording error" do
+    Dir.mktmpdir do |dir|
+      input = Pathname.new(dir).join("recording.webm")
+      input.write("broken webm bytes")
+      stderr = "ffmpeg version 7.1.4\nInvalid data found when processing input"
+
+      Open3.expects(:capture3).with do |*command|
+        command.first == "ffmpeg" &&
+          command.include?("-hide_banner") &&
+          command.include?("-v") &&
+          command.include?("error") &&
+          command.include?(input.to_s)
+      end.returns([ "", stderr, stub(success?: false) ])
+      Rails.logger.expects(:warn).with(includes("Invalid data found when processing input"))
+
+      error = assert_raises(Nodl::ValidationError) do
+        Nodl::Audio::Normalizer.new(ffmpeg_path: "ffmpeg").normalize(
+          input_path: input,
+          content_type: "audio/webm",
+          original_filename: "recording.webm"
+        )
+      end
+
+      assert_equal Nodl::Audio::Normalizer::INVALID_AUDIO_MESSAGE, error.message
+      assert_no_match(/ffmpeg version/, error.message)
+    end
+  end
 end

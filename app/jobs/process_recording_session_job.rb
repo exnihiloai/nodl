@@ -9,7 +9,9 @@ class ProcessRecordingSessionJob < ApplicationJob
 
     RecordingSessionProcessor.new.call(recording_session)
   rescue StandardError => error
-    recording_session&.mark_failed!(error.message)
+    if recording_session && !recording_session.reload.failed?
+      recording_session.mark_failed!(error.message)
+    end
     raise
   end
 end

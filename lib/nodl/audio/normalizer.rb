@@ -7,6 +7,8 @@ require_relative "../error"
 module Nodl
   module Audio
     class Normalizer
+      INVALID_AUDIO_MESSAGE = "The recording was interrupted before a valid audio file could be saved. Please try recording again.".freeze
+
       Result = Struct.new(:path, :converted, :content_type, :filename, keyword_init: true) do
         def converted?
           converted
@@ -65,6 +67,8 @@ module Nodl
         command = [
           ffmpeg_path,
           "-y",
+          "-hide_banner",
+          "-v", "error",
           "-i", input.to_s,
           "-vn",
           "-ac", "1",
@@ -75,9 +79,19 @@ module Nodl
         _stdout, stderr, status = Open3.capture3(*command)
         return if status.success? && Pathname.new(output_path).size.positive?
 
-        raise ValidationError, "Audio could not be normalized with ffmpeg: #{stderr.to_s.strip.presence || "conversion failed"}"
+        log_ffmpeg_failure(stderr)
+        raise ValidationError, INVALID_AUDIO_MESSAGE
       rescue Errno::ENOENT
         raise ConfigurationError, "ffmpeg is required to process this audio format."
+      end
+
+      def log_ffmpeg_failure(stderr)
+        return unless defined?(Rails)
+
+        Rails.logger.warn(
+          "Audio normalization failed with ffmpeg: " \
+          "#{stderr.to_s.strip.presence || "conversion failed"}"
+        )
       end
 
       def normalize_content_type(content_type)

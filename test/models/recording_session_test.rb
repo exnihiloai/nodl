@@ -250,14 +250,14 @@ class RecordingSessionTest < ActiveSupport::TestCase
       time_zone: "Europe/Vienna"
     )
     recording_session.original_audio.attach(
-      io: StringIO.new("webm"),
+      io: File.open(Rails.root.join("test", "fixtures", "files", "sample.mp3"), "rb"),
       filename: "???",
-      content_type: "audio/webm"
+      content_type: "audio/mpeg"
     )
     recording_session.save!
     recording_session.update_column(:created_at, Time.utc(2026, 6, 7, 8, 15))
 
-    assert_equal "strategy-review-20260607-1015.webm", recording_session.reload.original_audio_download_filename
+    assert_equal "strategy-review-20260607-1015.mp3", recording_session.reload.original_audio_download_filename
   end
 
   test "in-progress recording sessions are excluded from finalized scope and the recording limit" do

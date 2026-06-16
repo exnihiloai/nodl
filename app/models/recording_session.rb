@@ -1,6 +1,6 @@
 require "fileutils"
 require "pathname"
-require "nodl/audio/waveform_extractor"
+require "nodl/audio/duration_probe"
 
 class RecordingSession < ApplicationRecord
   DEFAULT_TITLE = "Untitled recording".freeze
@@ -257,14 +257,19 @@ class RecordingSession < ApplicationRecord
     end
 
     blob = original_audio.blob
-    content_type = blob.content_type.to_s.split(";").first
+    content_type = original_audio_content_type
     errors.add(:original_audio, "must be an audio file") unless ALLOWED_AUDIO_CONTENT_TYPES.include?(content_type)
+    errors.add(:original_audio, :empty) if blob.byte_size.zero?
     errors.add(:original_audio, "must be smaller than 100 MB") if blob.byte_size > MAX_AUDIO_SIZE
   end
 
   def original_audio_duration_within_limit
     duration = measured_original_audio_duration
-    return if duration.nil?
+    if duration.nil? || duration <= 0
+      errors.add(:original_audio, :invalid_or_interrupted)
+      return
+    end
+
     return if duration <= PlanLimits.max_recording_duration_seconds
 
     errors.add(:original_audio, :too_long, limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i)
@@ -272,8 +277,19 @@ class RecordingSession < ApplicationRecord
 
   def validate_original_audio_duration?
     return false unless original_audio.attached?
+    return false unless original_audio_content_type_supported?
+    return false if original_audio.blob.byte_size.zero?
+    return false if microphone? && persisted?
 
     new_record? || attachment_changes.key?("original_audio")
+  end
+
+  def original_audio_content_type_supported?
+    ALLOWED_AUDIO_CONTENT_TYPES.include?(original_audio_content_type)
+  end
+
+  def original_audio_content_type
+    original_audio.blob.content_type.to_s.split(";").first
   end
 
   def workspace_recording_limit_not_exceeded
@@ -286,14 +302,10 @@ class RecordingSession < ApplicationRecord
   def measured_original_audio_duration
     return @measured_original_audio_duration if defined?(@measured_original_audio_duration)
 
-    extension = original_audio.filename.extension_with_delimiter.presence || ".audio"
-    Tempfile.create([ "recording-duration", extension ], binmode: true) do |file|
-      file.write(original_audio.download)
-      file.flush
-      @measured_original_audio_duration = Nodl::Audio::WaveformExtractor.new.extract(file.path).duration
-    end
-  rescue Nodl::Error, ActiveStorage::FileNotFoundError
-    @measured_original_audio_duration = nil
+    @measured_original_audio_duration = Nodl::Audio::DurationProbe.new(
+      attachment: original_audio,
+      attachment_change: attachment_changes["original_audio"]
+    ).duration
   end
 
   def broadcast_live_transcript_panel

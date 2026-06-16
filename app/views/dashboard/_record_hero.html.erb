@@ -24,7 +24,10 @@
                     "audio-recorder-transcript-label-value": t("dashboard.transcript"),
                     "audio-recorder-listening-text-value": t("dashboard.listening"),
                     "audio-recorder-finalize-error-text-value": t("dashboard.recorder.finalize_error"),
-                    "audio-recorder-preview-stopped-text-value": t("dashboard.recorder.preview_stopped")
+                    "audio-recorder-preview-stopped-text-value": t("dashboard.recorder.preview_stopped"),
+                    "audio-recorder-wake-lock-unavailable-text-value": t("dashboard.recorder.wake_lock_unavailable"),
+                    "audio-recorder-interrupted-saving-text-value": t("dashboard.recorder.interrupted_saving"),
+                    "audio-recorder-interrupted-no-audio-text-value": t("dashboard.recorder.interrupted_no_audio")
                   } do |form| %>
       <%= form.hidden_field :source_kind, value: "upload", data: { "audio-recorder-target": "sourceKind" } %>
       <%= form.hidden_field :time_zone, data: { "audio-recorder-target": "timeZone" } %>
