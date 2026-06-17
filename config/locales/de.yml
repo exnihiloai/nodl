@@ -507,6 +507,7 @@ de:
         sealed: Integrität gesichert
         failed: Zeitstempel fehlgeschlagen
         pending_config: Fingerabdruck gespeichert
+        disabled: Derzeit deaktiviert
       statuses_compact:
         sealed: Gesichert
       descriptions:
@@ -514,6 +515,7 @@ de:
         sealed: Die Originalaufnahme hat einen vertrauenswürdigen Zeitstempel und kann mit Zertifikat exportiert werden.
         failed: Aufnahme und Dokumenterstellung funktionieren weiter. Nodl versucht den Zeitstempel automatisch erneut.
         pending_config: Der Fingerabdruck der Originalaufnahme ist gespeichert. Der Zeitstempel wird nachgeholt, sobald der Service konfiguriert ist.
+        disabled: Nodl kann ein Zertifikat bereitstellen, das belegt, dass die Audioaufnahme nicht verändert wurde und schon vorher existierte. Von offiziellen Stellen überprüfbar.
     live:
       transcript: Transkript
       preview: Vorschau
