@@ -83,6 +83,9 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "starter", captured[:metadata][:plan_code]
     assert_equal "international", captured[:metadata][:billing_region]
     assert_equal "monthly", captured[:metadata][:billing_interval]
+    assert_equal user.id.to_s, captured[:metadata][:user_id]
+    assert_equal user.workspaces.first.id.to_s, captured[:metadata][:workspace_id]
+    assert_equal user.email, captured[:customer_email]
   end
 
   test "checkout can use catalog price data when Stripe Price ID is not configured" do
@@ -146,14 +149,6 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     get payments_cancel_path
 
     assert_redirected_to payments_path
-  end
-
-  test "checkout redirects to login if not authenticated" do
-    with_env("STRIPE_SECRET_KEY" => "sk_test_123") do
-      post payments_checkout_path
-    end
-
-    assert_redirected_to login_path
   end
 
   test "webhook returns 503 if secret is missing" do

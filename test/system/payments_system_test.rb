@@ -28,15 +28,13 @@ class PaymentsSystemTest < ApplicationSystemTestCase
     assert_text "Stripe is not configured. Set STRIPE_SECRET_KEY first."
   end
 
-  test "success page renders passed session id" do
-    email = unique_email("payments-success")
-    create_user_with_workspace(email: email, password: "Valid123")
-    login_via_ui(email: email, password: "Valid123")
+  test "success page fails closed without stripe configuration" do
+    without_stripe_secret_key do
+      visit payments_success_path(session_id: "cs_test_123")
+    end
 
-    visit payments_success_path(session_id: "cs_test_123")
-
-    assert_text "Payment confirmed"
-    assert_text "cs_test_123"
+    assert_current_path payments_cancel_path(reason: "checkout_failed"), ignore_query: false
+    assert_text "Unable to start checkout right now."
   end
 
   private

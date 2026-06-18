@@ -262,6 +262,7 @@ de:
     payments:
       not_configured: Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY.
       checkout_failed: Checkout kann derzeit nicht gestartet werden.
+      checkout_success: Dein Account ist bereit.
       plan_unavailable: Dieser Paid Plan ist noch nicht für Checkout verfügbar.
     entitlements:
       limit_reached: Diese Aktion ist in deinem aktuellen Plan auf %{limit} begrenzt.
@@ -747,7 +748,7 @@ de:
         price: Gratis
         period: zum Kennenlernen
         no_card: Keine Kreditkarte nötig
-        upgrade_note: Wechsle, wenn du mehr Aufnahmevolumen brauchst.
+        upgrade_note: Zum Kennenlernen. Upgrade, wenn du mehr brauchst.
         cta: Kostenlos starten
         cancel_anytime: Es startet kein Abo automatisch
         features:

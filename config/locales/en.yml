@@ -156,6 +156,7 @@ en:
     payments:
       not_configured: Stripe is not configured. Set STRIPE_SECRET_KEY first.
       checkout_failed: Unable to start checkout right now.
+      checkout_success: Your account is ready.
       plan_unavailable: This paid plan is not available for checkout yet.
     entitlements:
       limit_reached: This action is limited to %{limit} on your current plan.
