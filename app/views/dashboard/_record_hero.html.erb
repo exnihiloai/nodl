@@ -2,7 +2,7 @@
   <% if recording_limit_reached %>
     <div class="space-y-3 text-center" data-testid="recording-limit-reached">
       <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
-      <div class="alert alert-warning"><%= t("dashboard.limits.recordings_reached", limit: PlanLimits::MAX_RECORDINGS) %></div>
+      <div class="alert alert-warning"><%= t("dashboard.limits.recordings_reached", limit: recording_session.workspace.entitlement_for(:recordings).limit) %></div>
     </div>
   <% else %>
     <%= form_with model: recording_session,
@@ -15,7 +15,7 @@
                     testid: "recording-form",
                     "audio-recorder-create-url-value": recording_sessions_path,
                     "audio-recorder-worklet-url-value": asset_path("audio_pcm_worklet.js"),
-                    "audio-recorder-max-duration-seconds-value": PlanLimits.max_recording_duration_seconds,
+                    "audio-recorder-max-duration-seconds-value": recording_session.workspace.entitlement_for(:max_recording_duration_seconds).limit,
                     "audio-recorder-duration-limit-text-value": t("dashboard.recorder.duration_limit"),
                     "audio-recorder-unsupported-text-value": t("dashboard.recorder.unsupported"),
                     "audio-recorder-start-error-text-value": t("dashboard.recorder.start_error"),

@@ -29,7 +29,7 @@
           <div class="flex items-baseline justify-between">
             <h2 class="text-lg font-semibold"><%= t("dashboard.formats") %></h2>
             <% if @format_limit_reached %>
-              <span class="text-xs text-base-content/50" data-testid="format-limit-reached"><%= t("dashboard.limits.formats_reached", limit: PlanLimits::MAX_FORMATS) %></span>
+              <span class="text-xs text-base-content/50" data-testid="format-limit-reached"><%= t("dashboard.limits.formats_reached", limit: @workspace.entitlement_for(:custom_formats).limit) %></span>
             <% else %>
               <%= link_to t("dashboard.new_format"), new_transformer_profile_path, class: "btn btn-ghost btn-xs", data: { testid: "new-format-button" } %>
             <% end %>

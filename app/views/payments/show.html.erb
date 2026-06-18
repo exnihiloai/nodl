@@ -29,16 +29,27 @@
           <% end %>
         </div>
 
-        <% if @stripe_configured %>
-          <%= form_with url: payments_checkout_path, method: :post, class: "card bg-base-200 border border-base-300" do |f| %>
-            <div class="card-body gap-4 flex flex-col sm:flex-row sm:items-center">
-              <%= f.submit t("payments.show.start_checkout"), class: "btn btn-primary btn-lg" %>
-              <div class="text-sm text-base-content/70">
-                <p><%= t("payments.show.redirect_note") %></p>
-                <p><%= t("payments.show.test_card_html", code: content_tag(:code, "4242 4242 4242 4242", class: "kbd kbd-xs")) %></p>
-              </div>
-            </div>
-          <% end %>
+        <% if @stripe_configured && @paid_plan_versions.any? %>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <% @paid_plan_versions.each do |plan_version| %>
+              <%= form_with url: payments_checkout_path, method: :post, class: "card bg-base-200 border border-base-300" do |f| %>
+                <%= hidden_field_tag :plan, plan_version.billing_plan.code %>
+                <div class="card-body gap-4">
+                  <div>
+                    <h3 class="font-semibold"><%= plan_version.billing_plan.display_name %></h3>
+                    <p class="text-xs text-base-content/60"><%= plan_version.version_key %></p>
+                  </div>
+                  <%= f.submit t("payments.show.start_checkout"), class: "btn btn-primary" %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="text-sm text-base-content/70">
+            <p><%= t("payments.show.redirect_note") %></p>
+            <p><%= t("payments.show.test_card_html", code: content_tag(:code, "4242 4242 4242 4242", class: "kbd kbd-xs")) %></p>
+          </div>
+        <% elsif @stripe_configured %>
+          <div class="alert alert-warning"><span><%= t("payments.show.no_active_paid_plan") %></span></div>
         <% else %>
           <div class="alert alert-warning flex-col items-start gap-2">
             <span class="font-semibold"><%= t("payments.show.config_required") %></span>

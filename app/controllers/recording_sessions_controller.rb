@@ -72,7 +72,15 @@ class RecordingSessionsController < ApplicationController
     return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless recording_session.original_audio.attached?
     return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_not_ready") unless recording_session.original_audio_downloadable?
     return redirect_to recording_session_path(recording_session), alert: t("flash.recording_sessions.original_audio_unavailable") unless original_audio_stored?(recording_session)
+    entitlement = current_workspace.entitlement_for(:original_audio_downloads)
+    return redirect_to recording_session_path(recording_session), alert: t("flash.entitlements.limit_reached", limit: entitlement.limit) unless entitlement.allowed?
 
+    UsageRecorder.record!(
+      workspace: current_workspace,
+      user: current_user,
+      event_kind: "original_audio_downloaded",
+      subject: recording_session
+    )
     stream_original_audio(recording_session)
   end
 

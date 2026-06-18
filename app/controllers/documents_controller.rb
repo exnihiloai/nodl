@@ -20,7 +20,19 @@ class DocumentsController < ApplicationController
   def download
     document = current_workspace.documents.find(params[:id])
     exporter = DocumentExporters.for(params[:format], document)
+    entitlement = current_workspace.entitlement_for(:exports)
+    unless entitlement.allowed?
+      redirect_to document_path(document), alert: t("flash.entitlements.limit_reached", limit: entitlement.limit)
+      return
+    end
 
+    UsageRecorder.record!(
+      workspace: current_workspace,
+      user: current_user,
+      event_kind: "document_exported",
+      subject: document,
+      metadata: { format: params[:format].to_s }
+    )
     send_data exporter.render,
               filename: exporter.filename,
               type: exporter.content_type,
