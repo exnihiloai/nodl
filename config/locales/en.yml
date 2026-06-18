@@ -361,6 +361,21 @@ en:
         money_back: Money-back guarantee
         dismiss: Maybe later
         close: Close
+      integrity:
+        heading: Turn on tamper-evident records.
+        body: Upgrade to Business to seal every recording with a trusted timestamp and a downloadable integrity certificate.
+        proof_heading: What you get with Business
+        benefit_timestamp: Trusted timestamp for every recording
+        benefit_archive: Downloadable integrity archive with certificate
+        benefit_legal: Proof unchanged since recording was made
+        upgrade: Upgrade to Business
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
       audio:
         heading: Download your original audio whenever you need it.
         body: Upgrade to Starter to download the original recording from any session.
@@ -485,6 +500,8 @@ en:
         failed: Recording and document generation still work. Nodl will retry timestamping automatically.
         pending_config: The original recording fingerprint is saved. Timestamping will be retried when the service is configured.
         disabled: Nodl can provide a certificate that proves the audio recording was not altered and existed before. Verifiable by official bodies.
+      activate: Activate
+      learn_more: Learn more
     live:
       transcript: Transcript
       preview: Preview

@@ -63,6 +63,24 @@
             <%= icon("download", class: "size-4") %>
             <span><%= t("recording_sessions.integrity.download_archive") %></span>
           <% end %>
+        <% elsif !integrity_enabled %>
+          <% if local_assigns[:integrity_wall] %>
+            <div class="flex shrink-0 items-center gap-2" data-controller="integrity-wall">
+              <%= link_to t("recording_sessions.integrity.learn_more"), integrity_proof_help_path,
+                          class: "btn btn-ghost btn-sm",
+                          data: { testid: "integrity-learn-more" } %>
+              <button type="button" class="btn btn-sm btn-primary"
+                      data-action="integrity-wall#open"
+                      data-testid="integrity-activate-button">
+                <%= t("recording_sessions.integrity.activate") %>
+              </button>
+              <%= render "recording_sessions/integrity_wall_modal" %>
+            </div>
+          <% else %>
+            <%= link_to t("recording_sessions.integrity.learn_more"), integrity_proof_help_path,
+                        class: "btn btn-ghost btn-sm shrink-0",
+                        data: { testid: "integrity-learn-more" } %>
+          <% end %>
         <% end %>
       </div>
     </div>

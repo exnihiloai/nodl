@@ -467,6 +467,21 @@ de:
         money_back: Geld-zurück-Garantie
         dismiss: Vielleicht später
         close: Schließen
+      integrity:
+        heading: Manipulationssichere, rechtlich verwertbare Nachweise aktivieren.
+        body: Wechsle zu Business, um jede Aufnahme mit einem vertrauenswürdigen Zeitstempel und einem herunterladbaren Integritätszertifikat zu sichern.
+        proof_heading: Das bekommst du mit Business
+        benefit_timestamp: Vertrauenswürdiger Zeitstempel für jede Aufnahme
+        benefit_archive: Herunterladbares Integritätsarchiv mit Zertifikat
+        benefit_legal: Weist nach, dass die Datei seit der Aufnahme unverändert blieb
+        upgrade: Zu Business wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
       audio:
         heading: Lade dein Original-Audio jederzeit herunter.
         body: Wechsle zu Starter und lade die Originalaufnahme aus jeder Session herunter.
@@ -590,7 +605,9 @@ de:
         sealed: Die Originalaufnahme hat einen vertrauenswürdigen Zeitstempel und kann mit Zertifikat exportiert werden.
         failed: Aufnahme und Dokumenterstellung funktionieren weiter. Nodl versucht den Zeitstempel automatisch erneut.
         pending_config: Der Fingerabdruck der Originalaufnahme ist gespeichert. Der Zeitstempel wird nachgeholt, sobald der Service konfiguriert ist.
-        disabled: Nodl kann ein Zertifikat bereitstellen, das belegt, dass die Audioaufnahme nicht verändert wurde und schon vorher existierte. Von offiziellen Stellen überprüfbar.
+        disabled: Nodl versiegelt deine Aufnahme. Ein fälschungssicherer Nachweis, dass deine Aufnahme nicht verändert oder manipuliert wurde, und beweist wann sie entstanden ist. Unabhängig überprüfbar.
+      activate: Aktivieren
+      learn_more: Mehr erfahren
     live:
       transcript: Transkript
       preview: Vorschau

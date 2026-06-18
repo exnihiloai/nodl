@@ -54,7 +54,7 @@
       </div>
     <% end %>
 
-    <%= render "recording_sessions/integrity_status", recording_session: @recording_session %>
+    <%= render "recording_sessions/integrity_status", recording_session: @recording_session, integrity_wall: @integrity_wall %>
 
     <div class="grid gap-6 lg:grid-cols-2">
       <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-controller="clipboard" data-clipboard-copy-text-value="<%= t("clipboard.copy") %>" data-clipboard-copied-text-value="<%= t("clipboard.copied") %>">
