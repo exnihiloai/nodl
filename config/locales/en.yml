@@ -611,23 +611,41 @@ en:
   payments:
     show:
       title: Pricing - Nodl
-      meta_description: Nodl is free today. Paid plans are coming soon.
+      meta_description: Choose a Nodl plan and start a Stripe Checkout subscription.
       badge: Pricing
-      heading: Start free today
-      subheading: Paid plans are coming soon. Create your account and use Nodl on the free tier, no payment required.
-      charge_note_html: Pro checkout is on the roadmap. For now, join the free tier and start recording, no payment required.
-      managed_in_stripe: Stripe price configured
-      using_price_html: Checkout will use %{code} when paid plans launch.
-      test_defaults: Free tier active, no checkout required right now.
-      start_checkout: Test checkout
+      heading: Choose the plan that fits your recording flow
+      subheading: Start with Starter for regular documentation work, or choose Business when you need higher volume and integrity checks.
+      recommended: Recommended
+      regions:
+        eu: EU
+        international: International
+      intervals:
+        monthly: Monthly
+        annual: Annual
+      plans:
+        starter:
+          description: For people turning everyday recordings into reusable documents.
+        business:
+          description: For heavier workflows, higher monthly volume, and tamper-evident records.
+      features:
+        starter_recordings: 500 recordings per monthly usage period
+        business_recordings: 2,000 recordings per monthly usage period
+        starter_formats: 10 custom document formats
+        unlimited_formats: Unlimited custom document formats
+        unlimited_exports: Unlimited exports and original audio downloads
+        integrity: Integrity checks included
+        monthly_usage_window: Monthly usage windows, even with annual billing
+      per_month: / month
+      per_year: / year
+      annual_note: Two months free, billed annually.
+      start_checkout: Start checkout
+      checkout_unavailable: Checkout unavailable
       redirect_note: You will be redirected to Stripe's hosted checkout page.
+      monthly_limits_note: Recording and audio usage reset monthly, including annual subscriptions.
       test_card_html: 'Test card: %{code}'
       config_required: Checkout not available yet
-      config_hint: Paid plans are not live yet. Create a free account from the homepage to start recording.
-      no_active_paid_plan: Stripe is configured, but no active paid plan version has a Stripe Price ID yet.
-      webhooks_title: For maintainers
-      webhooks_hint_html: When billing is enabled, point Stripe CLI to %{path} with %{secret}.
-      back_home: "← Back to homepage"
+      config_hint: Set STRIPE_SECRET_KEY to enable hosted checkout from this page.
+      dynamic_price_note: No fixed Stripe Price ID is configured for this selection yet; checkout will create the subscription price from the local catalog.
     success:
       title: Payment Successful
       badge: Payment confirmed

@@ -12,7 +12,6 @@ class BillingPlanVersion < ApplicationRecord
   validates :stripe_price_id, uniqueness: true, allow_nil: true
   validates :status, presence: true, inclusion: { in: STATUSES }
   validates :limits, presence: true
-  validate :stripe_price_required_for_active_paid_versions
   validate :immutable_limits_after_activation, on: :update
 
   scope :active, -> { where(status: "active") }
@@ -22,14 +21,6 @@ class BillingPlanVersion < ApplicationRecord
   end
 
   private
-
-  def stripe_price_required_for_active_paid_versions
-    return unless status == "active"
-    return unless paid?
-    return if stripe_price_id.present?
-
-    errors.add(:stripe_price_id, "is required for active paid plan versions")
-  end
 
   def immutable_limits_after_activation
     return unless will_save_change_to_limits?

@@ -5,11 +5,9 @@ class PaymentsController < ApplicationController
   def show
     BillingCatalog.ensure!
     @stripe_configured = stripe_secret_key.present?
-    @product_name = ENV.fetch("STRIPE_PRODUCT_NAME", "Nodl Starter Plan")
-    @amount_cents = ENV.fetch("STRIPE_DEFAULT_AMOUNT", "1900").to_i
-    @currency = ENV.fetch("STRIPE_CURRENCY", "usd").upcase
-    @stripe_price_id = ENV["STRIPE_PRICE_ID"]
-    @paid_plan_versions = BillingPlanVersion.active.includes(:billing_plan).select(&:paid?)
+    @selected_region = BillingPriceCatalog.normalize_region(params[:region])
+    @selected_interval = BillingPriceCatalog.normalize_interval(params[:interval])
+    @plan_cards = BillingPriceCatalog.plans(region: @selected_region, interval: @selected_interval)
   end
 
   def checkout
@@ -19,12 +17,11 @@ class PaymentsController < ApplicationController
       return
     end
 
-    plan_code = params[:plan].presence || "starter"
-    plan_version = BillingPlan.find_by!(code: plan_code).billing_plan_versions.active.order(active_from: :desc, created_at: :desc).first
-    unless plan_version&.stripe_price_id.present?
-      redirect_to payments_path, alert: t("flash.payments.plan_unavailable")
-      return
-    end
+    plan_code = BillingPriceCatalog.normalize_plan(params[:plan])
+    region = BillingPriceCatalog.normalize_region(params[:region])
+    interval = BillingPriceCatalog.normalize_interval(params[:interval])
+    plan_version = BillingCatalog.active_version!(plan_code)
+    selected_price = BillingPriceCatalog.price_for(plan_code:, region:, interval:)
 
     Stripe.api_key = stripe_secret_key
 
@@ -32,16 +29,15 @@ class PaymentsController < ApplicationController
     cancel_url = payments_cancel_url
 
     checkout_session = Stripe::Checkout::Session.create(
-      mode: "subscription",
-      success_url:,
-      cancel_url:,
-      line_items: [ { price: plan_version.stripe_price_id, quantity: 1 } ],
-      automatic_tax: { enabled: true },
-      metadata: {
-        user_id: current_user&.id,
-        workspace_id: current_workspace&.id,
-        plan_version_id: plan_version.id
-      }
+      checkout_session_params(
+        plan_version:,
+        selected_price:,
+        success_url:,
+        cancel_url:,
+        plan_code:,
+        region:,
+        interval:
+      )
     )
 
     session_url = checkout_session.respond_to?(:url) ? checkout_session.url : nil
@@ -127,6 +123,48 @@ class PaymentsController < ApplicationController
       entitlement.usage_period_ends_at ||= 1.month.from_now
       entitlement.save!
     end
+  end
+
+  def checkout_line_item(plan_version:, selected_price:)
+    if selected_price.stripe_price_id.present?
+      { price: selected_price.stripe_price_id, quantity: 1 }
+    else
+      {
+        price_data: {
+          currency: selected_price.currency,
+          unit_amount: selected_price.amount_cents,
+          recurring: { interval: selected_price.stripe_interval },
+          product_data: { name: plan_version.billing_plan.display_name }
+        },
+        quantity: 1
+      }
+    end
+  end
+
+  def checkout_session_params(plan_version:, selected_price:, success_url:, cancel_url:, plan_code:, region:, interval:)
+    {
+      mode: "subscription",
+      success_url:,
+      cancel_url:,
+      line_items: [ checkout_line_item(plan_version:, selected_price:) ],
+      automatic_tax: { enabled: true },
+      client_reference_id: current_workspace&.id,
+      customer_email: current_user.email,
+      metadata: checkout_metadata(plan_version:, selected_price:, plan_code:, region:, interval:)
+    }
+  end
+
+  def checkout_metadata(plan_version:, selected_price:, plan_code:, region:, interval:)
+    {
+      user_id: current_user.id,
+      workspace_id: current_workspace&.id,
+      plan_version_id: plan_version.id,
+      plan_code:,
+      billing_region: region,
+      billing_interval: interval,
+      currency: selected_price.currency,
+      amount_cents: selected_price.amount_cents
+    }
   end
 
   def stripe_secret_key

@@ -427,9 +427,16 @@ Monthly subscription prices at launch. Feature limits are unchanged from section
 | **Starter** | €29 / month | $39 / month |
 | **Business** | €99 / month | $129 / month |
 
+Annual subscription prices are **10x monthly** so customers receive 2 months free:
+
+| Plan | EU | International (US) |
+|---|---:|---:|
+| **Starter** | €290 / year | $390 / year |
+| **Business** | €990 / year | $1,290 / year |
+
 Stripe setup:
 
-- Create **four** recurring Stripe Prices (one per plan × region).
+- Create **eight** recurring Stripe Prices (one per plan × region × billing interval).
 - Map them through env vars (see `doc/design-output/modules/payments.md`).
 - Checkout selects the Price for the customer's billing region before `Stripe::Checkout::Session.create`.
 - Entitlement assignment still keys off the **plan code** (`starter` / `business`), not the Stripe Price ID — EU and International prices grant the same limits snapshot.

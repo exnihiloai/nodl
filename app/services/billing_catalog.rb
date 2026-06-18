@@ -62,15 +62,9 @@ class BillingCatalog
         version.billing_plan = plan
         version.status = active_status_for(code)
         version.limits = LIMITS.fetch(code)
-        version.stripe_price_id = stripe_price_id_for(code)
         version.active_from = Time.current if version.status == "active"
       end.tap do |version|
-        next unless version.status == "draft"
-
-        price_id = stripe_price_id_for(code)
-        next if price_id.blank?
-
-        version.update!(stripe_price_id: price_id, status: "active", active_from: Time.current)
+        version.update!(status: "active", active_from: Time.current) if version.status == "draft"
       end
     end
   end
@@ -80,25 +74,9 @@ class BillingCatalog
     BillingPlan.find_by!(code:).billing_plan_versions.active.order(active_from: :desc, created_at: :desc).first!
   end
 
-  def self.version_for_stripe_price(price_id)
-    ensure!
-    BillingPlanVersion.includes(:billing_plan).find_by(stripe_price_id: price_id)
-  end
-
   private
 
   def active_status_for(code)
-    return "draft" if code.in?(%w[starter business]) && stripe_price_id_for(code).blank?
-
     "active"
-  end
-
-  def stripe_price_id_for(code)
-    case code
-    when "starter"
-      ENV["STRIPE_STARTER_PRICE_ID"].presence || ENV["STRIPE_PRICE_ID"].presence
-    when "business"
-      ENV["STRIPE_BUSINESS_PRICE_ID"].presence
-    end
   end
 end

@@ -717,23 +717,41 @@ de:
   payments:
     show:
       title: Preise - Nodl
-      meta_description: Nodl ist aktuell kostenlos. Paid Plans kommen bald.
+      meta_description: Wähle einen Nodl-Plan und starte ein Stripe-Checkout-Abo.
       badge: Preise
-      heading: Heute kostenlos starten
-      subheading: Paid Plans kommen bald. Erstelle deinen Account und nutze Nodl im Free Tier, ohne Zahlung.
-      charge_note_html: Pro-Checkout ist auf der Roadmap. Jetzt im Free Tier starten und aufnehmen, keine Zahlung nötig.
-      managed_in_stripe: Stripe-Preis konfiguriert
-      using_price_html: Checkout nutzt %{code}, sobald Paid Plans live sind.
-      test_defaults: Free Tier aktiv, aktuell kein Checkout nötig.
-      start_checkout: Checkout testen
+      heading: Wähle den Plan für deinen Aufnahme-Workflow
+      subheading: Starter passt für regelmäßige Dokumentationsarbeit. Business ist für höheres Volumen und Integritätsprüfungen gedacht.
+      recommended: Empfohlen
+      regions:
+        eu: EU
+        international: International
+      intervals:
+        monthly: Monatlich
+        annual: Jährlich
+      plans:
+        starter:
+          description: Für Menschen, die regelmäßige Aufnahmen in wiederverwendbare Dokumente verwandeln.
+        business:
+          description: Für größere Workflows, höheres Monatsvolumen und manipulationssichere Aufzeichnungen.
+      features:
+        starter_recordings: 500 Aufnahmen pro monatlichem Nutzungszeitraum
+        business_recordings: 2.000 Aufnahmen pro monatlichem Nutzungszeitraum
+        starter_formats: 10 eigene Dokumentformate
+        unlimited_formats: Unbegrenzte eigene Dokumentformate
+        unlimited_exports: Unbegrenzte Exporte und Original-Audio-Downloads
+        integrity: Integritätsprüfungen enthalten
+        monthly_usage_window: Monatliche Nutzungszeiträume, auch bei jährlicher Zahlung
+      per_month: / Monat
+      per_year: / Jahr
+      annual_note: Zwei Monate gratis, jährlich abgerechnet.
+      start_checkout: Checkout starten
+      checkout_unavailable: Checkout nicht verfügbar
       redirect_note: Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet.
+      monthly_limits_note: Aufnahme- und Audio-Nutzung werden monatlich zurückgesetzt, auch bei jährlichen Abos.
       test_card_html: 'Testkarte: %{code}'
       config_required: Checkout noch nicht verfügbar
-      config_hint: Paid Plans sind noch nicht live. Erstelle einen Free Account auf der Startseite und leg los.
-      no_active_paid_plan: Stripe ist konfiguriert, aber kein aktiver Paid-Plan hat eine Stripe Price ID.
-      webhooks_title: Für Maintainer
-      webhooks_hint_html: Sobald Billing aktiv ist, Stripe CLI auf %{path} mit %{secret} zeigen.
-      back_home: "← Zurück zur Startseite"
+      config_hint: Setze STRIPE_SECRET_KEY, um gehosteten Checkout auf dieser Seite zu aktivieren.
+      dynamic_price_note: Für diese Auswahl ist noch keine feste Stripe Price ID konfiguriert; Checkout erzeugt den Abo-Preis aus dem lokalen Katalog.
     success:
       title: Zahlung erfolgreich
       badge: Zahlung bestätigt

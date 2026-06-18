@@ -42,26 +42,27 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "payments page shows checkout button when stripe is configured" do
-    with_env("STRIPE_SECRET_KEY" => "sk_test_123", "STRIPE_PRICE_ID" => "price_starter_test") do
+  test "payments page shows plan overview when stripe is configured" do
+    with_env("STRIPE_SECRET_KEY" => "sk_test_123") do
       get payments_path
       assert_response :success
-      assert_includes response.body, "Test checkout"
+      assert_includes response.body, "Starter"
+      assert_includes response.body, "Business"
+      assert_includes response.body, "€29"
+      assert_includes response.body, "Start checkout"
+      assert_select "form[data-turbo='false'][action='#{payments_checkout_path}']", 2
       refute_includes response.body, "Checkout not available yet"
     end
   end
 
-  test "checkout redirects to stripe hosted session url when configured" do
+  test "checkout redirects to stripe hosted session url with configured price id" do
     fake_session = Struct.new(:url).new("https://checkout.stripe.test/session/cs_test_123")
     captured = nil
     user = create_user_with_workspace(email: "checkout-success@example.test")
 
     with_env(
       "STRIPE_SECRET_KEY" => "sk_test_123",
-      "STRIPE_CURRENCY" => "usd",
-      "STRIPE_PRODUCT_NAME" => "Nodl Starter Plan",
-      "STRIPE_DEFAULT_AMOUNT" => "1900",
-      "STRIPE_PRICE_ID" => "price_starter_test"
+      "STRIPE_STARTER_PRICE_ID_USD" => "price_starter_usd_monthly"
     ) do
       login_as(user)
       Stripe::Checkout::Session.stubs(:create).with do |params|
@@ -69,15 +70,47 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
         true
       end.returns(fake_session)
 
-      post payments_checkout_path
+      post payments_checkout_path, params: { plan: "starter", region: "international", interval: "monthly" }
     end
 
     assert_equal 303, response.status
     assert_equal fake_session.url, response.headers["Location"]
     assert_equal "subscription", captured[:mode]
-    assert_equal [ { price: "price_starter_test", quantity: 1 } ], captured[:line_items]
+    assert_equal [ { price: "price_starter_usd_monthly", quantity: 1 } ], captured[:line_items]
     assert_includes captured[:success_url], "/payments/success"
     assert_includes captured[:cancel_url], "/payments/cancel"
+    assert_equal "starter", captured[:metadata][:plan_code]
+    assert_equal "international", captured[:metadata][:billing_region]
+    assert_equal "monthly", captured[:metadata][:billing_interval]
+  end
+
+  test "checkout can use catalog price data when Stripe Price ID is not configured" do
+    fake_session = Struct.new(:url).new("https://checkout.stripe.test/session/cs_test_dynamic")
+    captured = nil
+    user = create_user_with_workspace(email: "checkout-dynamic-price@example.test")
+
+    with_env(
+      "STRIPE_SECRET_KEY" => "sk_test_123",
+      "STRIPE_BUSINESS_ANNUAL_PRICE_ID_EUR" => nil,
+      "STRIPE_BUSINESS_PRICE_ID_EUR" => nil,
+      "STRIPE_BUSINESS_PRICE_ID" => nil
+    ) do
+      login_as(user)
+      Stripe::Checkout::Session.stubs(:create).with do |params|
+        captured = params
+        true
+      end.returns(fake_session)
+
+      post payments_checkout_path, params: { plan: "business", region: "eu", interval: "annual" }
+    end
+
+    line_item = captured[:line_items].first
+    assert_equal 303, response.status
+    assert_equal "eur", line_item[:price_data][:currency]
+    assert_equal 99_000, line_item[:price_data][:unit_amount]
+    assert_equal({ interval: "year" }, line_item[:price_data][:recurring])
+    assert_equal "Business", line_item[:price_data][:product_data][:name]
+    assert_equal "annual", captured[:metadata][:billing_interval]
   end
 
   test "checkout returns to payments with alert if stripe is not configured" do
