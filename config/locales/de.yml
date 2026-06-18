@@ -469,7 +469,7 @@ de:
         close: Schließen
       formats:
         heading: Erstell ein Format für jede Art von Dokument, die du machst.
-        body: Du hast bereits Arbeit investiert, um deinen Workspace zu gestalten. Wechsle zu Starter und erstelle so viele Formate, wie du brauchst.
+        body: Du hast Nodl bereits für dich entdeckt. Wechsle zu Starter und erstelle so viele Formate, wie du brauchst.
         proof_heading:
           one: "%{count} Format erstellt"
           other: "%{count} Formate erstellt"
