@@ -605,7 +605,7 @@ de:
         sealed: Die Originalaufnahme hat einen vertrauenswürdigen Zeitstempel und kann mit Zertifikat exportiert werden.
         failed: Aufnahme und Dokumenterstellung funktionieren weiter. Nodl versucht den Zeitstempel automatisch erneut.
         pending_config: Der Fingerabdruck der Originalaufnahme ist gespeichert. Der Zeitstempel wird nachgeholt, sobald der Service konfiguriert ist.
-        disabled: Nodl versiegelt deine Aufnahme. Ein fälschungssicherer Nachweis, dass deine Aufnahme nicht verändert oder manipuliert wurde, und beweist wann sie entstanden ist. Unabhängig überprüfbar.
+        disabled: Nodl versiegelt deine Aufnahme mit einem fälschungssicheren Nachweis, dass sie nicht verändert oder manipuliert wurde. Inklusive unabhängig überprüfbarem Zertifikat.
       activate: Aktivieren
       learn_more: Mehr erfahren
     live:
