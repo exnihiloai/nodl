@@ -343,6 +343,19 @@ en:
     limits:
       recordings_reached: You've used all %{limit} recordings included in your test plan.
       formats_reached: Limit of %{limit} formats reached
+    aha:
+      title: Done!
+      body: That took just %{seconds} and saved you about %{saved}.
+      seconds:
+        one: "%{count} second"
+        other: "%{count} seconds"
+      saved_minutes:
+        one: "%{count} minute"
+        other: "%{count} minutes"
+      saved_hours:
+        one: "%{count} hour"
+        other: "%{count} hours"
+      dismiss: Keep going
     privacy_note: Private to your workspace. Nothing is shared.
     formats: Formats
     new_format: "+ New format"

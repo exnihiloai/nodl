@@ -29,7 +29,7 @@
                        data: { "swipe-delete-target": "deleteButton", testid: "dashboard-delete-recording-mobile" } %>
           </div>
 
-          <div class="relative z-10 flex w-full flex-col gap-2 bg-base-100 p-4 transition-transform duration-200 ease-out sm:flex-row sm:items-center sm:justify-between"
+          <div class="relative z-10 flex w-full flex-col gap-2 bg-base-100 p-4 transition-transform duration-200 ease-out sm:flex-row sm:items-center sm:justify-between <%= row_corner_classes %>"
                data-swipe-delete-target="surface">
             <div class="flex min-w-0 items-start gap-3">
               <% if session.completed? %>

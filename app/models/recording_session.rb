@@ -117,6 +117,7 @@ class RecordingSession < ApplicationRecord
     end
     broadcast_dashboard_activity
     broadcast_live_transcript_panel
+    TrialAhaMoment.new(self).broadcast!
   end
 
   def mark_failed!(message)
@@ -190,15 +191,11 @@ class RecordingSession < ApplicationRecord
 
   def broadcast_dashboard_activity
     Turbo::StreamsChannel.broadcast_replace_to(
-      dashboard_stream,
+      [ workspace, :dashboard ],
       target: "dashboard_activity",
       partial: "dashboard/activity",
       locals: { recording_sessions: dashboard_recording_sessions }
     )
-  end
-
-  def dashboard_stream
-    [ workspace, :dashboard ]
   end
 
   def dashboard_recording_sessions

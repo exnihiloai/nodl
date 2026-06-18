@@ -29,6 +29,10 @@ class Workspace < ApplicationRecord
   after_create :ensure_trial_entitlement
   after_create :ensure_default_transformer_profile
 
+  def on_trial?
+    current_entitlement&.plan_code == "trial"
+  end
+
   def recording_limit_reached?
     EntitlementPolicy.new(self).allowed?(:recordings).denied?
   end
