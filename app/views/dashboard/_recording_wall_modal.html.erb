@@ -1,0 +1,76 @@
+<%#
+  Wall 1: recording volume. Opened on the reach-forward (clicking record or
+  upload) once a trial workspace is out of recordings, never mid-capture. Shows
+  the documents already created as proof of value, the total time saved, and a
+  one-click upgrade. Dismissible via X, backdrop, or "Maybe later".
+%>
+<% minutes = wall.total_time_saved_minutes %>
+<% saved_copy = if minutes >= 60
+     hours = (minutes / 60.0).round(1)
+     hours = hours.to_i if hours == hours.to_i
+     t("dashboard.aha.saved_hours", count: hours)
+   else
+     t("dashboard.aha.saved_minutes", count: [minutes, 1].max)
+   end %>
+<dialog class="modal" data-recording-wall-target="dialog" data-testid="recording-wall-modal">
+  <div class="modal-box max-w-md text-left">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" aria-label="<%= t("dashboard.wall.recordings.close") %>">✕</button>
+    </form>
+
+    <h3 class="pr-8 text-xl font-bold leading-snug"><%= t("dashboard.wall.recordings.heading", count: wall.documents_count) %></h3>
+    <p class="mt-2 text-sm text-base-content/60"><%= t("dashboard.wall.recordings.body") %></p>
+
+    <div class="mt-5 overflow-hidden rounded-xl border border-base-300">
+      <div class="flex items-center gap-3 border-b border-base-300 bg-base-200 px-4 py-3">
+        <%= icon("clock", class: "size-4 shrink-0 text-primary") %>
+        <p class="font-semibold text-primary"><%= t("dashboard.wall.recordings.time_saved", saved: saved_copy) %></p>
+      </div>
+      <div class="px-4 pb-2 pt-3">
+        <p class="text-xs font-medium uppercase tracking-wide text-base-content/40"><%= t("dashboard.wall.recordings.proof_heading", count: wall.documents_count) %></p>
+      </div>
+      <ul class="pb-3" data-testid="recording-wall-documents">
+        <% wall.documents.each do |document| %>
+          <li class="flex items-center gap-2.5 px-4 py-1.5 text-sm text-base-content/70">
+            <%= icon("file-text", class: "size-3.5 shrink-0 text-base-content/35") %>
+            <span class="truncate"><%= document.title %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="mt-5 flex flex-wrap justify-center gap-1.5">
+      <% [
+           ["rotate-ccw", t("dashboard.wall.recordings.cancel_anytime")],
+           ["shield-check", t("dashboard.wall.recordings.gdpr")],
+           ["lock",         t("dashboard.wall.recordings.encryption")],
+           ["badge-check",  t("dashboard.wall.recordings.money_back")]
+         ].each do |lucide_icon, label| %>
+        <span class="inline-flex items-center gap-1 rounded-full border border-base-300 bg-base-200 px-2.5 py-0.5 text-xs font-medium text-base-content/55">
+          <%= icon(lucide_icon, class: "size-3 shrink-0") %>
+          <%= label %>
+        </span>
+      <% end %>
+    </div>
+
+    <div class="mt-3 flex flex-col gap-2">
+      <%= button_to t("dashboard.wall.recordings.upgrade"), payments_checkout_path(plan: "starter"),
+                    method: :post,
+                    class: "btn btn-primary w-full",
+                    form: { class: "w-full" },
+                    data: { testid: "wall-upgrade-button" } %>
+      <%= link_to t("dashboard.wall.recordings.see_plans"), payments_path,
+                  class: "btn btn-ghost w-full",
+                  data: { testid: "wall-see-plans-button" } %>
+    </div>
+
+    <div class="mt-3 text-center">
+      <form method="dialog" class="contents">
+        <button class="link link-hover text-xs text-base-content/40" data-testid="wall-dismiss"><%= t("dashboard.wall.recordings.dismiss") %></button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button aria-label="<%= t("dashboard.wall.recordings.close") %>">close</button>
+  </form>
+</dialog>

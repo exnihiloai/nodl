@@ -345,6 +345,22 @@ en:
       formats_reached: Limit of %{limit} formats reached
     trial:
       recordings_left: "%{remaining} of %{limit} free recordings left"
+    wall:
+      recordings:
+        heading: You've turned %{count} recordings into documents. Keep going.
+        body: Your trial recordings are used up, but your documents are safe. Upgrade to Starter to keep recording with monthly recording capacity that feels unlimited for normal use.
+        proof_heading:
+          one: "%{count} document created"
+          other: "%{count} documents created"
+        time_saved: "≈ %{saved} saved so far"
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
     aha:
       title: Done!
       body: That took just %{seconds} and saved you about %{saved}.

@@ -451,6 +451,22 @@ de:
       formats_reached: Limit von %{limit} Formaten erreicht
     trial:
       recordings_left: "%{remaining} von %{limit} kostenlosen Aufnahmen übrig"
+    wall:
+      recordings:
+        heading: Du hast %{count} Aufnahmen in Dokumente verwandelt. Mach weiter.
+        body: Deine kostenlosen Aufnahmen sind aufgebraucht, aber deine Dokumente bleiben sicher. Wechsle zu Starter und nimm weiter auf – mit monatlicher Aufnahmekapazität, die sich im normalen Gebrauch unbegrenzt anfühlt.
+        proof_heading:
+          one: "%{count} Dokument erstellt"
+          other: "%{count} Dokumente erstellt"
+        time_saved: "≈ %{saved} bisher gespart"
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
     aha:
       title: Fertig!
       body: Das hat nur %{seconds} gedauert und dir rund %{saved} erspart.
