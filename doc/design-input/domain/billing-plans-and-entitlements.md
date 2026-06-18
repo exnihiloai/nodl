@@ -355,7 +355,22 @@ Walls fire on the **reach forward**:
 
 Walls must not fire in the middle of delivering something already promised. A recording accepted for processing should finish and produce its full document.
 
-### 10.3 Trial expiry
+### 10.3 Paid internal guardrails
+
+Paid tiers should feel effectively unlimited in public pricing copy while retaining internal abuse and cost controls.
+
+Initial internal monthly paid caps:
+
+| Plan | Public-facing recording feel | Internal recordings / billing period | Internal audio hours / billing period |
+|---|---|---:|---:|
+| Starter | Effectively unlimited | 500 | 100 |
+| Business | Effectively unlimited | 2000 | 500 |
+
+The audio-hours cap is represented as `recorded_audio_seconds` with `type: quantity`, `period: billing_period`, and `unit: seconds`.
+
+Current implementation note: Nodl does not yet model billable seats. Until seat-level accounting exists, this cap is enforced at workspace entitlement level. When seats are introduced, usage events should carry the seat/member dimension needed to enforce the same cap per seat.
+
+### 10.4 Trial expiry
 
 Trial ends when either condition is met:
 

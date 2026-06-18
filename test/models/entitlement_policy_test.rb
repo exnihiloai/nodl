@@ -90,6 +90,23 @@ class EntitlementPolicyTest < ActiveSupport::TestCase
     assert_equal 3600, result.usage
   end
 
+  test "paid catalog uses high recording caps and internal monthly audio-hour caps" do
+    starter_limits = BillingCatalog::LIMITS.fetch("starter")
+    business_limits = BillingCatalog::LIMITS.fetch("business")
+
+    assert_equal 500, starter_limits.dig("recordings", "limit")
+    assert_equal "billing_period", starter_limits.dig("recordings", "period")
+    assert_equal 100.hours.to_i, starter_limits.dig("recorded_audio_seconds", "limit")
+    assert_equal "billing_period", starter_limits.dig("recorded_audio_seconds", "period")
+    assert_equal "quantity", starter_limits.dig("recorded_audio_seconds", "type")
+
+    assert_equal 2000, business_limits.dig("recordings", "limit")
+    assert_equal "billing_period", business_limits.dig("recordings", "period")
+    assert_equal 500.hours.to_i, business_limits.dig("recorded_audio_seconds", "limit")
+    assert_equal "billing_period", business_limits.dig("recorded_audio_seconds", "period")
+    assert_equal "quantity", business_limits.dig("recorded_audio_seconds", "type")
+  end
+
   test "per-action limits are checked against candidate quantity" do
     workspace = create_user_with_workspace.workspaces.first
     result = EntitlementPolicy.new(workspace).allowed?(:max_recording_duration_seconds, quantity: PlanLimits.max_recording_duration_seconds + 1, unit: "seconds")

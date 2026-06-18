@@ -26,7 +26,8 @@ class BillingCatalog
       "max_recording_duration_seconds" => { "type" => "per_action", "limit" => PlanLimits.max_recording_duration_seconds, "period" => "per_action", "unit" => "seconds" }
     },
     "starter" => {
-      "recordings" => { "type" => "count", "limit" => 30, "period" => "billing_period", "unit" => "count" },
+      "recordings" => { "type" => "count", "limit" => 500, "period" => "billing_period", "unit" => "count" },
+      "recorded_audio_seconds" => { "type" => "quantity", "limit" => 100.hours.to_i, "period" => "billing_period", "unit" => "seconds" },
       "custom_formats" => { "type" => "count", "limit" => 10, "period" => "lifetime", "unit" => "count" },
       "exports" => { "type" => "unlimited", "limit" => "unlimited" },
       "original_audio_downloads" => { "type" => "unlimited", "limit" => "unlimited" },
@@ -34,7 +35,8 @@ class BillingCatalog
       "max_recording_duration_seconds" => { "type" => "per_action", "limit" => PlanLimits.max_recording_duration_seconds, "period" => "per_action", "unit" => "seconds" }
     },
     "business" => {
-      "recordings" => { "type" => "count", "limit" => 100, "period" => "billing_period", "unit" => "count" },
+      "recordings" => { "type" => "count", "limit" => 2000, "period" => "billing_period", "unit" => "count" },
+      "recorded_audio_seconds" => { "type" => "quantity", "limit" => 500.hours.to_i, "period" => "billing_period", "unit" => "seconds" },
       "custom_formats" => { "type" => "unlimited", "limit" => "unlimited" },
       "exports" => { "type" => "unlimited", "limit" => "unlimited" },
       "original_audio_downloads" => { "type" => "unlimited", "limit" => "unlimited" },
