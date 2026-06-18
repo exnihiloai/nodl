@@ -117,6 +117,7 @@ class RecordingSession < ApplicationRecord
     end
     broadcast_dashboard_activity
     broadcast_live_transcript_panel
+    TrialRecordingsBadge.new(workspace).broadcast!
     TrialAhaMoment.new(self).broadcast!
   end
 

@@ -19,6 +19,8 @@
     <% else %>
       <% first_run = @recording_sessions.none? %>
 
+      <%= render "trial_recordings_pill", badge: TrialRecordingsBadge.new(@workspace) %>
+
       <%= render "record_hero",
                  recording_limit_reached: @recording_limit_reached,
                  recording_session: @recording_session,

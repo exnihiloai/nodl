@@ -343,6 +343,8 @@ en:
     limits:
       recordings_reached: You've used all %{limit} recordings included in your test plan.
       formats_reached: Limit of %{limit} formats reached
+    trial:
+      recordings_left: "%{remaining} of %{limit} free recordings left"
     aha:
       title: Done!
       body: That took just %{seconds} and saved you about %{saved}.

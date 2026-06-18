@@ -1,0 +1,13 @@
+<%#
+  Trial "free recordings left" status pill. The wrapper id is always present so
+  it can be replaced live over the dashboard Turbo stream when a recording
+  completes; the badge inside only renders while the pill is visible.
+%>
+<div id="trial_recordings_pill" class="flex justify-center">
+  <% if badge.visible? %>
+    <span class="badge badge-soft badge-primary badge-lg gap-1.5" data-testid="trial-recordings-pill">
+      <%= icon("sparkles", class: "size-4") %>
+      <%= t("dashboard.trial.recordings_left", remaining: badge.remaining, limit: badge.limit) %>
+    </span>
+  <% end %>
+</div>
