@@ -156,6 +156,9 @@ en:
     payments:
       not_configured: Stripe is not configured. Set STRIPE_SECRET_KEY first.
       checkout_failed: Unable to start checkout right now.
+      plan_unavailable: This paid plan is not available for checkout yet.
+    entitlements:
+      limit_reached: This action is limited to %{limit} on your current plan.
   registrations:
     errors:
       email_mismatch: Email and confirmation must match.
@@ -532,6 +535,7 @@ en:
       test_card_html: 'Test card: %{code}'
       config_required: Checkout not available yet
       config_hint: Paid plans are not live yet. Create a free account from the homepage to start recording.
+      no_active_paid_plan: Stripe is configured, but no active paid plan version has a Stripe Price ID yet.
       webhooks_title: For maintainers
       webhooks_hint_html: When billing is enabled, point Stripe CLI to %{path} with %{secret}.
       back_home: "← Back to homepage"
@@ -564,6 +568,8 @@ en:
       no_workspace: This user has no workspace.
       usage_updated: Usage limits updated.
       integrity_sealing_updated: Integrity sealing setting updated.
+      entitlement_reason_required: Enter a reason before changing workspace access.
+      private_access_granted: Private Access granted.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -579,8 +585,8 @@ en:
       generate_password: Generate password
       deactivate: Deactivate
       reactivate: Reactivate
-      update_usage_limits: Update usage limits
       update_integrity_sealing: Update integrity sealing
+      grant_private_access: Grant Private Access
     common:
       never: Never
       none: "-"
@@ -590,7 +596,7 @@ en:
       index:
         title: Admin - Users
         heading: User roster
-        subheading: Overview of accounts, roles, and workspace limits.
+        subheading: Overview of accounts, roles, and workspace access.
         create_user: Create User
         col_user: User
         col_role: Role
@@ -598,10 +604,7 @@ en:
         col_last_login: Last login
         col_workspace: Workspace
         col_plan: Plan
-        col_usage: Usage
         id: ID %{id}
-        scans: 'Scans: %{used} / %{limit}'
-        storage: 'Storage: %{used}MB / %{limit}MB'
       show:
         title: Admin - User Detail
         heading: 'User Detail: %{email}'
@@ -609,10 +612,7 @@ en:
         account_information: Account Information
         created: 'Created:'
         last_login: 'Last login:'
-        subscription_and_usage: Subscription and Usage
-        subscription_status: Subscription Status
-        plan_html: 'Plan: %{plan}'
-        billing_cycle_html: 'Billing Cycle: %{cycle}'
+        workspace_access: Workspace Access
         no_workspace: No workspace assigned.
         audit_events: Recent Audit Events
         col_action: Action
@@ -654,14 +654,18 @@ en:
         deactivate: Deactivate User
         deactivate_confirm: Are you sure you want to deactivate this user?
         reactivate: Reactivate User
-      usage_section:
-        heading: Usage Limits
-        scans: Scans
-        storage: Storage (MB)
-        scans_limit: Scans Limit
-        storage_limit: Storage (MB) Limit
-        update: Update Limits
+      entitlement_section:
+        heading: Workspace Entitlement
+        plan: Plan
+        version: Version
+        source: Source
+        status: Status
+        limits: Limits
+        no_entitlement: No entitlement assigned.
         no_workspace: No workspace assigned for this user.
+        reason: Reason
+        reason_placeholder: Founder account, beta grant, support extension...
+        grant_private_access: Grant Private Access
       create_result:
         success: User created successfully.
         generated_password: 'Generated Password:'

@@ -262,6 +262,9 @@ de:
     payments:
       not_configured: Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY.
       checkout_failed: Checkout kann derzeit nicht gestartet werden.
+      plan_unavailable: Dieser Paid Plan ist noch nicht für Checkout verfügbar.
+    entitlements:
+      limit_reached: Diese Aktion ist in deinem aktuellen Plan auf %{limit} begrenzt.
   registrations:
     errors:
       email_mismatch: E-Mail und Bestätigung müssen übereinstimmen.
@@ -638,6 +641,7 @@ de:
       test_card_html: 'Testkarte: %{code}'
       config_required: Checkout noch nicht verfügbar
       config_hint: Paid Plans sind noch nicht live. Erstelle einen Free Account auf der Startseite und leg los.
+      no_active_paid_plan: Stripe ist konfiguriert, aber kein aktiver Paid-Plan hat eine Stripe Price ID.
       webhooks_title: Für Maintainer
       webhooks_hint_html: Sobald Billing aktiv ist, Stripe CLI auf %{path} mit %{secret} zeigen.
       back_home: "← Zurück zur Startseite"
@@ -670,6 +674,8 @@ de:
       no_workspace: Dieser Nutzer hat keinen Workspace.
       usage_updated: Nutzungslimits aktualisiert.
       integrity_sealing_updated: Einstellung für Integritätsversiegelung aktualisiert.
+      entitlement_reason_required: Gib einen Grund an, bevor du Workspace-Zugriff änderst.
+      private_access_granted: Private Access gewährt.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -685,8 +691,8 @@ de:
       generate_password: Passwort generiert
       deactivate: Deaktiviert
       reactivate: Reaktiviert
-      update_usage_limits: Nutzungslimits aktualisiert
       update_integrity_sealing: Integritätsversiegelung aktualisiert
+      grant_private_access: Private Access gewährt
     common:
       never: Nie
       none: "-"
@@ -696,7 +702,7 @@ de:
       index:
         title: Admin - Nutzer
         heading: Nutzerübersicht
-        subheading: Überblick über Konten, Rollen und Workspace-Limits.
+        subheading: Überblick über Konten, Rollen und Workspace-Zugriff.
         create_user: Nutzer erstellen
         col_user: Nutzer
         col_role: Rolle
@@ -704,10 +710,7 @@ de:
         col_last_login: Letzter Login
         col_workspace: Workspace
         col_plan: Tarif
-        col_usage: Nutzung
         id: ID %{id}
-        scans: 'Scans: %{used} / %{limit}'
-        storage: 'Speicher: %{used} MB / %{limit} MB'
       show:
         title: Admin - Nutzerdetails
         heading: 'Nutzerdetails: %{email}'
@@ -715,10 +718,7 @@ de:
         account_information: Kontoinformationen
         created: 'Erstellt:'
         last_login: 'Letzter Login:'
-        subscription_and_usage: Abonnement und Nutzung
-        subscription_status: Abonnementstatus
-        plan_html: 'Tarif: %{plan}'
-        billing_cycle_html: 'Abrechnungszyklus: %{cycle}'
+        workspace_access: Workspace-Zugriff
         no_workspace: Kein Workspace zugewiesen.
         audit_events: Letzte Audit-Ereignisse
         col_action: Aktion
@@ -760,14 +760,18 @@ de:
         deactivate: Nutzer deaktivieren
         deactivate_confirm: Bist du sicher, dass du diesen Nutzer deaktivieren möchtest?
         reactivate: Nutzer reaktivieren
-      usage_section:
-        heading: Nutzungslimits
-        scans: Scans
-        storage: Speicher (MB)
-        scans_limit: Scan-Limit
-        storage_limit: Speicherlimit (MB)
-        update: Limits aktualisieren
+      entitlement_section:
+        heading: Workspace-Entitlement
+        plan: Plan
+        version: Version
+        source: Quelle
+        status: Status
+        limits: Limits
+        no_entitlement: Kein Entitlement zugewiesen.
         no_workspace: Für diesen Nutzer ist kein Workspace zugewiesen.
+        reason: Grund
+        reason_placeholder: Founder Account, Beta Grant, Support-Verlängerung...
+        grant_private_access: Private Access gewähren
       create_result:
         success: Nutzer erfolgreich erstellt.
         generated_password: 'Generiertes Passwort:'

@@ -1,0 +1,42 @@
+<div id="entitlement_section" class="space-y-3">
+  <h3 class="font-semibold"><%= t("admin.users.entitlement_section.heading") %></h3>
+
+  <% if notice.present? %>
+    <div class="alert alert-success mt-2"><span><%= notice %></span></div>
+  <% elsif error.present? %>
+    <div class="alert alert-error mt-2"><span><%= error %></span></div>
+  <% end %>
+
+  <% if workspace&.current_entitlement.present? %>
+    <% entitlement = workspace.current_entitlement %>
+    <dl class="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm">
+      <dt class="text-base-content/60"><%= t("admin.users.entitlement_section.plan") %></dt>
+      <dd><%= entitlement.display_name %></dd>
+      <dt class="text-base-content/60"><%= t("admin.users.entitlement_section.version") %></dt>
+      <dd><code class="kbd kbd-xs"><%= entitlement.billing_plan_version.version_key %></code></dd>
+      <dt class="text-base-content/60"><%= t("admin.users.entitlement_section.source") %></dt>
+      <dd class="capitalize"><%= entitlement.source %></dd>
+      <dt class="text-base-content/60"><%= t("admin.users.entitlement_section.status") %></dt>
+      <dd class="capitalize"><%= entitlement.status %></dd>
+    </dl>
+
+    <details class="text-sm">
+      <summary class="cursor-pointer"><%= t("admin.users.entitlement_section.limits") %></summary>
+      <pre class="mt-2 max-h-64 overflow-auto rounded-box bg-base-200 p-3 text-xs"><%= JSON.pretty_generate(entitlement.limits_snapshot) %></pre>
+    </details>
+  <% elsif workspace.present? %>
+    <p class="text-sm text-base-content/70"><%= t("admin.users.entitlement_section.no_entitlement") %></p>
+  <% else %>
+    <p class="text-sm text-base-content/70"><%= t("admin.users.entitlement_section.no_workspace") %></p>
+  <% end %>
+
+  <% if workspace.present? %>
+    <%= form_with url: update_entitlement_admin_user_path(managed_user), method: :patch, class: "mt-4 space-y-2" do |f| %>
+      <div class="form-control">
+        <%= f.label :reason, t("admin.users.entitlement_section.reason"), class: "label" %>
+        <%= f.text_field :reason, value: "", placeholder: t("admin.users.entitlement_section.reason_placeholder"), class: "input input-bordered input-sm" %>
+      </div>
+      <%= f.submit t("admin.users.entitlement_section.grant_private_access"), class: "btn btn-sm" %>
+    <% end %>
+  <% end %>
+</div>
