@@ -3,117 +3,189 @@
   <meta name="description" content="<%= t("payments.show.meta_description") %>" />
 <% end %>
 
-<section class="bg-base-100 py-12 md:py-20">
+<section class="bg-base-100 py-16 md:py-24">
   <div class="container mx-auto max-w-5xl px-4">
 
-    <header class="mx-auto max-w-2xl text-center space-y-4">
-      <h1 class="text-3xl font-bold text-base-content md:text-4xl"><%= t("payments.show.heading") %></h1>
-      <p class="text-base text-base-content/70 md:text-lg"><%= t("payments.show.subheading") %></p>
+    <%# Header %>
+    <header class="mx-auto max-w-2xl text-center space-y-3">
+      <h1 class="text-4xl font-extrabold tracking-tight text-base-content md:text-5xl">
+        <%= t("payments.show.heading") %>
+      </h1>
+      <p class="text-base text-base-content/60 md:text-lg leading-relaxed">
+        <%= t("payments.show.subheading") %>
+      </p>
     </header>
 
-    <div class="mt-8 flex flex-col items-center gap-3">
-      <div class="join">
+    <%# Billing toggles %>
+    <div class="mt-10 flex flex-col items-center gap-4">
+      <div class="inline-flex rounded-full bg-base-200 p-1 gap-1">
         <% BillingPriceCatalog::INTERVALS.each_key do |interval| %>
           <%= link_to payments_path(region: @selected_region, interval:),
-                      class: class_names("btn join-item", interval == @selected_interval ? "btn-primary" : "btn-ghost border border-base-300"),
+                      class: class_names(
+                        "relative flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-all",
+                        interval == @selected_interval ? "bg-base-100 shadow text-base-content" : "text-base-content/60 hover:text-base-content"
+                      ),
                       data: { testid: "pricing-interval-#{interval}" } do %>
             <%= t(BillingPriceCatalog::INTERVALS.fetch(interval).fetch(:label_key)) %>
             <% if interval == "annual" %>
-              <span class="badge badge-success badge-xs ml-1"><%= t("payments.show.save_badge") %></span>
+              <span class="badge badge-success badge-sm"><%= t("payments.show.save_badge") %></span>
             <% end %>
           <% end %>
         <% end %>
       </div>
 
-      <div class="flex items-center gap-2 text-sm">
-        <div class="join">
-          <% BillingPriceCatalog::REGIONS.each_key do |region| %>
-            <%= link_to t(BillingPriceCatalog::REGIONS.fetch(region).fetch(:label_key)),
-                        payments_path(region:, interval: @selected_interval),
-                        class: class_names("btn join-item btn-sm btn-ghost border border-base-300", "btn-active": region == @selected_region),
-                        data: { testid: "pricing-region-#{region}" } %>
-          <% end %>
-        </div>
+      <div class="flex items-center gap-1.5 rounded-full bg-base-200 p-1">
+        <% BillingPriceCatalog::REGIONS.each_key do |region| %>
+          <%= link_to t(BillingPriceCatalog::REGIONS.fetch(region).fetch(:label_key)),
+                      payments_path(region:, interval: @selected_interval),
+                      class: class_names(
+                        "rounded-full px-4 py-1.5 text-xs font-medium transition-all",
+                        region == @selected_region ? "bg-base-100 shadow text-base-content" : "text-base-content/50 hover:text-base-content"
+                      ),
+                      data: { testid: "pricing-region-#{region}" } %>
+        <% end %>
       </div>
     </div>
 
-    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+    <%# Plan cards %>
+    <div class="mt-10 grid gap-6 lg:grid-cols-2 lg:items-start">
       <% @plan_cards.each do |plan| %>
         <% selected_price = plan.prices.fetch(@selected_interval) %>
         <% unit = selected_price.currency == "eur" ? "€" : "$" %>
         <% fmt = selected_price.currency == "eur" ? "%n %u" : "%u%n" %>
 
-        <article class="card border <%= plan.highlight ? "border-primary bg-primary/5 shadow-xl" : "border-base-300 bg-base-100 shadow-sm" %>">
-          <div class="card-body gap-5 p-6 md:p-8">
+        <article class="relative rounded-3xl <%= plan.highlight ? "border-2 border-primary bg-base-200 shadow-lg shadow-primary/10" : "border border-base-300 bg-base-200 shadow-sm" %>">
 
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h2 class="text-xl font-bold"><%= plan.name %></h2>
-                <p class="mt-1 text-sm text-base-content/70"><%= t(plan.description_key) %></p>
-              </div>
-              <% if plan.highlight %>
-                <span class="badge badge-primary shrink-0"><%= t("payments.show.recommended") %></span>
-              <% end %>
+          <% if plan.highlight %>
+            <div class="absolute -top-3.5 inset-x-0 flex justify-center">
+              <span class="badge badge-primary badge-lg shadow px-4 font-semibold"><%= t("payments.show.recommended") %></span>
+            </div>
+          <% end %>
+
+          <div class="p-7 md:p-9 flex flex-col gap-7">
+
+            <%# Plan name & description %>
+            <div class="pt-3">
+              <h2 class="text-xl font-bold text-base-content"><%= plan.name %></h2>
+              <p class="mt-1 text-sm leading-relaxed text-base-content/60">
+                <%= t(plan.description_key) %>
+              </p>
             </div>
 
-            <div>
-              <div class="flex items-end gap-1.5">
-                <span class="text-4xl font-bold tracking-tight">
+            <%# Price display %>
+            <div class="border-t border-base-300 pt-6">
+              <div class="flex items-end gap-1">
+                <span class="text-5xl font-extrabold tracking-tight leading-none text-base-content">
                   <%= number_to_currency(selected_price.amount_cents / 100.0, unit:, precision: 0, format: fmt) %>
                 </span>
-                <span class="pb-1 text-sm text-base-content/60">
+                <span class="pb-1 text-sm text-base-content/50">
                   <%= selected_price.annual? ? t("payments.show.per_year") : t("payments.show.per_month") %>
                 </span>
               </div>
               <% if selected_price.annual? %>
-                <p class="mt-1 text-sm text-success font-medium">
+                <p class="mt-2 text-sm font-medium text-success">
                   <%= t("payments.show.annual_monthly_equiv",
                         amount: number_to_currency(selected_price.amount_cents / 100.0 / 12, unit:, precision: 0, format: fmt)) %>
                 </p>
               <% else %>
-                <p class="mt-1 text-sm text-base-content/50"><%= t("payments.show.no_commitment") %></p>
+                <p class="mt-2 text-sm text-base-content/50"><%= t("payments.show.no_commitment") %></p>
               <% end %>
-              <p class="mt-1 text-xs text-base-content/40"><%= t("payments.show.vat_note") %></p>
+              <p class="mt-1 text-xs text-base-content/35"><%= t("payments.show.vat_note") %></p>
             </div>
 
+            <%# CTA %>
             <div>
               <% if @stripe_configured %>
                 <%= button_to t("payments.show.start_checkout"),
                               payments_checkout_path,
                               method: :post,
                               params: { plan: plan.code, region: @selected_region, interval: @selected_interval },
-                              class: "btn btn-primary w-full",
+                              class: class_names("btn w-full rounded-xl text-base font-semibold", plan.highlight ? "btn-primary" : "btn-outline"),
                               form: { data: { turbo: false } },
                               data: { testid: "checkout-#{plan.code}" } %>
               <% else %>
-                <button class="btn btn-disabled w-full"><%= t("payments.show.checkout_unavailable") %></button>
+                <button class="btn btn-disabled w-full rounded-xl"><%= t("payments.show.checkout_unavailable") %></button>
               <% end %>
-              <p class="mt-2 text-center text-xs text-base-content/50"><%= t("payments.show.cancel_anytime") %></p>
+              <p class="mt-2.5 text-center text-xs text-base-content/40">
+                <%= t("payments.show.cancel_anytime") %>
+              </p>
             </div>
 
-            <div class="rounded-2xl border border-base-300 bg-base-200/60 p-4">
-              <p class="mb-3 text-sm font-semibold"><%= t("payments.show.included_heading") %></p>
-              <ul class="space-y-2">
-                <% plan.features.each do |feature_key| %>
-                  <li class="flex items-start gap-2.5 text-sm">
-                    <%= icon("check", class: "size-4 mt-0.5 text-success shrink-0") %>
+            <%# Feature list %>
+            <div class="border-t border-base-300 pt-6 space-y-3">
+              <p class="text-xs font-bold uppercase tracking-widest text-base-content/40">
+                <%= t("payments.show.included_heading") %>
+              </p>
+              <ul class="space-y-2.5">
+                <% plan.features.reject { |feature_key| BillingPriceCatalog.premium_feature?(feature_key) }.each do |feature_key| %>
+                  <li class="flex items-start gap-3 text-sm text-base-content/85">
+                    <span class="mt-0.5 flex size-4.5 shrink-0 items-center justify-center rounded-full bg-success/15 text-success">
+                      <%= icon("check", class: "size-3") %>
+                    </span>
                     <span><%= t(feature_key) %></span>
+                  </li>
+                <% end %>
+              </ul>
+
+              <% if (premium_feature = plan.features.find { |feature_key| BillingPriceCatalog.premium_feature?(feature_key) }) %>
+                <div class="integrity-status mt-4 rounded-2xl border border-primary/30 bg-primary/8 overflow-hidden"
+                     data-controller="disclosure"
+                     data-disclosure-open-class="is-open"
+                     data-testid="premium-plan-feature">
+                  <button type="button"
+                          class="flex w-full cursor-pointer items-center gap-3 p-3.5 text-left transition-colors hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                          data-disclosure-target="trigger"
+                          data-action="disclosure#toggle"
+                          aria-expanded="false"
+                          data-testid="premium-plan-feature-trigger">
+                    <span class="flex size-4.5 shrink-0 items-center justify-center self-center" aria-hidden="true">
+                      <%= icon("chevron-right", class: "integrity-status-chevron size-4 text-primary") %>
+                    </span>
+                    <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content shadow-md shadow-primary/30">
+                      <%= icon("shield-check", class: "size-5") %>
+                    </span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-[0.6rem] font-bold uppercase tracking-widest text-primary">
+                        <%= t("payments.show.premium") %>
+                      </span>
+                      <span class="block text-sm font-semibold leading-snug text-base-content">
+                        <%= t(premium_feature) %>
+                      </span>
+                    </span>
+                  </button>
+                  <div class="integrity-status-panel px-3.5 pb-3.5"
+                       data-disclosure-target="panel"
+                       inert
+                       data-testid="premium-plan-feature-details">
+                    <div class="integrity-status-panel-inner">
+                      <div class="integrity-status-panel-content space-y-3 border-t border-primary/20 pt-3">
+                        <p class="text-sm leading-relaxed text-base-content/70">
+                          <%= t("recording_sessions.integrity.descriptions.disabled") %>
+                        </p>
+                        <%= link_to t("payments.show.integrity_learn_more"),
+                                    integrity_proof_help_path,
+                                    class: "btn btn-ghost btn-sm",
+                                    data: { testid: "premium-plan-feature-learn-more" } %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <ul class="space-y-2.5 mt-2.5">
+                <% t("payments.show.shared_features").each_value do |feature| %>
+                  <li class="flex items-start gap-3 text-sm text-base-content/50">
+                    <span class="mt-0.5 flex size-4.5 shrink-0 items-center justify-center rounded-full bg-base-300">
+                      <%= icon("check", class: "size-3") %>
+                    </span>
+                    <span><%= feature %></span>
                   </li>
                 <% end %>
               </ul>
             </div>
 
-            <ul class="space-y-2">
-              <% t("payments.show.shared_features").each_value do |feature| %>
-                <li class="flex items-start gap-2.5 text-sm text-base-content/80">
-                  <%= icon("check", class: "size-4 mt-0.5 text-success shrink-0") %>
-                  <span><%= feature %></span>
-                </li>
-              <% end %>
-            </ul>
-
             <% unless selected_price.stripe_price_id.present? %>
-              <p class="text-xs text-base-content/40"><%= t("payments.show.dynamic_price_note") %></p>
+              <p class="text-xs text-base-content/30"><%= t("payments.show.dynamic_price_note") %></p>
             <% end %>
 
           </div>
@@ -121,24 +193,25 @@
       <% end %>
     </div>
 
-    <div class="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-base-content/60">
+    <%# Trust bar %>
+    <div class="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3">
       <% t("payments.show.trust_items").each_value do |item| %>
-        <span class="flex items-center gap-1.5">
-          <%= icon("shield-check", class: "size-4 text-success") %>
+        <span class="flex items-center gap-2 text-sm text-base-content/50">
+          <%= icon("shield-check", class: "size-4 text-success/80") %>
           <%= item %>
         </span>
       <% end %>
     </div>
 
     <% unless @stripe_configured %>
-      <section class="mt-8 rounded-box border border-warning/40 bg-warning/10 p-4">
+      <section class="mt-8 rounded-2xl border border-warning/40 bg-warning/10 p-5">
         <h2 class="font-semibold"><%= t("payments.show.config_required") %></h2>
         <p class="mt-1 text-sm text-base-content/70"><%= t("payments.show.config_hint") %></p>
-        <div class="mt-3 rounded-box bg-base-100 p-3 font-mono text-xs">STRIPE_SECRET_KEY=sk_test_...</div>
+        <div class="mt-3 rounded-xl bg-base-100 p-3 font-mono text-xs">STRIPE_SECRET_KEY=sk_test_...</div>
       </section>
     <% end %>
 
-    <section class="mt-6 rounded-box border border-base-300 bg-base-200 p-4 text-xs text-base-content/60">
+    <section class="mt-6 rounded-2xl border border-base-200 bg-base-200/50 p-4 text-xs text-base-content/50">
       <p><%= t("payments.show.redirect_note") %></p>
       <p class="mt-1"><%= t("payments.show.monthly_limits_note") %></p>
       <p class="mt-1"><%= t("payments.show.test_card_html", code: content_tag(:code, "4242 4242 4242 4242", class: "kbd kbd-xs")) %></p>

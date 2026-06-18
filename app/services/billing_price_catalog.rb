@@ -41,18 +41,19 @@ class BillingPriceCatalog
     "business" => { "eur" => 9_900, "usd" => 12_900 }
   }.freeze
 
+  PREMIUM_FEATURE_KEY = "payments.show.features.integrity"
+
   FEATURES = {
     "starter" => %w[
       payments.show.features.starter_recordings
-      payments.show.features.starter_formats
+      payments.show.features.unlimited_formats
       payments.show.features.unlimited_exports
-      payments.show.features.monthly_usage_window
     ],
     "business" => %w[
       payments.show.features.business_recordings
       payments.show.features.unlimited_formats
+      payments.show.features.unlimited_exports
       payments.show.features.integrity
-      payments.show.features.monthly_usage_window
     ]
   }.freeze
 
@@ -87,6 +88,10 @@ class BillingPriceCatalog
 
   def self.normalize_plan(plan_code)
     plan_code.to_s.presence_in(PLAN_META.keys) || "starter"
+  end
+
+  def self.premium_feature?(feature_key)
+    feature_key == PREMIUM_FEATURE_KEY
   end
 
   attr_reader :region, :interval

@@ -14,9 +14,12 @@
 
 <section class="bg-base-200 py-10 sm:py-12">
   <div class="container mx-auto max-w-3xl space-y-6 px-4">
-    <%= link_to t("pages.integrity_proof.back_link"),
-                user_signed_in? ? dashboard_path : root_path,
-                class: "link link-hover inline-flex items-center gap-1 text-sm" %>
+    <% back_fallback = user_signed_in? ? dashboard_path : root_path %>
+    <%= button_tag t("pages.integrity_proof.back_link"),
+                   type: "button",
+                   class: "link link-hover inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 text-sm",
+                   data: { testid: "integrity-proof-back" },
+                   onclick: "if (history.length > 1) { history.back(); } else { window.location.assign(#{back_fallback.to_json}); }" %>
 
     <article class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8" data-testid="integrity-proof-help">
       <header class="flex items-start gap-4">

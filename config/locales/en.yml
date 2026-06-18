@@ -622,6 +622,8 @@ en:
       no_commitment: Monthly, cancel anytime
       cancel_anytime: Cancel anytime, no lock-in
       included_heading: What's included
+      premium: Premium
+      integrity_learn_more: Learn more
       regions:
         eu: "€ EUR"
         international: "$ USD"
@@ -636,10 +638,9 @@ en:
       features:
         starter_recordings: 500 recordings per month
         business_recordings: 2,000 recordings per month
-        starter_formats: 10 document templates
         unlimited_formats: Unlimited document templates
         unlimited_exports: Unlimited exports & audio downloads
-        integrity: Integrity proof for legally secure recordings
+        integrity: Tamper-proof recording verification
         monthly_usage_window: Usage limits reset monthly
       shared_features:
         complete_flow: "Full workflow: record, understand, document"

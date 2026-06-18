@@ -728,6 +728,8 @@ de:
       no_commitment: Monatlich, jederzeit kündbar
       cancel_anytime: Jederzeit kündbar, keine Vertragsbindung
       included_heading: Das ist enthalten
+      premium: Premium
+      integrity_learn_more: Erfahre mehr
       regions:
         eu: "€ EUR"
         international: "$ USD"
@@ -738,14 +740,13 @@ de:
         starter:
           description: Ideal für alle, die regelmäßig aufnehmen und daraus fertige Dokumente machen.
         business:
-          description: Für professionellen Einsatz mit höherem Volumen und rechtssicherer Dokumentation.
+          description: Für professionellen Einsatz mit höherem Volumen und nachweisbarer Dokumentation.
       features:
         starter_recordings: 500 Aufnahmen pro Monat
         business_recordings: 2.000 Aufnahmen pro Monat
-        starter_formats: 10 Dokumentvorlagen
         unlimited_formats: Unbegrenzte Dokumentvorlagen
         unlimited_exports: Unbegrenzte Exporte & Audio-Downloads
-        integrity: Integritätsnachweis für rechtssichere Aufnahmen
+        integrity: Nachweis gegen nachträgliche Änderungen
         monthly_usage_window: Nutzungslimits werden monatlich zurückgesetzt
       shared_features:
         complete_flow: "Vollständiger Workflow: aufnehmen, verstehen, dokumentieren"

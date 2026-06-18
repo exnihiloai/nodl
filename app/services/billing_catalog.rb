@@ -28,7 +28,7 @@ class BillingCatalog
     "starter" => {
       "recordings" => { "type" => "count", "limit" => 500, "period" => "usage_period", "unit" => "count" },
       "recorded_audio_seconds" => { "type" => "quantity", "limit" => 100.hours.to_i, "period" => "usage_period", "unit" => "seconds" },
-      "custom_formats" => { "type" => "count", "limit" => 10, "period" => "lifetime", "unit" => "count" },
+      "custom_formats" => { "type" => "unlimited", "limit" => "unlimited" },
       "exports" => { "type" => "unlimited", "limit" => "unlimited" },
       "original_audio_downloads" => { "type" => "unlimited", "limit" => "unlimited" },
       "integrity_checks" => { "type" => "boolean", "limit" => false },
