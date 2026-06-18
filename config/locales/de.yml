@@ -760,10 +760,14 @@ de:
         cross_platform: Browser-basiert – keine App-Installation nötig
         privacy: Verschlüsselter, privater Workspace
       trust_items:
-        cancel: Jederzeit kündbar
+        german_servers: Deutsche Server
+        made_in_austria: Entwickelt in Österreich
+        no_ai_training: Kein KI-Training
+        encryption: 100% Verschlüsselung
+        gdpr: DSGVO-konform
         no_setup: Keine Einrichtungsgebühr
-        stripe: Sichere Zahlung via Stripe
-        privacy: Daten verschlüsselt & privat
+        cancel: Jederzeit kündbar
+        money_back: Geld-zurück-Garantie in den ersten 40 Tagen
       per_month: / Monat
       per_year: / Jahr
       start_checkout: "Jetzt starten →"

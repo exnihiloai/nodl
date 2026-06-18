@@ -11,9 +11,6 @@
       <h1 class="text-4xl font-extrabold tracking-tight text-base-content md:text-5xl">
         <%= t("payments.show.heading") %>
       </h1>
-      <p class="text-base text-base-content/60 md:text-lg leading-relaxed">
-        <%= t("payments.show.subheading") %>
-      </p>
     </header>
 
     <%# Billing toggles %>
@@ -193,14 +190,26 @@
       <% end %>
     </div>
 
-    <%# Trust bar %>
-    <div class="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3">
-      <% t("payments.show.trust_items").each_value do |item| %>
-        <span class="flex items-center gap-2 text-sm text-base-content/50">
-          <%= icon("shield-check", class: "size-4 text-success/80") %>
-          <%= item %>
-        </span>
-      <% end %>
+    <%# Trust signals %>
+    <div class="mt-12">
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <% trust_icons = {
+          "german_servers" => "server",
+          "made_in_austria" => "map-pin",
+          "no_ai_training" => "brain",
+          "encryption" => "lock",
+          "gdpr" => "shield-check",
+          "no_setup" => "circle-check",
+          "cancel" => "rotate-ccw",
+          "money_back" => "badge-check"
+        } %>
+        <% t("payments.show.trust_items").each do |key, label| %>
+          <div class="flex items-center gap-2.5 rounded-2xl border border-base-200 bg-base-200/40 px-4 py-3">
+            <%= icon(trust_icons.fetch(key.to_s, "check"), class: "size-4 shrink-0 text-success/80") %>
+            <span class="text-xs font-medium text-base-content/60 leading-tight"><%= label %></span>
+          </div>
+        <% end %>
+      </div>
     </div>
 
     <% unless @stripe_configured %>

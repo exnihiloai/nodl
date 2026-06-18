@@ -654,10 +654,14 @@ en:
         cross_platform: Browser-based, no app installation needed
         privacy: Encrypted, private workspace
       trust_items:
-        cancel: Cancel anytime
-        no_setup: No setup fee
-        stripe: Secure payment via Stripe
-        privacy: Data encrypted & private
+        german_servers: German Servers
+        made_in_austria: Made in Austria
+        no_ai_training: No AI Training
+        encryption: 100% Encryption
+        gdpr: GDPR Compliant
+        no_setup: No Setup Fee
+        cancel: Cancel Anytime
+        money_back: Money-back guarantee within 40 days
       per_month: / month
       per_year: / year
       start_checkout: "Get started →"
