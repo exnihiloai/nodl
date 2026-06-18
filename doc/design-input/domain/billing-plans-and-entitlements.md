@@ -517,7 +517,7 @@ trial_ends_at: trial_started_at + 14 days
 
 ### 13.3 Current hard-coded limits
 
-`PlanLimits` currently contains global constants. The migration path should preserve current behavior for Manual users while moving enforcement into the entitlement policy.
+`PlanLimits` may remain as a home for app-wide non-plan defaults such as maximum recording duration. Count-based limits should live in plan-version capability definitions and be enforced through the entitlement policy.
 
 The desired end state is that controllers and views ask the entitlement policy for limits and availability instead of reading hard-coded constants directly.
 

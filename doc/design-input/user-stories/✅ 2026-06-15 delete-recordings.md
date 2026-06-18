@@ -28,7 +28,7 @@ so that I can keep my workspace tidy and free up recording quota.
 `RecordingSession` hard delete including encrypted fields, `original_audio`/`normalized_audio` blobs, `document`, `recording_integrity_record`, and `work_path` artifacts. In-flight jobs become no-ops.
 
 ### Side effects
-- Frees one `PlanLimits::MAX_RECORDINGS` slot.
+- Does not reduce append-only trial usage; quota behavior is owned by the entitlement policy.
 - Open detail page → redirect to dashboard (“recording no longer exists”).
 - Last item deleted → empty Recent state.
 - Same Delete action on `recording_sessions#show` (phase 1).

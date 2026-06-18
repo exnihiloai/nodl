@@ -29,8 +29,8 @@ module PagesHelper
   # Gratis-Test limits shown in the pricing card's framed "included" box.
   def free_plan_limits
     [
-      t("pages.plans.limits.recordings", count: PlanLimits::MAX_RECORDINGS),
-      t("pages.plans.limits.formats", count: PlanLimits::MAX_FORMATS),
+      t("pages.plans.limits.recordings", count: trial_limit_for("recordings")),
+      t("pages.plans.limits.formats", count: trial_limit_for("custom_formats")),
       t("pages.plans.limits.duration", count: PlanLimits::MAX_RECORDING_DURATION.in_hours.to_i)
     ]
   end
@@ -47,5 +47,11 @@ module PagesHelper
 
   def pro_plan_features
     t("pages.plans.pro")
+  end
+
+  private
+
+  def trial_limit_for(capability)
+    BillingCatalog::LIMITS.fetch("trial").fetch(capability).fetch("limit")
   end
 end

@@ -272,7 +272,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
     user = create_user_with_workspace
     workspace = user.workspaces.first
 
-    in_progress = PlanLimits::MAX_RECORDINGS.times.map do |i|
+    in_progress = 8.times.map do |i|
       workspace.recording_sessions.create!(
         creator: user,
         title: "Live #{i}",
