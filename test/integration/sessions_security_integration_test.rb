@@ -13,11 +13,7 @@ class SessionsSecurityIntegrationTest < ActionDispatch::IntegrationTest
       active: active
     )
 
-    workspace = Workspace.create!(
-      name: "#{email.split("@").first.titleize} Workspace",
-      usage_limits: { scans: 1000, storage_mb: 1024 },
-      usage_consumption: { scans: 0, storage_mb: 0 }
-    )
+    workspace = Workspace.create!(name: "#{email.split("@").first.titleize} Workspace")
 
     Membership.create!(user: user, workspace: workspace, role: :owner)
     user

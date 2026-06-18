@@ -10,11 +10,7 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
       active: true
     )
 
-    workspace = Workspace.create!(
-      name: "#{email.split("@").first.titleize} Workspace",
-      usage_limits: { scans: 1000, storage_mb: 1024 },
-      usage_consumption: { scans: 0, storage_mb: 0 }
-    )
+    workspace = Workspace.create!(name: "#{email.split("@").first.titleize} Workspace")
 
     Membership.create!(user: user, workspace: workspace, role: :owner)
     user
@@ -47,7 +43,7 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "payments page shows checkout button when stripe is configured" do
-    with_env("STRIPE_SECRET_KEY" => "sk_test_123") do
+    with_env("STRIPE_SECRET_KEY" => "sk_test_123", "STRIPE_PRICE_ID" => "price_starter_test") do
       get payments_path
       assert_response :success
       assert_includes response.body, "Test checkout"
@@ -64,7 +60,8 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
       "STRIPE_SECRET_KEY" => "sk_test_123",
       "STRIPE_CURRENCY" => "usd",
       "STRIPE_PRODUCT_NAME" => "Nodl Starter Plan",
-      "STRIPE_DEFAULT_AMOUNT" => "1900"
+      "STRIPE_DEFAULT_AMOUNT" => "1900",
+      "STRIPE_PRICE_ID" => "price_starter_test"
     ) do
       login_as(user)
       Stripe::Checkout::Session.stubs(:create).with do |params|
@@ -77,7 +74,8 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
 
     assert_equal 303, response.status
     assert_equal fake_session.url, response.headers["Location"]
-    assert_equal "payment", captured[:mode]
+    assert_equal "subscription", captured[:mode]
+    assert_equal [ { price: "price_starter_test", quantity: 1 } ], captured[:line_items]
     assert_includes captured[:success_url], "/payments/success"
     assert_includes captured[:cancel_url], "/payments/cancel"
   end
@@ -97,7 +95,7 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     fake_session = Struct.new(:url).new(nil)
     user = create_user_with_workspace(email: "checkout-missing-url@example.test")
 
-    with_env("STRIPE_SECRET_KEY" => "sk_test_123") do
+    with_env("STRIPE_SECRET_KEY" => "sk_test_123", "STRIPE_PRICE_ID" => "price_starter_test") do
       login_as(user)
       Stripe::Checkout::Session.stubs(:create).returns(fake_session)
       post payments_checkout_path

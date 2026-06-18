@@ -58,7 +58,16 @@ class TransformerProfileTest < ActiveSupport::TestCase
 
   test "rejects new format when workspace reached format limit" do
     workspace = create_user_with_workspace.workspaces.first
-    (PlanLimits::MAX_FORMATS - 1).times do |index|
+    WorkspaceEntitlementGrant.grant!(
+      workspace:,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise trial format limit"
+    )
+
+    2.times do |index|
       workspace.transformer_profiles.create!(
         name: "Format #{index}",
         handle: "format-#{index}",
@@ -73,7 +82,7 @@ class TransformerProfileTest < ActiveSupport::TestCase
     )
 
     assert_not profile.valid?
-    assert_includes profile.errors[:base], "You've reached the maximum of #{PlanLimits::MAX_FORMATS} formats."
+    assert_includes profile.errors[:base], "You've reached the maximum of 2 formats."
   end
 
   private

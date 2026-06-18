@@ -71,17 +71,13 @@ class AdminUserManagementTest < ApplicationSystemTestCase
     assert_text "User reactivated."
     assert_button "Deactivate User"
 
-    within("#usage_section") do
-      fill_in "Scans Limit", with: "250"
-      fill_in "Storage (MB) Limit", with: "128"
-      click_button "Update Limits"
+    within("#entitlement_section") do
+      assert_text "Workspace Entitlement"
+      assert_text "Private Access"
     end
-    assert_text "Usage limits updated."
-    assert_text "250"
-    assert_text "128"
 
     assert_text "Update email"
     assert_text "Update role"
-    assert_text "Update usage limits"
+    assert_button "Grant Private Access"
   end
 end
