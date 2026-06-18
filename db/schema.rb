@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_18_122000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_18_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -203,6 +203,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_122000) do
     t.string "subject_type"
     t.string "unit", default: "count", null: false
     t.datetime "updated_at", null: false
+    t.datetime "usage_period_ends_at"
+    t.datetime "usage_period_started_at"
     t.bigint "user_id"
     t.bigint "workspace_id", null: false
     t.index ["subject_type", "subject_id"], name: "index_usage_events_on_subject_type_and_subject_id"
@@ -249,12 +251,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_122000) do
     t.datetime "trial_ends_at"
     t.datetime "trial_started_at"
     t.datetime "updated_at", null: false
+    t.datetime "usage_period_ends_at"
+    t.datetime "usage_period_started_at"
     t.bigint "workspace_id", null: false
     t.index ["billing_plan_version_id"], name: "index_workspace_entitlements_on_billing_plan_version_id"
     t.index ["source"], name: "index_workspace_entitlements_on_source"
     t.index ["status"], name: "index_workspace_entitlements_on_status"
     t.index ["stripe_customer_id"], name: "index_workspace_entitlements_on_stripe_customer_id"
     t.index ["stripe_subscription_id"], name: "index_workspace_entitlements_on_stripe_subscription_id", unique: true, where: "(stripe_subscription_id IS NOT NULL)"
+    t.index ["usage_period_started_at", "usage_period_ends_at"], name: "idx_on_usage_period_started_at_usage_period_ends_at_3fbf829ec5"
     t.index ["workspace_id"], name: "index_workspace_entitlements_on_workspace_id", unique: true
   end
 

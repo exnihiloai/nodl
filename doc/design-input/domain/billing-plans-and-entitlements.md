@@ -208,7 +208,7 @@ Limits should declare their period and unit explicitly when relevant:
 
 | Field | Examples | Notes |
 |---|---|---|
-| `period` | `lifetime`, `billing_period`, `week`, `day`, `per_action` | Trial uses lifetime; paid plans use billing period for current count limits. |
+| `period` | `lifetime`, `usage_period`, `week`, `day`, `per_action` | Trial uses lifetime; paid plans use a local monthly usage period even when payment is annual. |
 | `unit` | `count`, `seconds`, `bytes` | Required for quantity-style limits. |
 | `limit` | `3`, `100`, `72000`, `true`, `unlimited` | Value type depends on limit type. |
 
@@ -219,7 +219,7 @@ Example:
   "recordings": {
     "type": "count",
     "limit": 100,
-    "period": "billing_period",
+    "period": "usage_period",
     "unit": "count"
   },
   "custom_formats": {
@@ -366,9 +366,11 @@ Initial internal monthly paid caps:
 | Starter | Effectively unlimited | 500 | 100 |
 | Business | Effectively unlimited | 2000 | 500 |
 
-The audio-hours cap is represented as `recorded_audio_seconds` with `type: quantity`, `period: billing_period`, and `unit: seconds`.
+The audio-hours cap is represented as `recorded_audio_seconds` with `type: quantity`, `period: usage_period`, and `unit: seconds`.
 
-Current implementation note: Nodl does not yet model billable seats. Until seat-level accounting exists, this cap is enforced at workspace entitlement level. When seats are introduced, usage events should carry the seat/member dimension needed to enforce the same cap per seat.
+Usage period note: the local usage window is separate from Stripe payment coverage. For monthly billing, payment coverage and usage period usually align. For annual billing, Stripe payment coverage can be yearly while `usage_period_started_at` / `usage_period_ends_at` rolls monthly.
+
+Current seat note: Nodl does not yet model billable seats. Until seat-level accounting exists, this cap is enforced at workspace entitlement level. When seats are introduced, usage events should carry the seat/member dimension needed to enforce the same cap per seat.
 
 ### 10.4 Trial expiry
 

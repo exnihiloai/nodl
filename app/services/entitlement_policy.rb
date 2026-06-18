@@ -75,11 +75,12 @@ class EntitlementPolicy
     case period
     when "lifetime"
       scope
-    when "billing_period"
+    when "usage_period", "billing_period"
       entitlement = workspace.current_entitlement
-      return scope.none unless entitlement&.current_period_started_at && entitlement&.current_period_ends_at
+      entitlement&.ensure_current_usage_period!(now:)
+      return scope.none unless entitlement&.usage_period_started_at && entitlement&.usage_period_ends_at
 
-      scope.where(occurred_at: entitlement.current_period_started_at...entitlement.current_period_ends_at)
+      scope.where(occurred_at: entitlement.usage_period_started_at...entitlement.usage_period_ends_at)
     when "week"
       scope.where(occurred_at: now.beginning_of_week...now.end_of_week)
     when "day"

@@ -123,6 +123,8 @@ class PaymentsController < ApplicationController
       entitlement.stripe_subscription_id = session_obj.subscription if session_obj.respond_to?(:subscription)
       entitlement.current_period_started_at ||= Time.current
       entitlement.current_period_ends_at ||= 1.month.from_now
+      entitlement.usage_period_started_at ||= Time.current
+      entitlement.usage_period_ends_at ||= 1.month.from_now
       entitlement.save!
     end
   end

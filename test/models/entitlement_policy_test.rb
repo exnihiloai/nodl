@@ -66,7 +66,9 @@ class EntitlementPolicyTest < ActiveSupport::TestCase
       stripe_customer_id: "cus_test_old",
       stripe_subscription_id: "sub_test_old",
       current_period_started_at: Time.current.beginning_of_month,
-      current_period_ends_at: Time.current.next_month.beginning_of_month
+      current_period_ends_at: Time.current.next_month.beginning_of_month,
+      usage_period_started_at: Time.current.beginning_of_month,
+      usage_period_ends_at: Time.current.next_month.beginning_of_month
     )
 
     assert_equal 100, entitlement.reload.limits_snapshot.dig("recordings", "limit")
@@ -95,16 +97,52 @@ class EntitlementPolicyTest < ActiveSupport::TestCase
     business_limits = BillingCatalog::LIMITS.fetch("business")
 
     assert_equal 500, starter_limits.dig("recordings", "limit")
-    assert_equal "billing_period", starter_limits.dig("recordings", "period")
+    assert_equal "usage_period", starter_limits.dig("recordings", "period")
     assert_equal 100.hours.to_i, starter_limits.dig("recorded_audio_seconds", "limit")
-    assert_equal "billing_period", starter_limits.dig("recorded_audio_seconds", "period")
+    assert_equal "usage_period", starter_limits.dig("recorded_audio_seconds", "period")
     assert_equal "quantity", starter_limits.dig("recorded_audio_seconds", "type")
 
     assert_equal 2000, business_limits.dig("recordings", "limit")
-    assert_equal "billing_period", business_limits.dig("recordings", "period")
+    assert_equal "usage_period", business_limits.dig("recordings", "period")
     assert_equal 500.hours.to_i, business_limits.dig("recorded_audio_seconds", "limit")
-    assert_equal "billing_period", business_limits.dig("recorded_audio_seconds", "period")
+    assert_equal "usage_period", business_limits.dig("recorded_audio_seconds", "period")
     assert_equal "quantity", business_limits.dig("recorded_audio_seconds", "type")
+  end
+
+  test "annual paid-through period still uses monthly usage period for metered limits" do
+    workspace = create_user_with_workspace.workspaces.first
+    version = BillingPlan.find_by!(code: "starter").billing_plan_versions.create!(
+      version_key: "starter_usage_period_test",
+      status: "active",
+      stripe_price_id: "price_starter_usage_period_test",
+      limits: {
+        "recordings" => { "type" => "count", "limit" => 2, "period" => "usage_period", "unit" => "count" }
+      }
+    )
+    paid_from = Time.zone.local(2026, 1, 1)
+    usage_from = Time.zone.local(2026, 6, 1)
+    entitlement = workspace.current_entitlement
+    entitlement.update!(
+      billing_plan_version: version,
+      source: "stripe",
+      status: "active",
+      limits_snapshot: version.limits.deep_dup,
+      stripe_customer_id: "cus_usage_period_test",
+      stripe_subscription_id: "sub_usage_period_test",
+      current_period_started_at: paid_from,
+      current_period_ends_at: paid_from + 1.year,
+      usage_period_started_at: usage_from,
+      usage_period_ends_at: usage_from + 1.month
+    )
+    UsageRecorder.record!(workspace:, event_kind: "recording_created", occurred_at: usage_from - 1.day)
+    UsageRecorder.record!(workspace:, event_kind: "recording_created", occurred_at: usage_from + 1.day)
+    UsageRecorder.record!(workspace:, event_kind: "recording_created", occurred_at: usage_from + 2.days)
+
+    result = EntitlementPolicy.new(workspace, now: usage_from + 3.days).allowed?(:recordings)
+
+    assert_predicate result, :denied?
+    assert_equal 2, result.usage
+    assert_equal 2, result.limit
   end
 
   test "per-action limits are checked against candidate quantity" do

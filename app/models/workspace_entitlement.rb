@@ -36,6 +36,16 @@ class WorkspaceEntitlement < ApplicationRecord
     false
   end
 
+  def ensure_current_usage_period!(now: Time.current)
+    return unless plan_code.in?(%w[starter business])
+    return if usage_period_started_at.present? && usage_period_ends_at.present? && now < usage_period_ends_at
+
+    update!(
+      usage_period_started_at: now,
+      usage_period_ends_at: 1.month.from_now(now)
+    )
+  end
+
   private
 
   def manual_access_does_not_require_stripe_state
