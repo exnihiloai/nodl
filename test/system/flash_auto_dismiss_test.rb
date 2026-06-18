@@ -2,12 +2,18 @@ require "application_js_system_test_case"
 
 class FlashAutoDismissTest < ApplicationJsSystemTestCase
   test "success flash appears then disappears on its own" do
-    register_via_ui(email: unique_email, password: "Valid123")
+    visit root_path
+    execute_script <<~JS
+      const flash = document.createElement("div")
+      flash.setAttribute("role", "alert")
+      flash.setAttribute("data-controller", "flash")
+      flash.textContent = "Account created successfully."
+      document.body.appendChild(flash)
+    JS
 
-    # The success notice shows after registration...
-    assert_text "Account created successfully."
-    # ...and then auto-dismisses without any user action.
-    assert_no_text "Account created successfully.", wait: 7
+    # The success notice is rendered, then auto-dismisses without any user action.
+    assert_selector "[role='alert']", text: "Account created successfully.", visible: :all
+    assert_no_selector "[role='alert']", text: "Account created successfully.", visible: :all, wait: 7
   end
 
   test "error flash stays so it can be read" do

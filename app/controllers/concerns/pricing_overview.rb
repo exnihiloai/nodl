@@ -3,7 +3,7 @@ module PricingOverview
 
   private
 
-  def prepare_pricing_overview(default_interval: "annual", ensure_billing_catalog: false)
+  def prepare_pricing_overview(default_interval: "monthly", ensure_billing_catalog: false)
     BillingCatalog.ensure! if ensure_billing_catalog
     @stripe_configured = ENV["STRIPE_SECRET_KEY"].present?
     @selected_region = BillingPriceCatalog.normalize_region(params[:region])

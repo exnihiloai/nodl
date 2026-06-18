@@ -48,8 +48,10 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_includes response.body, "Starter"
       assert_includes response.body, "Business"
-      assert_includes response.body, "290"
+      assert_includes response.body, "29"
       assert_includes response.body, "Get started"
+      assert_select "[data-testid='pricing-interval-monthly'].bg-base-100"
+      assert_select "[data-testid='pricing-interval-annual'].bg-base-100", false
       assert_select "form[data-turbo='false'][action='#{payments_checkout_path}']", 2
       refute_includes response.body, "Checkout not available yet"
     end
