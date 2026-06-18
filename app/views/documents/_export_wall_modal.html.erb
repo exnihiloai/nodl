@@ -46,7 +46,7 @@
       <%= button_to t("dashboard.wall.exports.upgrade"), payments_checkout_path(plan: "starter"),
                     method: :post,
                     class: "btn btn-primary w-full",
-                    form: { class: "w-full" },
+                    form: { class: "w-full", data: { turbo: false } },
                     data: { testid: "export-wall-upgrade-button" } %>
       <%= link_to t("dashboard.wall.exports.see_plans"), payments_path,
                   class: "btn btn-ghost w-full",

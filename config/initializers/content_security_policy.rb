@@ -11,7 +11,7 @@ Rails.application.configure do
     policy.img_src :self, :https, :data
     policy.font_src :self, :data
     policy.connect_src :self, :https
-    policy.form_action :self, "https://accounts.google.com"
+    policy.form_action :self, "https://accounts.google.com", "https://checkout.stripe.com"
     policy.frame_src :self, "https://js.stripe.com", "https://hooks.stripe.com", "https://checkout.stripe.com"
   end
 

@@ -12,13 +12,13 @@ class RecordingSessionsControllerIntegrityWallTest < ActionDispatch::Integration
     grant_trial!
     get recording_session_path(@session)
     assert_response :success
-    assert_equal true, assigns(:integrity_wall)
+    assert_includes response.body, 'data-testid="integrity-wall-modal"'
   end
 
   test "integrity_wall is false for non-trial workspaces" do
     get recording_session_path(@session)
     assert_response :success
-    assert_equal false, assigns(:integrity_wall)
+    refute_includes response.body, 'data-testid="integrity-wall-modal"'
   end
 
   private

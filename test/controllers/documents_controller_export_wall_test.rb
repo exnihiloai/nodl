@@ -12,14 +12,14 @@ class DocumentsControllerExportWallTest < ActionDispatch::IntegrationTest
   test "export_wall is false before the free export is used" do
     get document_path(@document)
     assert_response :success
-    assert_equal false, assigns(:export_wall)
+    refute_includes response.body, 'data-testid="export-wall-modal"'
   end
 
   test "export_wall is true once the free export is consumed" do
     record_export!
     get document_path(@document)
     assert_response :success
-    assert_equal true, assigns(:export_wall)
+    assert_includes response.body, 'data-testid="export-wall-modal"'
   end
 
   test "export_wall is false for non-trial workspaces even after an export" do
@@ -27,7 +27,7 @@ class DocumentsControllerExportWallTest < ActionDispatch::IntegrationTest
     record_export!
     get document_path(@document)
     assert_response :success
-    assert_equal false, assigns(:export_wall)
+    refute_includes response.body, 'data-testid="export-wall-modal"'
   end
 
   private

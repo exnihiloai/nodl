@@ -12,7 +12,7 @@
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3">
-      <%= form_with url: payments_checkout_path, method: :post do |f| %>
+      <%= form_with url: payments_checkout_path, method: :post, data: { turbo: false } do |f| %>
         <%= f.submit t("payments.cancel.try_again"), class: "btn btn-primary" %>
       <% end %>
       <%= link_to t("payments.cancel.review_details"), payments_path, class: "btn btn-outline" %>

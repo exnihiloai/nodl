@@ -12,14 +12,14 @@ class RecordingSessionsControllerAudioWallTest < ActionDispatch::IntegrationTest
   test "audio_wall is false before the free download is used" do
     get recording_session_path(@session)
     assert_response :success
-    assert_equal false, assigns(:audio_wall)
+    refute_includes response.body, 'data-testid="audio-wall-modal"'
   end
 
   test "audio_wall is true once the free download is consumed" do
     record_download!
     get recording_session_path(@session)
     assert_response :success
-    assert_equal true, assigns(:audio_wall)
+    assert_includes response.body, 'data-testid="audio-wall-modal"'
   end
 
   test "audio_wall is false for non-trial workspaces even after a download" do
@@ -27,7 +27,7 @@ class RecordingSessionsControllerAudioWallTest < ActionDispatch::IntegrationTest
     record_download!
     get recording_session_path(@session)
     assert_response :success
-    assert_equal false, assigns(:audio_wall)
+    refute_includes response.body, 'data-testid="audio-wall-modal"'
   end
 
   private

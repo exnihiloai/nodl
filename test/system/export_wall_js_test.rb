@@ -16,6 +16,7 @@ class ExportWallJsTest < ApplicationJsSystemTestCase
     assert_selector "[data-testid='download-menu']"
     assert_no_selector "[data-testid='export-wall-modal'][open]"
 
+    find("[data-testid='download-menu']").click
     find("[data-testid='download-pdf']").click
 
     assert_selector "[data-testid='export-wall-modal'][open]"
@@ -38,6 +39,7 @@ class ExportWallJsTest < ApplicationJsSystemTestCase
     login_via_ui(email: email, password: "Valid123")
     visit document_path(document)
 
+    find("[data-testid='download-menu']").click
     find("[data-testid='download-docx']").click
     assert_selector "[data-testid='export-wall-modal'][open]"
   end
@@ -53,6 +55,7 @@ class ExportWallJsTest < ApplicationJsSystemTestCase
     visit document_path(document)
 
     assert_no_selector "[data-controller='export-wall']"
+    find("[data-testid='download-menu']").click
     assert_selector "[data-testid='download-pdf']"
     assert_no_selector "[data-testid='export-wall-modal']"
   end

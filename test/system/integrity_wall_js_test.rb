@@ -18,7 +18,7 @@ class IntegrityWallJsTest < ApplicationJsSystemTestCase
     find("[data-testid='integrity-activate-button']").click
 
     assert_selector "[data-testid='integrity-wall-modal'][open]"
-    assert_text "legally-defensible"
+    assert_text "trusted timestamp"
     assert_selector "[data-testid='integrity-wall-upgrade-button']", text: "Upgrade to Business"
     assert_selector "[data-testid='integrity-wall-benefits']"
 
