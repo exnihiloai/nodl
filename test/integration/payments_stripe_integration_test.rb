@@ -48,8 +48,8 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_includes response.body, "Starter"
       assert_includes response.body, "Business"
-      assert_includes response.body, "€29"
-      assert_includes response.body, "Start checkout"
+      assert_includes response.body, "290"
+      assert_includes response.body, "Get started"
       assert_select "form[data-turbo='false'][action='#{payments_checkout_path}']", 2
       refute_includes response.body, "Checkout not available yet"
     end
@@ -78,7 +78,8 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "subscription", captured[:mode]
     assert_equal [ { price: "price_starter_usd_monthly", quantity: 1 } ], captured[:line_items]
     assert_includes captured[:success_url], "/payments/success"
-    assert_includes captured[:cancel_url], "/payments/cancel"
+    assert_includes captured[:cancel_url], "/payments"
+    refute_includes captured[:cancel_url], "/payments/cancel"
     assert_equal "starter", captured[:metadata][:plan_code]
     assert_equal "international", captured[:metadata][:billing_region]
     assert_equal "monthly", captured[:metadata][:billing_interval]
@@ -119,12 +120,12 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
     with_env("STRIPE_SECRET_KEY" => nil) do
       login_as(user)
       post payments_checkout_path
-      assert_redirected_to payments_path
+      assert_redirected_to payments_cancel_path(reason: "checkout_failed")
       assert_equal "Stripe is not configured. Set STRIPE_SECRET_KEY first.", flash[:alert]
     end
   end
 
-  test "checkout returns to payments with alert if session url is missing" do
+  test "checkout returns to cancel page with alert if session url is missing" do
     fake_session = Struct.new(:url).new(nil)
     user = create_user_with_workspace(email: "checkout-missing-url@example.test")
 
@@ -134,8 +135,17 @@ class PaymentsStripeIntegrationTest < ActionDispatch::IntegrationTest
       post payments_checkout_path
     end
 
-    assert_redirected_to payments_path
+    assert_redirected_to payments_cancel_path(reason: "checkout_failed")
     assert_equal "Unable to start checkout right now.", flash[:alert]
+  end
+
+  test "cancel page redirects to payments when checkout was not interrupted" do
+    user = create_user_with_workspace(email: "cancel-redirect@example.test")
+    login_as(user)
+
+    get payments_cancel_path
+
+    assert_redirected_to payments_path
   end
 
   test "checkout redirects to login if not authenticated" do

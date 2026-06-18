@@ -51,10 +51,12 @@ Launch prices are locked in `doc/design-input/domain/billing-plans-and-entitleme
 3. Builds a subscription `line_items` entry from `BillingPriceCatalog`: uses a fixed Stripe Price ID when configured, otherwise falls back to inline `price_data` from the local catalog.
 4. Calls `Stripe::Checkout::Session.create` with `mode: "subscription"`, `automatic_tax: { enabled: true }`, customer email, workspace reference, and metadata containing `user_id`, `workspace_id`, `plan_version_id`, `plan_code`, `billing_region`, `billing_interval`, `currency`, and `amount_cents`.
 5. Redirects to `checkout_session.url` with `allow_other_host: true, status: :see_other`.
-6. On `Stripe::StripeError` or missing URL, redirects to `/payments` with alert.
+6. On `Stripe::StripeError` or missing URL, redirects to `/payments/cancel?reason=checkout_failed` with alert.
 
 Success URL: `/payments/success?session_id={CHECKOUT_SESSION_ID}`
-Cancel URL: `/payments/cancel`
+Cancel URL: `/payments` (returns to pricing with the same region and interval; user-initiated Stripe back navigation does not show the error page)
+
+`GET /payments/cancel` — authenticated users only. Shown only when checkout fails (for example missing Stripe session URL or API error). Bare visits redirect to `/payments`.
 
 ## Webhook
 

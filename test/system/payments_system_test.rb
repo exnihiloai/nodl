@@ -19,12 +19,12 @@ class PaymentsSystemTest < ApplicationSystemTestCase
     login_via_ui(email: email, password: "Valid123")
 
     without_stripe_secret_key do
-      visit payments_cancel_path
+      visit payments_cancel_path(reason: "checkout_failed")
 
       click_button "Try again"
     end
 
-    assert_current_path payments_path, ignore_query: true
+    assert_current_path payments_cancel_path(reason: "checkout_failed"), ignore_query: false
     assert_text "Stripe is not configured. Set STRIPE_SECRET_KEY first."
   end
 

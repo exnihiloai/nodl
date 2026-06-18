@@ -717,34 +717,55 @@ de:
   payments:
     show:
       title: Preise - Nodl
-      meta_description: Wähle einen Nodl-Plan und starte ein Stripe-Checkout-Abo.
-      badge: Preise
-      heading: Wähle den Plan für deinen Aufnahme-Workflow
-      subheading: Starter passt für regelmäßige Dokumentationsarbeit. Business ist für höheres Volumen und Integritätsprüfungen gedacht.
+      meta_description: Wähle deinen Nodl-Plan. Faire Preise, alle Features inklusive, jederzeit kündbar.
+      heading: Einfache Preise.
+      subheading: Alle Features inklusive, egal welchen Plan du wählst. Keine Vertragsbindung, jederzeit kündbar.
       recommended: Empfohlen
+      save_badge: 2 Monate gratis
+      vat_note: Alle Preise inkl. MwSt.
+      currency_label: "Währung:"
+      annual_monthly_equiv: "entspricht %{amount} pro Monat, 2 Monate gratis"
+      no_commitment: Monatlich, jederzeit kündbar
+      cancel_anytime: Jederzeit kündbar, keine Vertragsbindung
+      included_heading: Das ist enthalten
       regions:
-        eu: EU
-        international: International
+        eu: "€ EUR"
+        international: "$ USD"
       intervals:
         monthly: Monatlich
         annual: Jährlich
       plans:
         starter:
-          description: Für Menschen, die regelmäßige Aufnahmen in wiederverwendbare Dokumente verwandeln.
+          description: Ideal für alle, die regelmäßig aufnehmen und daraus fertige Dokumente machen.
         business:
-          description: Für größere Workflows, höheres Monatsvolumen und manipulationssichere Aufzeichnungen.
+          description: Für professionellen Einsatz mit höherem Volumen und rechtssicherer Dokumentation.
       features:
-        starter_recordings: 500 Aufnahmen pro monatlichem Nutzungszeitraum
-        business_recordings: 2.000 Aufnahmen pro monatlichem Nutzungszeitraum
-        starter_formats: 10 eigene Dokumentformate
-        unlimited_formats: Unbegrenzte eigene Dokumentformate
-        unlimited_exports: Unbegrenzte Exporte und Original-Audio-Downloads
-        integrity: Integritätsprüfungen enthalten
-        monthly_usage_window: Monatliche Nutzungszeiträume, auch bei jährlicher Zahlung
+        starter_recordings: 500 Aufnahmen pro Monat
+        business_recordings: 2.000 Aufnahmen pro Monat
+        starter_formats: 10 Dokumentvorlagen
+        unlimited_formats: Unbegrenzte Dokumentvorlagen
+        unlimited_exports: Unbegrenzte Exporte & Audio-Downloads
+        integrity: Integritätsnachweis für rechtssichere Aufnahmen
+        monthly_usage_window: Nutzungslimits werden monatlich zurückgesetzt
+      shared_features:
+        complete_flow: "Vollständiger Workflow: aufnehmen, verstehen, dokumentieren"
+        live_transcript: Live-Transkript in Echtzeit, während du sprichst
+        languages: Transkription in 14 Sprachen
+        translation: Automatische Übersetzung in 70 Sprachen
+        templates: Eigene Dokumentvorlagen mit Beispielen
+        speakers: Sprecher automatisch unterscheiden
+        audio: Audio abspielen und herunterladen
+        export_formats: Export als PDF, Word und Markdown
+        cross_platform: Browser-basiert – keine App-Installation nötig
+        privacy: Verschlüsselter, privater Workspace
+      trust_items:
+        cancel: Jederzeit kündbar
+        no_setup: Keine Einrichtungsgebühr
+        stripe: Sichere Zahlung via Stripe
+        privacy: Daten verschlüsselt & privat
       per_month: / Monat
       per_year: / Jahr
-      annual_note: Zwei Monate gratis, jährlich abgerechnet.
-      start_checkout: Checkout starten
+      start_checkout: "Jetzt starten →"
       checkout_unavailable: Checkout nicht verfügbar
       redirect_note: Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet.
       monthly_limits_note: Aufnahme- und Audio-Nutzung werden monatlich zurückgesetzt, auch bei jährlichen Abos.
@@ -761,13 +782,13 @@ de:
       go_to_dashboard: Zum Dashboard
       back_to_payments: Zurück zu den Zahlungen
     cancel:
-      title: Zahlung abgebrochen
-      badge: Checkout abgebrochen
-      heading: Die Zahlung wurde abgebrochen
-      body: Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist.
+      title: Checkout-Problem
+      badge: Checkout unterbrochen
+      heading: Checkout konnte nicht abgeschlossen werden
+      body: Es wurden keine Beträge berechnet. Versuche es erneut oder prüfe deine Plandetails.
       reassurance_heading: Was als Nächstes passiert
       reassurance:
-        no_charge: Deine Karte wurde nicht belastet — du kannst es jederzeit erneut versuchen.
+        no_charge: Deine Karte wurde nicht belastet. Du kannst es jederzeit erneut versuchen.
         resume_anytime: Setze den Checkout fort, wann immer du bereit bist.
         secure_checkout: Zahlungen werden sicher über Stripe abgewickelt.
       try_again: Erneut versuchen

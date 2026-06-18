@@ -6,14 +6,14 @@ class PaymentsController < ApplicationController
     BillingCatalog.ensure!
     @stripe_configured = stripe_secret_key.present?
     @selected_region = BillingPriceCatalog.normalize_region(params[:region])
-    @selected_interval = BillingPriceCatalog.normalize_interval(params[:interval])
+    @selected_interval = params[:interval].present? ? BillingPriceCatalog.normalize_interval(params[:interval]) : "annual"
     @plan_cards = BillingPriceCatalog.plans(region: @selected_region, interval: @selected_interval)
   end
 
   def checkout
     BillingCatalog.ensure!
     unless stripe_secret_key.present?
-      redirect_to payments_path, alert: t("flash.payments.not_configured")
+      redirect_to checkout_error_path, alert: t("flash.payments.not_configured")
       return
     end
 
@@ -26,7 +26,7 @@ class PaymentsController < ApplicationController
     Stripe.api_key = stripe_secret_key
 
     success_url = payments_success_url(session_id: "{CHECKOUT_SESSION_ID}")
-    cancel_url = payments_cancel_url
+    cancel_url = payments_url(region:, interval:)
 
     checkout_session = Stripe::Checkout::Session.create(
       checkout_session_params(
@@ -43,14 +43,14 @@ class PaymentsController < ApplicationController
     session_url = checkout_session.respond_to?(:url) ? checkout_session.url : nil
     if session_url.blank?
       Rails.logger.error("stripe_checkout_missing_session_url")
-      redirect_to payments_path, alert: t("flash.payments.checkout_failed")
+      redirect_to checkout_error_path, alert: t("flash.payments.checkout_failed")
       return
     end
 
     redirect_to session_url, allow_other_host: true, status: :see_other
   rescue Stripe::StripeError => e
     Rails.logger.error("stripe_checkout_failed error=#{e.message}")
-    redirect_to payments_path, alert: t("flash.payments.checkout_failed")
+    redirect_to checkout_error_path, alert: t("flash.payments.checkout_failed")
   end
 
   def success
@@ -58,7 +58,11 @@ class PaymentsController < ApplicationController
     @product_name = ENV.fetch("STRIPE_PRODUCT_NAME", "Nodl Starter Plan")
   end
 
-  def cancel; end
+  def cancel
+    unless checkout_error_page?
+      redirect_to payments_path
+    end
+  end
 
   def webhook
     secret = ENV["STRIPE_WEBHOOK_SECRET"]
@@ -169,5 +173,13 @@ class PaymentsController < ApplicationController
 
   def stripe_secret_key
     ENV["STRIPE_SECRET_KEY"]
+  end
+
+  def checkout_error_path
+    payments_cancel_path(reason: "checkout_failed")
+  end
+
+  def checkout_error_page?
+    params[:reason] == "checkout_failed" || flash[:alert].present?
   end
 end

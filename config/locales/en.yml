@@ -611,34 +611,55 @@ en:
   payments:
     show:
       title: Pricing - Nodl
-      meta_description: Choose a Nodl plan and start a Stripe Checkout subscription.
-      badge: Pricing
-      heading: Choose the plan that fits your recording flow
-      subheading: Start with Starter for regular documentation work, or choose Business when you need higher volume and integrity checks.
+      meta_description: Choose your Nodl plan. Fair prices, every feature included, cancel anytime.
+      heading: Simple pricing.
+      subheading: Every feature included, regardless of which plan you choose. No lock-in, cancel anytime.
       recommended: Recommended
+      save_badge: 2 months free
+      vat_note: All prices include VAT.
+      currency_label: "Currency:"
+      annual_monthly_equiv: "equals %{amount} per month, 2 months free"
+      no_commitment: Monthly, cancel anytime
+      cancel_anytime: Cancel anytime, no lock-in
+      included_heading: What's included
       regions:
-        eu: EU
-        international: International
+        eu: "€ EUR"
+        international: "$ USD"
       intervals:
         monthly: Monthly
         annual: Annual
       plans:
         starter:
-          description: For people turning everyday recordings into reusable documents.
+          description: Great for anyone who records regularly and wants polished documents without the hassle.
         business:
-          description: For heavier workflows, higher monthly volume, and tamper-evident records.
+          description: For professional use with higher volume and tamper-evident documentation.
       features:
-        starter_recordings: 500 recordings per monthly usage period
-        business_recordings: 2,000 recordings per monthly usage period
-        starter_formats: 10 custom document formats
-        unlimited_formats: Unlimited custom document formats
-        unlimited_exports: Unlimited exports and original audio downloads
-        integrity: Integrity checks included
-        monthly_usage_window: Monthly usage windows, even with annual billing
+        starter_recordings: 500 recordings per month
+        business_recordings: 2,000 recordings per month
+        starter_formats: 10 document templates
+        unlimited_formats: Unlimited document templates
+        unlimited_exports: Unlimited exports & audio downloads
+        integrity: Integrity proof for legally secure recordings
+        monthly_usage_window: Usage limits reset monthly
+      shared_features:
+        complete_flow: "Full workflow: record, understand, document"
+        live_transcript: Live transcript in real time as you speak
+        languages: Transcription in 14 languages
+        translation: Automatic translation into 70 languages
+        templates: Custom document templates with examples
+        speakers: Automatic speaker identification
+        audio: Play back and download audio
+        export_formats: Export as PDF, Word, and Markdown
+        cross_platform: Browser-based, no app installation needed
+        privacy: Encrypted, private workspace
+      trust_items:
+        cancel: Cancel anytime
+        no_setup: No setup fee
+        stripe: Secure payment via Stripe
+        privacy: Data encrypted & private
       per_month: / month
       per_year: / year
-      annual_note: Two months free, billed annually.
-      start_checkout: Start checkout
+      start_checkout: "Get started →"
       checkout_unavailable: Checkout unavailable
       redirect_note: You will be redirected to Stripe's hosted checkout page.
       monthly_limits_note: Recording and audio usage reset monthly, including annual subscriptions.
@@ -655,13 +676,13 @@ en:
       go_to_dashboard: Go to dashboard
       back_to_payments: Back to payments
     cancel:
-      title: Payment Cancelled
-      badge: Checkout cancelled
-      heading: Payment was cancelled
-      body: No charges were made. Resume checkout whenever you're ready.
+      title: Checkout problem
+      badge: Checkout interrupted
+      heading: We couldn't complete checkout
+      body: No charges were made. Try again or review your plan details.
       reassurance_heading: What happens next
       reassurance:
-        no_charge: Your card was not charged — you can safely try again.
+        no_charge: Your card was not charged. You can safely try again.
         resume_anytime: Pick up checkout again whenever you're ready.
         secure_checkout: Payments are processed securely through Stripe.
       try_again: Try again
