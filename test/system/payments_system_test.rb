@@ -6,7 +6,7 @@ class PaymentsSystemTest < ApplicationSystemTestCase
       visit payments_path
     end
 
-    assert_text "Pricing"
+    assert_text I18n.t("payments.show.heading")
     assert_text "Checkout not available yet"
     assert_text "STRIPE_SECRET_KEY"
     assert_text "Starter"
