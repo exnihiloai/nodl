@@ -361,6 +361,20 @@ en:
         money_back: Money-back guarantee
         dismiss: Maybe later
         close: Close
+      formats:
+        heading: Build a format for every kind of document you make.
+        body: You've already invested effort shaping your workspace. Upgrade to Starter to create as many formats as you need.
+        proof_heading:
+          one: "%{count} format created"
+          other: "%{count} formats created"
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
     aha:
       title: Done!
       body: That took just %{seconds} and saved you about %{saved}.

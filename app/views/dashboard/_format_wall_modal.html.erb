@@ -1,0 +1,64 @@
+<%#
+  Wall 2: custom format limit. Opened on the reach-forward (clicking "+ New format")
+  once a trial workspace is at its format limit. Shows the formats already created
+  as proof of invested effort, and a one-click upgrade. Dismissible via X, backdrop,
+  or "Maybe later".
+%>
+<dialog class="modal" data-format-wall-target="dialog" data-testid="format-wall-modal">
+  <div class="modal-box max-w-md text-left">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" aria-label="<%= t("dashboard.wall.formats.close") %>">✕</button>
+    </form>
+
+    <h3 class="pr-8 text-xl font-bold leading-snug"><%= t("dashboard.wall.formats.heading") %></h3>
+    <p class="mt-2 text-sm text-base-content/60"><%= t("dashboard.wall.formats.body") %></p>
+
+    <div class="mt-5 overflow-hidden rounded-xl border border-base-300">
+      <div class="px-4 pb-2 pt-3">
+        <p class="text-xs font-medium uppercase tracking-wide text-base-content/40"><%= t("dashboard.wall.formats.proof_heading", count: wall.formats_count) %></p>
+      </div>
+      <ul class="pb-3" data-testid="format-wall-formats">
+        <% wall.formats.each do |profile| %>
+          <li class="flex items-center gap-2.5 px-4 py-1.5 text-sm text-base-content/70">
+            <%= icon("notebook-pen", class: "size-3.5 shrink-0 text-base-content/35") %>
+            <span class="truncate"><%= profile.name %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="mt-5 flex flex-wrap justify-center gap-1.5">
+      <% [
+           ["rotate-ccw", t("dashboard.wall.formats.cancel_anytime")],
+           ["shield-check", t("dashboard.wall.formats.gdpr")],
+           ["lock",         t("dashboard.wall.formats.encryption")],
+           ["badge-check",  t("dashboard.wall.formats.money_back")]
+         ].each do |lucide_icon, label| %>
+        <span class="inline-flex items-center gap-1 rounded-full border border-base-300 bg-base-200 px-2.5 py-0.5 text-xs font-medium text-base-content/55">
+          <%= icon(lucide_icon, class: "size-3 shrink-0") %>
+          <%= label %>
+        </span>
+      <% end %>
+    </div>
+
+    <div class="mt-3 flex flex-col gap-2">
+      <%= button_to t("dashboard.wall.formats.upgrade"), payments_checkout_path(plan: "starter"),
+                    method: :post,
+                    class: "btn btn-primary w-full",
+                    form: { class: "w-full" },
+                    data: { testid: "format-wall-upgrade-button" } %>
+      <%= link_to t("dashboard.wall.formats.see_plans"), payments_path,
+                  class: "btn btn-ghost w-full",
+                  data: { testid: "format-wall-see-plans-button" } %>
+    </div>
+
+    <div class="mt-3 text-center">
+      <form method="dialog" class="contents">
+        <button class="link link-hover text-xs text-base-content/40" data-testid="format-wall-dismiss"><%= t("dashboard.wall.formats.dismiss") %></button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button aria-label="<%= t("dashboard.wall.formats.close") %>">close</button>
+  </form>
+</dialog>

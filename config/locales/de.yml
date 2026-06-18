@@ -467,6 +467,20 @@ de:
         money_back: Geld-zurück-Garantie
         dismiss: Vielleicht später
         close: Schließen
+      formats:
+        heading: Erstell ein Format für jede Art von Dokument, die du machst.
+        body: Du hast bereits Arbeit investiert, um deinen Workspace zu gestalten. Wechsle zu Starter und erstelle so viele Formate, wie du brauchst.
+        proof_heading:
+          one: "%{count} Format erstellt"
+          other: "%{count} Formate erstellt"
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
     aha:
       title: Fertig!
       body: Das hat nur %{seconds} gedauert und dir rund %{saved} erspart.
