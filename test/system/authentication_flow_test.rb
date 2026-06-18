@@ -31,7 +31,7 @@ class AuthenticationFlowTest < ApplicationSystemTestCase
     email = unique_email("inactive")
     create_user_with_workspace(email: email, password: "Valid123", active: false)
 
-    login_via_ui(email: email, password: "Valid123")
+    login_via_ui(email: email, password: "Valid123", expect_success: false)
 
     assert_current_path login_path, ignore_query: true
     assert_text "Invalid credentials."

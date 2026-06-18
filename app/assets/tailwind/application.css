@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Marketing templates live in the git-ignored companion repo. Tailwind must
+   scan them or responsive utilities in private/views never reach tailwind.css
+   (broken grids, both marquee stacks visible at once, etc.). */
+@source "../../../private/views";
+
 /* Custom DaisyUI light theme tokens */
 :root,
 [data-theme="light"] {

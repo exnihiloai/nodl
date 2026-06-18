@@ -1,9 +1,19 @@
 class Workspace < ApplicationRecord
+  self.ignored_columns += %w[
+    subscription_status
+    subscription_plan
+    subscription_billing_cycle
+    usage_limits
+    usage_consumption
+  ]
+
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :recording_sessions, dependent: :destroy
   has_many :documents, dependent: :destroy
   has_many :transformer_profiles, dependent: :destroy
+  has_many :usage_events, dependent: :destroy
+  has_one :current_entitlement, class_name: "WorkspaceEntitlement", dependent: :destroy
 
   # Encrypt the workspace display name at rest (Active Record Encryption).
   # `slug` stays plaintext: it is the indexed, queried tenant identifier.
@@ -16,22 +26,23 @@ class Workspace < ApplicationRecord
   validates :slug, presence: true, uniqueness: true
 
   before_validation :ensure_slug
+  after_create :ensure_trial_entitlement
   after_create :ensure_default_transformer_profile
 
-  def usage_limit_for(key, default_value)
-    usage_limits.fetch(key.to_s, default_value).to_i
-  end
-
-  def usage_consumed_for(key)
-    usage_consumption.fetch(key.to_s, 0).to_i
+  def on_trial?
+    current_entitlement&.plan_code == "trial"
   end
 
   def recording_limit_reached?
-    recording_sessions.finalized.count >= PlanLimits::MAX_RECORDINGS
+    EntitlementPolicy.new(self).allowed?(:recordings).denied?
   end
 
   def format_limit_reached?
-    transformer_profiles.count >= PlanLimits::MAX_FORMATS
+    EntitlementPolicy.new(self).allowed?(:custom_formats).denied?
+  end
+
+  def entitlement_for(capability, quantity: 1, unit: "count", subject: nil)
+    EntitlementPolicy.new(self).allowed?(capability, quantity:, unit:, subject:)
   end
 
   private
@@ -45,5 +56,19 @@ class Workspace < ApplicationRecord
 
   def ensure_default_transformer_profile
     TransformerProfile.ensure_default_for!(self)
+  end
+
+  def ensure_trial_entitlement
+    return if current_entitlement.present?
+
+    WorkspaceEntitlementGrant.grant!(
+      workspace: self,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Default entitlement for new workspace"
+    )
+    association(:current_entitlement).reset
   end
 end

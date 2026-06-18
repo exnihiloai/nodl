@@ -1,0 +1,65 @@
+<%#
+  Wall 4: original audio download limit. Opened on the reach-forward (clicking
+  "Download original audio") once a trial workspace has used its one free download.
+  The integrity archive link stays free. Dismissible via X, backdrop, or "Maybe later".
+%>
+<dialog class="modal" data-audio-wall-target="dialog" data-testid="audio-wall-modal">
+  <div class="modal-box max-w-md text-left">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" aria-label="<%= t("dashboard.wall.audio.close") %>">✕</button>
+    </form>
+
+    <h3 class="pr-8 text-xl font-bold leading-snug"><%= t("dashboard.wall.audio.heading") %></h3>
+    <p class="mt-2 text-sm text-base-content/60"><%= t("dashboard.wall.audio.body") %></p>
+
+    <div class="mt-5 overflow-hidden rounded-xl border border-base-300 bg-base-200 px-4 py-4">
+      <p class="text-xs font-medium uppercase tracking-wide text-base-content/40"><%= t("dashboard.wall.audio.proof_heading") %></p>
+      <ul class="mt-2 space-y-1.5" data-testid="audio-wall-benefits">
+        <% [
+             t("dashboard.wall.audio.benefit_quality"),
+             t("dashboard.wall.audio.benefit_redownload"),
+             t("dashboard.wall.audio.benefit_archive")
+           ].each do |label| %>
+          <li class="flex items-center gap-2 text-sm font-medium">
+            <%= icon("check", class: "size-4 shrink-0 text-success") %>
+            <%= label %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="mt-5 flex flex-wrap justify-center gap-1.5">
+      <% [
+           ["rotate-ccw", t("dashboard.wall.audio.cancel_anytime")],
+           ["shield-check", t("dashboard.wall.audio.gdpr")],
+           ["lock",         t("dashboard.wall.audio.encryption")],
+           ["badge-check",  t("dashboard.wall.audio.money_back")]
+         ].each do |lucide_icon, label| %>
+        <span class="inline-flex items-center gap-1 rounded-full border border-base-300 bg-base-100 px-2.5 py-0.5 text-xs font-medium text-base-content/55">
+          <%= icon(lucide_icon, class: "size-3 shrink-0") %>
+          <%= label %>
+        </span>
+      <% end %>
+    </div>
+
+    <div class="mt-3 flex flex-col gap-2">
+      <%= button_to t("dashboard.wall.audio.upgrade"), payments_checkout_path(plan: "starter"),
+                    method: :post,
+                    class: "btn btn-primary w-full",
+                    form: { class: "w-full", data: { turbo: false } },
+                    data: { testid: "audio-wall-upgrade-button" } %>
+      <%= link_to t("dashboard.wall.audio.see_plans"), payments_path,
+                  class: "btn btn-ghost w-full",
+                  data: { testid: "audio-wall-see-plans-button" } %>
+    </div>
+
+    <div class="mt-3 text-center">
+      <form method="dialog" class="contents">
+        <button class="link link-hover text-xs text-base-content/40" data-testid="audio-wall-dismiss"><%= t("dashboard.wall.audio.dismiss") %></button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button aria-label="<%= t("dashboard.wall.audio.close") %>">close</button>
+  </form>
+</dialog>

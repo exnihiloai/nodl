@@ -1,11 +1,12 @@
 module Admin
   class UsersController < ApplicationController
+    include Admin::UserEntitlementManagement
     before_action :authenticate_user!
     before_action :require_admin!
-    before_action :set_managed_user, only: %i[show update_email update_role update_password update_integrity_sealing update_usage generate_password deactivate reactivate]
+    before_action :set_managed_user, only: %i[show update_email update_role update_password update_integrity_sealing update_entitlement generate_password deactivate reactivate]
 
     def index
-      @users = User.includes(:memberships, :workspaces).order(created_at: :desc)
+      @users = User.includes(workspaces: :current_entitlement).order(created_at: :desc)
     end
 
     def show
@@ -39,11 +40,7 @@ module Admin
           preferred_language: "en"
         )
 
-        workspace = Workspace.create!(
-          name: default_workspace_name(user),
-          usage_limits: { scans: 1000, storage_mb: 1024 },
-          usage_consumption: { scans: 0, storage_mb: 0 }
-        )
+        workspace = Workspace.create!(name: default_workspace_name(user))
 
         Membership.create!(user:, workspace:, role: :owner)
         audit!(user, "create_user", nil, { email: user.email, role: user.role, workspace_id: workspace.id })
@@ -156,30 +153,6 @@ module Admin
       end
     end
 
-    def update_usage
-      workspace = primary_workspace_for(@managed_user)
-
-      if workspace.blank?
-        render_usage_section(error: t("admin.flash.no_workspace"), status: :unprocessable_entity)
-        return
-      end
-
-      scans = params[:scans].to_i
-      storage_mb = params[:storage_mb].to_i
-      scans = 0 if scans.negative?
-      storage_mb = 0 if storage_mb.negative?
-
-      before_state = { usage_limits: workspace.usage_limits }
-      after_limits = workspace.usage_limits.merge("scans" => scans, "storage_mb" => storage_mb)
-
-      if workspace.update(usage_limits: after_limits)
-        audit!(@managed_user, "update_usage_limits", before_state, { usage_limits: after_limits })
-        render_usage_section(notice: t("admin.flash.usage_updated"))
-      else
-        render_usage_section(error: workspace.errors.full_messages.to_sentence, status: :unprocessable_entity)
-      end
-    end
-
     private
 
     def set_managed_user
@@ -210,52 +183,24 @@ module Admin
       "#{user.email.split("@").first.titleize} Workspace"
     end
 
-    def email_section_id
-      "email_section"
-    end
-
-    def role_section_id
-      "role_section"
-    end
-
-    def password_section_id
-      "password_section"
-    end
-
-    def integrity_sealing_section_id
-      "integrity_sealing_section"
-    end
-
-    def lifecycle_section_id
-      "lifecycle_section"
-    end
-
-    def usage_section_id
-      "usage_section"
-    end
-
     def render_email_section(notice: nil, error: nil, status: :ok)
-      render_section(email_section_id, "admin/users/email_section", { managed_user: @managed_user, notice:, error: }, status)
+      render_section("email_section", "admin/users/email_section", { managed_user: @managed_user, notice:, error: }, status)
     end
 
     def render_role_section(notice: nil, error: nil, status: :ok)
-      render_section(role_section_id, "admin/users/role_section", { managed_user: @managed_user, notice:, error: }, status)
+      render_section("role_section", "admin/users/role_section", { managed_user: @managed_user, notice:, error: }, status)
     end
 
     def render_password_section(notice: nil, error: nil, generated_password: nil, status: :ok)
-      render_section(password_section_id, "admin/users/password_section", { managed_user: @managed_user, notice:, error:, generated_password: }, status)
+      render_section("password_section", "admin/users/password_section", { managed_user: @managed_user, notice:, error:, generated_password: }, status)
     end
 
     def render_integrity_sealing_section(notice: nil, error: nil, status: :ok)
-      render_section(integrity_sealing_section_id, "admin/users/integrity_sealing_section", { managed_user: @managed_user, notice:, error: }, status)
+      render_section("integrity_sealing_section", "admin/users/integrity_sealing_section", { managed_user: @managed_user, notice:, error: }, status)
     end
 
     def render_lifecycle_section(notice: nil, error: nil, status: :ok)
-      render_section(lifecycle_section_id, "admin/users/lifecycle_section", { managed_user: @managed_user, notice:, error: }, status)
-    end
-
-    def render_usage_section(notice: nil, error: nil, status: :ok)
-      render_section(usage_section_id, "admin/users/usage_section", { managed_user: @managed_user, workspace: @workspace, notice:, error: }, status)
+      render_section("lifecycle_section", "admin/users/lifecycle_section", { managed_user: @managed_user, notice:, error: }, status)
     end
 
     def render_section(section_id, partial, locals, status)

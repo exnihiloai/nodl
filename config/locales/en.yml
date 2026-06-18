@@ -156,6 +156,10 @@ en:
     payments:
       not_configured: Stripe is not configured. Set STRIPE_SECRET_KEY first.
       checkout_failed: Unable to start checkout right now.
+      checkout_success: Your account is ready.
+      plan_unavailable: This paid plan is not available for checkout yet.
+    entitlements:
+      limit_reached: This action is limited to %{limit} on your current plan.
   registrations:
     errors:
       email_mismatch: Email and confirmation must match.
@@ -340,6 +344,93 @@ en:
     limits:
       recordings_reached: You've used all %{limit} recordings included in your test plan.
       formats_reached: Limit of %{limit} formats reached
+    trial:
+      recordings_left: "%{remaining} of %{limit} free recordings left"
+    wall:
+      recordings:
+        heading: You've turned %{count} recordings into documents. Keep going.
+        body: Your trial recordings are used up, but your documents are safe. Upgrade to Starter to keep recording with monthly recording capacity that feels unlimited for normal use.
+        proof_heading:
+          one: "%{count} document created"
+          other: "%{count} documents created"
+        time_saved: "≈ %{saved} saved so far"
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
+      integrity:
+        heading: Turn on tamper-evident records.
+        body: Upgrade to Business to seal every recording with a trusted timestamp and a downloadable integrity certificate.
+        proof_heading: What you get with Business
+        benefit_timestamp: Trusted timestamp for every recording
+        benefit_archive: Downloadable integrity archive with certificate
+        benefit_legal: Proof unchanged since recording was made
+        upgrade: Upgrade to Business
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
+      audio:
+        heading: Download your original audio whenever you need it.
+        body: Upgrade to Starter to download the original recording from any session.
+        proof_heading: What you get
+        benefit_quality: Original, uncompressed audio file
+        benefit_redownload: Re-download anytime, from any session
+        benefit_archive: Keep recordings for compliance or reference
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
+      exports:
+        heading: Send it as a polished Word, PDF, or Markdown file. Every time.
+        body: Upgrade to Starter to export as many documents as you need, whenever you need them.
+        proof_heading: Available export formats
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
+      formats:
+        heading: Build a format for every kind of document you make.
+        body: You've already invested effort shaping your workspace. Upgrade to Starter to create as many formats as you need.
+        proof_heading:
+          one: "%{count} format created"
+          other: "%{count} formats created"
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
+    aha:
+      title: Done!
+      body: That took just %{seconds} and saved you about %{saved}.
+      seconds:
+        one: "%{count} second"
+        other: "%{count} seconds"
+      saved_minutes:
+        one: "%{count} minute"
+        other: "%{count} minutes"
+      saved_hours:
+        one: "%{count} hour"
+        other: "%{count} hours"
+      dismiss: Keep going
     privacy_note: Private to your workspace. Nothing is shared.
     formats: Formats
     new_format: "+ New format"
@@ -401,6 +492,7 @@ en:
         sealed: Integrity sealed
         failed: Timestamp failed
         pending_config: Hash recorded
+        disabled: Currently turned off
       statuses_compact:
         sealed: secured
       descriptions:
@@ -408,6 +500,9 @@ en:
         sealed: The original recording has a trusted timestamp and can be exported with its certificate.
         failed: Recording and document generation still work. Nodl will retry timestamping automatically.
         pending_config: The original recording fingerprint is saved. Timestamping will be retried when the service is configured.
+        disabled: Nodl can provide a certificate that proves the audio recording was not altered and existed before. Verifiable by official bodies.
+      activate: Activate
+      learn_more: Learn more
     live:
       transcript: Transcript
       preview: Preview
@@ -517,22 +612,80 @@ en:
   payments:
     show:
       title: Pricing - Nodl
-      meta_description: Nodl is free today. Paid plans are coming soon.
-      badge: Pricing
-      heading: Start free today
-      subheading: Paid plans are coming soon. Create your account and use Nodl on the free tier, no payment required.
-      charge_note_html: Pro checkout is on the roadmap. For now, join the free tier and start recording, no payment required.
-      managed_in_stripe: Stripe price configured
-      using_price_html: Checkout will use %{code} when paid plans launch.
-      test_defaults: Free tier active, no checkout required right now.
-      start_checkout: Test checkout
+      meta_description: Choose your Nodl plan. Fair prices, every feature included, cancel anytime.
+      heading: Start without risk. Scale when it pays off.
+      subheading: Every feature is included. You only choose your recording volume, cancel monthly, no setup fee.
+      recommended: Recommended
+      save_badge: 2 months free
+      vat_note: All prices include VAT.
+      currency_label: "Currency:"
+      annual_monthly_equiv: "equals %{amount} per month, 2 months free"
+      no_commitment: Monthly, cancel anytime
+      cancel_anytime: Cancel anytime, no lock-in
+      included_heading: What's included
+      premium: Premium
+      integrity_learn_more: Learn more
+      regions:
+        eu: "€ EUR"
+        international: "$ USD"
+      intervals:
+        monthly: Monthly
+        annual: Annual
+      plans:
+        starter:
+          description: Great for anyone who records regularly and wants polished documents without the hassle.
+        business:
+          description: For professional use with higher volume and tamper-evident documentation.
+      trial_card:
+        name: Free Trial
+        description: Try Nodl on real recordings before choosing a paid plan.
+        price: Free
+        period: / 14 days
+        no_card: No credit card required
+        upgrade_note: Upgrade when you want more recording volume.
+        cta: Start free
+        cancel_anytime: No subscription starts automatically
+        features:
+          - "Up to %{recordings} recordings total"
+          - "Up to %{formats} custom formats"
+          - "Up to %{hours} hour per recording"
+      features:
+        starter_recordings: 500 recordings per month
+        business_recordings: 2,000 recordings per month
+        unlimited_formats: Unlimited document templates
+        unlimited_exports: Unlimited exports & audio downloads
+        integrity: Tamper-proof recording verification
+        monthly_usage_window: Usage limits reset monthly
+      shared_features:
+        complete_flow: "Full workflow: record, understand, document"
+        live_transcript: Live transcript in real time as you speak
+        languages: Transcription in 14 languages
+        translation: Automatic translation into 70 languages
+        templates: Custom document templates with examples
+        speakers: Automatic speaker identification
+        audio: Play back and download audio
+        export_formats: Export as PDF, Word, and Markdown
+        cross_platform: Browser-based, no app installation needed
+        privacy: Encrypted, private workspace
+      trust_items:
+        german_servers: German Servers
+        made_in_austria: Made in Austria
+        no_ai_training: No AI Training
+        encryption: 100% Encryption
+        gdpr: GDPR Compliant
+        no_setup: No Setup Fee
+        cancel: Cancel Anytime
+        money_back: Money-back guarantee within 40 days
+      per_month: / month
+      per_year: / year
+      start_checkout: "Get started →"
+      checkout_unavailable: Checkout unavailable
       redirect_note: You will be redirected to Stripe's hosted checkout page.
+      monthly_limits_note: Recording and audio usage reset monthly, including annual subscriptions.
       test_card_html: 'Test card: %{code}'
       config_required: Checkout not available yet
-      config_hint: Paid plans are not live yet. Create a free account from the homepage to start recording.
-      webhooks_title: For maintainers
-      webhooks_hint_html: When billing is enabled, point Stripe CLI to %{path} with %{secret}.
-      back_home: "← Back to homepage"
+      config_hint: Set STRIPE_SECRET_KEY to enable hosted checkout from this page.
+      dynamic_price_note: No fixed Stripe Price ID is configured for this selection yet; checkout will create the subscription price from the local catalog.
     success:
       title: Payment Successful
       badge: Payment confirmed
@@ -542,12 +695,18 @@ en:
       go_to_dashboard: Go to dashboard
       back_to_payments: Back to payments
     cancel:
-      title: Payment Cancelled
-      badge: Checkout cancelled
-      heading: Payment was cancelled
-      body: No charges were made. Resume checkout whenever you're ready.
+      title: Checkout problem
+      badge: Checkout interrupted
+      heading: We couldn't complete checkout
+      body: No charges were made. Try again or review your plan details.
+      reassurance_heading: What happens next
+      reassurance:
+        no_charge: Your card was not charged. You can safely try again.
+        resume_anytime: Pick up checkout again whenever you're ready.
+        secure_checkout: Payments are processed securely through Stripe.
       try_again: Try again
       review_details: Review payment details
+      back_to_dashboard: Back to dashboard
   admin:
     flash:
       invalid_role: Invalid role selected.
@@ -562,6 +721,8 @@ en:
       no_workspace: This user has no workspace.
       usage_updated: Usage limits updated.
       integrity_sealing_updated: Integrity sealing setting updated.
+      entitlement_reason_required: Enter a reason before changing workspace access.
+      private_access_granted: Private Access granted.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -577,8 +738,8 @@ en:
       generate_password: Generate password
       deactivate: Deactivate
       reactivate: Reactivate
-      update_usage_limits: Update usage limits
       update_integrity_sealing: Update integrity sealing
+      grant_private_access: Grant Private Access
     common:
       never: Never
       none: "-"
@@ -588,7 +749,7 @@ en:
       index:
         title: Admin - Users
         heading: User roster
-        subheading: Overview of accounts, roles, and workspace limits.
+        subheading: Overview of accounts, roles, and workspace access.
         create_user: Create User
         col_user: User
         col_role: Role
@@ -596,10 +757,7 @@ en:
         col_last_login: Last login
         col_workspace: Workspace
         col_plan: Plan
-        col_usage: Usage
         id: ID %{id}
-        scans: 'Scans: %{used} / %{limit}'
-        storage: 'Storage: %{used}MB / %{limit}MB'
       show:
         title: Admin - User Detail
         heading: 'User Detail: %{email}'
@@ -607,10 +765,7 @@ en:
         account_information: Account Information
         created: 'Created:'
         last_login: 'Last login:'
-        subscription_and_usage: Subscription and Usage
-        subscription_status: Subscription Status
-        plan_html: 'Plan: %{plan}'
-        billing_cycle_html: 'Billing Cycle: %{cycle}'
+        workspace_access: Workspace Access
         no_workspace: No workspace assigned.
         audit_events: Recent Audit Events
         col_action: Action
@@ -652,14 +807,18 @@ en:
         deactivate: Deactivate User
         deactivate_confirm: Are you sure you want to deactivate this user?
         reactivate: Reactivate User
-      usage_section:
-        heading: Usage Limits
-        scans: Scans
-        storage: Storage (MB)
-        scans_limit: Scans Limit
-        storage_limit: Storage (MB) Limit
-        update: Update Limits
+      entitlement_section:
+        heading: Workspace Entitlement
+        plan: Plan
+        version: Version
+        source: Source
+        status: Status
+        limits: Limits
+        no_entitlement: No entitlement assigned.
         no_workspace: No workspace assigned for this user.
+        reason: Reason
+        reason_placeholder: Founder account, beta grant, support extension...
+        grant_private_access: Grant Private Access
       create_result:
         success: User created successfully.
         generated_password: 'Generated Password:'

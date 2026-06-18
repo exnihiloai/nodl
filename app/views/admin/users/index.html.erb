@@ -31,7 +31,6 @@
               <th><%= t("admin.users.index.col_last_login") %></th>
               <th><%= t("admin.users.index.col_workspace") %></th>
               <th><%= t("admin.users.index.col_plan") %></th>
-              <th><%= t("admin.users.index.col_usage") %></th>
             </tr>
           </thead>
           <tbody>
@@ -57,17 +56,7 @@
                 <td><%= user.created_at&.strftime("%Y-%m-%d %H:%M") || t("admin.common.none") %></td>
                 <td><%= user.last_login_at&.strftime("%Y-%m-%d %H:%M") || t("admin.common.never") %></td>
                 <td><%= workspace&.name || t("admin.common.none") %></td>
-                <td><%= workspace&.subscription_plan&.capitalize || t("admin.common.free") %></td>
-                <td>
-                  <% if workspace.present? %>
-                    <div class="text-xs space-y-1">
-                      <div><%= t("admin.users.index.scans", used: workspace.usage_consumed_for(:scans), limit: workspace.usage_limit_for(:scans, 0)) %></div>
-                      <div><%= t("admin.users.index.storage", used: workspace.usage_consumed_for(:storage_mb), limit: workspace.usage_limit_for(:storage_mb, 0)) %></div>
-                    </div>
-                  <% else %>
-                    <%= t("admin.common.none") %>
-                  <% end %>
-                </td>
+                <td><%= workspace&.current_entitlement&.display_name || t("admin.common.free") %></td>
               </tr>
             <% end %>
           </tbody>

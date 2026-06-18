@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :workspaces, through: :memberships
   has_many :created_recording_sessions, class_name: "RecordingSession", foreign_key: :creator_id, inverse_of: :creator, dependent: :restrict_with_exception
+  has_many :usage_events, dependent: :nullify
   has_many :admin_audit_events, dependent: :destroy
   has_many :legal_consents, dependent: :destroy
   has_many :acting_admin_audit_events, class_name: "AdminAuditEvent", foreign_key: :acting_admin_id, inverse_of: :acting_admin, dependent: :destroy
@@ -76,11 +77,7 @@ class User < ApplicationRecord
   def self.ensure_default_workspace_for!(user)
     return if user.workspaces.exists?
 
-    workspace = Workspace.create!(
-      name: "#{user.email.split("@").first.titleize} Workspace",
-      usage_limits: { scans: 1000, storage_mb: 1024 },
-      usage_consumption: { scans: 0, storage_mb: 0 }
-    )
+    workspace = Workspace.create!(name: "#{user.email.split("@").first.titleize} Workspace")
 
     Membership.create!(user:, workspace:, role: :owner)
   end

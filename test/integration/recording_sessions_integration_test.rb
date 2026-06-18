@@ -248,9 +248,17 @@ class RecordingSessionsIntegrationTest < ActionDispatch::IntegrationTest
   test "rejects creating a recording when workspace reached recording limit" do
     user = create_user_with_workspace(email: "recording-limit@example.test")
     workspace = user.workspaces.first
+    WorkspaceEntitlementGrant.grant!(
+      workspace:,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise trial recording limit"
+    )
     post login_path, params: { email: user.email, password: "Valid123" }
 
-    PlanLimits::MAX_RECORDINGS.times do |index|
+    3.times do |index|
       workspace.recording_sessions.create!(
         creator: user,
         title: "Recording #{index}",

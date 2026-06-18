@@ -3,68 +3,10 @@
   <meta name="description" content="<%= t("payments.show.meta_description") %>" />
 <% end %>
 
-<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
-  <div class="container mx-auto px-4 max-w-4xl space-y-10">
-    <header class="text-center space-y-3">
-      <span class="badge badge-primary badge-lg"><%= t("payments.show.badge") %></span>
-      <h1 class="text-4xl font-semibold"><%= t("payments.show.heading") %></h1>
-      <p class="text-base-content/70 text-lg"><%= t("payments.show.subheading") %></p>
-    </header>
-
-    <section class="card bg-base-100 shadow-2xl">
-      <div class="card-body space-y-6">
-        <div class="space-y-2">
-          <h2 class="card-title text-2xl"><%= @product_name %></h2>
-          <p class="text-base-content/70">
-            <%= t("payments.show.charge_note_html", code: content_tag(:code, "STRIPE_PRICE_ID", class: "kbd kbd-sm")) %>
-          </p>
-        </div>
-        <div class="rounded-box bg-base-200 p-4 text-sm space-y-1">
-          <% if @stripe_price_id.present? %>
-            <div class="font-semibold text-base-content"><%= t("payments.show.managed_in_stripe") %></div>
-            <div class="text-base-content/70"><%= t("payments.show.using_price_html", code: content_tag(:code, @stripe_price_id, class: "kbd kbd-xs")) %></div>
-          <% else %>
-            <div class="font-semibold text-2xl text-base-content"><%= format("%.2f", @amount_cents / 100.0) %> <%= @currency %></div>
-            <div class="text-base-content/70"><%= t("payments.show.test_defaults") %></div>
-          <% end %>
-        </div>
-
-        <% if @stripe_configured %>
-          <%= form_with url: payments_checkout_path, method: :post, class: "card bg-base-200 border border-base-300" do |f| %>
-            <div class="card-body gap-4 flex flex-col sm:flex-row sm:items-center">
-              <%= f.submit t("payments.show.start_checkout"), class: "btn btn-primary btn-lg" %>
-              <div class="text-sm text-base-content/70">
-                <p><%= t("payments.show.redirect_note") %></p>
-                <p><%= t("payments.show.test_card_html", code: content_tag(:code, "4242 4242 4242 4242", class: "kbd kbd-xs")) %></p>
-              </div>
-            </div>
-          <% end %>
-        <% else %>
-          <div class="alert alert-warning flex-col items-start gap-2">
-            <span class="font-semibold"><%= t("payments.show.config_required") %></span>
-            <p class="text-sm"><%= t("payments.show.config_hint") %></p>
-            <div class="bg-base-100 rounded-box p-3 font-mono text-xs">
-              STRIPE_SECRET_KEY=sk_test_...<br />
-              STRIPE_PUBLISHABLE_KEY=pk_test_...
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </section>
-
-    <section class="card bg-base-100 shadow">
-      <div class="card-body space-y-3">
-        <h3 class="card-title text-lg"><%= t("payments.show.webhooks_title") %></h3>
-        <p class="text-base-content/70">
-          <%= t("payments.show.webhooks_hint_html",
-                path: content_tag(:code, "/payments/webhook", class: "kbd kbd-xs"),
-                secret: content_tag(:code, "STRIPE_WEBHOOK_SECRET", class: "kbd kbd-xs")) %>
-        </p>
-      </div>
-    </section>
-
-    <div class="text-center">
-      <%= link_to t("payments.show.back_home"), root_path, class: "link link-hover" %>
-    </div>
-  </div>
-</section>
+<%= render "pricing/plan_overview",
+      selected_region: @selected_region,
+      selected_interval: @selected_interval,
+      plan_cards: @plan_cards,
+      stripe_configured: @stripe_configured,
+      pricing_url: ->(region:, interval:) { payments_path(region:, interval:) },
+      show_config_warning: true %>

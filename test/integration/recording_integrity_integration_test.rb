@@ -53,14 +53,17 @@ class RecordingIntegrityIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :accepted
   end
 
-  test "recording session page shows integrity status only when enabled" do
-    disabled_user = create_user_with_workspace(email: "integrity-hidden@example.test")
-    hidden_session = completed_recording(disabled_user, title: "Hidden integrity")
+  test "recording session page always shows integrity status" do
+    disabled_user = create_user_with_workspace(email: "integrity-disabled@example.test")
+    disabled_session = completed_recording(disabled_user, title: "Disabled integrity")
 
     login(disabled_user)
-    get recording_session_path(hidden_session)
+    get recording_session_path(disabled_session)
     assert_response :success
-    assert_select "[data-testid='integrity-status']", count: 0
+    assert_select "[data-testid='integrity-status']"
+    assert_select "[data-testid='integrity-status-badge']", text: /currently turned off/i
+    assert_select "[data-testid='integrity-status-details']", text: /verifiable by official bodies/i
+    assert_select "[data-testid='download-integrity-archive']", count: 0
 
     delete logout_path
     enabled_user = create_user_with_workspace(email: "integrity-visible@example.test")

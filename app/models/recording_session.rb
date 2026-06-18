@@ -77,6 +77,7 @@ class RecordingSession < ApplicationRecord
   scope :finalized, -> { where.not(status: :recording) }
 
   before_validation :assign_default_title, on: :create
+  after_create_commit :record_recording_usage
   after_destroy_commit :remove_work_path
 
   def mark_processing!
@@ -116,6 +117,7 @@ class RecordingSession < ApplicationRecord
     end
     broadcast_dashboard_activity
     broadcast_live_transcript_panel
+    DashboardCompletionBroadcaster.new(self).call
   end
 
   def mark_failed!(message)
@@ -189,15 +191,11 @@ class RecordingSession < ApplicationRecord
 
   def broadcast_dashboard_activity
     Turbo::StreamsChannel.broadcast_replace_to(
-      dashboard_stream,
+      [ workspace, :dashboard ],
       target: "dashboard_activity",
       partial: "dashboard/activity",
       locals: { recording_sessions: dashboard_recording_sessions }
     )
-  end
-
-  def dashboard_stream
-    [ workspace, :dashboard ]
   end
 
   def dashboard_recording_sessions
@@ -270,9 +268,10 @@ class RecordingSession < ApplicationRecord
       return
     end
 
-    return if duration <= PlanLimits.max_recording_duration_seconds
+    result = workspace.entitlement_for(:max_recording_duration_seconds, quantity: duration, unit: "seconds")
+    return if result.allowed?
 
-    errors.add(:original_audio, :too_long, limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i)
+    errors.add(:original_audio, :too_long, limit: (result.limit.to_f / 60).ceil)
   end
 
   def validate_original_audio_duration?
@@ -294,9 +293,14 @@ class RecordingSession < ApplicationRecord
 
   def workspace_recording_limit_not_exceeded
     return if workspace.blank?
-    return unless workspace.recording_limit_reached?
+    result = workspace.entitlement_for(:recordings)
+    return if result.allowed?
 
-    errors.add(:base, :recording_limit_reached, limit: PlanLimits::MAX_RECORDINGS)
+    errors.add(:base, :recording_limit_reached, limit: result.limit)
+  end
+
+  def record_recording_usage
+    UsageRecorder.record!(workspace:, user: creator, event_kind: "recording_created", subject: self)
   end
 
   def measured_original_audio_duration

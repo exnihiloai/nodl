@@ -16,10 +16,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     click_button "Create account"
   end
 
-  def login_via_ui(email:, password:)
+  def login_via_ui(email:, password:, expect_success: true)
     visit login_path
     fill_in "login_email", with: email
     fill_in "login_password", with: password
     click_button "Sign in"
+    assert_current_path dashboard_path, ignore_query: true if expect_success
   end
 end

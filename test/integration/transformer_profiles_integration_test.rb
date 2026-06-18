@@ -243,7 +243,16 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "rejects creating a format when workspace reached format limit" do
-    (PlanLimits::MAX_FORMATS - 1).times do |index|
+    WorkspaceEntitlementGrant.grant!(
+      workspace: @workspace,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise trial format limit"
+    )
+
+    2.times do |index|
       @workspace.transformer_profiles.create!(
         name: "Format #{index}",
         handle: "format-#{index}",
@@ -258,11 +267,20 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_includes response.body, "maximum of #{PlanLimits::MAX_FORMATS} formats"
+    assert_includes response.body, "maximum of 2 formats"
   end
 
   test "redirects new format page when workspace reached format limit" do
-    (PlanLimits::MAX_FORMATS - 1).times do |index|
+    WorkspaceEntitlementGrant.grant!(
+      workspace: @workspace,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise trial format limit"
+    )
+
+    2.times do |index|
       @workspace.transformer_profiles.create!(
         name: "Format #{index}",
         handle: "format-#{index}",
@@ -273,7 +291,7 @@ class TransformerProfilesIntegrationTest < ActionDispatch::IntegrationTest
     get new_transformer_profile_path
 
     assert_redirected_to dashboard_path
-    assert_equal "Limit of #{PlanLimits::MAX_FORMATS} formats reached", flash[:alert]
+    assert_equal "Limit of 2 formats reached", flash[:alert]
   end
 
   private

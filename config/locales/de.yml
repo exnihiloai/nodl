@@ -262,6 +262,10 @@ de:
     payments:
       not_configured: Stripe ist nicht konfiguriert. Setze zuerst STRIPE_SECRET_KEY.
       checkout_failed: Checkout kann derzeit nicht gestartet werden.
+      checkout_success: Dein Account ist bereit.
+      plan_unavailable: Dieser Paid Plan ist noch nicht für Checkout verfügbar.
+    entitlements:
+      limit_reached: Diese Aktion ist in deinem aktuellen Plan auf %{limit} begrenzt.
   registrations:
     errors:
       email_mismatch: E-Mail und Bestätigung müssen übereinstimmen.
@@ -446,6 +450,93 @@ de:
     limits:
       recordings_reached: Du hast alle %{limit} Recordings deines Testplans verbraucht.
       formats_reached: Limit von %{limit} Formaten erreicht
+    trial:
+      recordings_left: "%{remaining} von %{limit} kostenlosen Aufnahmen übrig"
+    wall:
+      recordings:
+        heading: Du hast %{count} Aufnahmen in Dokumente verwandelt. Mach weiter.
+        body: Deine kostenlosen Aufnahmen sind aufgebraucht, aber deine Dokumente bleiben sicher. Wechsle zu Starter und nimm weiter auf – mit monatlicher Aufnahmekapazität, die sich im normalen Gebrauch unbegrenzt anfühlt.
+        proof_heading:
+          one: "%{count} Dokument erstellt"
+          other: "%{count} Dokumente erstellt"
+        time_saved: "≈ %{saved} bisher gespart"
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
+      integrity:
+        heading: Manipulationssichere, rechtlich verwertbare Nachweise aktivieren.
+        body: Wechsle zu Business, um jede Aufnahme mit einem vertrauenswürdigen Zeitstempel und einem herunterladbaren Integritätszertifikat zu sichern.
+        proof_heading: Das bekommst du mit Business
+        benefit_timestamp: Vertrauenswürdiger Zeitstempel für jede Aufnahme
+        benefit_archive: Herunterladbares Integritätsarchiv mit Zertifikat
+        benefit_legal: Weist nach, dass die Datei seit der Aufnahme unverändert blieb
+        upgrade: Zu Business wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
+      audio:
+        heading: Lade dein Original-Audio jederzeit herunter.
+        body: Wechsle zu Starter und lade die Originalaufnahme aus jeder Session herunter.
+        proof_heading: Das bekommst du
+        benefit_quality: Originalaufnahme in voller Qualität
+        benefit_redownload: Jederzeit erneut herunterladen, aus jeder Session
+        benefit_archive: Aufnahmen für Compliance oder Archivierung behalten
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
+      exports:
+        heading: Als Word, PDF oder Markdown verschicken. Immer.
+        body: Wechsle zu Starter und exportiere so viele Dokumente, wie du brauchst.
+        proof_heading: Verfügbare Exportformate
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
+      formats:
+        heading: Erstell ein Format für jede Art von Dokument, die du machst.
+        body: Du hast Nodl bereits für dich entdeckt. Wechsle zu Starter und erstelle so viele Formate, wie du brauchst.
+        proof_heading:
+          one: "%{count} Format erstellt"
+          other: "%{count} Formate erstellt"
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
+    aha:
+      title: Fertig!
+      body: Das hat nur %{seconds} gedauert und dir rund %{saved} erspart.
+      seconds:
+        one: "%{count} Sekunde"
+        other: "%{count} Sekunden"
+      saved_minutes:
+        one: "%{count} Minute"
+        other: "%{count} Minuten"
+      saved_hours:
+        one: "%{count} Stunde"
+        other: "%{count} Stunden"
+      dismiss: Weiter geht's
     privacy_note: Privat für deinen Workspace. Nichts wird geteilt.
     formats: Formate
     new_format: "+ Neues Format"
@@ -507,6 +598,7 @@ de:
         sealed: Integrität gesichert
         failed: Zeitstempel fehlgeschlagen
         pending_config: Fingerabdruck gespeichert
+        disabled: Derzeit deaktiviert
       statuses_compact:
         sealed: Gesichert
       descriptions:
@@ -514,6 +606,9 @@ de:
         sealed: Die Originalaufnahme hat einen vertrauenswürdigen Zeitstempel und kann mit Zertifikat exportiert werden.
         failed: Aufnahme und Dokumenterstellung funktionieren weiter. Nodl versucht den Zeitstempel automatisch erneut.
         pending_config: Der Fingerabdruck der Originalaufnahme ist gespeichert. Der Zeitstempel wird nachgeholt, sobald der Service konfiguriert ist.
+        disabled: Nodl versiegelt deine Aufnahme mit einem fälschungssicheren Nachweis, dass sie nicht verändert oder manipuliert wurde. Inklusive unabhängig überprüfbarem Zertifikat.
+      activate: Aktivieren
+      learn_more: Mehr erfahren
     live:
       transcript: Transkript
       preview: Vorschau
@@ -623,22 +718,80 @@ de:
   payments:
     show:
       title: Preise - Nodl
-      meta_description: Nodl ist aktuell kostenlos. Paid Plans kommen bald.
-      badge: Preise
-      heading: Heute kostenlos starten
-      subheading: Paid Plans kommen bald. Erstelle deinen Account und nutze Nodl im Free Tier, ohne Zahlung.
-      charge_note_html: Pro-Checkout ist auf der Roadmap. Jetzt im Free Tier starten und aufnehmen, keine Zahlung nötig.
-      managed_in_stripe: Stripe-Preis konfiguriert
-      using_price_html: Checkout nutzt %{code}, sobald Paid Plans live sind.
-      test_defaults: Free Tier aktiv, aktuell kein Checkout nötig.
-      start_checkout: Checkout testen
+      meta_description: Wähle deinen Nodl-Plan. Faire Preise, alle Features inklusive, jederzeit kündbar.
+      heading: Starte ohne Risiko. Skaliere, wenn es sich lohnt.
+      subheading: Alle Funktionen sind inklusive. Du wählst nur dein Aufnahmevolumen, monatlich kündbar, ohne Setup-Gebühr.
+      recommended: Empfohlen
+      save_badge: 2 Monate gratis
+      vat_note: Alle Preise inkl. MwSt.
+      currency_label: "Währung:"
+      annual_monthly_equiv: "entspricht %{amount} pro Monat, 2 Monate gratis"
+      no_commitment: Monatlich, jederzeit kündbar
+      cancel_anytime: Jederzeit kündbar, keine Vertragsbindung
+      included_heading: Das ist enthalten
+      premium: Premium
+      integrity_learn_more: Erfahre mehr
+      regions:
+        eu: "€ EUR"
+        international: "$ USD"
+      intervals:
+        monthly: Monatlich
+        annual: Jährlich
+      plans:
+        starter:
+          description: Ideal für alle, die regelmäßig aufnehmen und daraus fertige Dokumente machen.
+        business:
+          description: Für professionellen Einsatz mit höherem Volumen und nachweisbarer Dokumentation.
+      trial_card:
+        name: Gratis Test
+        description: Teste Nodl mit echten Aufnahmen mit einem kleinen Test-Kontingent.
+        price: Gratis
+        period: zum Kennenlernen
+        no_card: Keine Kreditkarte nötig
+        upgrade_note: Zum Kennenlernen. Upgrade, wenn du mehr brauchst.
+        cta: Kostenlos starten
+        cancel_anytime: Es startet kein Abo automatisch
+        features:
+          - "Bis zu %{recordings} Aufnahmen insgesamt"
+          - "Bis zu %{formats} eigene Formate"
+          - "Bis zu %{hours} Stunde pro Aufnahme"
+      features:
+        starter_recordings: 500 Aufnahmen pro Monat
+        business_recordings: 2.000 Aufnahmen pro Monat
+        unlimited_formats: Unbegrenzte Dokumentvorlagen
+        unlimited_exports: Unbegrenzte Exporte & Audio-Downloads
+        integrity: Nachweis gegen nachträgliche Änderungen
+        monthly_usage_window: Nutzungslimits werden monatlich zurückgesetzt
+      shared_features:
+        complete_flow: "Vollständiger Workflow: aufnehmen, verstehen, dokumentieren"
+        live_transcript: Live-Transkript in Echtzeit, während du sprichst
+        languages: Transkription in 14 Sprachen
+        translation: Automatische Übersetzung in 70 Sprachen
+        templates: Eigene Dokumentvorlagen mit Beispielen
+        speakers: Sprecher automatisch unterscheiden
+        audio: Audio abspielen und herunterladen
+        export_formats: Export als PDF, Word und Markdown
+        cross_platform: Browser-basiert – keine App-Installation nötig
+        privacy: Verschlüsselter, privater Workspace
+      trust_items:
+        german_servers: Deutsche Server
+        made_in_austria: Entwickelt in Österreich
+        no_ai_training: Kein KI-Training
+        encryption: 100% Verschlüsselung
+        gdpr: DSGVO-konform
+        no_setup: Keine Einrichtungsgebühr
+        cancel: Jederzeit kündbar
+        money_back: Geld-zurück-Garantie in den ersten 40 Tagen
+      per_month: / Monat
+      per_year: / Jahr
+      start_checkout: "Jetzt starten →"
+      checkout_unavailable: Checkout nicht verfügbar
       redirect_note: Du wirst zur gehosteten Checkout-Seite von Stripe weitergeleitet.
+      monthly_limits_note: Aufnahme- und Audio-Nutzung werden monatlich zurückgesetzt, auch bei jährlichen Abos.
       test_card_html: 'Testkarte: %{code}'
       config_required: Checkout noch nicht verfügbar
-      config_hint: Paid Plans sind noch nicht live. Erstelle einen Free Account auf der Startseite und leg los.
-      webhooks_title: Für Maintainer
-      webhooks_hint_html: Sobald Billing aktiv ist, Stripe CLI auf %{path} mit %{secret} zeigen.
-      back_home: "← Zurück zur Startseite"
+      config_hint: Setze STRIPE_SECRET_KEY, um gehosteten Checkout auf dieser Seite zu aktivieren.
+      dynamic_price_note: Für diese Auswahl ist noch keine feste Stripe Price ID konfiguriert; Checkout erzeugt den Abo-Preis aus dem lokalen Katalog.
     success:
       title: Zahlung erfolgreich
       badge: Zahlung bestätigt
@@ -648,12 +801,18 @@ de:
       go_to_dashboard: Zum Dashboard
       back_to_payments: Zurück zu den Zahlungen
     cancel:
-      title: Zahlung abgebrochen
-      badge: Checkout abgebrochen
-      heading: Die Zahlung wurde abgebrochen
-      body: Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist.
+      title: Checkout-Problem
+      badge: Checkout unterbrochen
+      heading: Checkout konnte nicht abgeschlossen werden
+      body: Es wurden keine Beträge berechnet. Versuche es erneut oder prüfe deine Plandetails.
+      reassurance_heading: Was als Nächstes passiert
+      reassurance:
+        no_charge: Deine Karte wurde nicht belastet. Du kannst es jederzeit erneut versuchen.
+        resume_anytime: Setze den Checkout fort, wann immer du bereit bist.
+        secure_checkout: Zahlungen werden sicher über Stripe abgewickelt.
       try_again: Erneut versuchen
       review_details: Zahlungsdetails prüfen
+      back_to_dashboard: Zurück zum Dashboard
   admin:
     flash:
       invalid_role: Ungültige Rolle ausgewählt.
@@ -668,6 +827,8 @@ de:
       no_workspace: Dieser Nutzer hat keinen Workspace.
       usage_updated: Nutzungslimits aktualisiert.
       integrity_sealing_updated: Einstellung für Integritätsversiegelung aktualisiert.
+      entitlement_reason_required: Gib einen Grund an, bevor du Workspace-Zugriff änderst.
+      private_access_granted: Private Access gewährt.
     breadcrumbs:
       dashboard: Dashboard
       admin: Admin
@@ -683,8 +844,8 @@ de:
       generate_password: Passwort generiert
       deactivate: Deaktiviert
       reactivate: Reaktiviert
-      update_usage_limits: Nutzungslimits aktualisiert
       update_integrity_sealing: Integritätsversiegelung aktualisiert
+      grant_private_access: Private Access gewährt
     common:
       never: Nie
       none: "-"
@@ -694,7 +855,7 @@ de:
       index:
         title: Admin - Nutzer
         heading: Nutzerübersicht
-        subheading: Überblick über Konten, Rollen und Workspace-Limits.
+        subheading: Überblick über Konten, Rollen und Workspace-Zugriff.
         create_user: Nutzer erstellen
         col_user: Nutzer
         col_role: Rolle
@@ -702,10 +863,7 @@ de:
         col_last_login: Letzter Login
         col_workspace: Workspace
         col_plan: Tarif
-        col_usage: Nutzung
         id: ID %{id}
-        scans: 'Scans: %{used} / %{limit}'
-        storage: 'Speicher: %{used} MB / %{limit} MB'
       show:
         title: Admin - Nutzerdetails
         heading: 'Nutzerdetails: %{email}'
@@ -713,10 +871,7 @@ de:
         account_information: Kontoinformationen
         created: 'Erstellt:'
         last_login: 'Letzter Login:'
-        subscription_and_usage: Abonnement und Nutzung
-        subscription_status: Abonnementstatus
-        plan_html: 'Tarif: %{plan}'
-        billing_cycle_html: 'Abrechnungszyklus: %{cycle}'
+        workspace_access: Workspace-Zugriff
         no_workspace: Kein Workspace zugewiesen.
         audit_events: Letzte Audit-Ereignisse
         col_action: Aktion
@@ -758,14 +913,18 @@ de:
         deactivate: Nutzer deaktivieren
         deactivate_confirm: Bist du sicher, dass du diesen Nutzer deaktivieren möchtest?
         reactivate: Nutzer reaktivieren
-      usage_section:
-        heading: Nutzungslimits
-        scans: Scans
-        storage: Speicher (MB)
-        scans_limit: Scan-Limit
-        storage_limit: Speicherlimit (MB)
-        update: Limits aktualisieren
+      entitlement_section:
+        heading: Workspace-Entitlement
+        plan: Plan
+        version: Version
+        source: Quelle
+        status: Status
+        limits: Limits
+        no_entitlement: Kein Entitlement zugewiesen.
         no_workspace: Für diesen Nutzer ist kein Workspace zugewiesen.
+        reason: Grund
+        reason_placeholder: Founder Account, Beta Grant, Support-Verlängerung...
+        grant_private_access: Private Access gewähren
       create_result:
         success: Nutzer erfolgreich erstellt.
         generated_password: 'Generiertes Passwort:'

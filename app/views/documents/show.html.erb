@@ -9,32 +9,64 @@
           <p class="text-base-content/70"><%= @document.transformer_handle.humanize %>, <%= l(@document.local_generated_at, format: :short) %></p>
         </div>
 
-        <div class="dropdown" data-testid="download-menu">
-          <label tabindex="0" class="btn btn-sm gap-2">
-            <%= icon "download", class: "h-4 w-4" %>
-            <%= t("documents.show.download") %>
-          </label>
-          <ul tabindex="0" class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-            <li class="p-0">
-              <%= link_to t("documents.show.pdf"),
-                          download_document_path(@document, format: "pdf"),
-                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
-                          data: { testid: "download-pdf" } %>
-            </li>
-            <li class="p-0">
-              <%= link_to t("documents.show.docx"),
-                          download_document_path(@document, format: "docx"),
-                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
-                          data: { testid: "download-docx" } %>
-            </li>
-            <li class="p-0">
-              <%= link_to t("documents.show.markdown"),
-                          download_document_path(@document, format: "md"),
-                          class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
-                          data: { testid: "download-md" } %>
-            </li>
-          </ul>
-        </div>
+        <% if @export_wall %>
+          <div data-controller="export-wall">
+            <div class="dropdown" data-testid="download-menu">
+              <label tabindex="0" class="btn btn-sm gap-2">
+                <%= icon "download", class: "h-4 w-4" %>
+                <%= t("documents.show.download") %>
+              </label>
+              <ul tabindex="0" class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                <li class="p-0">
+                  <%= link_to t("documents.show.pdf"),
+                              download_document_path(@document, format: "pdf"),
+                              class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                              data: { testid: "download-pdf", action: "export-wall#open" } %>
+                </li>
+                <li class="p-0">
+                  <%= link_to t("documents.show.docx"),
+                              download_document_path(@document, format: "docx"),
+                              class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                              data: { testid: "download-docx", action: "export-wall#open" } %>
+                </li>
+                <li class="p-0">
+                  <%= link_to t("documents.show.markdown"),
+                              download_document_path(@document, format: "md"),
+                              class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                              data: { testid: "download-md", action: "export-wall#open" } %>
+                </li>
+              </ul>
+            </div>
+            <%= render "documents/export_wall_modal" %>
+          </div>
+        <% else %>
+          <div class="dropdown" data-testid="download-menu">
+            <label tabindex="0" class="btn btn-sm gap-2">
+              <%= icon "download", class: "h-4 w-4" %>
+              <%= t("documents.show.download") %>
+            </label>
+            <ul tabindex="0" class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+              <li class="p-0">
+                <%= link_to t("documents.show.pdf"),
+                            download_document_path(@document, format: "pdf"),
+                            class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                            data: { testid: "download-pdf" } %>
+              </li>
+              <li class="p-0">
+                <%= link_to t("documents.show.docx"),
+                            download_document_path(@document, format: "docx"),
+                            class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                            data: { testid: "download-docx" } %>
+              </li>
+              <li class="p-0">
+                <%= link_to t("documents.show.markdown"),
+                            download_document_path(@document, format: "md"),
+                            class: "flex w-full items-center px-3 py-1.5 rounded-[inherit]",
+                            data: { testid: "download-md" } %>
+              </li>
+            </ul>
+          </div>
+        <% end %>
       </div>
 
       <%= link_to t("documents.show.show_recording"), recording_session_path(@recording_session), class: "btn btn-outline" %>

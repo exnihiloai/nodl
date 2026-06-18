@@ -1,0 +1,88 @@
+<% integrity_enabled = recording_session.creator.integrity_sealing_enabled? %>
+<% integrity_record = recording_session.integrity_record if integrity_enabled %>
+<% integrity_panel_id = "integrity-status-panel-#{recording_session.id}" %>
+<div class="integrity-status rounded-box border border-base-300 bg-base-100 shadow-sm"
+     data-controller="disclosure"
+     data-disclosure-open-class="is-open"
+     data-testid="integrity-status">
+  <button type="button"
+          id="<%= integrity_panel_id %>-trigger"
+          class="integrity-status-trigger flex w-full cursor-pointer list-none select-none items-center gap-3 rounded-box p-4 text-left transition-colors hover:bg-base-200/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          data-disclosure-target="trigger"
+          data-action="disclosure#toggle"
+          aria-expanded="false"
+          aria-controls="<%= integrity_panel_id %>">
+    <span class="flex size-5 shrink-0 items-center justify-center" aria-hidden="true">
+      <%= icon("chevron-right", class: "integrity-status-chevron size-4 text-base-content/50") %>
+    </span>
+    <span class="flex size-5 shrink-0 items-center justify-center <%= integrity_enabled ? "text-primary" : "text-base-content/40" %>" aria-hidden="true">
+      <%= icon("shield-check", class: "size-5") %>
+    </span>
+    <span class="min-w-0 flex-1 font-semibold"><%= t("recording_sessions.integrity.heading") %></span>
+    <% if integrity_enabled %>
+      <% if integrity_record&.sealed? %>
+        <span class="integrity-sealed-badge shrink-0" data-testid="integrity-status-badge">
+          <span class="integrity-sealed-badge__icon" aria-hidden="true">
+            <%= icon("check", class: "size-3") %>
+          </span>
+          <span class="integrity-sealed-badge__label"><%= t("recording_sessions.integrity.statuses_compact.sealed") %></span>
+        </span>
+      <% else %>
+        <span class="badge <%= integrity_badge_class(integrity_record) %>" data-testid="integrity-status-badge">
+          <%= t("recording_sessions.integrity.statuses.#{integrity_status_key(integrity_record)}") %>
+        </span>
+      <% end %>
+    <% else %>
+      <span class="badge badge-neutral text-base-content/60" data-testid="integrity-status-badge">
+        <%= t("recording_sessions.integrity.statuses.disabled") %>
+      </span>
+    <% end %>
+  </button>
+
+  <div id="<%= integrity_panel_id %>"
+       class="integrity-status-panel"
+       data-disclosure-target="panel"
+       inert>
+    <div class="integrity-status-panel-inner">
+      <div class="integrity-status-panel-content flex flex-col gap-3 border-t border-base-300 px-4 pb-4 pt-3 sm:flex-row sm:items-center sm:justify-between" data-testid="integrity-status-details">
+        <p class="text-sm text-base-content/70">
+          <% if integrity_enabled %>
+            <% if integrity_record&.sealed? && integrity_record.tsa_timestamp.present? %>
+              <%= t("recording_sessions.integrity.sealed_at", time: l(integrity_record.tsa_timestamp.utc, format: :short)) %>
+            <% else %>
+              <%= t("recording_sessions.integrity.descriptions.#{integrity_status_key(integrity_record)}") %>
+            <% end %>
+          <% else %>
+            <%= t("recording_sessions.integrity.descriptions.disabled") %>
+          <% end %>
+        </p>
+        <% if integrity_enabled && integrity_record&.sealed? && recording_session.original_audio_downloadable? %>
+          <%= link_to download_integrity_archive_recording_session_path(recording_session),
+                      class: "btn btn-sm gap-2 shrink-0",
+                      data: { testid: "download-integrity-archive" } do %>
+            <%= icon("download", class: "size-4") %>
+            <span><%= t("recording_sessions.integrity.download_archive") %></span>
+          <% end %>
+        <% elsif !integrity_enabled %>
+          <% if local_assigns[:integrity_wall] %>
+            <div class="flex shrink-0 items-center gap-2" data-controller="integrity-wall">
+              <%= link_to t("recording_sessions.integrity.learn_more"), integrity_proof_help_path,
+                          class: "btn btn-ghost btn-sm",
+                          data: { testid: "integrity-learn-more" } %>
+              <button type="button" class="btn btn-sm btn-primary"
+                      data-action="integrity-wall#open"
+                      data-testid="integrity-activate-button">
+                <%= t("recording_sessions.integrity.activate") %>
+              </button>
+              <%= render "recording_sessions/integrity_wall_modal" %>
+            </div>
+          <% else %>
+            <%= link_to t("recording_sessions.integrity.learn_more"), integrity_proof_help_path,
+                        class: "btn btn-ghost btn-sm shrink-0",
+                        data: { testid: "integrity-learn-more" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

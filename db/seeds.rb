@@ -16,11 +16,6 @@ def ensure_user_with_workspace!(email:, password:, role:)
 
   workspace = Workspace.find_or_create_by!(slug: "#{email.split('@').first.parameterize}-workspace") do |w|
     w.name = "#{email.split('@').first.titleize} Workspace"
-    w.subscription_status = "inactive"
-    w.subscription_plan = "free"
-    w.subscription_billing_cycle = "monthly"
-    w.usage_limits = { scans: 1000, storage_mb: 1024 }
-    w.usage_consumption = { scans: 0, storage_mb: 0 }
   end
 
   Membership.find_or_create_by!(user:, workspace:) do |membership|

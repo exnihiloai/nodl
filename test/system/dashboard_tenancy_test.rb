@@ -12,11 +12,7 @@ class DashboardTenancyTest < ApplicationSystemTestCase
     email = unique_email("tenant")
     user = create_user_with_workspace(email: email, password: "Valid123", workspace_name: "Alpha Workspace")
 
-    beta_workspace = Workspace.create!(
-      name: "Beta Workspace",
-      usage_limits: { scans: 500, storage_mb: 512 },
-      usage_consumption: { scans: 10, storage_mb: 5 }
-    )
+    beta_workspace = Workspace.create!(name: "Beta Workspace")
     Membership.create!(user: user, workspace: beta_workspace, role: :member)
 
     login_via_ui(email: email, password: "Valid123")

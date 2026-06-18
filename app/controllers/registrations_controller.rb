@@ -23,9 +23,7 @@ class RegistrationsController < ApplicationController
 
       workspace = Workspace.create!(
         name: default_workspace_name(user.email),
-        slug: SecureRandom.alphanumeric(10).downcase,
-        usage_limits: { scans: 1000, storage_mb: 1024 },
-        usage_consumption: { scans: 0, storage_mb: 0 }
+        slug: SecureRandom.alphanumeric(10).downcase
       )
 
       Membership.create!(user:, workspace:, role: :owner)

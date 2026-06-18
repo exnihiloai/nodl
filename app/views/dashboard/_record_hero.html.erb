@@ -1,9 +1,29 @@
 <div id="dashboard_record_hero" class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-testid="record-hero">
   <% if recording_limit_reached %>
-    <div class="space-y-3 text-center" data-testid="recording-limit-reached">
-      <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
-      <div class="alert alert-warning"><%= t("dashboard.limits.recordings_reached", limit: PlanLimits::MAX_RECORDINGS) %></div>
-    </div>
+    <% workspace = recording_session.workspace %>
+    <% if workspace.on_trial? %>
+      <%# At 3/3 the record/upload buttons stay visible so the reach-forward still
+          happens, but they open Wall 1 instead of starting a capture. %>
+      <div class="space-y-6 text-center" data-testid="recording-limit-reached" data-controller="recording-wall">
+        <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
+        <div class="mx-auto flex w-full max-w-md gap-3">
+          <button type="button" class="btn btn-bouncy btn-primary flex-1 gap-2"
+                  data-action="recording-wall#open" data-testid="record-button">
+            <span aria-hidden="true">●</span> <%= t("dashboard.record") %>
+          </button>
+          <button type="button" class="btn btn-outline flex-1"
+                  data-action="recording-wall#open" data-testid="upload-audio-button">
+            <%= t("dashboard.upload_audio") %>
+          </button>
+        </div>
+        <%= render "dashboard/recording_wall_modal", wall: TrialRecordingWall.new(workspace) %>
+      </div>
+    <% else %>
+      <div class="space-y-3 text-center" data-testid="recording-limit-reached">
+        <h1 class="text-2xl font-bold"><%= t("dashboard.start_heading") %></h1>
+        <div class="alert alert-warning"><%= t("dashboard.limits.recordings_reached", limit: workspace.entitlement_for(:recordings).limit) %></div>
+      </div>
+    <% end %>
   <% else %>
     <%= form_with model: recording_session,
                   url: recording_sessions_path,
@@ -15,7 +35,7 @@
                     testid: "recording-form",
                     "audio-recorder-create-url-value": recording_sessions_path,
                     "audio-recorder-worklet-url-value": asset_path("audio_pcm_worklet.js"),
-                    "audio-recorder-max-duration-seconds-value": PlanLimits.max_recording_duration_seconds,
+                    "audio-recorder-max-duration-seconds-value": recording_session.workspace.entitlement_for(:max_recording_duration_seconds).limit,
                     "audio-recorder-duration-limit-text-value": t("dashboard.recorder.duration_limit"),
                     "audio-recorder-unsupported-text-value": t("dashboard.recorder.unsupported"),
                     "audio-recorder-start-error-text-value": t("dashboard.recorder.start_error"),

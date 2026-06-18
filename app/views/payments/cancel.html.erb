@@ -1,21 +1,67 @@
 <% content_for :title, t("payments.cancel.title") %>
 
-<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-20">
-  <div class="container mx-auto px-4 max-w-3xl flex flex-col items-center gap-8 text-center">
-    <div class="avatar">
-      <div class="w-24 rounded-full bg-warning text-warning-content flex items-center justify-center text-4xl">⏸</div>
-    </div>
-    <div class="space-y-3">
-      <span class="badge badge-warning badge-lg"><%= t("payments.cancel.badge") %></span>
-      <h1 class="text-4xl font-semibold"><%= t("payments.cancel.heading") %></h1>
-      <p class="text-base-content/70 text-lg"><%= t("payments.cancel.body") %></p>
-    </div>
+<section class="bg-base-100 py-12 md:py-20">
+  <div class="container mx-auto max-w-2xl px-4">
+    <article class="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg" data-testid="payments-cancel-card">
+      <div class="h-1.5 bg-gradient-to-r from-error/50 via-error to-error/50" aria-hidden="true"></div>
 
-    <div class="flex flex-col sm:flex-row gap-3">
-      <%= form_with url: payments_checkout_path, method: :post do |f| %>
-        <%= f.submit t("payments.cancel.try_again"), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to t("payments.cancel.review_details"), payments_path, class: "btn btn-outline" %>
-    </div>
+      <div class="px-6 pt-10 pb-8 text-center sm:px-10">
+        <span class="mx-auto flex size-20 items-center justify-center rounded-2xl border border-error/25 bg-error/10 text-error shadow-sm">
+          <%= icon("rotate-ccw", class: "size-10", label: t("payments.cancel.badge")) %>
+        </span>
+
+        <span class="badge badge-error badge-lg mt-6"><%= t("payments.cancel.badge") %></span>
+        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-base-content md:text-4xl">
+          <%= t("payments.cancel.heading") %>
+        </h1>
+        <% if flash[:alert].present? %>
+          <p class="mx-auto mt-3 max-w-md rounded-xl border border-error/25 bg-error/5 px-4 py-3 text-sm leading-relaxed text-error" data-testid="payments-cancel-error">
+            <%= flash[:alert] %>
+          </p>
+        <% end %>
+        <p class="mx-auto mt-3 max-w-md text-base leading-relaxed text-base-content/70 md:text-lg">
+          <%= t("payments.cancel.body") %>
+        </p>
+      </div>
+
+      <div class="border-t border-base-300 bg-base-200/50 px-6 py-5 sm:px-10">
+        <p class="text-center text-xs font-semibold uppercase tracking-wide text-base-content/45">
+          <%= t("payments.cancel.reassurance_heading") %>
+        </p>
+        <ul class="mt-4 space-y-3">
+          <% [
+               ["shield-check", t("payments.cancel.reassurance.no_charge")],
+               ["rotate-ccw", t("payments.cancel.reassurance.resume_anytime")],
+               ["lock", t("payments.cancel.reassurance.secure_checkout")]
+             ].each do |lucide_icon, label| %>
+            <li class="flex items-start gap-3 rounded-xl border border-base-300/80 bg-base-100 px-4 py-3 text-sm text-base-content/75">
+              <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-200 text-base-content/55">
+                <%= icon(lucide_icon, class: "size-4") %>
+              </span>
+              <span class="pt-1 text-left leading-relaxed"><%= label %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-3 border-t border-base-300 px-6 py-6 sm:flex-row sm:justify-center sm:px-10">
+        <%= form_with url: payments_checkout_path, method: :post, data: { turbo: false }, class: "contents" do |f| %>
+          <%= f.submit t("payments.cancel.try_again"),
+                       class: "btn btn-primary w-full sm:w-auto sm:min-w-44",
+                       data: { testid: "payments-cancel-try-again" } %>
+        <% end %>
+        <%= link_to t("payments.cancel.review_details"),
+                    payments_path,
+                    class: "btn btn-outline w-full sm:w-auto sm:min-w-44",
+                    data: { testid: "payments-cancel-review-details" } %>
+      </div>
+
+      <div class="border-t border-base-300 bg-base-200/30 px-6 py-4 text-center">
+        <%= link_to t("payments.cancel.back_to_dashboard"),
+                    dashboard_path,
+                    class: "link link-hover text-sm text-base-content/50",
+                    data: { testid: "payments-cancel-dashboard" } %>
+      </div>
+    </article>
   </div>
 </section>

@@ -2,11 +2,7 @@ require "test_helper"
 
 class DocumentExportersTest < ActiveSupport::TestCase
   def build_document(title: "Quarterly Review", content: "# Heading\n\nSome **bold** text.\n")
-    workspace = Workspace.create!(
-      name: "Exporter Workspace",
-      usage_limits: { scans: 10, storage_mb: 10 },
-      usage_consumption: { scans: 0, storage_mb: 0 }
-    )
+    workspace = Workspace.create!(name: "Exporter Workspace")
     user = User.create!(email: unique_email, password: "Valid123", password_confirmation: "Valid123")
     session = workspace.recording_sessions.new(creator: user, title: title, transformer_handle: "default")
     attach_sample_audio(session)

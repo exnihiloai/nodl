@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2026-06-18
+
+### Added
+- **Starter and Business Plans:** A new pricing page lets you choose between two subscription tiers — **Starter** for regular use (500 recordings per month) and **Business** for higher volume (2,000 recordings per month) plus tamper-evident integrity verification. Switch between monthly and annual billing, and between EU (EUR) and International (USD) pricing. Annual plans include two months free.
+- **Free Trial on Pricing:** The pricing page and landing page now show a free trial card alongside paid plans — try Nodl with up to 3 recordings, no credit card required.
+- **Checkout Without an Account:** You can subscribe directly from the pricing page even if you are not signed in — after payment, Nodl creates your account and signs you in automatically.
+- **Trial Recording Counter:** While on the free trial, the dashboard shows a live pill telling you how many free recordings you have left.
+- **"Aha Moment" Celebration:** After completing a trial recording, Nodl celebrates your first result with a confetti moment showing how much time you saved.
+- **Trial Upgrade Prompts:** When you hit trial limits — recordings (3), custom formats (2), document exports (1), or original audio downloads (1) — Nodl shows a friendly upgrade modal instead of a dead end. Viewing, editing, and copying stay free; only the gated actions prompt you to upgrade.
+- **Integrity Status Always Visible:** The integrity panel on recording sessions is now always shown — even when integrity sealing is not enabled for your account, you see a clear disabled state and can learn what Business unlocks.
+- **Integrity Upgrade Prompt:** Trial and Starter users who try to use tamper-evident integrity features see an upgrade prompt for the Business plan.
+
+### Changed
+- **Checkout Cancellation Page:** If you abandon or fail checkout, you now land on a clearer page that reassures you no charge was made and lets you try again.
+- **Payment Page Redesign:** The pricing page has been redesigned with clearer plan comparison, trust badges, and regional pricing controls.
+
+### Fixed
+- **German Trial Messages:** Improved German translations for recording-disabled and format-creation messages.
+
+### Technical
+- Introduced workspace entitlements to enforce plan limits (recordings, formats, exports, audio downloads, integrity) with monthly usage periods for paid plans.
+- Administrators now manage workspace access through entitlements instead of legacy usage-limit fields.
+
 ## [0.22.0] - 2026-06-16
 
 ### Added

@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  include PricingOverview
+
   before_action :require_private_marketing_page!, only: %i[
     about
     for_doctors
@@ -12,6 +14,7 @@ class PagesController < ApplicationController
 
   def home
     if current_user.blank?
+      prepare_pricing_overview
       ActiveSupport::Notifications.instrument("nodl.landing.visited", ip: request.remote_ip, user_agent: request.user_agent)
       return
     end

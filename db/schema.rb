@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_18_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
     t.bigint "user_id", null: false
     t.index ["acting_admin_id"], name: "index_admin_audit_events_on_acting_admin_id"
     t.index ["user_id"], name: "index_admin_audit_events_on_user_id"
+  end
+
+  create_table "billing_plan_versions", force: :cascade do |t|
+    t.datetime "active_from"
+    t.bigint "billing_plan_id", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "limits", default: {}, null: false
+    t.datetime "retired_at"
+    t.string "status", default: "draft", null: false
+    t.string "stripe_price_id"
+    t.datetime "updated_at", null: false
+    t.string "version_key", null: false
+    t.index ["billing_plan_id", "status"], name: "index_billing_plan_versions_on_billing_plan_id_and_status"
+    t.index ["stripe_price_id"], name: "index_billing_plan_versions_on_stripe_price_id", unique: true, where: "(stripe_price_id IS NOT NULL)"
+    t.index ["version_key"], name: "index_billing_plan_versions_on_version_key", unique: true
+  end
+
+  create_table "billing_plans", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "display_name", null: false
+    t.boolean "stripe_required", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_billing_plans_on_code", unique: true
   end
 
   create_table "documents", force: :cascade do |t|
@@ -145,6 +169,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
     t.index ["workspace_id", "status"], name: "index_recording_sessions_on_workspace_id_and_status"
   end
 
+  create_table "stripe_webhook_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.datetime "processed_at", null: false
+    t.string "stripe_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stripe_event_id"], name: "index_stripe_webhook_events_on_stripe_event_id", unique: true
+  end
+
   create_table "transformer_profiles", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -156,6 +189,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
     t.bigint "workspace_id", null: false
     t.index ["workspace_id", "handle"], name: "index_transformer_profiles_on_workspace_id_and_handle", unique: true
     t.index ["workspace_id"], name: "index_transformer_profiles_one_default_per_workspace", unique: true, where: "(\"default\" = true)"
+  end
+
+  create_table "usage_events", force: :cascade do |t|
+    t.datetime "billing_period_ends_at"
+    t.datetime "billing_period_started_at"
+    t.datetime "created_at", null: false
+    t.string "event_kind", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.decimal "quantity", precision: 20, scale: 4, default: "1.0", null: false
+    t.bigint "subject_id"
+    t.string "subject_type"
+    t.string "unit", default: "count", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "usage_period_ends_at"
+    t.datetime "usage_period_started_at"
+    t.bigint "user_id"
+    t.bigint "workspace_id", null: false
+    t.index ["subject_type", "subject_id"], name: "index_usage_events_on_subject_type_and_subject_id"
+    t.index ["user_id"], name: "index_usage_events_on_user_id"
+    t.index ["workspace_id", "event_kind", "occurred_at"], name: "idx_on_workspace_id_event_kind_occurred_at_f428dcce6e"
   end
 
   create_table "users", force: :cascade do |t|
@@ -181,18 +235,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
   end
 
+  create_table "workspace_entitlements", force: :cascade do |t|
+    t.bigint "billing_plan_version_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "current_period_ends_at"
+    t.datetime "current_period_started_at"
+    t.datetime "expires_at"
+    t.datetime "grace_period_ends_at"
+    t.jsonb "limits_snapshot", default: {}, null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "source", null: false
+    t.string "status", null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.datetime "trial_ends_at"
+    t.datetime "trial_started_at"
+    t.datetime "updated_at", null: false
+    t.datetime "usage_period_ends_at"
+    t.datetime "usage_period_started_at"
+    t.bigint "workspace_id", null: false
+    t.index ["billing_plan_version_id"], name: "index_workspace_entitlements_on_billing_plan_version_id"
+    t.index ["source"], name: "index_workspace_entitlements_on_source"
+    t.index ["status"], name: "index_workspace_entitlements_on_status"
+    t.index ["stripe_customer_id"], name: "index_workspace_entitlements_on_stripe_customer_id"
+    t.index ["stripe_subscription_id"], name: "index_workspace_entitlements_on_stripe_subscription_id", unique: true, where: "(stripe_subscription_id IS NOT NULL)"
+    t.index ["usage_period_started_at", "usage_period_ends_at"], name: "idx_on_usage_period_started_at_usage_period_ends_at_3fbf829ec5"
+    t.index ["workspace_id"], name: "index_workspace_entitlements_on_workspace_id", unique: true
+  end
+
   create_table "workspaces", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "slug", null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
-    t.string "subscription_billing_cycle", default: "monthly", null: false
-    t.string "subscription_plan", default: "free", null: false
-    t.string "subscription_status", default: "inactive", null: false
     t.datetime "updated_at", null: false
-    t.jsonb "usage_consumption", default: {}, null: false
-    t.jsonb "usage_limits", default: {}, null: false
     t.index ["slug"], name: "index_workspaces_on_slug", unique: true
   end
 
@@ -200,6 +277,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_audit_events", "users"
   add_foreign_key "admin_audit_events", "users", column: "acting_admin_id"
+  add_foreign_key "billing_plan_versions", "billing_plans"
   add_foreign_key "documents", "recording_sessions"
   add_foreign_key "documents", "workspaces"
   add_foreign_key "legal_consents", "users"
@@ -210,4 +288,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_14_130100) do
   add_foreign_key "recording_sessions", "users", column: "creator_id"
   add_foreign_key "recording_sessions", "workspaces"
   add_foreign_key "transformer_profiles", "workspaces"
+  add_foreign_key "usage_events", "users", on_delete: :nullify
+  add_foreign_key "usage_events", "workspaces"
+  add_foreign_key "workspace_entitlements", "billing_plan_versions"
+  add_foreign_key "workspace_entitlements", "workspaces"
 end

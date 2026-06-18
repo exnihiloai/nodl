@@ -62,10 +62,19 @@ class RecordingSessionsDeleteIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "deleting a completed recording removes dependents and frees recording quota" do
+  test "deleting a completed recording removes dependents without reducing trial usage" do
     user = create_user_with_workspace(email: "recording-delete-complete@example.test")
     workspace = user.workspaces.first
-    (PlanLimits::MAX_RECORDINGS - 1).times do |index|
+    WorkspaceEntitlementGrant.grant!(
+      workspace:,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise append-only trial usage"
+    )
+
+    2.times do |index|
       workspace.recording_sessions.create!(
         creator: user,
         title: "Quota #{index}",
@@ -104,7 +113,7 @@ class RecordingSessionsDeleteIntegrationTest < ActionDispatch::IntegrationTest
 
     assert workspace.reload.recording_limit_reached?
     assert_destroy_removes_recording_data(recording_session, document, integrity_record)
-    assert_not workspace.reload.recording_limit_reached?
+    assert workspace.reload.recording_limit_reached?
   end
 
   test "repeat delete reports the recording is already gone" do
@@ -140,10 +149,19 @@ class RecordingSessionsDeleteIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal %(Recording "Detail delete" was permanently deleted.), flash[:notice]
   end
 
-  test "dashboard delete turbo stream restores record hero when quota opens up" do
+  test "dashboard delete turbo stream keeps trial wall when usage quota is consumed" do
     user = create_user_with_workspace(email: "recording-delete-quota@example.test")
     workspace = user.workspaces.first
-    PlanLimits::MAX_RECORDINGS.times do |index|
+    WorkspaceEntitlementGrant.grant!(
+      workspace:,
+      plan_code: "trial",
+      source: "trial",
+      status: "trialing",
+      trial: true,
+      reason: "Exercise append-only trial usage"
+    )
+
+    3.times do |index|
       workspace.recording_sessions.create!(
         creator: user,
         title: "Quota #{index}",
@@ -159,9 +177,9 @@ class RecordingSessionsDeleteIntegrationTest < ActionDispatch::IntegrationTest
     delete recording_session_path(recording_session), as: :turbo_stream
 
     assert_response :success
-    assert_not workspace.reload.recording_limit_reached?
-    assert_includes response.body, 'data-testid="recording-form"'
-    assert_not_includes response.body, 'data-testid="recording-limit-reached"'
+    assert workspace.reload.recording_limit_reached?
+    assert_includes response.body, 'data-testid="recording-limit-reached"'
+    assert_not_includes response.body, 'data-testid="recording-form"'
     assert_includes response.body, 'target="dashboard_record_hero"'
   end
 

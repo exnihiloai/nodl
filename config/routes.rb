@@ -69,7 +69,7 @@ Rails.application.routes.draw do
         patch :update_role
         patch :update_password
         patch :update_integrity_sealing
-        patch :update_usage
+        patch :update_entitlement
         post :generate_password
         post :deactivate
         post :reactivate

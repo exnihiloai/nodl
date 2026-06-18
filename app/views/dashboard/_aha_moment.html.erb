@@ -1,0 +1,35 @@
+<%#
+  Trial aha-moment celebration. Appended to #aha_moment_slot over the dashboard
+  Turbo stream the instant a recording finishes processing. The controller opens
+  the dialog, fires a short confetti burst, and removes the element on close.
+%>
+<% minutes = aha.time_saved_minutes %>
+<% saved_copy = if minutes >= 60
+     hours = (minutes / 60.0).round(1)
+     hours = hours.to_i if hours == hours.to_i
+     t("dashboard.aha.saved_hours", count: hours)
+   else
+     t("dashboard.aha.saved_minutes", count: [minutes, 1].max)
+   end %>
+<dialog id="<%= dom_id(recording_session, :aha) %>"
+        class="modal"
+        data-controller="aha-moment"
+        data-testid="aha-moment">
+  <div class="modal-box text-center">
+    <div class="text-5xl" aria-hidden="true">🎉</div>
+    <h3 class="mt-3 text-xl font-bold"><%= t("dashboard.aha.title") %></h3>
+    <p class="mt-2 text-base-content/70" data-testid="aha-moment-message">
+      <%= t("dashboard.aha.body",
+            seconds: t("dashboard.aha.seconds", count: aha.conversion_seconds),
+            saved: saved_copy) %>
+    </p>
+    <div class="modal-action justify-center">
+      <form method="dialog">
+        <button class="btn btn-primary" data-testid="aha-moment-dismiss"><%= t("dashboard.aha.dismiss") %></button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button aria-label="<%= t("dashboard.aha.dismiss") %>">close</button>
+  </form>
+</dialog>

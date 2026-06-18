@@ -40,7 +40,7 @@ class RecordingSessionProcessor
       )
       attach_normalized_audio(recording_session, normalized) if normalized.converted?
       waveform = Nodl::Audio::WaveformExtractor.new.extract(normalized.path)
-      enforce_recording_duration!(waveform.duration)
+      enforce_recording_duration!(recording_session, waveform.duration)
       result = pipeline.run(
         audio_path: normalized.path,
         transformer_handle: recording_session.transformer_handle,
@@ -78,12 +78,13 @@ class RecordingSessionProcessor
       message.include?("Invalid data found when processing input")
   end
 
-  def enforce_recording_duration!(duration)
-    return if duration.to_f <= PlanLimits.max_recording_duration_seconds
+  def enforce_recording_duration!(recording_session, duration)
+    result = recording_session.workspace.entitlement_for(:max_recording_duration_seconds, quantity: duration.to_f, unit: "seconds")
+    return if result.allowed?
 
     raise Nodl::Error, I18n.t(
       "activerecord.errors.models.recording_session.attributes.original_audio.too_long",
-      limit: PlanLimits::MAX_RECORDING_DURATION.in_minutes.to_i
+      limit: (result.limit.to_f / 60).ceil
     )
   end
 

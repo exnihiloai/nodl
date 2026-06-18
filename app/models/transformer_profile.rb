@@ -66,6 +66,7 @@ class TransformerProfile < ApplicationRecord
   validate :example_files_limit
   validate :example_files_content_types
   validate :workspace_format_limit_not_exceeded, on: :create
+  after_create_commit :record_custom_format_usage
 
   scope :active, -> { where(active: true) }
   # Default profile first, then a stable order by `handle`. We can't ORDER BY
@@ -116,9 +117,21 @@ class TransformerProfile < ApplicationRecord
   end
 
   def workspace_format_limit_not_exceeded
+    return if default?
     return if workspace.blank?
-    return unless workspace.format_limit_reached?
+    result = workspace.entitlement_for(:custom_formats)
+    return if result.allowed?
 
-    errors.add(:base, :format_limit_reached, limit: PlanLimits::MAX_FORMATS)
+    errors.add(:base, :format_limit_reached, limit: result.limit)
+  end
+
+  def record_custom_format_usage
+    return if default?
+
+    UsageRecorder.record!(
+      workspace:,
+      event_kind: "custom_format_created",
+      subject: self
+    )
   end
 end

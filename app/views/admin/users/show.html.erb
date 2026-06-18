@@ -37,21 +37,8 @@
 
     <div class="card bg-base-100 shadow-sm lg:col-span-2">
       <div class="card-body">
-        <h2 class="card-title"><%= t("admin.users.show.subscription_and_usage") %></h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h3 class="font-semibold"><%= t("admin.users.show.subscription_status") %></h3>
-            <% if @workspace.present? %>
-              <p class="capitalize"><%= @workspace.subscription_status %></p>
-              <p><%= t("admin.users.show.plan_html", plan: content_tag(:span, @workspace.subscription_plan, class: "capitalize")) %></p>
-              <p><%= t("admin.users.show.billing_cycle_html", cycle: content_tag(:span, @workspace.subscription_billing_cycle, class: "capitalize")) %></p>
-            <% else %>
-              <p><%= t("admin.users.show.no_workspace") %></p>
-            <% end %>
-          </div>
-
-          <%= render "admin/users/usage_section", managed_user: @managed_user, workspace: @workspace, notice: nil, error: nil %>
-        </div>
+        <h2 class="card-title"><%= t("admin.users.show.workspace_access") %></h2>
+        <%= render "admin/users/entitlement_section", managed_user: @managed_user, workspace: @workspace, notice: nil, error: nil %>
       </div>
     </div>
   </div>
