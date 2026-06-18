@@ -635,6 +635,19 @@ en:
           description: Great for anyone who records regularly and wants polished documents without the hassle.
         business:
           description: For professional use with higher volume and tamper-evident documentation.
+      trial_card:
+        name: Free Trial
+        description: Try Nodl on real recordings before choosing a paid plan.
+        price: Free
+        period: / 14 days
+        no_card: No credit card required
+        upgrade_note: Upgrade when you want more recording volume.
+        cta: Start free
+        cancel_anytime: No subscription starts automatically
+        features:
+          - "Up to %{recordings} recordings total"
+          - "Up to %{formats} custom formats"
+          - "Up to %{hours} hour per recording"
       features:
         starter_recordings: 500 recordings per month
         business_recordings: 2,000 recordings per month

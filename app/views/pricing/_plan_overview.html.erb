@@ -5,10 +5,12 @@
 <% stripe_configured = local_assigns.fetch(:stripe_configured) %>
 <% pricing_url = local_assigns.fetch(:pricing_url) %>
 <% show_config_warning = local_assigns.fetch(:show_config_warning, true) %>
+<% show_trial = local_assigns.fetch(:show_trial, false) %>
+<% trial_url = local_assigns[:trial_url] %>
 <% reveal = local_assigns.fetch(:reveal, false) %>
 
 <section<%= " id=\"#{section_id}\"".html_safe if section_id.present? %> class="bg-base-100 py-16 md:py-24">
-  <div class="container mx-auto max-w-5xl px-4">
+  <div class="container mx-auto <%= show_trial ? "max-w-7xl" : "max-w-5xl" %> px-4">
     <header class="mx-auto max-w-2xl text-center space-y-3" <%= "data-reveal".html_safe if reveal %>>
       <h1 class="text-4xl font-extrabold tracking-tight text-base-content md:text-5xl">
         <%= t("payments.show.heading") %>
@@ -45,7 +47,73 @@
       </div>
     </div>
 
-    <div class="mt-10 grid gap-6 lg:grid-cols-2 lg:items-start">
+    <div class="mt-10 grid gap-6 <%= show_trial ? "lg:grid-cols-3" : "lg:grid-cols-2" %> lg:items-start">
+      <% if show_trial %>
+        <article class="relative rounded-3xl border border-base-300 bg-base-200 shadow-sm" <%= "data-reveal".html_safe if reveal %>>
+          <div class="p-7 md:p-9 flex flex-col gap-7">
+            <div class="pt-3">
+              <h2 class="text-xl font-bold text-base-content"><%= t("payments.show.trial_card.name") %></h2>
+              <p class="mt-1 text-sm leading-relaxed text-base-content/60">
+                <%= t("payments.show.trial_card.description") %>
+              </p>
+            </div>
+
+            <div class="border-t border-base-300 pt-6">
+              <div class="flex items-end gap-1">
+                <span class="text-5xl font-extrabold tracking-tight leading-none text-base-content">
+                  <%= t("payments.show.trial_card.price") %>
+                </span>
+                <span class="pb-1 text-sm text-base-content/50">
+                  <%= t("payments.show.trial_card.period") %>
+                </span>
+              </div>
+              <p class="mt-2 text-sm text-base-content/50"><%= t("payments.show.trial_card.no_card") %></p>
+              <p class="mt-1 text-xs text-base-content/35"><%= t("payments.show.trial_card.upgrade_note") %></p>
+            </div>
+
+            <div>
+              <%= link_to t("payments.show.trial_card.cta"),
+                          trial_url || register_path,
+                          class: "btn btn-outline w-full rounded-xl text-base font-semibold",
+                          data: { testid: "pricing-trial-signup" } %>
+              <p class="mt-2.5 text-center text-xs text-base-content/40">
+                <%= t("payments.show.trial_card.cancel_anytime") %>
+              </p>
+            </div>
+
+            <div class="border-t border-base-300 pt-6 space-y-3">
+              <p class="text-xs font-bold uppercase tracking-widest text-base-content/40">
+                <%= t("payments.show.included_heading") %>
+              </p>
+              <ul class="space-y-2.5">
+                <% t("payments.show.trial_card.features",
+                     recordings: BillingCatalog::LIMITS.fetch("trial").fetch("recordings").fetch("limit"),
+                     formats: BillingCatalog::LIMITS.fetch("trial").fetch("custom_formats").fetch("limit"),
+                     hours: PlanLimits::MAX_RECORDING_DURATION.in_hours.to_i).each do |feature| %>
+                  <li class="flex items-start gap-3 text-sm text-base-content/85">
+                    <span class="mt-0.5 flex size-4.5 shrink-0 items-center justify-center rounded-full bg-success/15 text-success">
+                      <%= icon("check", class: "size-3") %>
+                    </span>
+                    <span><%= feature %></span>
+                  </li>
+                <% end %>
+              </ul>
+
+              <ul class="space-y-2.5 mt-2.5">
+                <% t("payments.show.shared_features").each_value do |feature| %>
+                  <li class="flex items-start gap-3 text-sm text-base-content/50">
+                    <span class="mt-0.5 flex size-4.5 shrink-0 items-center justify-center rounded-full bg-base-300">
+                      <%= icon("check", class: "size-3") %>
+                    </span>
+                    <span><%= feature %></span>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </article>
+      <% end %>
+
       <% plan_cards.each do |plan| %>
         <% selected_price = plan.prices.fetch(selected_interval) %>
         <% unit = selected_price.currency == "eur" ? "€" : "$" %>
