@@ -467,6 +467,21 @@ de:
         money_back: Geld-zurück-Garantie
         dismiss: Vielleicht später
         close: Schließen
+      audio:
+        heading: Lade dein Original-Audio jederzeit herunter.
+        body: Wechsle zu Starter und lade die Originalaufnahme aus jeder Session herunter.
+        proof_heading: Das bekommst du
+        benefit_quality: Originalaufnahme in voller Qualität
+        benefit_redownload: Jederzeit erneut herunterladen, aus jeder Session
+        benefit_archive: Aufnahmen für Compliance oder Archivierung behalten
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
       exports:
         heading: Als Word, PDF oder Markdown verschicken. Immer.
         body: Wechsle zu Starter und exportiere so viele Dokumente, wie du brauchst.

@@ -34,6 +34,7 @@ class RecordingSessionsController < ApplicationController
   def show
     @recording_session = current_workspace.recording_sessions.includes(:creator, :document, :integrity_record, original_audio_attachment: :blob, normalized_audio_attachment: :blob).find(params[:id])
     @document = @recording_session.document
+    @audio_wall = current_workspace.on_trial? && current_workspace.entitlement_for(:original_audio_downloads).denied?
   end
 
   def destroy

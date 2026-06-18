@@ -138,33 +138,66 @@
           </details>
 
           <% if @recording_session.original_audio_downloadable? %>
-            <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">
-              <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                       data-testid="audio-actions-menu-button"
-                       aria-label="<%= t("recording_sessions.show.audio_actions") %>">
-                <%= icon("ellipsis", class: "size-5") %>
-              </summary>
-              <ul class="dropdown-content menu z-10 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-1 shadow">
-                <li>
-                  <%= link_to download_original_audio_recording_session_path(@recording_session),
-                              class: "flex items-center gap-2",
-                              data: { testid: "download-original-audio" } do %>
-                    <%= icon("download", class: "size-4") %>
-                    <span><%= t("recording_sessions.show.download_original_audio") %></span>
-                  <% end %>
-                </li>
-                <% if @recording_session.creator.integrity_sealing_enabled? && @recording_session.integrity_record&.sealed? %>
+            <% if @audio_wall %>
+              <div data-controller="audio-wall">
+                <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">
+                  <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                           data-testid="audio-actions-menu-button"
+                           aria-label="<%= t("recording_sessions.show.audio_actions") %>">
+                    <%= icon("ellipsis", class: "size-5") %>
+                  </summary>
+                  <ul class="dropdown-content menu z-10 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+                    <li>
+                      <%= link_to download_original_audio_recording_session_path(@recording_session),
+                                  class: "flex items-center gap-2",
+                                  data: { testid: "download-original-audio", action: "audio-wall#open" } do %>
+                        <%= icon("download", class: "size-4") %>
+                        <span><%= t("recording_sessions.show.download_original_audio") %></span>
+                      <% end %>
+                    </li>
+                    <% if @recording_session.creator.integrity_sealing_enabled? && @recording_session.integrity_record&.sealed? %>
+                      <li>
+                        <%= link_to download_integrity_archive_recording_session_path(@recording_session),
+                                    class: "flex items-center gap-2",
+                                    data: { testid: "download-integrity-archive-menu" } do %>
+                          <%= icon("shield-check", class: "size-4") %>
+                          <span><%= t("recording_sessions.integrity.download_archive") %></span>
+                        <% end %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </details>
+                <%= render "recording_sessions/audio_wall_modal" %>
+              </div>
+            <% else %>
+              <details class="dropdown dropdown-end shrink-0" data-controller="dropdown" data-testid="audio-actions-menu">
+                <summary class="btn btn-ghost btn-circle btn-sm list-none text-primary/70 hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                         data-testid="audio-actions-menu-button"
+                         aria-label="<%= t("recording_sessions.show.audio_actions") %>">
+                  <%= icon("ellipsis", class: "size-5") %>
+                </summary>
+                <ul class="dropdown-content menu z-10 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-1 shadow">
                   <li>
-                    <%= link_to download_integrity_archive_recording_session_path(@recording_session),
+                    <%= link_to download_original_audio_recording_session_path(@recording_session),
                                 class: "flex items-center gap-2",
-                                data: { testid: "download-integrity-archive-menu" } do %>
-                      <%= icon("shield-check", class: "size-4") %>
-                      <span><%= t("recording_sessions.integrity.download_archive") %></span>
+                                data: { testid: "download-original-audio" } do %>
+                      <%= icon("download", class: "size-4") %>
+                      <span><%= t("recording_sessions.show.download_original_audio") %></span>
                     <% end %>
                   </li>
-                <% end %>
-              </ul>
-            </details>
+                  <% if @recording_session.creator.integrity_sealing_enabled? && @recording_session.integrity_record&.sealed? %>
+                    <li>
+                      <%= link_to download_integrity_archive_recording_session_path(@recording_session),
+                                  class: "flex items-center gap-2",
+                                  data: { testid: "download-integrity-archive-menu" } do %>
+                        <%= icon("shield-check", class: "size-4") %>
+                        <span><%= t("recording_sessions.integrity.download_archive") %></span>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ul>
+              </details>
+            <% end %>
           <% end %>
         </div>
       </section>

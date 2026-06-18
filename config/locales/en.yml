@@ -361,6 +361,21 @@ en:
         money_back: Money-back guarantee
         dismiss: Maybe later
         close: Close
+      audio:
+        heading: Download your original audio whenever you need it.
+        body: Upgrade to Starter to download the original recording from any session.
+        proof_heading: What you get
+        benefit_quality: Original, uncompressed audio file
+        benefit_redownload: Re-download anytime, from any session
+        benefit_archive: Keep recordings for compliance or reference
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
       exports:
         heading: Send it as a polished Word, PDF, or Markdown file. Every time.
         body: Upgrade to Starter to export as many documents as you need, whenever you need them.
