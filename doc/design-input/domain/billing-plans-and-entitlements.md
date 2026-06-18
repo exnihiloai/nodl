@@ -61,6 +61,7 @@ The foundation should separate plan catalog definitions, versioned plan packages
 | **D12** | **Active and retired plan versions are immutable** | Prevents accidental retroactive limit changes. Editable changes happen only on draft versions. |
 | **D13** | **Usage is append-only** | Deleting a recording, format, document, or attachment must not reduce historical usage. |
 | **D14** | **Stripe is payment authority; Rails is entitlement authority** | Stripe determines subscription/payment state. Nodl determines feature access, local usage, and product gates. |
+| **D15** | **Launch pricing is regional (EU vs International)** | Same plan entitlements; checkout uses a region-specific Stripe Price. EU customers see EUR; International (US-led) customers see USD. |
 
 ---
 
@@ -417,7 +418,25 @@ Nodl should handle:
 - admin grants/overrides
 - product-specific trial behavior
 
-### 11.3 Webhook requirements
+### 11.3 Launch pricing (locked)
+
+Monthly subscription prices at launch. Feature limits are unchanged from section 10.3; only checkout amount and currency differ by region.
+
+| Plan | EU | International (US) |
+|---|---:|---:|
+| **Starter** | €29 / month | $39 / month |
+| **Business** | €99 / month | $129 / month |
+
+Stripe setup:
+
+- Create **four** recurring Stripe Prices (one per plan × region).
+- Map them through env vars (see `doc/design-output/modules/payments.md`).
+- Checkout selects the Price for the customer's billing region before `Stripe::Checkout::Session.create`.
+- Entitlement assignment still keys off the **plan code** (`starter` / `business`), not the Stripe Price ID — EU and International prices grant the same limits snapshot.
+
+Region detection (implementation detail, TBD): prefer explicit customer choice or billing-country signal over IP-only geolocation.
+
+### 11.4 Webhook requirements
 
 Stripe webhooks must be idempotent. Repeated Stripe event delivery must not double-apply entitlement changes or duplicate usage.
 
