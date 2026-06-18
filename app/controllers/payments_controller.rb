@@ -1,13 +1,11 @@
 class PaymentsController < ApplicationController
+  include PricingOverview
+
   before_action :authenticate_user!, only: %i[checkout success cancel]
   skip_forgery_protection only: :webhook
 
   def show
-    BillingCatalog.ensure!
-    @stripe_configured = stripe_secret_key.present?
-    @selected_region = BillingPriceCatalog.normalize_region(params[:region])
-    @selected_interval = params[:interval].present? ? BillingPriceCatalog.normalize_interval(params[:interval]) : "annual"
-    @plan_cards = BillingPriceCatalog.plans(region: @selected_region, interval: @selected_interval)
+    prepare_pricing_overview(ensure_billing_catalog: true)
   end
 
   def checkout
