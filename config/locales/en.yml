@@ -361,6 +361,18 @@ en:
         money_back: Money-back guarantee
         dismiss: Maybe later
         close: Close
+      exports:
+        heading: Send it as a polished Word, PDF, or Markdown file. Every time.
+        body: Upgrade to Starter to export as many documents as you need, whenever you need them.
+        proof_heading: Available export formats
+        upgrade: Upgrade to Starter
+        see_plans: See plans
+        cancel_anytime: Cancel anytime
+        gdpr: 100% GDPR compliant
+        encryption: Secure encryption
+        money_back: Money-back guarantee
+        dismiss: Maybe later
+        close: Close
       formats:
         heading: Build a format for every kind of document you make.
         body: You've already invested effort shaping your workspace. Upgrade to Starter to create as many formats as you need.

@@ -4,6 +4,7 @@ class DocumentsController < ApplicationController
 
   def show
     load_document
+    @export_wall = current_workspace.on_trial? && current_workspace.entitlement_for(:exports).denied?
   end
 
   def update

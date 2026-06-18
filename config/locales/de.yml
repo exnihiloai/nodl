@@ -467,6 +467,18 @@ de:
         money_back: Geld-zurück-Garantie
         dismiss: Vielleicht später
         close: Schließen
+      exports:
+        heading: Als Word, PDF oder Markdown verschicken. Immer.
+        body: Wechsle zu Starter und exportiere so viele Dokumente, wie du brauchst.
+        proof_heading: Verfügbare Exportformate
+        upgrade: Zu Starter wechseln
+        see_plans: Pläne ansehen
+        cancel_anytime: Jederzeit kündbar
+        gdpr: 100% DSGVO-konform
+        encryption: Sichere Verschlüsselung
+        money_back: Geld-zurück-Garantie
+        dismiss: Vielleicht später
+        close: Schließen
       formats:
         heading: Erstell ein Format für jede Art von Dokument, die du machst.
         body: Du hast Nodl bereits für dich entdeckt. Wechsle zu Starter und erstelle so viele Formate, wie du brauchst.
