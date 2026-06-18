@@ -659,8 +659,14 @@ en:
       badge: Checkout cancelled
       heading: Payment was cancelled
       body: No charges were made. Resume checkout whenever you're ready.
+      reassurance_heading: What happens next
+      reassurance:
+        no_charge: Your card was not charged — you can safely try again.
+        resume_anytime: Pick up checkout again whenever you're ready.
+        secure_checkout: Payments are processed securely through Stripe.
       try_again: Try again
       review_details: Review payment details
+      back_to_dashboard: Back to dashboard
   admin:
     flash:
       invalid_role: Invalid role selected.

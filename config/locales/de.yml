@@ -765,8 +765,14 @@ de:
       badge: Checkout abgebrochen
       heading: Die Zahlung wurde abgebrochen
       body: Es wurden keine Beträge berechnet. Setze den Checkout fort, wann immer du bereit bist.
+      reassurance_heading: Was als Nächstes passiert
+      reassurance:
+        no_charge: Deine Karte wurde nicht belastet — du kannst es jederzeit erneut versuchen.
+        resume_anytime: Setze den Checkout fort, wann immer du bereit bist.
+        secure_checkout: Zahlungen werden sicher über Stripe abgewickelt.
       try_again: Erneut versuchen
       review_details: Zahlungsdetails prüfen
+      back_to_dashboard: Zurück zum Dashboard
   admin:
     flash:
       invalid_role: Ungültige Rolle ausgewählt.
