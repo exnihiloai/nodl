@@ -25,4 +25,21 @@ class LlmsIntegrationTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "rel=\"alternate\""
     assert_includes response.body, "/llms.txt"
   end
+
+  test "homepage responds with RFC 8288 Link headers for agent discovery" do
+    get root_path
+
+    link_header = response.headers["Link"]
+    assert_not_nil link_header, "Link header must be present"
+    assert_includes link_header, "</llms.txt>; rel=\"describedby\""
+    assert_includes link_header, "</llms-full.txt>; rel=\"describedby\""
+    assert_includes link_header, "rel=\"service-doc\""
+  end
+
+  test "all pages carry the agent discovery Link header" do
+    get login_path
+
+    assert_not_nil response.headers["Link"]
+    assert_includes response.headers["Link"], "describedby"
+  end
 end
