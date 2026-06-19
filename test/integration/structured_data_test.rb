@@ -22,6 +22,7 @@ class StructuredDataTest < ActionDispatch::IntegrationTest
     assert org["url"].start_with?("https://nodl.now"), "url must be canonical"
     assert org["logo"].start_with?("https://nodl.now"), "logo must be canonical"
     assert_equal "hello@nodl.now", org["email"]
+    assert_includes Array(org["sameAs"]), "https://github.com/exnihiloai/nodl", "sameAs must include OSS GitHub repo"
     assert_nil org["aggregateRating"], "must not emit fake aggregateRating"
     assert_nil org["review"], "must not emit fake reviews"
   end
