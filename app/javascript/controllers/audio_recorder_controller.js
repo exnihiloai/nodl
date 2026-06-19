@@ -12,6 +12,9 @@ const RECORDING_CHUNK_MS = 1000
 // word to fully age into the default text colour. Colour is keyed to this
 // distance-from-edge so confirming a word at the front never recolours the rest.
 const LIVE_AGE_STEPS = 4
+// Per-character stagger (ms) for the live transcript reveal, so newly arrived
+// letters fade in one after another like typing instead of all at once.
+const LIVE_CHAR_STAGGER_MS = 24
 
 export default class extends Controller {
   static targets = [
@@ -756,17 +759,25 @@ export default class extends Controller {
     panel.scrollTop = panel.scrollHeight
   }
 
-  // Append text as a freshly-faded inline fragment so live characters/words
-  // ease in smoothly. The fragment starts transparent and flips visible on the
-  // next frame to trigger the CSS opacity transition.
+  // Append text one character at a time so newly arrived letters fade in in
+  // sequence (typing feel) rather than the whole chunk popping at once. Each
+  // character is its own transparent span with a staggered transition-delay;
+  // flipping them all visible on the next frame starts the cascade. Array.from
+  // splits by code point so multi-byte characters stay intact.
   appendLiveFragment(wordEl, text) {
     if (!text) return
 
-    const frag = document.createElement("span")
-    frag.className = "voice-frag"
-    frag.textContent = text
-    wordEl.appendChild(frag)
-    window.requestAnimationFrame(() => frag.classList.add("is-in"))
+    const spans = Array.from(text).map((char, index) => {
+      const span = document.createElement("span")
+      span.className = "voice-frag"
+      span.textContent = char
+      span.style.transitionDelay = `${index * LIVE_CHAR_STAGGER_MS}ms`
+      wordEl.appendChild(span)
+      return span
+    })
+    window.requestAnimationFrame(() => {
+      spans.forEach((span) => span.classList.add("is-in"))
+    })
   }
 
   tokenizePreview(text) {
