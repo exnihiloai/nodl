@@ -317,18 +317,19 @@ html {
   content: " ";
 }
 
-/* Freshly appended characters ease in one by one, gently rising from below.
-   inline-block lets each letter carry a transform without breaking the line;
-   the slow ease-out cubic gives an elegant, calm settle. */
+/* Freshly appended characters ease in one by one, gently rising from below
+   while sharpening from a soft blur into focus (opacity stays at 100%).
+   inline-block lets each letter carry a transform/filter without breaking the
+   line; the slow ease-out cubic gives an elegant, calm settle. */
 .voice-frag {
   display: inline-block;
-  opacity: 0;
+  filter: blur(0.18em);
   transform: translateY(0.4em);
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  transition: filter 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: filter, transform;
 }
 .voice-frag.is-in {
-  opacity: 1;
+  filter: blur(0);
   transform: translateY(0);
 }
 
@@ -347,7 +348,7 @@ html {
     transition: none;
   }
   .voice-frag {
-    opacity: 1;
+    filter: none;
     transform: none;
   }
 }
