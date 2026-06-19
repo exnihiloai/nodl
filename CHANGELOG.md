@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.1] - 2026-06-19
+
+### Added
+- **AI-readable site summaries (llms.txt):** Nodl now publishes `/llms.txt` and `/llms-full.txt` — curated plain-text guides that help AI search engines and answer bots understand what Nodl is, who it is for, and how pricing works.
+- **Richer search results (structured data):** Public marketing pages now include JSON-LD structured data — organization details, website info, app description, FAQs, and breadcrumbs — so search engines and AI systems can show more accurate, informative results about Nodl.
+- **Markdown for AI agents:** Any page can be requested as Markdown by sending `Accept: text/markdown`. AI crawlers get clean, readable content without parsing HTML.
+
+### Changed
+- **Robots.txt welcomes AI crawlers:** `robots.txt` now explicitly allows major AI crawlers (OpenAI, Google, Perplexity, Anthropic, and others) and points them to the llms.txt summaries.
+
+### Technical
+- Added `StructuredDataHelper` for JSON-LD schema generation (Organization, WebSite, SoftwareApplication, BreadcrumbList, FAQPage).
+- Added `MarkdownForAgents` Rack middleware and the `reverse_markdown` gem for HTML-to-Markdown content negotiation.
+- Added `LlmsController` to serve version-controlled `config/llms.txt` and `config/llms-full.txt`.
+- All HTML responses now include RFC 8288 `Link` headers and a `<link rel="alternate">` tag pointing to llms.txt for agent discovery.
+
 ## [0.23.0] - 2026-06-18
 
 ### Added
