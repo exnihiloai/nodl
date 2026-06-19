@@ -51,13 +51,17 @@ class SitemapIntegrationTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "robots.txt references the sitemap" do
+  test "robots.txt references the sitemap and allows ai crawlers" do
     get robots_path
 
     assert_response :success
     assert_equal "text/plain; charset=utf-8", response.content_type
     assert_includes response.body, "Sitemap: http://www.example.com/sitemap.xml"
+    assert_includes response.body, "User-agent: *"
     assert_includes response.body, "Allow: /"
+    assert_includes response.body, "User-agent: GPTBot\nAllow: /"
+    assert_includes response.body, "User-agent: Google-Extended\nAllow: /"
+    assert_includes response.body, "Content-Signal: search=yes,ai-input=yes,ai-train=yes"
   end
 
   test "sitemap is reachable for search console crawler user agents" do
