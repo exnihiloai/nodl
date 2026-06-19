@@ -14,7 +14,16 @@ const RECORDING_CHUNK_MS = 1000
 const LIVE_AGE_STEPS = 4
 // Per-character stagger (ms) for the live transcript reveal, so newly arrived
 // letters fade in one after another like typing instead of all at once.
-const LIVE_CHAR_STAGGER_MS = 24
+const LIVE_CHAR_STAGGER_MS = 31
+// Phantom word: a never-sharp, decorative guess shown past the live edge while
+// the user is audibly speaking, to mask recognition latency. It appears once
+// the smoothed audio level crosses SHOW and hides once it drops below HIDE
+// (hysteresis avoids flicker around the threshold). Length is random within
+// the char bounds so each guess reads as a plausible, fresh word.
+const PHANTOM_SHOW_LEVEL = 0.12
+const PHANTOM_HIDE_LEVEL = 0.06
+const PHANTOM_MIN_CHARS = 3
+const PHANTOM_MAX_CHARS = 8
 
 export default class extends Controller {
   static targets = [
@@ -112,6 +121,7 @@ export default class extends Controller {
     this.confirmedWordCount = 0
     this.loggedWordCount = 0
     this.loggedConfirmedCount = 0
+    this.phantomBaseWordCount = -1
     this.sourceKindTarget.value = "microphone"
     this.resetLivePanel()
 
@@ -521,11 +531,13 @@ export default class extends Controller {
     this.smoothedLevel += (target - this.smoothedLevel) * coeff
 
     this.stageTarget.style.setProperty("--voice-level", this.smoothedLevel.toFixed(3))
+    this.updatePhantom()
 
     this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
   }
 
   stopVisualizer() {
+    this.clearPhantom()
     if (this.auraFrameId) {
       window.cancelAnimationFrame(this.auraFrameId)
       this.auraFrameId = null
@@ -756,6 +768,16 @@ export default class extends Controller {
       this.loggedConfirmedCount = confirmedCount
     }
 
+    // Keep the phantom guess trailing the newest real word, and refresh its
+    // random shape whenever a real word lands so it reads as a fresh guess.
+    if (this.phantomEl && this.phantomEl.parentNode === container) {
+      if (words.length !== this.phantomBaseWordCount) {
+        this.phantomEl.textContent = this.randomPhantomText()
+        this.phantomBaseWordCount = words.length
+      }
+      container.appendChild(this.phantomEl)
+    }
+
     panel.scrollTop = panel.scrollHeight
   }
 
@@ -778,6 +800,91 @@ export default class extends Controller {
     window.requestAnimationFrame(() => {
       spans.forEach((span) => span.classList.add("is-in"))
     })
+  }
+
+  // The phantom word is a deliberately fake, never-sharp guess shown just past
+  // the newest real word while the user is audibly speaking. It masks the
+  // recognition latency ("we're already on the word you're saying right now")
+  // and disappears in silence to signal that we know nobody is speaking. It is
+  // decorative only — aria-hidden, random letters — and never part of the saved
+  // transcript. Driven by the smoothed audio level from the visualizer loop.
+  updatePhantom() {
+    const container = document.querySelector("#live_transcript_segments [data-live-words]")
+    if (!container) {
+      this.clearPhantom()
+      return
+    }
+
+    const level = this.smoothedLevel || 0
+    const active = this.phantomEl && !this.phantomHideTimer
+    const shouldShow = active ? level > PHANTOM_HIDE_LEVEL : level > PHANTOM_SHOW_LEVEL
+
+    if (shouldShow) {
+      this.showPhantom(container)
+    } else {
+      this.hidePhantom()
+    }
+  }
+
+  showPhantom(container) {
+    if (this.phantomHideTimer) {
+      window.clearTimeout(this.phantomHideTimer)
+      this.phantomHideTimer = null
+    }
+
+    if (!this.phantomEl) {
+      const el = document.createElement("span")
+      el.className = "voice-phantom"
+      el.setAttribute("aria-hidden", "true")
+      el.textContent = this.randomPhantomText()
+      container.appendChild(el)
+      this.phantomEl = el
+      this.phantomBaseWordCount = this.wordEntries ? this.wordEntries.length : 0
+      window.requestAnimationFrame(() => {
+        if (this.phantomEl === el) el.classList.add("is-on")
+      })
+    } else {
+      this.phantomEl.classList.add("is-on")
+      if (this.phantomEl !== container.lastChild) container.appendChild(this.phantomEl)
+    }
+  }
+
+  hidePhantom() {
+    if (!this.phantomEl || this.phantomHideTimer) return
+
+    const el = this.phantomEl
+    el.classList.remove("is-on")
+    this.phantomHideTimer = window.setTimeout(() => {
+      el.remove()
+      if (this.phantomEl === el) this.phantomEl = null
+      this.phantomHideTimer = null
+    }, 240)
+  }
+
+  clearPhantom() {
+    if (this.phantomHideTimer) {
+      window.clearTimeout(this.phantomHideTimer)
+      this.phantomHideTimer = null
+    }
+    if (this.phantomEl) {
+      this.phantomEl.remove()
+      this.phantomEl = null
+    }
+  }
+
+  // Plausible-looking but random word: alternating consonants/vowels so the
+  // blurred silhouette reads like a real word rather than noise.
+  randomPhantomText() {
+    const consonants = "bcdfghklmnprstvwz"
+    const vowels = "aeiou"
+    const span = PHANTOM_MAX_CHARS - PHANTOM_MIN_CHARS + 1
+    const length = PHANTOM_MIN_CHARS + Math.floor(Math.random() * span)
+    let text = ""
+    for (let i = 0; i < length; i += 1) {
+      const set = i % 2 === 0 ? consonants : vowels
+      text += set[Math.floor(Math.random() * set.length)]
+    }
+    return text
   }
 
   tokenizePreview(text) {
@@ -838,6 +945,7 @@ export default class extends Controller {
     // drop the stale references before the next render rebuilds them.
     this.wordEntries = null
     this.confirmedWordCount = 0
+    this.clearPhantom()
   }
 
   selectedTransformerHandle() {

@@ -317,20 +317,36 @@ html {
   content: " ";
 }
 
-/* Freshly appended characters ease in one by one, gently rising from below
-   while sharpening from a soft blur into focus (opacity stays at 100%).
-   inline-block lets each letter carry a transform/filter without breaking the
-   line; the slow ease-out cubic gives an elegant, calm settle. */
+/* Freshly appended characters sharpen into focus one by one, from a soft blur
+   to crisp (opacity stays at 100%, no movement). inline-block lets each letter
+   carry a filter; the slow ease gives an elegant, calm settle. */
 .voice-frag {
   display: inline-block;
   filter: blur(0.18em);
-  transform: translateY(0.4em);
-  transition: filter 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: filter, transform;
+  transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: filter;
 }
 .voice-frag.is-in {
   filter: blur(0);
-  transform: translateY(0);
+}
+
+/* Phantom guess: a never-sharp, decorative word shown past the live edge while
+   the user is audibly speaking, to mask recognition latency. Stronger blur and
+   lower opacity than real text, and it never resolves to sharp. Sits in the
+   accent colour like the freshest live word. */
+.voice-phantom {
+  display: inline-block;
+  color: var(--color-accent);
+  opacity: 0;
+  filter: blur(0.25em);
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+.voice-phantom.is-on {
+  opacity: 0.85;
+}
+.voice-phantom::before {
+  content: " ";
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -344,12 +360,12 @@ html {
     transform: none;
   }
   .voice-word,
-  .voice-frag {
+  .voice-frag,
+  .voice-phantom {
     transition: none;
   }
   .voice-frag {
     filter: none;
-    transform: none;
   }
 }
 
