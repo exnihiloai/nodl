@@ -6,11 +6,7 @@ class RobotsController < ApplicationController
   private
 
   def robots_body
-    <<~ROBOTS
-      User-agent: *
-      Allow: /
-
-      Sitemap: #{sitemap_url}
-    ROBOTS
+    content = Rails.root.join("config/robots.txt").read.strip
+    content.gsub(/^Sitemap:.*$/, "").strip + "\n\nSitemap: #{sitemap_url}\n"
   end
 end

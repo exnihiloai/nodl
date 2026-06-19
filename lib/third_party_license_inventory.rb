@@ -25,7 +25,8 @@ class ThirdPartyLicenseInventory
     "Ruby" => "ruby",
     "Ruby/BSD-2-Clause" => "ruby",
     "MPL-2.0" => "mpl-2.0",
-    "Nonstandard/GPL-2.0-only/GPL-3.0-only" => "prawn"
+    "Nonstandard/GPL-2.0-only/GPL-3.0-only" => "prawn",
+    "WTFPL" => "wtfpl" # reverse_markdown: Do What The F*** You Want To Public License v2
   }.freeze
 
   # Display name + canonical license text file, in render order. Every family
@@ -39,7 +40,8 @@ class ThirdPartyLicenseInventory
     [ "mpl-2.0",      "Mozilla Public License 2.0",           "mpl-2.0.txt" ],
     [ "ruby",         "Ruby License",                         "ruby.txt" ],
     [ "ofl-1.1",      "SIL Open Font License 1.1",            "ofl-1.1.txt" ],
-    [ "prawn",        "Prawn License (Ruby / GPLv2 / GPLv3)", "prawn.txt" ]
+    [ "prawn",        "Prawn License (Ruby / GPLv2 / GPLv3)", "prawn.txt" ],
+    [ "wtfpl",        "WTFPL",                                "wtfpl.txt" ]
   ].freeze
 
   # Hand-corrected notices where a license file leads with boilerplate instead

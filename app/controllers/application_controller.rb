@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :current_workspace, :user_signed_in?, :legal_consent_required?
 
   before_action :prepend_private_view_path
+  before_action :set_agent_link_headers
   around_action :switch_locale
 
   private
@@ -39,6 +40,14 @@ class ApplicationController < ActionController::Base
 
   def supported_locale?(code)
     code.present? && I18n.available_locales.map(&:to_s).include?(code.to_s)
+  end
+
+  def set_agent_link_headers
+    response.set_header("Link", [
+      "</llms.txt>; rel=\"describedby\"; type=\"text/plain\"",
+      "</llms-full.txt>; rel=\"describedby\"; type=\"text/plain\"",
+      "</about>; rel=\"service-doc\""
+    ].join(", "))
   end
 
   def crawler_facing_endpoint?

@@ -30,6 +30,8 @@ gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "rack-attack", "~> 6.7"
 gem "stripe", "~> 13.0"
 gem "kramdown", "~> 2.4.0"
+# HTML → Markdown conversion for the MarkdownForAgents Rack middleware (Accept: text/markdown).
+gem "reverse_markdown", "~> 2.1"
 # Pure-Ruby document export for downloads: PDF (prawn/prawn-html) and Word (htmltoword). No native binaries.
 gem "prawn", "~> 2.5"
 gem "prawn-html", "~> 0.6"

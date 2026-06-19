@@ -2,6 +2,8 @@
 
 > **A showcase of Agentic AI Engineering.** Nodl is a real, commercially-licensed product whose code is **100% AI-generated** — written by AI agents under human direction and held to production standards through automated quality gates, migration-safety checks, security scanning, and a full test suite. It is published source-available so the *engineering*, not just the product, can be inspected.
 
+**👉 Check it out on [https://nodl.now](https://nodl.now).**
+
 Nodl is a Ruby on Rails 8 SaaS application. It uses server-rendered ERB, Turbo, Stimulus, Tailwind CSS, DaisyUI, PostgreSQL, Rails-native session authentication, workspace-based tenancy, admin user management, and a Stripe Checkout placeholder flow. Built and maintained by ex-nihilo GmbH.
 
 The local development workflow is Docker-only. You should not need a local Ruby, Rails, PostgreSQL, or Node runtime to boot and test the app.

@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       format: false, constraints: { version_slug: /v[\d.]+/ }
   get "/sitemap.xml", to: "sitemap#show", defaults: { format: :xml }, as: :sitemap
   get "/robots.txt", to: "robots#show", as: :robots
+  get "/llms.txt", to: "llms#show", as: :llms
+  get "/llms-full.txt", to: "llms#full", as: :llms_full
   get "/impressum", to: "legal_pages#imprint", as: :imprint
   get "/datenschutz", to: "legal_pages#privacy", as: :privacy
   get "/agb", to: "legal_pages#terms", as: :terms

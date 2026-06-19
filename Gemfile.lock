@@ -533,6 +533,8 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    reverse_markdown (2.1.1)
+      nokogiri
     rexml (3.4.4)
     rubocop (1.84.2)
       json (~> 2.3)
@@ -716,6 +718,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rack-attack (~> 6.7)
   rails (~> 8.1.2)
+  reverse_markdown (~> 2.1)
   rubocop-rails-omakase
   selenium-webdriver
   simplecov

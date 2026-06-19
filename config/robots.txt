@@ -1,0 +1,54 @@
+# AI-readable site summary: https://nodl.now/llms.txt (and /llms-full.txt)
+
+User-agent: *
+Allow: /
+
+# Explicitly allow OpenAI search + training crawlers
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Explicitly allow Google Search + Google AI/Gemini usage
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Explicitly allow other AI/search crawlers
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Cloudflare content signals: allow search, AI input, and AI training
+Content-Signal: search=yes,ai-input=yes,ai-train=yes
+
+Sitemap: https://nodl.now/sitemap.xml

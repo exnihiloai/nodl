@@ -11,11 +11,15 @@
     <%= csp_meta_tag %>
 
     <%= yield :head %>
+    <% if controller_name == "pages" && action_name == "home" %>
+      <%= render "shared/homepage_structured_data" %>
+    <% end %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="manifest" href="<%= pwa_manifest_path(format: :json) %>">
+    <link rel="alternate" type="text/plain" href="<%= llms_url %>" title="llms.txt">
     <%= stylesheet_link_tag "daisyui", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
