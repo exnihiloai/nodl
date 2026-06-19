@@ -119,8 +119,6 @@ export default class extends Controller {
     this.fastPreviewText = ""
     this.slowPreviewText = ""
     this.confirmedWordCount = 0
-    this.loggedWordCount = 0
-    this.loggedConfirmedCount = 0
     this.phantomBaseWordCount = -1
     this.sourceKindTarget.value = "microphone"
     this.resetLivePanel()
@@ -563,9 +561,6 @@ export default class extends Controller {
   async startRealtimeTranscription() {
     if (!this.liveSession || !this.stream || !this.realtimeSupported()) return
 
-    this.liveLogStart = performance.now()
-    this.liveLog("realtime_start", {})
-
     try {
       this.consumer ||= createConsumer()
       this.realtimeSubscription = this.consumer.subscriptions.create(
@@ -644,36 +639,14 @@ export default class extends Controller {
   handleRealtimeMessage(data) {
     if (data.type === "fast_delta" && data.text) {
       this.fastPreviewText += data.text
-      this.liveLog("fast_delta", {
-        delta: data.text,
-        fastTotal: this.fastPreviewText,
-        fastWords: this.tokenizePreview(this.fastPreviewText).length,
-        slowWords: this.tokenizePreview(this.slowPreviewText).length
-      })
       this.scheduleLivePreviewRender()
     } else if (data.type === "slow_delta" && data.text) {
       this.slowPreviewText += data.text
-      this.liveLog("slow_delta", {
-        delta: data.text,
-        slowTotal: this.slowPreviewText,
-        fastWords: this.tokenizePreview(this.fastPreviewText).length,
-        slowWords: this.tokenizePreview(this.slowPreviewText).length
-      })
       this.scheduleLivePreviewRender()
     } else if (data.type === "error") {
       this.updateStatus(this.previewStoppedTextValue)
       this.stopRealtimeTranscription()
     }
-  }
-
-  // Lightweight timestamped logger for the live transcript, used to diagnose
-  // jitter/word-jumping in the provisional preview. Times are milliseconds
-  // since realtime transcription started, so deltas and the resulting renders
-  // can be lined up on a single timeline.
-  liveLog(event, payload) {
-    const elapsed = this.liveLogStart ? performance.now() - this.liveLogStart : 0
-    // eslint-disable-next-line no-console
-    console.log(`[live-transcript +${elapsed.toFixed(0)}ms] ${event}`, payload)
   }
 
   scheduleLivePreviewRender() {
@@ -756,16 +729,6 @@ export default class extends Controller {
     // Fast only ever grows, but guard against a shrink so stale spans go away.
     while (this.wordEntries.length > words.length) {
       this.wordEntries.pop().el.remove()
-    }
-
-    if (words.length !== this.loggedWordCount || confirmedCount !== this.loggedConfirmedCount) {
-      this.liveLog("render", {
-        words: words.length,
-        confirmed: confirmedCount,
-        tail: words.slice(confirmedCount).join(" ")
-      })
-      this.loggedWordCount = words.length
-      this.loggedConfirmedCount = confirmedCount
     }
 
     // Keep the phantom guess trailing the newest real word, and refresh its
