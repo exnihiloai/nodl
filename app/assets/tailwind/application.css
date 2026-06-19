@@ -282,41 +282,66 @@ html {
   50%      { transform: translate3d(-3.5%, -2.5%, 0) scale(1);   opacity: 0.72; }
 }
 
-/* Provisional (still-being-confirmed) words in the live transcript. Instead of
-   a flat orange, they shimmer with the same primary→accent palette as the voice
-   aura, so the "live" text feels connected to the glow. Both stops sit in the
-   55–70% lightness range, which keeps the words legible on the dark transcript
-   well and on the light theme alike. */
-.voice-live-text {
-  background-image: linear-gradient(100deg,
-    var(--color-primary) 0%,
-    var(--color-accent) 50%,
-    var(--color-primary) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-          background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: voice-live-text-flow 4s linear infinite;
+/* Live transcript, rendered word-by-word. Each word is an independent span so
+   confirming a word at the front never recolours the rest. Confirmed words sit
+   in the default text colour; provisional words are coloured by their distance
+   from the live (right) edge via data-age, fading default → primary → accent
+   toward the newest word. Because colour is keyed to age (not to the changing
+   provisional length), a word only drifts toward the default as newer words
+   arrive — and the colour transition makes that drift, plus the eventual flip
+   to confirmed, smooth instead of a jump. */
+.voice-word {
+  color: var(--color-base-content);
+  transition: color 0.5s ease;
 }
 
-/* Symmetric gradient, so shifting by one full tile loops seamlessly. */
-@keyframes voice-live-text-flow {
-  to {
-    background-position: 200% center;
-  }
+.voice-word.is-live[data-age="0"] {
+  color: var(--color-accent);
+}
+.voice-word.is-live[data-age="1"] {
+  color: color-mix(in oklch, var(--color-accent) 50%, var(--color-primary));
+}
+.voice-word.is-live[data-age="2"] {
+  color: var(--color-primary);
+}
+.voice-word.is-live[data-age="3"] {
+  color: color-mix(in oklch, var(--color-primary) 55%, var(--color-base-content));
+}
+.voice-word.is-live[data-age="4"] {
+  color: color-mix(in oklch, var(--color-primary) 22%, var(--color-base-content));
+}
+
+/* Single space between adjacent words (kept on a pseudo-element so it is never
+   part of an animated fragment and never pops in/out). */
+.voice-word + .voice-word::before {
+  content: " ";
+}
+
+/* Freshly appended characters/words ease in instead of popping. */
+.voice-frag {
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.voice-frag.is-in {
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .voice-stage.is-recording .voice-aura,
   .voice-stage.is-recording .voice-aura::before,
   .voice-stage.is-recording .voice-aura::after,
-  .voice-stage.is-recording .voice-stage__panel::after,
-  .voice-live-text {
+  .voice-stage.is-recording .voice-stage__panel::after {
     animation: none;
   }
   .voice-stage.is-recording .voice-aura {
     transform: none;
+  }
+  .voice-word,
+  .voice-frag {
+    transition: none;
+  }
+  .voice-frag {
+    opacity: 1;
   }
 }
 

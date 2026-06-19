@@ -8,6 +8,10 @@ const MIME_OPTIONS = [
   { mimeType: "audio/aac", extension: "aac" }
 ]
 const RECORDING_CHUNK_MS = 1000
+// How many words back from the live (right) edge it takes for a provisional
+// word to fully age into the default text colour. Colour is keyed to this
+// distance-from-edge so confirming a word at the front never recolours the rest.
+const LIVE_AGE_STEPS = 4
 
 export default class extends Controller {
   static targets = [
@@ -102,6 +106,9 @@ export default class extends Controller {
     this.chunks = []
     this.fastPreviewText = ""
     this.slowPreviewText = ""
+    this.confirmedWordCount = 0
+    this.loggedWordCount = 0
+    this.loggedConfirmedCount = 0
     this.sourceKindTarget.value = "microphone"
     this.resetLivePanel()
 
@@ -541,6 +548,9 @@ export default class extends Controller {
   async startRealtimeTranscription() {
     if (!this.liveSession || !this.stream || !this.realtimeSupported()) return
 
+    this.liveLogStart = performance.now()
+    this.liveLog("realtime_start", {})
+
     try {
       this.consumer ||= createConsumer()
       this.realtimeSubscription = this.consumer.subscriptions.create(
@@ -619,14 +629,36 @@ export default class extends Controller {
   handleRealtimeMessage(data) {
     if (data.type === "fast_delta" && data.text) {
       this.fastPreviewText += data.text
+      this.liveLog("fast_delta", {
+        delta: data.text,
+        fastTotal: this.fastPreviewText,
+        fastWords: this.tokenizePreview(this.fastPreviewText).length,
+        slowWords: this.tokenizePreview(this.slowPreviewText).length
+      })
       this.scheduleLivePreviewRender()
     } else if (data.type === "slow_delta" && data.text) {
       this.slowPreviewText += data.text
+      this.liveLog("slow_delta", {
+        delta: data.text,
+        slowTotal: this.slowPreviewText,
+        fastWords: this.tokenizePreview(this.fastPreviewText).length,
+        slowWords: this.tokenizePreview(this.slowPreviewText).length
+      })
       this.scheduleLivePreviewRender()
     } else if (data.type === "error") {
       this.updateStatus(this.previewStoppedTextValue)
       this.stopRealtimeTranscription()
     }
+  }
+
+  // Lightweight timestamped logger for the live transcript, used to diagnose
+  // jitter/word-jumping in the provisional preview. Times are milliseconds
+  // since realtime transcription started, so deltas and the resulting renders
+  // can be lined up on a single timeline.
+  liveLog(event, payload) {
+    const elapsed = this.liveLogStart ? performance.now() - this.liveLogStart : 0
+    // eslint-disable-next-line no-console
+    console.log(`[live-transcript +${elapsed.toFixed(0)}ms] ${event}`, payload)
   }
 
   scheduleLivePreviewRender() {
@@ -638,6 +670,11 @@ export default class extends Controller {
     })
   }
 
+  // Word-level reconciler for the live transcript. Each word is its own span
+  // that we only ever append to — confirming a word at the front never rewrites
+  // or recolours the rest, which kills the colour "wobble" and word-jumping the
+  // old whole-string rerender caused. The fast stream supplies the live word
+  // sequence; the slow stream's word count drives the confirmed boundary.
   renderLivePreview() {
     const panel = document.getElementById("live_transcript_segments")
     if (!panel) return
@@ -645,38 +682,91 @@ export default class extends Controller {
     const placeholder = panel.querySelector("[data-live-placeholder]")
     if (placeholder) placeholder.remove()
 
-    let transcript = panel.querySelector("[data-live-transcript-wrapper]")
-    if (!transcript) {
-      transcript = document.createElement("div")
-      transcript.dataset.liveTranscriptWrapper = "true"
-      transcript.className = "whitespace-pre-wrap text-sm leading-6"
-      transcript.innerHTML = [
-        "<span data-live-stable class=\"text-base-content\"></span>",
-        "<span data-live-fast class=\"voice-live-text\"></span>"
-      ].join("")
-      panel.appendChild(transcript)
+    let container = panel.querySelector("[data-live-words]")
+    if (!container) {
+      container = document.createElement("div")
+      container.dataset.liveWords = "true"
+      container.className = "voice-live-words whitespace-pre-wrap text-sm leading-6"
+      panel.appendChild(container)
+      this.wordEntries = []
+    }
+    this.wordEntries ||= []
+
+    const words = this.tokenizePreview(this.fastPreviewText)
+    // Confirmed boundary is monotonic (only grows) and never exceeds the words
+    // we actually have, so a word can never flip back to provisional.
+    const confirmedCount = Math.min(
+      Math.max(this.confirmedWordCount || 0, this.tokenizePreview(this.slowPreviewText).length),
+      words.length
+    )
+    this.confirmedWordCount = confirmedCount
+
+    for (let i = 0; i < words.length; i += 1) {
+      const word = words[i]
+      let entry = this.wordEntries[i]
+
+      if (!entry) {
+        const el = document.createElement("span")
+        el.className = "voice-word"
+        container.appendChild(el)
+        entry = this.wordEntries[i] = { el, text: "" }
+      }
+
+      if (entry.text !== word) {
+        // Pure growth (e.g. "Spielh" → "Spielhälfte") only fades in the new
+        // suffix; otherwise rebuild the word. Either way fresh characters ease
+        // in via CSS instead of popping.
+        if (entry.text && word.startsWith(entry.text)) {
+          this.appendLiveFragment(entry.el, word.slice(entry.text.length))
+        } else {
+          entry.el.textContent = ""
+          this.appendLiveFragment(entry.el, word)
+        }
+        entry.text = word
+      }
+
+      const confirmed = i < confirmedCount
+      entry.el.classList.toggle("is-live", !confirmed)
+      if (confirmed) {
+        entry.el.removeAttribute("data-age")
+      } else {
+        // Colour by distance from the live (right) edge — newest word = accent,
+        // ageing toward the default colour. A word only ages as *newer* words
+        // arrive, so confirming a word at the front leaves the rest's colour
+        // untouched. The CSS colour transition makes the ageing smooth.
+        entry.el.dataset.age = String(Math.min(words.length - 1 - i, LIVE_AGE_STEPS))
+      }
     }
 
-    const stable = transcript.querySelector("[data-live-stable]")
-    const fast = transcript.querySelector("[data-live-fast]")
-    const { confirmed, provisional } = this.splitPreview()
-    stable.textContent = confirmed
-    fast.textContent = provisional
+    // Fast only ever grows, but guard against a shrink so stale spans go away.
+    while (this.wordEntries.length > words.length) {
+      this.wordEntries.pop().el.remove()
+    }
+
+    if (words.length !== this.loggedWordCount || confirmedCount !== this.loggedConfirmedCount) {
+      this.liveLog("render", {
+        words: words.length,
+        confirmed: confirmedCount,
+        tail: words.slice(confirmedCount).join(" ")
+      })
+      this.loggedWordCount = words.length
+      this.loggedConfirmedCount = confirmedCount
+    }
+
     panel.scrollTop = panel.scrollHeight
   }
 
-  // The slow stream is the refined, confident transcript and is rendered in
-  // the solid base text colour; the fast stream runs ahead with a provisional
-  // guess. We show the confirmed words solid and only the still-unconfirmed
-  // tail of the fast text in the animated voice gradient, so confirmation
-  // fills in left-to-right instead of the live line vanishing and reappearing.
-  splitPreview() {
-    const slowWords = this.tokenizePreview(this.slowPreviewText)
-    const fastWords = this.tokenizePreview(this.fastPreviewText)
-    const confirmed = (this.slowPreviewText || "").replace(/\s+$/, "")
-    const tail = fastWords.slice(slowWords.length)
-    const provisional = tail.length ? `${confirmed ? " " : ""}${tail.join(" ")}` : ""
-    return { confirmed, provisional }
+  // Append text as a freshly-faded inline fragment so live characters/words
+  // ease in smoothly. The fragment starts transparent and flips visible on the
+  // next frame to trigger the CSS opacity transition.
+  appendLiveFragment(wordEl, text) {
+    if (!text) return
+
+    const frag = document.createElement("span")
+    frag.className = "voice-frag"
+    frag.textContent = text
+    wordEl.appendChild(frag)
+    window.requestAnimationFrame(() => frag.classList.add("is-in"))
   }
 
   tokenizePreview(text) {
@@ -732,6 +822,11 @@ export default class extends Controller {
     if (segmentsContainer) {
       segmentsContainer.innerHTML = `<p class="text-sm italic text-base-content/60" data-live-placeholder>${this.listeningTextValue}</p>`
     }
+
+    // The word container lives inside the segments markup we just replaced, so
+    // drop the stale references before the next render rebuilds them.
+    this.wordEntries = null
+    this.confirmedWordCount = 0
   }
 
   selectedTransformerHandle() {
