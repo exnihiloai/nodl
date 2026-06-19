@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2026-06-20
+
+### Changed
+- **Smoother live transcript while recording:** Words now update one at a time instead of the whole line refreshing, so confirmed text stays stable and provisional words no longer jump or change colour unexpectedly.
+- **Typing-style word reveal:** New characters appear one by one with a soft blur-to-sharp effect, making the live preview feel more natural as you speak.
+- **Visual cue while you are still speaking:** While the microphone picks up your voice, a blurred placeholder word appears at the end of the live transcript to show that Nodl is catching up — it fades away when you pause.
+
+
 ## [0.23.1] - 2026-06-19
 
 ### Added
