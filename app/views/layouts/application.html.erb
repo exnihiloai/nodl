@@ -11,6 +11,9 @@
     <%= csp_meta_tag %>
 
     <%= yield :head %>
+    <% if controller_name == "pages" && action_name == "home" %>
+      <%= render "shared/homepage_structured_data" %>
+    <% end %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
