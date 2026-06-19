@@ -318,10 +318,10 @@ html {
 }
 
 /* Freshly appended characters sharpen into focus one by one, from a soft blur
-   to crisp (opacity stays at 100%, no movement). inline-block lets each letter
-   carry a filter; the slow ease gives an elegant, calm settle. */
+   to crisp (opacity stays at 100%, no movement). Kept as plain inline (not
+   inline-block) so the browser never treats individual letters as break points
+   — words only wrap at the spaces between them. filter works fine on inline. */
 .voice-frag {
-  display: inline-block;
   filter: blur(0.18em);
   transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: filter;
