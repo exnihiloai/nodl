@@ -848,3 +848,11 @@ groups:
     copyright: Copyright (c) Alexander Mankuta, Gregory Brown, Brad Ediger, Daniel
       Nelson, Jonathan Greenberg, James Healy, Cameron Dutro
     url: http://prawnpdf.org/
+- id: wtfpl
+  name: WTFPL
+  body_file: wtfpl.txt
+  components:
+  - name: reverse_markdown
+    version: 2.1.1
+    copyright: Copyright (C) 2014 Johannes Opper <xijo@gmx.de>
+    url: http://github.com/xijo/reverse_markdown
