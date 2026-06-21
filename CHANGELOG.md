@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1] - 2026-06-21
+
+### Fixed
+
+- **Sign-up language preference:** When you create an account or sign in with Google, Nodl now saves the language you were browsing in as your preferred language — instead of always defaulting to English.
+
+### Security
+
+- **Production Docker image hardening:** Rebuilds now apply Debian security updates before and after installing runtime packages (OpenSSL, Poppler, libcap2), and remove stale Ruby default-gem copies (`net-imap` 0.4.21, `erb` 4.0.3, `zlib` 3.1.1) that Trivy flagged even though the app loads patched versions from the bundle. A fresh image scan drops fixable HIGH/CRITICAL CVEs from 30 to 1; the remaining item is upstream in `thruster` 0.1.21 (Go stdlib CVE-2026-42504, no gem release yet). Development image (`Dockerfile.dev`) now runs `apt-get upgrade` for the same OS-layer hygiene.
+
 ## [0.25.0] - 2026-06-21
 
 ### Added
@@ -32,14 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Smoother live transcript while recording:** Words now update one at a time instead of the whole line refreshing, so confirmed text stays stable and provisional words no longer jump or change colour unexpectedly.
 - **Typing-style word reveal:** New characters appear one by one with a soft blur-to-sharp effect, making the live preview feel more natural as you speak.
 - **Visual cue while you are still speaking:** While the microphone picks up your voice, a blurred placeholder word appears at the end of the live transcript to show that Nodl is catching up — it fades away when you pause.
-
-## [0.23.2] - 2026-06-19
-
-### Fixed
-- **Sign-up language preference:** When you create an account or sign in with Google, Nodl now saves the language you were browsing in as your preferred language — instead of always defaulting to English.
-
-### Security
-- **Production Docker image hardening:** Rebuilds now apply Debian security updates before and after installing runtime packages (OpenSSL, Poppler, libcap2), and remove stale Ruby default-gem copies (`net-imap` 0.4.21, `erb` 4.0.3, `zlib` 3.1.1) that Trivy flagged even though the app loads patched versions from the bundle. A fresh image scan drops fixable HIGH/CRITICAL CVEs from 30 to 1; the remaining item is upstream in `thruster` 0.1.21 (Go stdlib CVE-2026-42504, no gem release yet). Development image (`Dockerfile.dev`) now runs `apt-get upgrade` for the same OS-layer hygiene.
 
 ## [0.23.1] - 2026-06-19
 
@@ -111,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.19.1] - 2026-06-15
 
 ### Fixed
-- **Daily Push Reminder — Improved stability and reliability.
+- **Daily Push Reminder:** Improved stability and reliability.
 
 
 ## [0.19.0] - 2026-06-15
