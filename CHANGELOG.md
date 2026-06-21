@@ -5,12 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.24.1] - 2026-06-20
+## [0.25.0] - 2026-06-21
 
+### Added
+
+- **Document preview on the recording page:** When your document is ready, you can read the formatted result directly on the recording session page — no need to open the full document first. An **Open document** button still takes you to the full view.
+
+### Technical
+
+- Further optimized the live recording visualizer and transcript updater to reduce CPU use during long sessions (smaller audio analysis window, fewer DOM lookups, and style updates only when values change).
+
+## [0.24.1] - 2026-06-20
 
 ### Fixed
 
-- Heat.
+- **Overheating on phones during recording:** Long recording sessions no longer push your phone's GPU as hard — the live transcript animation no longer keeps thousands of settled letters on separate compositor layers, and the microphone visualizer runs at a lower frame rate with no visible difference.
+
+### Changed
+
+- **Live words settle after you pause:** Accent-coloured provisional words now fade to the confirmed colour about a second after you stop speaking, so the transcript no longer looks "still live" when you have finished a thought.
+- **Smoother phantom-word cue:** The blurred placeholder at the end of the live transcript now appears faster when you start speaking and stays safely blurred even if you use reduced-motion settings.
 
 ## [0.24.0] - 2026-06-20
 
