@@ -15,9 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Formatting toolbar stays visible while scrolling:** When you edit a long document, the formatting toolbar now stays pinned below the navigation bar as you scroll, so you can keep formatting without jumping back to the top.
 
-### Fixed
-
-- **Underline combined with bold or other styles:** Fixed an issue where underlining text and then applying bold, italic, or strikethrough could save literal asterisks or tildes instead of the intended formatting.
 
 ## [0.25.1] - 2026-06-21
 
