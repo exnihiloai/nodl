@@ -115,5 +115,6 @@ class DocumentsUpdateTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='document-insert-hr']"
     assert_select "[data-document-editor-command-param='undo']"
     assert_select "[data-testid='document-format-underline']"
+    assert_select "[data-document-editor-target='toolbar'].sticky"
   end
 end
