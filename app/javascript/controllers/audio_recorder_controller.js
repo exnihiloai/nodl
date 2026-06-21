@@ -504,13 +504,17 @@ export default class extends Controller {
       if (this.audioContext.state === "suspended") this.audioContext.resume()
 
       this.analyser = this.audioContext.createAnalyser()
-      this.analyser.fftSize = 1024
+      // 256 time-domain samples is plenty for a single heavily-smoothed level;
+      // a larger window just burns CPU in the per-frame RMS loop for no visible
+      // difference.
+      this.analyser.fftSize = 256
       this.analyser.smoothingTimeConstant = 0.85
       this.sourceNode = this.audioContext.createMediaStreamSource(this.stream)
       this.sourceNode.connect(this.analyser)
       this.levelData = new Uint8Array(this.analyser.fftSize)
       this.smoothedLevel = 0
       this.lastAuraFrame = 0
+      this.lastVoiceLevel = null
 
       this.stageTarget.style.setProperty("--voice-level", "0")
       this.stageTarget.classList.add("is-recording")
@@ -550,7 +554,13 @@ export default class extends Controller {
     const coeff = target > this.smoothedLevel ? 0.45 : 0.12
     this.smoothedLevel += (target - this.smoothedLevel) * coeff
 
-    this.stageTarget.style.setProperty("--voice-level", this.smoothedLevel.toFixed(3))
+    // Only write the custom property when the rounded value actually changes,
+    // so steady/silent stretches don't trigger redundant style recalcs.
+    const voiceLevel = this.smoothedLevel.toFixed(3)
+    if (voiceLevel !== this.lastVoiceLevel) {
+      this.stageTarget.style.setProperty("--voice-level", voiceLevel)
+      this.lastVoiceLevel = voiceLevel
+    }
     this.updatePhantom()
 
     this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
@@ -734,6 +744,7 @@ export default class extends Controller {
       this.wordEntries = []
     }
     this.wordEntries ||= []
+    this.wordsContainer = container
 
     const words = this.tokenizePreview(this.fastPreviewText)
     // Confirmed boundary is monotonic (only grows) and never exceeds the words
@@ -843,8 +854,10 @@ export default class extends Controller {
   // decorative only — aria-hidden, random letters — and never part of the saved
   // transcript. Driven by the smoothed audio level from the visualizer loop.
   updatePhantom() {
-    const container = document.querySelector("#live_transcript_segments [data-live-words]")
-    if (!container) {
+    // Use the container cached by renderLivePreview instead of querying the DOM
+    // every frame; isConnected guards against it having been replaced.
+    const container = this.wordsContainer
+    if (!container || !container.isConnected) {
       this.clearPhantom()
       return
     }
@@ -1011,6 +1024,7 @@ export default class extends Controller {
     // The word container lives inside the segments markup we just replaced, so
     // drop the stale references before the next render rebuilds them.
     this.wordEntries = null
+    this.wordsContainer = null
     this.confirmedWordCount = 0
     this.cancelLiveSettle()
     this.clearPhantom()
