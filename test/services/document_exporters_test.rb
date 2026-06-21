@@ -41,6 +41,31 @@ class DocumentExportersTest < ActiveSupport::TestCase
     assert exporter.render.start_with?("PK"), "expected docx (zip) magic bytes"
   end
 
+  test "pdf and docx exporters handle inline underline HTML" do
+    content = "# Heading\n\n**bold** and <u>underlined</u> and ~~struck~~\n"
+    document = build_document(content: content)
+
+    pdf = DocumentExporters.for("pdf", document).render
+    assert pdf.start_with?("%PDF"), "expected PDF magic bytes"
+
+    docx = DocumentExporters.for("docx", document).render
+    assert docx.start_with?("PK"), "expected docx (zip) magic bytes"
+
+    Zip::File.open_buffer(docx) do |zip|
+      document_xml = zip.read("word/document.xml")
+      assert_includes document_xml, "<w:u ", "expected Word underline markup"
+      assert_includes document_xml, "underlined"
+      assert_includes document_xml, "struck"
+    end
+  end
+
+  test "markdown exporter preserves inline underline HTML" do
+    content = "# Raw\n\n<u>underlined</u> text\n"
+    exporter = DocumentExporters.for("md", build_document(content: content))
+
+    assert_equal content, exporter.render
+  end
+
   test "filename falls back when title has no slug characters" do
     exporter = DocumentExporters.for("md", build_document(title: "!!!"))
 

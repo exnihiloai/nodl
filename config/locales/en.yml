@@ -534,6 +534,7 @@ en:
         bold: Bold
         italic: Italic
         strikethrough: Strikethrough
+        underline: Underline
         code: Inline code
         link: Link
         link_prompt: Link URL

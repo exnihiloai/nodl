@@ -1,4 +1,4 @@
-<%# B I S | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
+<%# B I S U | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
 <div
   class="document-editor-toolbar flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
   role="toolbar"
@@ -35,6 +35,17 @@
       title="<%= t("documents.show.format.strikethrough") %>"
     >
       S
+    </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item min-w-9 px-2 underline"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="underline"
+      aria-label="<%= t("documents.show.format.underline") %>"
+      title="<%= t("documents.show.format.underline") %>"
+      data-testid="document-format-underline"
+    >
+      U
     </button>
   </div>
 

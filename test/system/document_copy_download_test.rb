@@ -44,6 +44,24 @@ class DocumentCopyDownloadTest < ApplicationJsSystemTestCase
     assert_no_selector "[data-testid='document-content-editor']", visible: :visible
   end
 
+  test "saving underline then bold stores bold outside underline" do
+    document = create_document_for_ui
+
+    visit document_path(document)
+    find("[data-testid='edit-document']").click
+
+    page.execute_script(<<~JS)
+      const surface = document.querySelector("[data-testid='document-content-editor']");
+      surface.innerHTML = "<p>Der Name der <u><strong>Person</strong></u> lautet Franz.</p>";
+    JS
+    find("[data-testid='save-document']").click
+
+    assert_selector ".alert-success", text: "Document saved"
+    assert_selector "strong u", text: "Person"
+    assert_no_text "**Person**"
+    assert_equal "Der Name der **<u>Person</u>** lautet Franz.", document.reload.content
+  end
+
   private
 
   def create_document_for_ui

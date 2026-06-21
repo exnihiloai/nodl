@@ -3,6 +3,47 @@ import { marked } from "marked"
 import TurndownService from "turndown"
 
 const BLOCK_TYPE_COMMANDS = new Set([ "paragraph", "h1", "h2", "h3", "blockquote", "code_block" ])
+const FORMATTING_OUTSIDE_UNDERLINE = new Set([ "STRONG", "B", "EM", "I", "DEL", "S", "STRIKE" ])
+
+// Turndown emits markdown markers inside <u> when the browser nests bold/italic/strike
+// inside underline. Canonical storage keeps <u> innermost so marked and Kramdown render
+// formatting instead of literal asterisks/tildes.
+function normalizeUnderlineMarkdown(markdown) {
+  return markdown
+    .replace(/<u>\*\*([\s\S]+?)\*\*<\/u>/g, "**<u>$1</u>**")
+    .replace(/<u>~~([\s\S]+?)~~<\/u>/g, "~~<u>$1</u>~~")
+    .replace(/<u>\*([\s\S]+?)\*<\/u>/g, "*<u>$1</u>*")
+}
+
+function hoistFormattingOutsideUnderline(root) {
+  let changed = true
+
+  while (changed) {
+    changed = false
+    root.querySelectorAll("u").forEach((underline) => {
+      if (hoistSingleFormattingChildOutsideUnderline(underline)) changed = true
+    })
+  }
+}
+
+function hoistSingleFormattingChildOutsideUnderline(underline) {
+  if (underline.childNodes.length !== 1) return false
+
+  const child = underline.firstChild
+  if (child.nodeType !== Node.ELEMENT_NODE) return false
+  if (!FORMATTING_OUTSIDE_UNDERLINE.has(child.tagName)) return false
+
+  const outer = document.createElement(child.tagName === "B" ? "strong" : child.tagName === "I" ? "em" : child.tagName.toLowerCase())
+  const innerUnderline = document.createElement("u")
+
+  while (child.firstChild) {
+    innerUnderline.appendChild(child.firstChild)
+  }
+
+  outer.appendChild(innerUnderline)
+  underline.replaceWith(outer)
+  return true
+}
 
 // WYSIWYG document editor: contenteditable surface with a formatting toolbar.
 // Persists Markdown in a hidden textarea so exports and rendering stay unchanged.
@@ -15,6 +56,21 @@ export default class extends Controller {
     this.turndown.addRule("strikethrough", {
       filter: [ "del", "s", "strike" ],
       replacement: (content) => `~~${content}~~`
+    })
+    // Markdown has no underline syntax; persist as inline HTML (same approach as
+    // browser paste paths that emit styled spans instead of <u>).
+    this.turndown.addRule("underline", {
+      filter: [ "u" ],
+      replacement: (content) => `<u>${content}</u>`
+    })
+    this.turndown.addRule("underlineSpan", {
+      filter: (node) => {
+        if (node.nodeName !== "SPAN") return false
+
+        const decoration = node.style?.textDecorationLine || node.style?.textDecoration || ""
+        return decoration.includes("underline")
+      },
+      replacement: (content) => `<u>${content}</u>`
     })
     marked.setOptions({ gfm: true, breaks: false })
 
@@ -65,6 +121,9 @@ export default class extends Controller {
         break
       case "strikethrough":
         document.execCommand("strikeThrough")
+        break
+      case "underline":
+        document.execCommand("underline")
         break
       case "code":
         this.wrapSelection("code")
@@ -136,13 +195,14 @@ export default class extends Controller {
   }
 
   populateEditor() {
-    const markdown = this.contentTarget.value
+    const markdown = normalizeUnderlineMarkdown(this.contentTarget.value)
     this.surfaceTarget.innerHTML = markdown.trim() === "" ? "<p></p>" : marked.parse(markdown)
     this.updateBlockTypeLabel()
   }
 
   syncMarkdownToInput() {
-    const markdown = this.turndown.turndown(this.surfaceTarget.innerHTML).trim()
+    hoistFormattingOutsideUnderline(this.surfaceTarget)
+    const markdown = normalizeUnderlineMarkdown(this.turndown.turndown(this.surfaceTarget.innerHTML).trim())
     this.contentTarget.value = markdown
   }
 

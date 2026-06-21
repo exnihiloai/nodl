@@ -43,6 +43,22 @@ class DocumentsUpdateTest < ActionDispatch::IntegrationTest
     assert_select ".prose", text: /fixed text/
   end
 
+  test "renders underlined content saved as inline HTML" do
+    user = create_user_with_workspace
+    document = create_document(workspace: user.workspaces.first, content: "# Original\n")
+    login(user)
+
+    patch document_path(document), params: {
+      document: { content: "# Title\n\n**bold** and <u>underlined</u> and ~~struck~~\n" }
+    }
+
+    follow_redirect!
+    assert_select ".prose u", text: "underlined"
+    assert_select ".prose strong", text: "bold"
+    assert_select ".prose del", text: "struck"
+    assert_equal "# Title\n\n**bold** and <u>underlined</u> and ~~struck~~\n", document.reload.content
+  end
+
   test "edited content is used for markdown download" do
     user = create_user_with_workspace
     document = create_document(workspace: user.workspaces.first, content: "# Original\n")
@@ -98,5 +114,6 @@ class DocumentsUpdateTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='document-insert-menu']", text: /Insert/i
     assert_select "[data-testid='document-insert-hr']"
     assert_select "[data-document-editor-command-param='undo']"
+    assert_select "[data-testid='document-format-underline']"
   end
 end
