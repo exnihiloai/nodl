@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0] - 2026-06-21
+
+### Added
+
+- **Underline in the document editor:** You can now underline text while editing a document — the formatting toolbar has a new **U** button alongside bold, italic, and strikethrough. Underlined text appears correctly when you view, copy, or export the document as PDF, Word, or Markdown.
+
+### Changed
+
+- **Formatting toolbar stays visible while scrolling:** When you edit a long document, the formatting toolbar now stays pinned below the navigation bar as you scroll, so you can keep formatting without jumping back to the top.
+
+### Fixed
+
+- **Underline combined with bold or other styles:** Fixed an issue where underlining text and then applying bold, italic, or strikethrough could save literal asterisks or tildes instead of the intended formatting.
+
 ## [0.25.1] - 2026-06-21
 
 ### Fixed
