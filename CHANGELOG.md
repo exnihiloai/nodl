@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Sign-up language preference:** When you create an account or sign in with Google, Nodl now saves the language you were browsing in as your preferred language — instead of always defaulting to English.
 
+### Security
+- **Production Docker image hardening:** Rebuilds now apply Debian security updates before and after installing runtime packages (OpenSSL, Poppler, libcap2), and remove stale Ruby default-gem copies (`net-imap` 0.4.21, `erb` 4.0.3, `zlib` 3.1.1) that Trivy flagged even though the app loads patched versions from the bundle. A fresh image scan drops fixable HIGH/CRITICAL CVEs from 30 to 1; the remaining item is upstream in `thruster` 0.1.21 (Go stdlib CVE-2026-42504, no gem release yet). Development image (`Dockerfile.dev`) now runs `apt-get upgrade` for the same OS-layer hygiene.
+
 ## [0.23.1] - 2026-06-19
 
 ### Added
