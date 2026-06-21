@@ -8,7 +8,7 @@ module Users
         return
       end
 
-      user = User.from_google_oauth!(auth)
+      user = User.from_google_oauth!(auth, preferred_language: current_locale.to_s)
 
       unless user.active?
         redirect_to login_path, alert: t("flash.sessions.invalid_credentials")

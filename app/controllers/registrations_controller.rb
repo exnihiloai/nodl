@@ -18,7 +18,7 @@ class RegistrationsController < ApplicationController
         email: @form["email"],
         password: @form["password"],
         password_confirmation: @form["password_confirm"],
-        preferred_language: "en"
+        preferred_language: current_locale.to_s
       )
 
       workspace = Workspace.create!(
