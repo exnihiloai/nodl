@@ -20,6 +20,7 @@ WORKDIR /rails
 RUN apt-get update -qq && \
     apt-get upgrade -y && \
     apt-get install --no-install-recommends -y curl ffmpeg libjemalloc2 libvips postgresql-client && \
+    apt-get upgrade -y && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
@@ -76,9 +77,16 @@ RUN groupadd --system --gid 1000 rails && \
 
 # Remove stale, vulnerable Ruby default-gem copies that linger on disk even
 # though the app loads patched versions from the bundle (net-imap >= 0.6.4.1,
-# erb 6.0.4). Done as root before dropping privileges.
-RUN rm -f /usr/local/lib/ruby/gems/*/specifications/net-imap-0.4.21.gemspec \
-          /usr/local/lib/ruby/gems/*/specifications/default/erb-*.gemspec
+# erb 6.0.4). Trivy scans gem trees and cache files, not only runtime load paths.
+RUN rm -rf /usr/local/lib/ruby/gems/*/gems/net-imap-0.4.21 \
+          /usr/local/lib/ruby/gems/*/gems/erb-4.0.3 \
+          /usr/local/lib/ruby/gems/*/gems/zlib-3.1.1 \
+          /usr/local/lib/ruby/gems/*/cache/net-imap-0.4.21.gem \
+          /usr/local/lib/ruby/gems/*/cache/erb-4.0.3.gem \
+          /usr/local/lib/ruby/gems/*/cache/zlib-3.1.1.gem \
+          /usr/local/lib/ruby/gems/*/specifications/net-imap-0.4.21.gemspec \
+          /usr/local/lib/ruby/gems/*/specifications/default/erb-*.gemspec \
+          /usr/local/lib/ruby/gems/*/specifications/default/zlib-*.gemspec
 
 USER 1000:1000
 
