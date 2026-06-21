@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Typing-style word reveal:** New characters appear one by one with a soft blur-to-sharp effect, making the live preview feel more natural as you speak.
 - **Visual cue while you are still speaking:** While the microphone picks up your voice, a blurred placeholder word appears at the end of the live transcript to show that Nodl is catching up — it fades away when you pause.
 
+## [0.23.2] - 2026-06-19
+
+### Fixed
+- **Sign-up language preference:** When you create an account or sign in with Google, Nodl now saves the language you were browsing in as your preferred language — instead of always defaulting to English.
 
 ## [0.23.1] - 2026-06-19
 
