@@ -320,11 +320,13 @@ html {
 /* Freshly appended characters sharpen into focus one by one, from a soft blur
    to crisp (opacity stays at 100%, no movement). Kept as plain inline (not
    inline-block) so the browser never treats individual letters as break points
-   — words only wrap at the spaces between them. filter works fine on inline. */
+   — words only wrap at the spaces between them. filter works fine on inline.
+   No will-change: each fragment is short-lived (flattened to plain text once it
+   finishes, see appendLiveFragment), so permanently layer-promoting thousands
+   of settled letters — which pegged the GPU and overheated phones — is avoided. */
 .voice-frag {
   filter: blur(0.18em);
   transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: filter;
 }
 .voice-frag.is-in {
   filter: blur(0);
@@ -333,17 +335,23 @@ html {
 /* Phantom guess: a never-sharp, decorative word shown past the live edge while
    the user is audibly speaking, to mask recognition latency. Stronger blur and
    lower opacity than real text, and it never resolves to sharp. Sits in the
-   accent colour like the freshest live word. */
+   accent colour like the freshest live word. The blur strength is a single
+   variable so the reduced-motion reassertion below can never drift from it. */
 .voice-phantom {
+  --voice-phantom-blur: 0.25em;
   display: inline-block;
   color: var(--color-accent);
   opacity: 0;
-  filter: blur(0.25em);
+  filter: blur(var(--voice-phantom-blur));
+  /* Governs the FADE-OUT (is-on removed): slow, 0.2s. */
   transition: opacity 0.2s ease;
   user-select: none;
 }
 .voice-phantom.is-on {
   opacity: 0.85;
+  /* Governs the FADE-IN (is-on added): much faster than the fade-out, so the
+     phantom snaps in the instant speech is detected but eases out gently. */
+  transition: opacity 0.07s ease;
 }
 .voice-phantom::before {
   content: " ";
@@ -361,11 +369,18 @@ html {
   }
   .voice-word,
   .voice-frag,
-  .voice-phantom {
+  .voice-phantom,
+  .voice-phantom.is-on {
     transition: none;
   }
   .voice-frag {
     filter: none;
+  }
+  /* The phantom word is gibberish, so it must stay blurred under EVERY setting,
+     including reduced motion — it can never be allowed to render readably. Only
+     its opacity transition is dropped above; the blur is reasserted here. */
+  .voice-phantom {
+    filter: blur(var(--voice-phantom-blur));
   }
 }
 
