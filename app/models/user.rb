@@ -31,7 +31,7 @@ class User < ApplicationRecord
     role.to_s.capitalize
   end
 
-  def self.from_google_oauth!(auth)
+  def self.from_google_oauth!(auth, preferred_language: I18n.default_locale.to_s)
     provider = auth.fetch("provider")
     uid = auth.fetch("uid")
     info = auth.fetch("info")
@@ -58,7 +58,7 @@ class User < ApplicationRecord
         email:,
         password: generated_password,
         password_confirmation: generated_password,
-        preferred_language: "en"
+        preferred_language: preferred_language
       ).tap { created_user = true }
 
       user.update!(

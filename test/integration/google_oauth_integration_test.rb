@@ -22,6 +22,18 @@ class GoogleOauthIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "google callback stores the active language for new users" do
+    patch locale_path(locale: "de")
+
+    with_google_auth(email: "new-google-de@example.test", uid: "google-new-de-1") do
+      assert_difference "User.count", 1 do
+        perform_google_auth
+      end
+    end
+
+    assert_equal "de", User.find_by!(email: "new-google-de@example.test").preferred_language
+  end
+
   test "google callback links an existing user by verified email" do
     user = create_user_with_workspace(email: "existing-google@example.test")
 

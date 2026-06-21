@@ -8,6 +8,34 @@ const MIME_OPTIONS = [
   { mimeType: "audio/aac", extension: "aac" }
 ]
 const RECORDING_CHUNK_MS = 1000
+// How many words back from the live (right) edge it takes for a provisional
+// word to fully age into the default text colour. Colour is keyed to this
+// distance-from-edge so confirming a word at the front never recolours the rest.
+const LIVE_AGE_STEPS = 4
+// Per-character stagger (ms) for the live transcript reveal, so newly arrived
+// letters fade in one after another like typing instead of all at once.
+const LIVE_CHAR_STAGGER_MS = 31
+// After this long with no new transcript delta (i.e. the speaker has paused),
+// settle every still-live-coloured word to the confirmed/default colour. The
+// trailing words stay accent-coloured only briefly after speech stops.
+const LIVE_SETTLE_MS = 1200
+// Phantom word: a never-sharp, decorative guess shown past the live edge while
+// the user is audibly speaking, to mask recognition latency. It appears once
+// the smoothed audio level crosses SHOW and hides once it drops below HIDE
+// (hysteresis avoids flicker around the threshold).
+const PHANTOM_SHOW_LEVEL = 0.12
+const PHANTOM_HIDE_LEVEL = 0.06
+// Each phantom picks a random base length N (PHANTOM_BASE_MIN..MAX, all > 3),
+// then its displayed length jitters within [N-1, N+2] and re-rolls every
+// PHANTOM_LENGTH_INTERVAL_MS so the guess feels alive rather than static.
+const PHANTOM_BASE_MIN_CHARS = 4
+const PHANTOM_BASE_MAX_CHARS = 8
+const PHANTOM_LENGTH_INTERVAL_MS = 1000
+// Throttle the audio visualizer/aura loop to ~30fps instead of the display's
+// native (usually 60fps) rate. The FFT read + CSS updates every frame are a
+// steady CPU/GPU cost over a long recording; halving the rate roughly halves
+// that draw with no perceptible difference to the smoothed halo.
+const AURA_FRAME_INTERVAL_MS = 1000 / 30
 
 export default class extends Controller {
   static targets = [
@@ -102,6 +130,8 @@ export default class extends Controller {
     this.chunks = []
     this.fastPreviewText = ""
     this.slowPreviewText = ""
+    this.confirmedWordCount = 0
+    this.phantomBaseWordCount = -1
     this.sourceKindTarget.value = "microphone"
     this.resetLivePanel()
 
@@ -474,12 +504,17 @@ export default class extends Controller {
       if (this.audioContext.state === "suspended") this.audioContext.resume()
 
       this.analyser = this.audioContext.createAnalyser()
-      this.analyser.fftSize = 1024
+      // 256 time-domain samples is plenty for a single heavily-smoothed level;
+      // a larger window just burns CPU in the per-frame RMS loop for no visible
+      // difference.
+      this.analyser.fftSize = 256
       this.analyser.smoothingTimeConstant = 0.85
       this.sourceNode = this.audioContext.createMediaStreamSource(this.stream)
       this.sourceNode.connect(this.analyser)
       this.levelData = new Uint8Array(this.analyser.fftSize)
       this.smoothedLevel = 0
+      this.lastAuraFrame = 0
+      this.lastVoiceLevel = null
 
       this.stageTarget.style.setProperty("--voice-level", "0")
       this.stageTarget.classList.add("is-recording")
@@ -494,6 +529,15 @@ export default class extends Controller {
   // CSS, so the box stays calm when idle and only blooms when the user speaks.
   renderAura() {
     if (!this.analyser) return
+
+    // Throttle to ~30fps: keep the rAF cadence (so it pauses when hidden) but
+    // skip the FFT read + style writes on frames that arrive too soon.
+    const now = performance.now()
+    if (this.lastAuraFrame && now - this.lastAuraFrame < AURA_FRAME_INTERVAL_MS) {
+      this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
+      return
+    }
+    this.lastAuraFrame = now
 
     this.analyser.getByteTimeDomainData(this.levelData)
     let sumSquares = 0
@@ -510,12 +554,20 @@ export default class extends Controller {
     const coeff = target > this.smoothedLevel ? 0.45 : 0.12
     this.smoothedLevel += (target - this.smoothedLevel) * coeff
 
-    this.stageTarget.style.setProperty("--voice-level", this.smoothedLevel.toFixed(3))
+    // Only write the custom property when the rounded value actually changes,
+    // so steady/silent stretches don't trigger redundant style recalcs.
+    const voiceLevel = this.smoothedLevel.toFixed(3)
+    if (voiceLevel !== this.lastVoiceLevel) {
+      this.stageTarget.style.setProperty("--voice-level", voiceLevel)
+      this.lastVoiceLevel = voiceLevel
+    }
+    this.updatePhantom()
 
     this.auraFrameId = window.requestAnimationFrame(() => this.renderAura())
   }
 
   stopVisualizer() {
+    this.clearPhantom()
     if (this.auraFrameId) {
       window.cancelAnimationFrame(this.auraFrameId)
       this.auraFrameId = null
@@ -585,6 +637,7 @@ export default class extends Controller {
 
   stopRealtimeTranscription() {
     this.cancelLivePreviewRender()
+    this.cancelLiveSettle()
     if (this.realtimeSubscription) {
       this.realtimeSubscription.send({ type: "stop" })
       this.consumer.subscriptions.remove(this.realtimeSubscription)
@@ -620,13 +673,45 @@ export default class extends Controller {
     if (data.type === "fast_delta" && data.text) {
       this.fastPreviewText += data.text
       this.scheduleLivePreviewRender()
+      this.scheduleLiveSettle()
     } else if (data.type === "slow_delta" && data.text) {
       this.slowPreviewText += data.text
       this.scheduleLivePreviewRender()
+      this.scheduleLiveSettle()
     } else if (data.type === "error") {
       this.updateStatus(this.previewStoppedTextValue)
       this.stopRealtimeTranscription()
     }
+  }
+
+  // Each new transcript delta resets the settle timer; if it ever fires, the
+  // speaker has paused, so every shown word is faded to the confirmed colour.
+  scheduleLiveSettle() {
+    this.cancelLiveSettle()
+    this.liveSettleTimer = window.setTimeout(() => {
+      this.liveSettleTimer = null
+      this.settleLiveWords()
+    }, LIVE_SETTLE_MS)
+  }
+
+  cancelLiveSettle() {
+    if (!this.liveSettleTimer) return
+
+    window.clearTimeout(this.liveSettleTimer)
+    this.liveSettleTimer = null
+  }
+
+  // Mark every currently shown word as confirmed (default colour). Bumping the
+  // confirmed count keeps the model consistent, so words that resume after the
+  // pause are still coloured as live while these stay settled.
+  settleLiveWords() {
+    if (!this.wordEntries) return
+
+    this.confirmedWordCount = this.wordEntries.length
+    this.wordEntries.forEach((entry) => {
+      entry.el.classList.remove("is-live")
+      entry.el.removeAttribute("data-age")
+    })
   }
 
   scheduleLivePreviewRender() {
@@ -638,6 +723,11 @@ export default class extends Controller {
     })
   }
 
+  // Word-level reconciler for the live transcript. Each word is its own span
+  // that we only ever append to — confirming a word at the front never rewrites
+  // or recolours the rest, which kills the colour "wobble" and word-jumping the
+  // old whole-string rerender caused. The fast stream supplies the live word
+  // sequence; the slow stream's word count drives the confirmed boundary.
   renderLivePreview() {
     const panel = document.getElementById("live_transcript_segments")
     if (!panel) return
@@ -645,38 +735,236 @@ export default class extends Controller {
     const placeholder = panel.querySelector("[data-live-placeholder]")
     if (placeholder) placeholder.remove()
 
-    let transcript = panel.querySelector("[data-live-transcript-wrapper]")
-    if (!transcript) {
-      transcript = document.createElement("div")
-      transcript.dataset.liveTranscriptWrapper = "true"
-      transcript.className = "whitespace-pre-wrap text-sm leading-6"
-      transcript.innerHTML = [
-        "<span data-live-stable class=\"text-base-content\"></span>",
-        "<span data-live-fast class=\"voice-live-text\"></span>"
-      ].join("")
-      panel.appendChild(transcript)
+    let container = panel.querySelector("[data-live-words]")
+    if (!container) {
+      container = document.createElement("div")
+      container.dataset.liveWords = "true"
+      container.className = "voice-live-words whitespace-pre-wrap text-sm leading-6"
+      panel.appendChild(container)
+      this.wordEntries = []
+    }
+    this.wordEntries ||= []
+    this.wordsContainer = container
+
+    const words = this.tokenizePreview(this.fastPreviewText)
+    // Confirmed boundary is monotonic (only grows) and never exceeds the words
+    // we actually have, so a word can never flip back to provisional.
+    const confirmedCount = Math.min(
+      Math.max(this.confirmedWordCount || 0, this.tokenizePreview(this.slowPreviewText).length),
+      words.length
+    )
+    this.confirmedWordCount = confirmedCount
+
+    for (let i = 0; i < words.length; i += 1) {
+      const word = words[i]
+      let entry = this.wordEntries[i]
+
+      if (!entry) {
+        const el = document.createElement("span")
+        el.className = "voice-word"
+        container.appendChild(el)
+        entry = this.wordEntries[i] = { el, text: "" }
+      }
+
+      if (entry.text !== word) {
+        // Pure growth (e.g. "Spielh" → "Spielhälfte") only fades in the new
+        // suffix; otherwise rebuild the word. Either way fresh characters ease
+        // in via CSS instead of popping.
+        if (entry.text && word.startsWith(entry.text)) {
+          this.appendLiveFragment(entry.el, word.slice(entry.text.length))
+        } else {
+          entry.el.textContent = ""
+          this.appendLiveFragment(entry.el, word)
+        }
+        entry.text = word
+      }
+
+      const confirmed = i < confirmedCount
+      entry.el.classList.toggle("is-live", !confirmed)
+      if (confirmed) {
+        entry.el.removeAttribute("data-age")
+      } else {
+        // Colour by distance from the live (right) edge — newest word = accent,
+        // ageing toward the default colour. A word only ages as *newer* words
+        // arrive, so confirming a word at the front leaves the rest's colour
+        // untouched. The CSS colour transition makes the ageing smooth.
+        entry.el.dataset.age = String(Math.min(words.length - 1 - i, LIVE_AGE_STEPS))
+      }
     }
 
-    const stable = transcript.querySelector("[data-live-stable]")
-    const fast = transcript.querySelector("[data-live-fast]")
-    const { confirmed, provisional } = this.splitPreview()
-    stable.textContent = confirmed
-    fast.textContent = provisional
+    // Fast only ever grows, but guard against a shrink so stale spans go away.
+    while (this.wordEntries.length > words.length) {
+      this.wordEntries.pop().el.remove()
+    }
+
+    // Keep the phantom guess trailing the newest real word, and refresh its
+    // random shape whenever a real word lands so it reads as a fresh guess.
+    if (this.phantomEl && this.phantomEl.parentNode === container) {
+      if (words.length !== this.phantomBaseWordCount) {
+        this.phantomEl.textContent = this.phantomText(this.randomPhantomLength())
+        this.phantomBaseWordCount = words.length
+      }
+      container.appendChild(this.phantomEl)
+    }
+
     panel.scrollTop = panel.scrollHeight
   }
 
-  // The slow stream is the refined, confident transcript and is rendered in
-  // the solid base text colour; the fast stream runs ahead with a provisional
-  // guess. We show the confirmed words solid and only the still-unconfirmed
-  // tail of the fast text in the animated voice gradient, so confirmation
-  // fills in left-to-right instead of the live line vanishing and reappearing.
-  splitPreview() {
-    const slowWords = this.tokenizePreview(this.slowPreviewText)
-    const fastWords = this.tokenizePreview(this.fastPreviewText)
-    const confirmed = (this.slowPreviewText || "").replace(/\s+$/, "")
-    const tail = fastWords.slice(slowWords.length)
-    const provisional = tail.length ? `${confirmed ? " " : ""}${tail.join(" ")}` : ""
-    return { confirmed, provisional }
+  // Append text one character at a time so newly arrived letters sharpen out of
+  // a blur in sequence (typing feel) rather than the whole chunk popping at
+  // once. Each character is its own blurred span with a staggered
+  // transition-delay; flipping them all visible on the next frame starts the
+  // cascade. Array.from splits by code point so multi-byte characters stay
+  // intact.
+  //
+  // Crucially, once a letter finishes its blur transition we flatten its span
+  // back into a plain text node. A 4-minute recording is thousands of letters;
+  // leaving each as a filtered, layer-promoted span accumulates thousands of
+  // GPU compositing layers that peg the GPU and overheat the device. Flattening
+  // means only the handful of currently-animating letters ever carry a filter.
+  appendLiveFragment(wordEl, text) {
+    if (!text) return
+
+    const spans = Array.from(text).map((char, index) => {
+      const span = document.createElement("span")
+      span.className = "voice-frag"
+      span.textContent = char
+      span.style.transitionDelay = `${index * LIVE_CHAR_STAGGER_MS}ms`
+      wordEl.appendChild(span)
+
+      const flatten = () => {
+        if (span.parentNode) span.replaceWith(document.createTextNode(span.textContent))
+      }
+      span.addEventListener("transitionend", flatten, { once: true })
+      // Fallback if transitionend never fires (interrupted, tab backgrounded,
+      // word rebuilt): flatten after the transition's delay + duration + slack.
+      window.setTimeout(flatten, index * LIVE_CHAR_STAGGER_MS + 900)
+
+      return span
+    })
+    window.requestAnimationFrame(() => {
+      spans.forEach((span) => span.classList.add("is-in"))
+    })
+  }
+
+  // The phantom word is a deliberately fake, never-sharp guess shown just past
+  // the newest real word while the user is audibly speaking. It masks the
+  // recognition latency ("we're already on the word you're saying right now")
+  // and disappears in silence to signal that we know nobody is speaking. It is
+  // decorative only — aria-hidden, random letters — and never part of the saved
+  // transcript. Driven by the smoothed audio level from the visualizer loop.
+  updatePhantom() {
+    // Use the container cached by renderLivePreview instead of querying the DOM
+    // every frame; isConnected guards against it having been replaced.
+    const container = this.wordsContainer
+    if (!container || !container.isConnected) {
+      this.clearPhantom()
+      return
+    }
+
+    const level = this.smoothedLevel || 0
+    const active = this.phantomEl && !this.phantomHideTimer
+    const shouldShow = active ? level > PHANTOM_HIDE_LEVEL : level > PHANTOM_SHOW_LEVEL
+
+    if (shouldShow) {
+      this.showPhantom(container)
+    } else {
+      this.hidePhantom()
+    }
+  }
+
+  showPhantom(container) {
+    if (this.phantomHideTimer) {
+      window.clearTimeout(this.phantomHideTimer)
+      this.phantomHideTimer = null
+    }
+
+    if (!this.phantomEl) {
+      const el = document.createElement("span")
+      el.className = "voice-phantom"
+      el.setAttribute("aria-hidden", "true")
+      // Pick a fresh base length N for this appearance; the displayed length
+      // jitters around it (see randomPhantomLength) and re-rolls every second.
+      this.phantomBaseLength = this.randomBetween(PHANTOM_BASE_MIN_CHARS, PHANTOM_BASE_MAX_CHARS)
+      el.textContent = this.phantomText(this.randomPhantomLength())
+      container.appendChild(el)
+      this.phantomEl = el
+      this.phantomBaseWordCount = this.wordEntries ? this.wordEntries.length : 0
+      window.requestAnimationFrame(() => {
+        if (this.phantomEl === el) el.classList.add("is-on")
+      })
+    } else {
+      this.phantomEl.classList.add("is-on")
+      if (this.phantomEl !== container.lastChild) container.appendChild(this.phantomEl)
+    }
+
+    this.startPhantomLengthTimer()
+  }
+
+  // Re-roll the phantom's length once a second so it feels like it is actively
+  // re-guessing, rather than a static blob.
+  startPhantomLengthTimer() {
+    if (this.phantomLengthTimer) return
+
+    this.phantomLengthTimer = window.setInterval(() => {
+      if (this.phantomEl) this.phantomEl.textContent = this.phantomText(this.randomPhantomLength())
+    }, PHANTOM_LENGTH_INTERVAL_MS)
+  }
+
+  stopPhantomLengthTimer() {
+    if (!this.phantomLengthTimer) return
+
+    window.clearInterval(this.phantomLengthTimer)
+    this.phantomLengthTimer = null
+  }
+
+  hidePhantom() {
+    if (!this.phantomEl || this.phantomHideTimer) return
+
+    this.stopPhantomLengthTimer()
+    const el = this.phantomEl
+    el.classList.remove("is-on")
+    this.phantomHideTimer = window.setTimeout(() => {
+      el.remove()
+      if (this.phantomEl === el) this.phantomEl = null
+      this.phantomHideTimer = null
+    }, 240)
+  }
+
+  clearPhantom() {
+    this.stopPhantomLengthTimer()
+    if (this.phantomHideTimer) {
+      window.clearTimeout(this.phantomHideTimer)
+      this.phantomHideTimer = null
+    }
+    if (this.phantomEl) {
+      this.phantomEl.remove()
+      this.phantomEl = null
+    }
+  }
+
+  randomBetween(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1))
+  }
+
+  // Length jitters within [N-1, N+2] around the base N, floored at 3 so it
+  // always reads as a word.
+  randomPhantomLength() {
+    const base = this.phantomBaseLength || PHANTOM_BASE_MIN_CHARS
+    return Math.max(3, this.randomBetween(base - 1, base + 2))
+  }
+
+  // Plausible-looking but random word: alternating consonants/vowels so the
+  // blurred silhouette reads like a real word rather than noise.
+  phantomText(length) {
+    const consonants = "bcdfghklmnprstvwz"
+    const vowels = "aeiou"
+    let text = ""
+    for (let i = 0; i < length; i += 1) {
+      const set = i % 2 === 0 ? consonants : vowels
+      text += set[Math.floor(Math.random() * set.length)]
+    }
+    return text
   }
 
   tokenizePreview(text) {
@@ -732,6 +1020,14 @@ export default class extends Controller {
     if (segmentsContainer) {
       segmentsContainer.innerHTML = `<p class="text-sm italic text-base-content/60" data-live-placeholder>${this.listeningTextValue}</p>`
     }
+
+    // The word container lives inside the segments markup we just replaced, so
+    // drop the stale references before the next render rebuilds them.
+    this.wordEntries = null
+    this.wordsContainer = null
+    this.confirmedWordCount = 0
+    this.cancelLiveSettle()
+    this.clearPhantom()
   }
 
   selectedTransformerHandle() {

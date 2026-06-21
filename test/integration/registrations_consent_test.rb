@@ -59,6 +59,17 @@ class RegistrationsConsentTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
   end
 
+  test "registration stores the active language preference" do
+    patch locale_path(locale: "de")
+
+    assert_difference "User.count", 1 do
+      post register_path, params: registration_params(accept: false)
+    end
+
+    user = User.find_by!(email: "consent@example.com")
+    assert_equal "de", user.preferred_language
+  end
+
   private
 
   def publish_legal_docs
