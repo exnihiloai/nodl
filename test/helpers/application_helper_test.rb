@@ -19,6 +19,26 @@ class ApplicationHelperTest < ActionView::TestCase
     refute_match "~~", result
   end
 
+  test "render_markdown preserves inline underline HTML" do
+    result = render_markdown("**bold** and <u>underlined</u> text\n")
+
+    assert_match "<strong>bold</strong>", result
+    assert_match "<u>underlined</u>", result
+  end
+
+  test "render_markdown keeps underline when combined with strikethrough" do
+    result = render_markdown("~~<u>removed</u>~~\n")
+
+    assert_match "<del><u>removed</u></del>", result
+  end
+
+  test "render_markdown repairs legacy underline wrapping bold markers" do
+    result = render_markdown("Der Name der <u>**Person**</u> lautet Franz.\n")
+
+    assert_match "<strong><u>Person</u></strong>", result
+    refute_match(/\*\*/, result)
+  end
+
   test "render_markdown sanitizes unsafe HTML tags" do
     markdown = "# Header\n\n<script>alert('XSS')</script>\n\n[untrusted](javascript:alert('XSS'))"
     result = render_markdown(markdown)

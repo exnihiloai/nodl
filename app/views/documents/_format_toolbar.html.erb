@@ -1,6 +1,6 @@
-<%# B I S | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
+<%# B I S U | Absatz ▾ | Liste … | Link | Einfügen ▾ | Undo Redo %>
 <div
-  class="document-editor-toolbar flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-200/50 p-1"
+  class="document-editor-toolbar sticky top-16 z-30 mb-2 flex flex-wrap items-center gap-1 rounded-box border border-base-300 bg-base-100/95 p-1 shadow-sm backdrop-blur-sm"
   role="toolbar"
   aria-label="<%= t("documents.show.format.toolbar") %>"
   data-document-editor-target="toolbar"
@@ -36,6 +36,17 @@
     >
       S
     </button>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm join-item min-w-9 px-2 underline"
+      data-action="mousedown->document-editor#keepFocus document-editor#format"
+      data-document-editor-command-param="underline"
+      aria-label="<%= t("documents.show.format.underline") %>"
+      title="<%= t("documents.show.format.underline") %>"
+      data-testid="document-format-underline"
+    >
+      U
+    </button>
   </div>
 
   <span class="toolbar-separator mx-0.5 hidden h-6 w-px shrink-0 self-center bg-base-300 sm:inline-block" aria-hidden="true"></span>
@@ -48,7 +59,7 @@
       <span data-document-editor-target="blockTypeLabel"><%= t("documents.show.format.paragraph") %></span>
       <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
     </summary>
-    <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+    <ul class="dropdown-content menu z-50 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
       <% {
         paragraph: t("documents.show.format.paragraph"),
         h1: t("documents.show.format.h1"),
@@ -120,7 +131,7 @@
       <%= t("documents.show.format.insert_menu") %>
       <%= icon "chevron-down", class: "toolbar-chevron opacity-60" %>
     </summary>
-    <ul class="dropdown-content menu z-20 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+    <ul class="dropdown-content menu z-50 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
       <% { hr: t("documents.show.format.hr") }.each do |command, label| %>
         <li class="p-0">
           <button

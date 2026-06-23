@@ -43,7 +43,10 @@ class DocumentsDownloadTest < ActionDispatch::IntegrationTest
 
   test "downloads a PDF" do
     user = create_user_with_workspace
-    document = create_document(workspace: user.workspaces.first)
+    document = create_document(
+      workspace: user.workspaces.first,
+      content: "# Hi\n\n<u>underlined</u> text\n"
+    )
     login(user)
 
     get download_document_path(document, format: "pdf")
@@ -55,7 +58,10 @@ class DocumentsDownloadTest < ActionDispatch::IntegrationTest
 
   test "downloads a Word document" do
     user = create_user_with_workspace
-    document = create_document(workspace: user.workspaces.first)
+    document = create_document(
+      workspace: user.workspaces.first,
+      content: "# Hi\n\n<u>underlined</u> text\n"
+    )
     login(user)
 
     get download_document_path(document, format: "docx")

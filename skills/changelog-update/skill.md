@@ -53,6 +53,8 @@ Categorise each change into one of these buckets:
 | **Technical** | Internal refactors, dependency updates, CI, performance not visible to end users |
 | **Security** | Security-relevant changes (may be more technical) |
 
+**Important** Mention Fix only when the actual issue existed in the version before. If a new feature is implemented on the feature branch, it has a bug, the featuer was not yet released, and on the same branch a feature is implemented, we do not mention the fix. Instead it is considered part of the feature and should not be mentioned.
+
 ### Step 4 — Draft the changelog entry
 
 Follow this style guide:
