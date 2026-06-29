@@ -38,4 +38,29 @@ class AudioRecorderJsTest < ApplicationJsSystemTestCase
     # Button is active again
     assert_button "Record", disabled: false
   end
+
+  test "stop recording inserts processing row when dashboard cable stream is unavailable" do
+    email = unique_email("audio-recorder-direct-update")
+    user = create_user_with_workspace(email: email, password: "Valid123")
+    workspace = user.workspaces.first
+
+    login_via_ui(email: email, password: "Valid123")
+
+    page.execute_script(<<~JS)
+      document.querySelectorAll("turbo-cable-stream-source").forEach((source) => source.remove())
+    JS
+
+    click_button "Record"
+    assert_button "Stop", disabled: false, visible: true
+
+    click_button "Stop"
+
+    assert_selector "[data-testid='dashboard-activity-item'][data-status='processing']", text: "Untitled recording", wait: 5
+    assert_selector "[data-controller='processing-progress']"
+
+    recording_session = workspace.recording_sessions.finalized.recent_first.first
+    assert_not_nil recording_session
+    assert_predicate recording_session, :processing?
+    assert_predicate recording_session.original_audio, :attached?
+  end
 end

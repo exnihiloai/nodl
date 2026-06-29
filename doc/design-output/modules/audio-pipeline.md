@@ -157,7 +157,7 @@ The UI flow adds database records around the pipeline:
 
 `RecordingSession` attaches the original audio through Active Storage and attaches a normalized MP3 only when `ffmpeg` conversion is required.
 
-`RecordingSession` also owns the dashboard live-update contract. Its status transition helpers broadcast one Turbo Stream replacement for `dashboard_activity` on `[workspace, :dashboard]`. The activity feed renders recent sessions and links to a generated document when a completed session has one.
+`RecordingSession` also owns the dashboard live-update contract. Its status transition helpers broadcast one Turbo Stream replacement for `dashboard_activity` on `[workspace, :dashboard]`. The microphone finalize request returns the same replacement directly to the browser that pressed Stop, so the new processing row appears even if the dashboard cable subscription is reconnecting. The activity feed renders recent sessions and links to a generated document when a completed session has one.
 
 Microphone recording sessions can start in `recording` status before the final audio exists. During that state, `LiveTranscriptionChannel` authenticates the user/workspace/session, proxies PCM frames to Mistral Voxtral realtime transcription, and transmits text deltas back to the browser. `POST /recording_sessions/:id/finalize` attaches the uninterrupted full clip, moves the session into processing, and enqueues the normal `ProcessRecordingSessionJob`.
 

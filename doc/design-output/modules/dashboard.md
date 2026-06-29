@@ -58,6 +58,11 @@ Stable DOM and stream contract:
 - `mark_completed!`
 - `mark_failed!`
 
+Microphone finalization also returns a direct Turbo Stream replacement for
+`dashboard_activity` to the browser that pressed Stop. The initiating page must
+not depend on receiving its own ActionCable broadcast; broadcasts remain for
+other open tabs/devices and later status transitions.
+
 The feed is intentionally session-first. Completed sessions expose an "Open document" action when `session.document` exists; failed sessions link back to the recording session detail page for error context.
 
 ## Recording Modes

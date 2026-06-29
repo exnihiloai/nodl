@@ -63,7 +63,12 @@ class RecordingSessionsController < ApplicationController
     if @recording_session.save
       ProcessRecordingSessionJob.perform_later(@recording_session.id)
       enqueue_integrity_sealing(@recording_session)
-      render json: { status: @recording_session.status, url: recording_session_path(@recording_session) }, status: :accepted
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: dashboard_activity_turbo_stream, status: :accepted
+        end
+        format.json { render json: { status: @recording_session.status, url: recording_session_path(@recording_session) }, status: :accepted }
+      end
     else
       render json: { error: @recording_session.errors.full_messages.to_sentence }, status: :unprocessable_entity
     end
@@ -135,13 +140,17 @@ class RecordingSessionsController < ApplicationController
         partial: "dashboard/record_hero",
         locals: record_hero_locals
       ),
-      turbo_stream.replace(
-        "dashboard_activity",
-        partial: "dashboard/activity",
-        locals: { recording_sessions: dashboard_recording_sessions }
-      ),
+      dashboard_activity_turbo_stream,
       turbo_stream.replace("flash", partial: "shared/flash")
     ]
+  end
+
+  def dashboard_activity_turbo_stream
+    turbo_stream.replace(
+      "dashboard_activity",
+      partial: "dashboard/activity",
+      locals: { recording_sessions: dashboard_recording_sessions }
+    )
   end
 
   def record_hero_locals

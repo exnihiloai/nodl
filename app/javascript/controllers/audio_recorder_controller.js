@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { createConsumer } from "@rails/actioncable"
+import { Turbo } from "@hotwired/turbo-rails"
 
 const MIME_OPTIONS = [
   { mimeType: "audio/webm;codecs=opus", extension: "webm" },
@@ -314,7 +315,7 @@ export default class extends Controller {
       const response = await window.fetch(this.liveSession.finalize_url, {
         method: "POST",
         headers: {
-          Accept: "application/json",
+          Accept: "text/vnd.turbo-stream.html, application/json",
           "X-CSRF-Token": this.csrfToken()
         },
         body: formData
@@ -323,6 +324,10 @@ export default class extends Controller {
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}))
         throw new Error(payload.error || this.finalizeErrorTextValue)
+      }
+
+      if (this.turboStreamResponse(response)) {
+        Turbo.renderStreamMessage(await response.text())
       }
     } catch (error) {
       this.updateStatus(error.message || this.finalizeErrorTextValue)
@@ -340,6 +345,10 @@ export default class extends Controller {
     this.recordInputTarget.files = transfer.files
     this.uploadInputTarget.value = ""
     this.submit()
+  }
+
+  turboStreamResponse(response) {
+    return response.headers.get("Content-Type")?.includes("text/vnd.turbo-stream.html")
   }
 
   supportedMimeOption() {
