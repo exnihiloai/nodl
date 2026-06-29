@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.1] - 2026-06-30
+
+### Fixed
+
+- **Recording appears immediately after stopping:** Fixed an issue where a microphone recording could save and process successfully but not show up on the dashboard until you reloaded the page. The dashboard now shows the new recording row and progress bar as soon as Nodl accepts the recording.
+
 ## [0.26.0] - 2026-06-21
 
 ### Added
