@@ -49,7 +49,11 @@ module StructuredDataHelper
       "url" => "#{CANONICAL_BASE}/",
       "logo" => "#{CANONICAL_BASE}/icon.png",
       "email" => "hello@nodl.now",
-      "sameAs" => [ "https://github.com/exnihiloai/nodl" ],
+      "sameAs" => [
+        "https://github.com/exnihiloai/nodl",
+        "https://www.producthunt.com/products/nodl-2",
+        "https://x.com/ex_nihilo_ai"
+      ],
       "address" => {
         "@type" => "PostalAddress",
         "streetAddress" => "Effingergasse 18/2-3",
