@@ -45,23 +45,42 @@ sync_agent_instruction_files() {
 case "$COMMAND" in
   generate)
     render_tmp
-    rm -rf "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.codex/skills" "$ROOT_DIR/SKILL.md"
+    rm -rf "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.claude/skills" "$ROOT_DIR/.codex/skills" "$ROOT_DIR/SKILL.md"
     mkdir -p "$ROOT_DIR/.claude" "$ROOT_DIR/.codex"
     cp -R "$tmp_dir/.claude/agents" "$ROOT_DIR/.claude/agents"
+    cp -R "$tmp_dir/.claude/skills" "$ROOT_DIR/.claude/skills"
     cp -R "$tmp_dir/.codex/skills" "$ROOT_DIR/.codex/skills"
     cp "$tmp_dir/SKILL.md" "$ROOT_DIR/SKILL.md"
     sync_agent_instruction_files
-    echo "Generated skill outputs in .claude/agents, .codex/skills, and SKILL.md"
+    echo "Generated skill outputs in .claude/skills, .claude/agents, .codex/skills, and SKILL.md"
     ;;
   check)
     render_tmp
-    if git -C "$ROOT_DIR" ls-files .claude/agents .codex/skills SKILL.md | grep -q .; then
+    if git -C "$ROOT_DIR" ls-files .claude/agents .claude/skills .codex/skills SKILL.md | grep -q .; then
       echo "Generated skill outputs are tracked by git. Remove them from index and keep them ignored." >&2
       exit 1
     fi
 
-    if find "$tmp_dir/.claude/agents" "$tmp_dir/.codex/skills" -type l | grep -q .; then
+    if find "$tmp_dir/.claude/agents" "$tmp_dir/.claude/skills" "$tmp_dir/.codex/skills" -type l | grep -q .; then
       echo "Symlinks detected in generated outputs, which is not allowed." >&2
+      exit 1
+    fi
+
+    missing_claude_skills=0
+    while IFS= read -r skill_md; do
+      [[ -f "$skill_md" ]] || continue
+      if ! head -n 1 "$skill_md" | grep -q '^---$'; then
+        echo "Invalid Claude skill (missing frontmatter): $skill_md" >&2
+        missing_claude_skills=1
+      fi
+    done < <(find "$tmp_dir/.claude/skills" -name SKILL.md | sort)
+    if [[ "$missing_claude_skills" -ne 0 ]]; then
+      exit 1
+    fi
+
+    claude_skill_count="$(find "$tmp_dir/.claude/skills" -mindepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+    if [[ "$claude_skill_count" -eq 0 ]]; then
+      echo "No Claude Code skills generated under .claude/skills/" >&2
       exit 1
     fi
 
@@ -81,8 +100,8 @@ case "$COMMAND" in
     echo "Skill sources are valid and generated outputs are not tracked."
     ;;
   clean)
-    rm -rf "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.codex/skills" "$ROOT_DIR/SKILL.md"
-    mkdir -p "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.codex/skills"
+    rm -rf "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.claude/skills" "$ROOT_DIR/.codex/skills" "$ROOT_DIR/SKILL.md"
+    mkdir -p "$ROOT_DIR/.claude/agents" "$ROOT_DIR/.claude/skills" "$ROOT_DIR/.codex/skills"
     echo "Cleaned generated skill outputs"
     ;;
   *)

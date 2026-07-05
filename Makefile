@@ -39,7 +39,7 @@ help:
 	@echo "  make audit  # Scan gems for known CVEs (bundler-audit vs rubysec ruby-advisory-db)"
 	@echo "  make image-audit [IMAGE=repo:tag] [FORMAT=html|txt] # Trivy scan a built image (OS + gems + secrets)"
 	@echo "  make skill  # Alias for 'make skills'"
-	@echo "  make skills # Generate Claude/Codex skill outputs from canonical /skills"
+	@echo "  make skills # Generate .claude/skills + .claude/agents + .codex/skills from canonical /skills"
 	@echo "  make skills-check # Verify generated skill outputs are up to date"
 	@echo "  make skills-clean # Remove generated skill outputs"
 	@echo "  make skill-new ID=<id> NAME=\"<Skill Name>\" # Create canonical skill scaffold"

@@ -131,7 +131,7 @@ OpenTelemetry export can be enabled via `OTEL_*` environment variables (`OTEL_SE
 Canonical skill sources live under `skills/`. Generated Claude/Codex outputs are local artifacts and are ignored by git.
 
 ```sh
-make skills        # Generate local .claude/.codex skill outputs and sync AGENTS.md/CLAUDE.md
+make skills        # Generate .claude/skills, .claude/agents, .codex/skills; sync AGENTS.md/CLAUDE.md
 make skills-check  # Verify skill sources and agent instruction sync
 make skills-clean  # Remove generated outputs
 ```

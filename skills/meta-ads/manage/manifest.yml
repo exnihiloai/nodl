@@ -1,0 +1,21 @@
+---
+id: meta-ads
+name: Meta Ads
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Manage Meta Ads (Facebook + Instagram) — performance, ROAS, CPM, frequency,
+    audience overlap, learning phase, creative fatigue, budgets, ad sets, campaigns,
+    ads. Use for any mention of Meta Ads, Facebook Ads, Instagram Ads, ROAS, CPM,
+    ad spend, or campaign settings on Meta.
+  steps:
+  - Activate when the user mentions meta ads or related NotFair workflows.
+  - Activate when the user mentions facebook ads or related NotFair workflows.
+  - Activate when the user mentions instagram ads or related NotFair workflows.
+  - Activate when the user mentions meta campaigns or related NotFair workflows.
+  - Activate when the user mentions ad sets or related NotFair workflows.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

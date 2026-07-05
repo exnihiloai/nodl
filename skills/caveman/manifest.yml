@@ -1,0 +1,19 @@
+id: caveman
+name: "Caveman"
+version: "1.0.0"
+
+entrypoints: []
+
+instructions:
+  summary: "Ultra-compressed communication mode. Cuts token usage ~75% by speaking like caveman while keeping full technical accuracy. Use when user says caveman mode, talk like caveman, use caveman, less tokens, be brief, or invokes /caveman."
+  steps:
+    - "Activate caveman mode on every response until the user says stop caveman or normal mode."
+    - "Follow the Rules and Intensity sections in skill.md."
+    - "Drop caveman temporarily for security warnings or irreversible confirmations."
+
+inputs: []
+outputs: []
+
+compat:
+  claude_agent: true
+  codex_skill: true

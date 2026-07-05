@@ -52,6 +52,7 @@ config/credentials/*.key
 
 # Generated skill outputs
 /.claude/agents
+/.claude/skills
 /.codex/skills
 /CLAUDE.md
 /SKILL.md

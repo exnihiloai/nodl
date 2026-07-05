@@ -1,0 +1,34 @@
+---
+id: seo-analysis
+name: SEO Analysis
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: 'Full SEO audit: Google Search Console data + URL Inspection API + PageSpeed
+    Insights API + technical crawl + keyword research + metadata audit + schema markup
+    audit + search intent analysis + Core Web Vitals monitoring. Feeds real GSC data
+    and PageSpeed metrics into AI to surface quick wins, diagnose traffic drops, find
+    content gaps, identify metadata mismatches, detect schema gaps, monitor page performance,
+    and produce an actionable 30-day plan. Use this skill whenever the user asks about
+    SEO, search rankings, organic traffic, Google Search Console, keyword performance,
+    traffic drops, content gaps, search visibility, technical SEO, meta tags, schema
+    markup, structured data, URL indexing, keyword research, indexing issues, page
+    speed, performance, Core Web Vitals, LCP, INP, CLS, or Lighthouse scores. Also
+    trigger on: "why is my traffic down", "what keywords am I ranking for", "improve
+    my rankings", "check my search console", "SEO audit", "analyze my SEO", "technical
+    SEO", "meta tags", "indexing issues", "crawl errors", "content strategy", "keyword
+    cannibalization", "search intent", "schema markup", "structured data", "URL inspection",
+    "page speed", "performance score", "core web vitals", "lighthouse", or any organic
+    search question. If in doubt, trigger. This skill handles everything from quick
+    GSC checks to deep technical audits with performance monitoring.'
+  steps:
+  - Follow the Step 0 — Establish the Website URL section in skill.md.
+  - Follow the Step 0.5 — Load Audit History section in skill.md.
+  - Follow the Phase 0 — Preflight Check section in skill.md.
+  - Follow the Phase 1 — Confirm Access to Google Search Console section in skill.md.
+  - Follow the Phase 2 — Match the Site to a GSC Property section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

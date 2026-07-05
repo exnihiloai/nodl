@@ -1,0 +1,23 @@
+---
+id: schema-markup-generator
+name: Schema Markup Generator
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Generate JSON-LD structured data markup for rich results in Google Search.
+    Supports FAQ, HowTo, Article, Product, LocalBusiness, and multi-type schemas.
+    Validates against Google requirements and provides implementation guidance. Use
+    when asked to "add schema markup", "generate structured data", "JSON-LD", "rich
+    snippets", "FAQ schema", "product markup", "add structured data to my page", "how
+    to get rich snippets", or any structured data task.
+  steps:
+  - Follow the When This Must Trigger section in skill.md.
+  - Follow the What This Skill Does section in skill.md.
+  - Follow the Quick Start section in skill.md.
+  - Follow the Data Sources section in skill.md.
+  - Follow the Instructions section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true
