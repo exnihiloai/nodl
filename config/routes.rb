@@ -2,12 +2,29 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/about", to: "pages#about"
-  get "/fuer/aerzte", to: "pages#for_doctors", as: :for_doctors
-  get "/fuer/zahnaerzte", to: "pages#for_dentists", as: :for_dentists
-  get "/fuer/gedankenkarussell", to: "pages#for_overthinkers", as: :for_overthinkers
-  get "/fuer/tagebuch", to: "pages#for_journaling", as: :for_journaling
-  get "/fuer/interviews", to: "pages#for_interviews", as: :for_interviews
-  get "/fuer/coaches", to: "pages#for_coaches", as: :for_coaches
+
+  # Vertical marketing pages exist once per language: the URL fixes the locale
+  # (see ApplicationController#current_locale) so crawlers index a stable
+  # language per URL. DE and EN variants reference each other via hreflang
+  # (SeoHelper#seo_link_tags).
+  get "/fuer/aerzte", to: "pages#for_doctors", as: :for_doctors, defaults: { locale: "de" }
+  get "/fuer/zahnaerzte", to: "pages#for_dentists", as: :for_dentists, defaults: { locale: "de" }
+  get "/fuer/gedankenkarussell", to: "pages#for_overthinkers", as: :for_overthinkers, defaults: { locale: "de" }
+  get "/fuer/tagebuch", to: "pages#for_journaling", as: :for_journaling, defaults: { locale: "de" }
+  get "/fuer/interviews", to: "pages#for_interviews", as: :for_interviews, defaults: { locale: "de" }
+  get "/fuer/coaches", to: "pages#for_coaches", as: :for_coaches, defaults: { locale: "de" }
+  get "/for/doctors", to: "pages#for_doctors", as: :for_doctors_en, defaults: { locale: "en" }
+  get "/for/dentists", to: "pages#for_dentists", as: :for_dentists_en, defaults: { locale: "en" }
+  get "/for/racing-mind", to: "pages#for_overthinkers", as: :for_overthinkers_en, defaults: { locale: "en" }
+  get "/for/journaling", to: "pages#for_journaling", as: :for_journaling_en, defaults: { locale: "en" }
+  get "/for/interviews", to: "pages#for_interviews", as: :for_interviews_en, defaults: { locale: "en" }
+  get "/for/coaches", to: "pages#for_coaches", as: :for_coaches_en, defaults: { locale: "en" }
+
+  # Operator content pages (articles/guides) rendered from private/views/content/<locale>/<slug>.
+  get "/artikel/:slug", to: "content_pages#show", as: :artikel,
+      format: false, defaults: { locale: "de" }, constraints: { slug: /[a-z0-9-]+/ }
+  get "/articles/:slug", to: "content_pages#show", as: :article,
+      format: false, defaults: { locale: "en" }, constraints: { slug: /[a-z0-9-]+/ }
   get "/licenses", to: "licenses#show", as: :licenses
   get "/help/integrity-proof", to: "pages#integrity_proof", as: :integrity_proof_help
   get "/changelog", to: "changelogs#show", as: :changelog, format: false

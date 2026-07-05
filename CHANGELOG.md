@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.0] - 2026-07-05
+
+### Added
+
+- **English marketing pages:** Every audience page now has an English twin with its own URL (for example `/for/journaling` alongside `/fuer/tagebuch`). The URL decides the language, and both versions point to each other, so search engines can index Nodl in both languages.
+- **Articles and guides:** Nodl can now serve operator-written articles under `/artikel/<name>` (German) and `/articles/<name>` (English). New articles automatically appear in the sitemap.
+
+### Fixed
+
+- **Stable language per page for search engines:** Public marketing pages no longer switch language based on the visitor's browser settings — the URL fixes the language. Search engines previously saw English content on German URLs, which prevented German pages from ranking.
+- **Duplicate structured data on the homepage:** The homepage no longer emits every schema.org block twice.
+
 ## [0.26.1] - 2026-06-30
 
 ### Fixed

@@ -56,6 +56,7 @@ Design output documents describe accepted or currently implemented system struct
 | [design-output/modules/live-transcription.md](design-output/modules/live-transcription.md) | Realtime Voxtral live preview, batch diarization, waveform precompute, and the synced audio player |
 | [design-output/modules/frontend.md](design-output/modules/frontend.md) | Tailwind, DaisyUI, Turbo, Stimulus, theme switching |
 | [design-output/modules/i18n.md](design-output/modules/i18n.md) | English-first i18n with German translation, locale resolution, delta tooling |
+| [design-output/modules/seo-localized-pages-and-articles.md](design-output/modules/seo-localized-pages-and-articles.md) | URL-locale contract (/fuer vs /for), operator article system (/artikel, /articles), canonical/hreflang, sitemap, llms.txt, structured data |
 | [design-output/modules/testing.md](design-output/modules/testing.md) | Test structure, CI pipeline, conventions |
 
 ## Architecture Decision Records

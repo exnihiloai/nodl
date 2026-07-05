@@ -1,0 +1,22 @@
+---
+id: meta-tags-optimizer
+name: Meta Tags Optimizer
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Optimize title tags, meta descriptions, Open Graph, and Twitter cards for
+    maximum click-through rate. Generates multiple A/B test variations with character
+    counting and SERP preview. Use when asked to "optimize title tag", "write meta
+    description", "improve CTR", "Open Graph tags", "fix my meta tags", "social media
+    preview", "my click rate is low", "title optimization", or any meta tag task.
+  steps:
+  - Follow the When This Must Trigger section in skill.md.
+  - Follow the What This Skill Does section in skill.md.
+  - Follow the Quick Start section in skill.md.
+  - Follow the Data Sources section in skill.md.
+  - Follow the Instructions section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

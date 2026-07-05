@@ -1,0 +1,21 @@
+---
+id: google-ads
+name: Google Ads
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Manage Google Ads — performance, keywords, bids, budgets, negatives, campaigns,
+    ads, search terms, QS, location targeting, bulk operations, experiments, asset
+    management, portfolio bidding, offline conversions. Use for any mention of Google
+    Ads, CPA, ROAS, ad spend, or campaign settings.
+  steps:
+  - Activate when the user mentions google ads or related NotFair workflows.
+  - Activate when the user mentions campaigns or related NotFair workflows.
+  - Activate when the user mentions keywords or related NotFair workflows.
+  - Activate when the user mentions ad spend or related NotFair workflows.
+  - Activate when the user mentions CPA or related NotFair workflows.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

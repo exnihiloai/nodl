@@ -23,6 +23,8 @@ class StructuredDataTest < ActionDispatch::IntegrationTest
     assert org["logo"].start_with?("https://nodl.now"), "logo must be canonical"
     assert_equal "hello@nodl.now", org["email"]
     assert_includes Array(org["sameAs"]), "https://github.com/exnihiloai/nodl", "sameAs must include OSS GitHub repo"
+    assert_includes Array(org["sameAs"]), "https://www.producthunt.com/products/nodl-2", "sameAs must include Product Hunt profile"
+    assert_includes Array(org["sameAs"]), "https://x.com/ex_nihilo_ai", "sameAs must include X profile"
     assert_nil org["aggregateRating"], "must not emit fake aggregateRating"
     assert_nil org["review"], "must not emit fake reviews"
   end
@@ -58,6 +60,12 @@ class StructuredDataTest < ActionDispatch::IntegrationTest
       assert q.dig("acceptedAnswer", "text").present?, "FAQ answer must not be blank"
       assert_no_match(/<[^>]+>/, q.dig("acceptedAnswer", "text"), "answer text must not contain HTML tags")
     end
+  end
+
+  test "homepage emits each schema type only once" do
+    get root_path
+    types = extract_schemas(response.body).map { |s| s["@type"] }
+    assert_equal types.uniq, types, "duplicate JSON-LD blocks on homepage: #{types}"
   end
 
   test "homepage JSON-LD navigational fields use canonical https://nodl.now URLs" do

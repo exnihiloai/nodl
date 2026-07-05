@@ -27,11 +27,18 @@ class ApplicationController < ActionController::Base
     I18n.with_locale(current_locale, &action)
   end
 
-  # Priority: explicit session choice, signed-in user preference, the browser's
-  # Accept-Language header, then the application default.
+  # Priority: locale fixed by the route (language-specific marketing/content
+  # URLs must render one stable language for crawlers), explicit session choice,
+  # signed-in user preference, the browser's Accept-Language header, then the
+  # application default. Only route defaults count — query strings do not
+  # switch languages, so every URL has exactly one indexable variant.
   def current_locale
-    candidate = session[:locale] || current_user&.preferred_language || locale_from_header
+    candidate = locale_from_route || session[:locale] || current_user&.preferred_language || locale_from_header
     supported_locale?(candidate) ? candidate.to_sym : I18n.default_locale
+  end
+
+  def locale_from_route
+    request.path_parameters[:locale]
   end
 
   def locale_from_header

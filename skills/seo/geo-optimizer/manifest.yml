@@ -1,0 +1,27 @@
+---
+id: geo-optimizer
+name: GEO Optimizer
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Generative Engine Optimization (GEO) — make content rank in AI search answers
+    from ChatGPT, Claude, Perplexity, Gemini, and Google AI Overviews. Audits existing
+    content, rewrites for AI citation, and produces per-engine strategy. Use when
+    asked to "optimize for AI search", "rank in ChatGPT", "GEO audit", "improve AI
+    citations", "rank in Perplexity", "AI Overview optimization", "AI Overview ranking",
+    "LLM SEO", "answer engine optimization", "AEO", "get cited by AI", "GEO", "generative
+    engine optimization", "show up in ChatGPT", "appear in AI answers", "be cited
+    by Perplexity", "SGE optimization", "Search Generative Experience", or "make my
+    content show up in AI answers". Distinct from regular SEO — this targets generative
+    engines, not traditional Google rankings.
+  steps:
+  - 'Follow the Critical: No Fabrication. Ever. section in skill.md.'
+  - Follow the Step 1 — Determine the Job section in skill.md.
+  - Follow the Step 2 — Read the Reference section in skill.md.
+  - Follow the Step 3 — Gather Context section in skill.md.
+  - Follow the Step 4 — Execute section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

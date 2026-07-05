@@ -67,26 +67,34 @@ def load_skill(skill_dir)
 end
 
 def generated_source_notice(skill)
-  "Source: /skills/#{skill.fetch("id")}/manifest.yml and /skills/#{skill.fetch("id")}/skill.md"
+  rel = skill.fetch("skill_dir").relative_path_from(SKILLS_ROOT).to_s
+  "Source: /skills/#{rel}/manifest.yml and /skills/#{rel}/skill.md"
 end
 
-def claude_content(skill)
+def claude_frontmatter_yaml(skill)
   frontmatter = {
     "name" => skill.fetch("id"),
     "description" => skill.fetch("summary")
   }
 
-  yaml_body = YAML.dump(frontmatter).sub(/\A---\s*\n/, "").rstrip
+  YAML.dump(frontmatter).sub(/\A---\s*\n/, "").rstrip
+end
 
+def claude_skill_md(skill)
   <<~MD
     ---
-    # GENERATED FILE - DO NOT EDIT
-    # #{generated_source_notice(skill)}
-    #{yaml_body}
+    #{claude_frontmatter_yaml(skill)}
     ---
+
+    <!-- GENERATED FILE - DO NOT EDIT -->
+    <!-- #{generated_source_notice(skill)} -->
 
     #{skill.fetch("skill_md").rstrip}
   MD
+end
+
+def claude_content(skill)
+  claude_skill_md(skill)
 end
 
 def codex_openai_yaml(skill)
@@ -125,8 +133,9 @@ end
 def root_skill_index_md(skills)
   skill_lines = skills.map do |skill|
     id = skill.fetch("id")
+    rel = skill.fetch("skill_dir").relative_path_from(SKILLS_ROOT)
     summary = skill.fetch("summary")
-    "- `#{id}` (`.codex/skills/#{id}/SKILL.md`) - #{summary}"
+    "- `#{id}` (`/skills/#{rel}`) - #{summary}"
   end.join("\n")
 
   <<~MD
@@ -162,15 +171,33 @@ def copy_scripts(skill, dest_dir)
   end
 end
 
+def copy_skill_support_files(skill, dest_dir)
+  %w[references scripts evals].each do |subdir|
+    source = skill.fetch("skill_dir").join(subdir)
+    next unless source.directory?
+
+    files = source.children
+    next if files.empty?
+
+    destination = dest_dir.join(subdir)
+    FileUtils.mkdir_p(destination)
+    files.each do |file|
+      FileUtils.cp_r(file.to_s, destination.join(file.basename).to_s, preserve: true)
+    end
+  end
+end
+
 def generate_into(output_root)
   output_root = Pathname.new(output_root)
-  claude_root = output_root.join(".claude", "agents")
+  claude_agents_root = output_root.join(".claude", "agents")
+  claude_skills_root = output_root.join(".claude", "skills")
   codex_root = output_root.join(".codex", "skills")
 
-  FileUtils.mkdir_p(claude_root)
+  FileUtils.mkdir_p(claude_agents_root)
+  FileUtils.mkdir_p(claude_skills_root)
   FileUtils.mkdir_p(codex_root)
 
-  skill_dirs = SKILLS_ROOT.children.select(&:directory?).sort
+  skill_dirs = SKILLS_ROOT.glob("**/manifest.yml").map(&:dirname).sort_by(&:to_s)
   raise "No skills found in #{SKILLS_ROOT}" if skill_dirs.empty?
 
   skills = skill_dirs.map { |dir| load_skill(dir) }
@@ -181,7 +208,12 @@ def generate_into(output_root)
     id = skill.fetch("id")
 
     if skill.dig("compat", "claude_agent")
-      write_file(claude_root.join("#{id}.md"), claude_content(skill))
+      claude_skill_root = claude_skills_root.join(id)
+      write_file(claude_skill_root.join("SKILL.md"), claude_skill_md(skill))
+      copy_skill_support_files(skill, claude_skill_root)
+
+      # Legacy subagent surface (same instructions, flat file).
+      write_file(claude_agents_root.join("#{id}.md"), claude_content(skill))
     end
 
     if skill.dig("compat", "codex_skill")
@@ -189,6 +221,7 @@ def generate_into(output_root)
       write_file(codex_skill_root.join("SKILL.md"), codex_skill_md(skill))
       write_file(codex_skill_root.join("agents", "openai.yaml"), codex_openai_yaml(skill))
       copy_scripts(skill, codex_skill_root.join("scripts"))
+      copy_skill_support_files(skill, codex_skill_root)
     end
   end
 end

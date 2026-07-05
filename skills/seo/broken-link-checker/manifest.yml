@@ -1,0 +1,19 @@
+---
+id: broken-link-checker
+name: Broken Link Checker
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Scans a website to find broken links (404s, 500s). Crawls internal pages,  identifies
+    broken outbound links, and reports source pages for easy fixing. Use this when
+    the user asks to "check for broken links", "find 404s",  "audit my links", or
+    "is my site healthy".
+  steps:
+  - Follow the Step 1 — Identify the Target URL section in skill.md.
+  - Follow the Step 2 — Run the Scan section in skill.md.
+  - Follow the Step 3 — Analyze and Report section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

@@ -1,0 +1,24 @@
+---
+id: google-ads-landing
+name: Setup
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Score and diagnose Google Ads landing pages. Use when asked to audit a
+    landing page, check landing page quality, diagnose high-CTR but low-conversion-rate
+    ad groups, improve Quality Score's Landing Page Experience component, or compare
+    an ad group's messaging against its landing page. Trigger on "landing page audit",
+    "landing page score", "landing page quality", "why is my conversion rate low",
+    "LPX", "landing page experience", "ad to page match", or when `/google-ads-audit`
+    surfaces a high-CTR / low-CVR ad group.
+  steps:
+  - Follow the Reference section in skill.md.
+  - 'Follow the Phase 1: Resolve the target pages section in skill.md.'
+  - 'Follow the Phase 2: Gather signal (parallel) section in skill.md.'
+  - 'Follow the Phase 3: Score the page section in skill.md.'
+  - 'Follow the Phase 4: Deliver the report section in skill.md.'
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true

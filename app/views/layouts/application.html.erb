@@ -11,7 +11,9 @@
     <%= csp_meta_tag %>
 
     <%= yield :head %>
-    <% if controller_name == "pages" && action_name == "home" %>
+    <%= seo_link_tags %>
+    <% if controller_name == "pages" && action_name == "home" && !PrivateContent.marketing? %>
+      <%# Private marketing home templates ship their own richer JSON-LD; only the OSS shell needs this fallback. %>
       <%= render "shared/homepage_structured_data" %>
     <% end %>
 

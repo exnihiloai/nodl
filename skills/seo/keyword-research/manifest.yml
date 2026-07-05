@@ -1,0 +1,25 @@
+---
+id: keyword-research
+name: Keyword Research
+version: 0.25.6
+entrypoints: []
+instructions:
+  summary: Discover, analyze, and prioritize keywords for SEO and GEO content strategies
+    from a seed keyword or niche. Identifies high-value opportunities based on search
+    volume, competition, intent, and business relevance. Generates topic clusters.
+    For building a dated editorial calendar from your own Search Console data, use
+    `content-planner` instead — this skill is seed-driven keyword discovery, not calendar
+    scheduling. Use when asked to "find keywords", "keyword research", "keyword analysis",
+    "search volume", "keyword difficulty", "content ideas from a seed", or any keyword
+    discovery task.
+  steps:
+  - Follow the When This Must Trigger section in skill.md.
+  - Follow the What This Skill Does section in skill.md.
+  - Follow the Quick Start section in skill.md.
+  - Follow the Data Sources section in skill.md.
+  - Follow the Instructions section in skill.md.
+inputs: []
+outputs: []
+compat:
+  claude_agent: true
+  codex_skill: true
