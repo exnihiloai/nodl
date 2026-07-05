@@ -9,15 +9,23 @@ class Sitemap
   ].freeze
 
   MARKETING_ENTRIES = [
-    { path: :about_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_doctors_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_dentists_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_overthinkers_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_journaling_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_interviews_path, changefreq: "monthly", priority: "0.8" },
-    { path: :for_coaches_path, changefreq: "monthly", priority: "0.8" },
-    { path: :try_now_path, changefreq: "monthly", priority: "0.8" }
+    { page: :about, path: :about_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_doctors, path: :for_doctors_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_doctors, path: :for_doctors_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_dentists, path: :for_dentists_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_dentists, path: :for_dentists_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_overthinkers, path: :for_overthinkers_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_overthinkers, path: :for_overthinkers_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_journaling, path: :for_journaling_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_journaling, path: :for_journaling_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_interviews, path: :for_interviews_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_interviews, path: :for_interviews_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_coaches, path: :for_coaches_path, changefreq: "monthly", priority: "0.8" },
+    { page: :for_coaches, path: :for_coaches_en_path, changefreq: "monthly", priority: "0.8" },
+    { page: :try_now, path: :try_now_path, changefreq: "monthly", priority: "0.8" }
   ].freeze
+
+  CONTENT_LOCALES = { de: :artikel_path, en: :article_path }.freeze
 
   LEGAL_ENTRIES = {
     "imprint" => :imprint_path,
@@ -27,7 +35,10 @@ class Sitemap
 
   class << self
     def entries(base_url:, url_helpers:)
-      public_entries(base_url:, url_helpers:) + marketing_entries(base_url:, url_helpers:) + legal_entries(base_url:, url_helpers:)
+      public_entries(base_url:, url_helpers:) +
+        marketing_entries(base_url:, url_helpers:) +
+        content_entries(base_url:, url_helpers:) +
+        legal_entries(base_url:, url_helpers:)
     end
 
     private
@@ -38,9 +49,21 @@ class Sitemap
 
     def marketing_entries(base_url:, url_helpers:)
       MARKETING_ENTRIES.filter_map do |entry|
-        next unless PrivateContent.marketing_page?(entry.fetch(:path).to_s.delete_suffix("_path").to_sym)
+        next unless PrivateContent.marketing_page?(entry.fetch(:page))
 
         build_entry(entry, base_url:, url_helpers:)
+      end
+    end
+
+    def content_entries(base_url:, url_helpers:)
+      CONTENT_LOCALES.flat_map do |locale, path_helper|
+        PrivateContent.content_slugs(locale).map do |slug|
+          Entry.new(
+            loc: "#{base_url.chomp("/")}#{url_helpers.public_send(path_helper, slug)}",
+            changefreq: "monthly",
+            priority: "0.6"
+          )
+        end
       end
     end
 

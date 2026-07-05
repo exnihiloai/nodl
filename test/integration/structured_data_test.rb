@@ -60,6 +60,12 @@ class StructuredDataTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "homepage emits each schema type only once" do
+    get root_path
+    types = extract_schemas(response.body).map { |s| s["@type"] }
+    assert_equal types.uniq, types, "duplicate JSON-LD blocks on homepage: #{types}"
+  end
+
   test "homepage JSON-LD navigational fields use canonical https://nodl.now URLs" do
     get root_path
     schemas = extract_schemas(response.body)

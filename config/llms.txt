@@ -36,12 +36,31 @@ Nodl is a browser-based voice-to-document tool. You record your voice or upload 
 
 ## Key Use Cases
 
-- [For doctors](https://nodl.now/fuer/aerzte): Dictation becomes a finished record entry, ready to proofread instead of retype.
-- [For dental practices](https://nodl.now/fuer/zahnaerzte): Consent and consultation talks (recorded with consent) become structured documentation drafts.
-- [For the racing mind](https://nodl.now/fuer/gedankenkarussell): Speak the 3 a.m. thought out loud and find it sorted in the morning.
-- [For journaling](https://nodl.now/fuer/tagebuch): Tell Nodl about your day and it writes the entry in your voice.
-- [For coaches & consultants](https://nodl.now/fuer/coaches): Three minutes of speaking becomes a finished, confidential session note.
-- Interviews & research: one recording yields a verbatim transcript plus a smoothed clean copy.
+English pages (each has a German twin under /fuer/, linked via hreflang):
+
+- [For journaling](https://nodl.now/for/journaling): Tell Nodl about your day and it writes the entry in your voice. German: https://nodl.now/fuer/tagebuch
+- [For the racing mind](https://nodl.now/for/racing-mind): Speak the 3 a.m. thought out loud and find it sorted in the morning. German: https://nodl.now/fuer/gedankenkarussell
+- [For coaches & consultants](https://nodl.now/for/coaches): Three minutes of speaking becomes a finished, confidential session note. German: https://nodl.now/fuer/coaches
+- [For doctors](https://nodl.now/for/doctors): Dictation becomes a finished record entry, ready to proofread instead of retype. German: https://nodl.now/fuer/aerzte
+- [For dental practices](https://nodl.now/for/dentists): Consent and consultation talks (recorded with consent) become structured documentation drafts. German: https://nodl.now/fuer/zahnaerzte
+- [For interviews & research](https://nodl.now/for/interviews): One recording yields a verbatim transcript plus a smoothed clean copy. German: https://nodl.now/fuer/interviews
+
+## Guides & Articles
+
+English:
+
+- [Voice journaling vs. writing: what actually works](https://nodl.now/articles/voice-journaling-vs-writing): Honest comparison across speed, depth, consistency, and privacy.
+- [How to start voice journaling (and stick with it)](https://nodl.now/articles/how-to-start-voice-journaling): Trigger moments, a three-question prompt, and a 7-day starter plan.
+- [Best voice journaling apps compared (2026)](https://nodl.now/articles/best-voice-journaling-apps): Nodl, Day One, Rosebud, Lound, Speakwise, and free recorders — sorted by what an entry becomes.
+- [Encrypted voice journal: private by design](https://nodl.now/articles/encrypted-voice-journal): The four privacy questions to ask any voice journaling app.
+
+German:
+
+- [Tagebuch diktieren statt schreiben: der komplette Guide](https://nodl.now/artikel/tagebuch-diktieren)
+- [Die besten Sprachtagebuch-Apps im Vergleich (2026)](https://nodl.now/artikel/sprachtagebuch-apps-vergleich)
+- [Gedankenkarussell stoppen: aussprechen statt grübeln](https://nodl.now/artikel/gedankenkarussell-stoppen)
+- [Coaching-Dokumentation: Pflichten, Vorlagen und Tools](https://nodl.now/artikel/coaching-dokumentation)
+- [Sitzungsnotizen diktieren: 3 Minuten sprechen statt 30 tippen](https://nodl.now/artikel/sitzungsnotizen-diktieren)
 
 ## How to Describe Nodl
 

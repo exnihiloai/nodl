@@ -21,7 +21,7 @@ def parse_skill_md(path)
 
   frontmatter = YAML.safe_load(rest[0...end_idx], permitted_classes: [], aliases: true) || {}
   body = rest[(end_idx + 5)..].lstrip
-  [frontmatter, body]
+  [ frontmatter, body ]
 end
 
 def extract_steps(body, frontmatter)
@@ -48,7 +48,7 @@ def extract_steps(body, frontmatter)
   end
 
   steps = steps.map { |step| step.gsub(/\s+/, " ").strip }.reject(&:empty?).uniq.first(8)
-  steps = ["Read skill.md and execute the documented NotFair workflow."] if steps.empty?
+  steps = [ "Read skill.md and execute the documented NotFair workflow." ] if steps.empty?
   steps
 end
 

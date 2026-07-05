@@ -2,6 +2,8 @@
 
 # Resolves operator-specific content from the git-ignored private companion repo.
 class PrivateContent
+  CONTENT_SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
+
   MARKETING_PAGES = {
     about: "pages/about",
     for_doctors: "pages/for_doctors",
@@ -36,6 +38,24 @@ class PrivateContent
       template = MARKETING_PAGES.fetch(name)
 
       template?(template)
+    end
+
+    # Operator articles/guides live at private/views/content/<locale>/<slug>.html.erb
+    # and are served by ContentPagesController under /artikel (de) and /articles (en).
+    def content_page?(locale, slug)
+      return false unless slug.to_s.match?(CONTENT_SLUG_FORMAT)
+
+      template?("content/#{locale}/#{slug}")
+    end
+
+    def content_slugs(locale)
+      dir = view_root.join("content", locale.to_s)
+      return [] unless dir.directory?
+
+      Dir[dir.join("*.html.erb").to_s]
+        .map { |file| File.basename(file, ".html.erb") }
+        .grep(CONTENT_SLUG_FORMAT)
+        .sort
     end
 
     def locale_paths
