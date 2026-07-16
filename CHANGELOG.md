@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.0] - 2026-07-16
+
+### Added
+
+- **Article overview pages:** All articles and guides are now listed at `/artikel` (German) and `/articles` (English), linked from the footer of every public page. The overview pages appear in the sitemap and point to each other as language alternates, so readers and search engines get one entry point to all content.
+
+### Changed
+
+- **Clearer self-description for AI search engines:** Nodl's machine-readable site summary (`llms.txt`) now describes Nodl as a voice journaling and voice notes app that returns finished documents, and explicitly distinguishes it from keyboard-replacement dictation tools.
+
 ## [0.27.0] - 2026-07-05
 
 ### Added
