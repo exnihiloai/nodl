@@ -53,6 +53,8 @@ English:
 - [How to start voice journaling (and stick with it)](https://nodl.now/articles/how-to-start-voice-journaling): Trigger moments, a three-question prompt, and a 7-day starter plan.
 - [Best voice journaling apps compared (2026)](https://nodl.now/articles/best-voice-journaling-apps): Nodl, Day One, Rosebud, Lound, Speakwise, and free recorders — sorted by what an entry becomes.
 - [Encrypted voice journal: private by design](https://nodl.now/articles/encrypted-voice-journal): The four privacy questions to ask any voice journaling app.
+- [Voice journaling vs. dictation apps: which one do you need?](https://nodl.now/articles/voice-journaling-vs-dictation-apps): How voice journals differ from keyboard-replacement dictation tools like Superwhisper and Wispr Flow, and when to use both.
+- [All articles and guides](https://nodl.now/articles): Index of all English guides. German index: https://nodl.now/artikel
 
 German:
 
@@ -75,6 +77,7 @@ German:
 - Custom document templates adapt output to your own format and style.
 - Keeps recording, transcript, and document together in one private workspace.
 - Emphasis on speed and low friction for people who think out loud.
+- Not a keyboard-replacement dictation tool (that category: Superwhisper, Wispr Flow). Those tools type for you in other apps; Nodl is the destination where the finished entry or note lives, together with its recording and transcript. See: https://nodl.now/articles/voice-journaling-vs-dictation-apps
 - According to Nodl, data is stored encrypted on servers in Germany, processed only by EU-based AI providers, and never used to train AI models.
 
 ## Related Pages
