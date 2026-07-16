@@ -1,0 +1,51 @@
+<% base_url = "#{StructuredDataHelper::CANONICAL_BASE}#{I18n.locale == :de ? artikel_index_path : article_index_path}" %>
+<% content_for :title, t("content_index.title") %>
+<% content_for :head do %>
+  <meta name="description" content="<%= t("content_index.meta_description") %>" />
+  <%= json_ld_tag({
+    "@context" => "https://schema.org",
+    "@type" => "CollectionPage",
+    "name" => t("content_index.heading"),
+    "inLanguage" => I18n.locale.to_s,
+    "url" => base_url,
+    "mainEntity" => {
+      "@type" => "ItemList",
+      "itemListElement" => @pages.each_with_index.map do |page, idx|
+        {
+          "@type" => "ListItem",
+          "position" => idx + 1,
+          "name" => page.title,
+          "url" => "#{StructuredDataHelper::CANONICAL_BASE}#{I18n.locale == :de ? artikel_path(page.slug) : article_path(page.slug)}"
+        }
+      end
+    }
+  }) %>
+  <%= json_ld_tag(breadcrumb_schema([
+    ["Home", "#{StructuredDataHelper::CANONICAL_BASE}/"],
+    [t("content_index.heading"), base_url]
+  ])) %>
+<% end %>
+
+<section class="pt-16 pb-10 bg-base-100">
+  <div class="container mx-auto px-4 max-w-3xl space-y-5" data-reveal>
+    <span class="lp-eyebrow"><%= t("content_index.eyebrow") %></span>
+    <h1 class="text-4xl sm:text-5xl font-extrabold leading-[1.1] tracking-tight text-balance"><%= t("content_index.heading") %></h1>
+    <p class="text-lg sm:text-xl text-base-content/70"><%= t("content_index.intro") %></p>
+  </div>
+</section>
+
+<section class="py-10 bg-base-200/60 border-t border-base-300/60">
+  <div class="container mx-auto px-4 max-w-3xl space-y-4" data-reveal>
+    <% @pages.each do |page| %>
+      <%= link_to I18n.locale == :de ? artikel_path(page.slug) : article_path(page.slug),
+                  class: "card bg-base-100 border border-base-300/60 transition-colors hover:border-primary/40" do %>
+        <div class="card-body gap-2">
+          <h2 class="card-title text-xl leading-snug"><%= page.title %></h2>
+          <% if page.description.present? %>
+            <p class="text-base-content/70"><%= page.description %></p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>

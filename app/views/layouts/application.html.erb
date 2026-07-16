@@ -61,6 +61,9 @@
               <%= link_to t("footer.pricing"), user_signed_in? ? payments_path : root_path(anchor: "pricing"), class: "link link-hover" %>
               <%= link_to t("footer.demo"), try_now_path, class: "link link-hover" %>
             <% end %>
+            <% if PrivateContent.content_slugs(I18n.locale).any? %>
+              <%= link_to t("footer.articles"), I18n.locale == :de ? artikel_index_path : article_index_path, class: "link link-hover" %>
+            <% end %>
             <% LegalPage::FOOTER_SLUGS.each do |slug| %>
               <%= legal_page_link(slug) %>
             <% end %>

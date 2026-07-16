@@ -8,12 +8,21 @@ class ContentPagesTest < ActionDispatch::IntegrationTest
     @private_views = Rails.root.join("tmp/content_pages_test/#{SecureRandom.hex(8)}/views")
     @private_views.join("content/de").mkpath
     @private_views.join("content/en").mkpath
-    @private_views.join("content/de/tagebuch-diktieren.html.erb").write(
-      "<h1>DE Artikel</h1><p>locale=<%= I18n.locale %></p>"
-    )
-    @private_views.join("content/en/voice-journaling.html.erb").write(
-      "<h1>EN article</h1><p>locale=<%= I18n.locale %></p>"
-    )
+    @private_views.join("content/de/tagebuch-diktieren.html.erb").write(<<~ERB)
+      <% content_for :title, "Tagebuch diktieren: Der komplette Guide – Nodl" %>
+      <% content_for :head do %>
+        <meta name="description" content="So diktierst du dein Tagebuch." />
+      <% end %>
+      <h1>DE Artikel</h1><p>locale=<%= I18n.locale %></p>
+    ERB
+    @private_views.join("content/en/voice-journaling.html.erb").write(<<~ERB)
+      <% content_for :title, "Voice Journaling Guide – Nodl" %>
+      <% content_for :head do %>
+        <meta name="description" content="How to journal by speaking." />
+      <% end %>
+      <h1>EN article</h1><p>locale=<%= I18n.locale %></p>
+    ERB
+    @private_views.join("content/de/ohne-meta.html.erb").write("<h1>Ohne Meta</h1>")
   end
 
   teardown do
@@ -82,11 +91,65 @@ class ContentPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "sitemap lists articles from both locales" do
+  test "german hub lists articles with metadata parsed from templates" do
+    with_private_view_root(@private_views) do
+      get "/artikel"
+
+      assert_response :success
+      assert_includes response.body, "Tagebuch diktieren: Der komplette Guide"
+      assert_not_includes response.body, "Der komplette Guide – Nodl"
+      assert_includes response.body, "So diktierst du dein Tagebuch."
+      assert_select "a[href=?]", "/artikel/tagebuch-diktieren"
+      assert_select "footer a[href=?]", "/artikel"
+    end
+  end
+
+  test "hub falls back to a humanized slug when a template has no title" do
+    with_private_view_root(@private_views) do
+      get "/artikel"
+
+      assert_select "a[href=?]", "/artikel/ohne-meta", text: /Ohne meta/
+    end
+  end
+
+  test "german hub declares canonical and hreflang pair" do
+    with_private_view_root(@private_views) do
+      get "/artikel"
+
+      assert_select "link[rel=canonical][href=?]", "https://nodl.now/artikel"
+      assert_select "link[rel=alternate][hreflang=de][href=?]", "https://nodl.now/artikel"
+      assert_select "link[rel=alternate][hreflang=en][href=?]", "https://nodl.now/articles"
+    end
+  end
+
+  test "english hub renders with forced English locale" do
+    with_private_view_root(@private_views) do
+      get "/articles", headers: { "Accept-Language" => "de-DE,de;q=0.9" }
+
+      assert_response :success
+      assert_includes response.body, "Voice Journaling Guide"
+      assert_select "a[href=?]", "/articles/voice-journaling"
+      assert_select "link[rel=canonical][href=?]", "https://nodl.now/articles"
+    end
+  end
+
+  test "hub 404s without private content" do
+    Dir.mktmpdir do |empty_root|
+      with_private_view_root(empty_root) do
+        get "/artikel"
+
+        assert_response :not_found
+      end
+    end
+  end
+
+  test "sitemap lists hubs and articles from both locales" do
     with_private_view_root(@private_views) do
       get sitemap_path(format: :xml)
 
       assert_response :success
+      assert_includes response.body, "<loc>http://www.example.com/artikel</loc>"
+      assert_includes response.body, "<loc>http://www.example.com/articles</loc>"
       assert_includes response.body, "<loc>http://www.example.com/artikel/tagebuch-diktieren</loc>"
       assert_includes response.body, "<loc>http://www.example.com/articles/voice-journaling</loc>"
     end

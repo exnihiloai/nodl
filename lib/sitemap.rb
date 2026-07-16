@@ -27,6 +27,8 @@ class Sitemap
 
   CONTENT_LOCALES = { de: :artikel_path, en: :article_path }.freeze
 
+  CONTENT_INDEXES = { de: :artikel_index_path, en: :article_index_path }.freeze
+
   LEGAL_ENTRIES = {
     "imprint" => :imprint_path,
     "privacy" => :privacy_path,
@@ -57,7 +59,16 @@ class Sitemap
 
     def content_entries(base_url:, url_helpers:)
       CONTENT_LOCALES.flat_map do |locale, path_helper|
-        PrivateContent.content_slugs(locale).map do |slug|
+        slugs = PrivateContent.content_slugs(locale)
+        next [] if slugs.empty?
+
+        index_entry = Entry.new(
+          loc: "#{base_url.chomp("/")}#{url_helpers.public_send(CONTENT_INDEXES.fetch(locale))}",
+          changefreq: "weekly",
+          priority: "0.7"
+        )
+
+        [ index_entry ] + slugs.map do |slug|
           Entry.new(
             loc: "#{base_url.chomp("/")}#{url_helpers.public_send(path_helper, slug)}",
             changefreq: "monthly",

@@ -21,6 +21,10 @@ Rails.application.routes.draw do
   get "/for/coaches", to: "pages#for_coaches", as: :for_coaches_en, defaults: { locale: "en" }
 
   # Operator content pages (articles/guides) rendered from private/views/content/<locale>/<slug>.
+  get "/artikel", to: "content_pages#index", as: :artikel_index,
+      format: false, defaults: { locale: "de" }
+  get "/articles", to: "content_pages#index", as: :article_index,
+      format: false, defaults: { locale: "en" }
   get "/artikel/:slug", to: "content_pages#show", as: :artikel,
       format: false, defaults: { locale: "de" }, constraints: { slug: /[a-z0-9-]+/ }
   get "/articles/:slug", to: "content_pages#show", as: :article,
