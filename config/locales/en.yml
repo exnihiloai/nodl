@@ -82,7 +82,14 @@ en:
       10: October
       11: November
       12: December
+  content_index:
+    title: Articles & Guides – Nodl
+    meta_description: "Nodl's voice journaling articles: how to get started and which apps fit the way you journal."
+    eyebrow: Guides
+    heading: Articles & Guides
+    intro: Voice journaling guides and app comparisons for anyone who would rather speak than type.
   footer:
+    articles: Articles
     imprint: Imprint
     privacy: Privacy
     terms: Terms

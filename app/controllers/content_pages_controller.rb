@@ -4,6 +4,12 @@
 # every article has exactly one language and one URL. Deployments without
 # private content simply 404 here, mirroring the marketing page contract.
 class ContentPagesController < ApplicationController
+  def index
+    @pages = PrivateContent.content_pages(locale_from_route)
+
+    render "errors/not_found", status: :not_found if @pages.empty?
+  end
+
   def show
     unless PrivateContent.content_page?(locale_from_route, params[:slug])
       return render "errors/not_found", status: :not_found

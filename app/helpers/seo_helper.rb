@@ -20,6 +20,8 @@ module SeoHelper
     try_now: :try_now_path
   }.freeze
 
+  CONTENT_INDEX_PAIR = { de: :artikel_index_path, en: :article_index_path }.freeze
+
   def seo_link_tags
     return unless controller_name.in?(%w[pages content_pages])
 
@@ -27,6 +29,8 @@ module SeoHelper
       localized_page_link_tags(pair)
     elsif controller_name == "pages" && (path_helper = SINGLE_URL_ACTIONS[action_name.to_sym])
       tag.link(rel: "canonical", href: canonical_url(public_send(path_helper)))
+    elsif controller_name == "content_pages" && action_name == "index"
+      localized_page_link_tags(CONTENT_INDEX_PAIR)
     elsif controller_name == "content_pages" && action_name == "show"
       content_page_canonical_tag
     end

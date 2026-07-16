@@ -202,7 +202,14 @@ de:
       10: Oktober
       11: November
       12: Dezember
+  content_index:
+    title: Artikel & Guides – Nodl
+    meta_description: Alle Artikel und Guides von Nodl, vom Tagebuch-Diktieren bis zur Sitzungsnotiz per Sprache.
+    eyebrow: Wissen
+    heading: Artikel & Guides
+    intro: Guides und App-Vergleiche rund ums Tagebuch-Diktieren, für alle, die lieber sprechen als tippen.
   footer:
+    articles: Artikel
     imprint: Impressum
     privacy: Datenschutz
     terms: AGB

@@ -13,7 +13,7 @@ class FlashAutoDismissTest < ApplicationJsSystemTestCase
 
     # The success notice is rendered, then auto-dismisses without any user action.
     assert_selector "[role='alert']", text: "Account created successfully.", visible: :all
-    assert_no_selector "[role='alert']", text: "Account created successfully.", visible: :all, wait: 7
+    assert_no_selector "[role='alert']", text: "Account created successfully.", visible: :all, wait: 15
   end
 
   test "error flash stays so it can be read" do

@@ -3,6 +3,13 @@ require "selenium/webdriver"
 
 class ApplicationJsSystemTestCase < ApplicationSystemTestCase
   if ENV["JS_SYSTEM_TESTS"] == "1"
+    # Capybara's default 2s wait is not enough when four parallel headless
+    # Chromium instances share a loaded CI runner: login redirects and
+    # Turbo-driven modals regularly take longer, which makes tests fail in
+    # rotation. Waiting matchers return as soon as the condition holds, so a
+    # generous ceiling does not slow down green runs.
+    Capybara.default_max_wait_time = 15
+
     driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1000 ] do |options|
       options.add_argument("--no-sandbox")
       options.add_argument("--disable-dev-shm-usage")

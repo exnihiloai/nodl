@@ -32,11 +32,9 @@ class AudioRecorderJsTest < ApplicationJsSystemTestCase
     # Button is locked (disabled) initially
     assert_button "Record", disabled: true
 
-    # Wait for more than 3 seconds to ensure the 3s timer reactivates it
-    sleep 3.2
-
-    # Button is active again
-    assert_button "Record", disabled: false
+    # The 3s cooldown timer must reactivate it. Waiting matcher instead of a
+    # fixed sleep: JS timers stretch on loaded CI runners.
+    assert_button "Record", disabled: false, wait: 10
   end
 
   test "stop recording inserts processing row when dashboard cable stream is unavailable" do

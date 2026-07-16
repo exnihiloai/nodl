@@ -4,6 +4,16 @@
 class PrivateContent
   CONTENT_SLUG_FORMAT = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
+  # Listing metadata for one operator article, parsed from its template.
+  ContentPage = Data.define(:slug, :title, :description)
+
+  # Articles declare their metadata inline (`content_for :title` + meta
+  # description); the hub index reads it back out of the template source so
+  # there is no separate manifest to keep in sync.
+  CONTENT_TITLE_PATTERN = /content_for\s+:title,\s*"([^"]+)"/
+  CONTENT_DESCRIPTION_PATTERN = /<meta\s+name="description"\s+content="([^"]+)"/
+  CONTENT_TITLE_BRAND_SUFFIX = /\s*[-–—]\s*Nodl\z/
+
   MARKETING_PAGES = {
     about: "pages/about",
     for_doctors: "pages/for_doctors",
@@ -56,6 +66,19 @@ class PrivateContent
         .map { |file| File.basename(file, ".html.erb") }
         .grep(CONTENT_SLUG_FORMAT)
         .sort
+    end
+
+    def content_pages(locale)
+      content_slugs(locale).map do |slug|
+        source = view_root.join("content", locale.to_s, "#{slug}.html.erb").read
+        title = source[CONTENT_TITLE_PATTERN, 1]&.sub(CONTENT_TITLE_BRAND_SUFFIX, "")
+
+        ContentPage.new(
+          slug:,
+          title: title.presence || slug.tr("-", " ").upcase_first,
+          description: source[CONTENT_DESCRIPTION_PATTERN, 1]
+        )
+      end
     end
 
     def locale_paths
