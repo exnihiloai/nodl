@@ -2,6 +2,8 @@
 
 <% segments = @recording_session.transcript_segments %>
 <% has_player = @recording_session.completed? && @recording_session.playback_audio.attached? %>
+<% annotated_transcript_text = annotated_transcript_plain_text(segments) %>
+<% annotated_transcript_rich_text = annotated_transcript_html(segments) %>
 
 <section class="bg-base-200 py-10">
   <div class="container mx-auto px-4 max-w-5xl space-y-6"
@@ -57,7 +59,14 @@
     <%= render "recording_sessions/integrity_status", recording_session: @recording_session, integrity_wall: @integrity_wall %>
 
     <div class="grid gap-6 lg:grid-cols-2">
-      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm" data-controller="clipboard" data-clipboard-copy-text-value="<%= t("clipboard.copy") %>" data-clipboard-copied-text-value="<%= t("clipboard.copied") %>">
+      <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm"
+               data-controller="clipboard"
+               data-clipboard-copy-text-value="<%= t("clipboard.copy") %>"
+               data-clipboard-copied-text-value="<%= t("clipboard.copied") %>"
+               <% if annotated_transcript_text.present? %>
+                 data-clipboard-plain-text-value="<%= annotated_transcript_text %>"
+                 data-clipboard-html-value="<%= annotated_transcript_rich_text %>"
+               <% end %>>
         <div class="flex items-start justify-between gap-2">
           <h2 class="text-xl font-semibold"><%= t("recording_sessions.show.transcript") %></h2>
           <% if @recording_session.completed? && (segments.present? || @recording_session.transcript_text.present?) %>
