@@ -21,8 +21,8 @@
     </div>
   <% end %>
 
-  <%# Only the transcript paragraphs are copyable; the speaker legend above is
-      intentionally left outside the clipboard source. %>
+  <%# The visible transcript remains the clipboard source fallback. Multi-speaker
+      recordings provide an annotated clipboard override on the parent section. %>
   <div data-clipboard-target="source">
     <% segments.chunk { |segment| segment["speaker"] }.each_with_index do |(speaker, run), run_index| %>
       <% color = colors[speaker] %>

@@ -19,6 +19,40 @@ module RecordingSessionsHelper
     end
   end
 
+  # Consecutive segments from the same speaker become a single readable turn.
+  # Speaker numbers follow first appearance so they match the on-page legend.
+  def transcript_speaker_turns(segments)
+    speaker_numbers = transcript_speakers(segments).each_with_index.to_h { |speaker, index| [ speaker, index + 1 ] }
+
+    Array(segments).chunk { |segment| segment["speaker"].presence || false }.filter_map do |speaker, run|
+      speaker = nil unless speaker
+      text = run.filter_map { |segment| strip_speaker_label(segment["text"]).presence }.join(" ")
+      next if text.blank?
+
+      { speaker: speaker, number: speaker_numbers[speaker], text: text }
+    end
+  end
+
+  def annotated_transcript_plain_text(segments)
+    return unless multi_speaker_transcript?(segments)
+
+    transcript_speaker_turns(segments).map { |turn| annotated_transcript_turn_text(turn) }.join("\n\n")
+  end
+
+  def annotated_transcript_html(segments)
+    return unless multi_speaker_transcript?(segments)
+
+    transcript_speaker_turns(segments).map do |turn|
+      tag.p do
+        if turn[:number]
+          safe_join([ tag.strong("[#{transcript_speaker_label(turn[:number])}]"), " ", turn[:text] ])
+        else
+          turn[:text]
+        end
+      end
+    end.join
+  end
+
   SPEAKER_LABEL = /\Aspeaker[\s_-]*\d+\s*:?\s*/i
 
   # Removes a leading "speaker_1:" / "Speaker 1:" label that Voxtral prepends to
@@ -58,5 +92,17 @@ module RecordingSessionsHelper
 
   def recording_delete_confirm(recording_session)
     t("recording_sessions.actions.delete_confirm", title: recording_session.title)
+  end
+
+  private
+
+  def annotated_transcript_turn_text(turn)
+    return turn[:text] unless turn[:number]
+
+    "[#{transcript_speaker_label(turn[:number])}] #{turn[:text]}"
+  end
+
+  def transcript_speaker_label(number)
+    t("recording_sessions.interactive.speaker", number: number)
   end
 end

@@ -9,12 +9,14 @@ export default class extends Controller {
   static values = {
     resetDelay: { type: Number, default: 2000 },
     copyText: { type: String, default: "Copy" },
-    copiedText: { type: String, default: "Copied" }
+    copiedText: { type: String, default: "Copied" },
+    plainText: String,
+    html: String
   }
 
   async copy() {
-    const html = this.sourceTarget.innerHTML
-    const text = this.sourceTarget.innerText
+    const html = this.hasHtmlValue ? this.htmlValue : this.sourceTarget.innerHTML
+    const text = this.hasPlainTextValue ? this.plainTextValue : this.sourceTarget.innerText
 
     try {
       if (navigator.clipboard && window.ClipboardItem) {

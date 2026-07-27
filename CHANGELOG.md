@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.0] - 2026-07-27
+
+### Changed
+
+- **Speaker labels when copying transcripts:** Copied multi-speaker transcripts now identify each turn with a clear label such as `[Person 1]` or `[Person 2]`, so pasted meeting transcripts preserve who said what. Existing recordings also benefit when their transcripts already contain speaker data.
+
 ## [0.28.0] - 2026-07-16
 
 ### Added

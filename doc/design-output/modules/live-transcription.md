@@ -121,6 +121,9 @@ renders a full-width player below the Transcript/Document cards, driven by
 - **Transcript** ([`_interactive_transcript.html.erb`](../../../app/views/recording_sessions/_interactive_transcript.html.erb))
   is a compact block. Consecutive segments from one speaker flow as a single paragraph; a new
   paragraph starts only on a speaker change.
+- **Transcript copy:** multi-speaker clipboard exports prefix each consecutive speaker turn with a
+  localized bracketed label (`[Person 1]`, `[Person 2]`, ...). The visible transcript remains compact,
+  while single-speaker and legacy plain-text transcripts keep their clean, unannotated copy.
 - **Two-way sync:** click a segment to seek; during playback/scrub the current segment is highlighted
   **in the speaker's color** and scrolled into view.
 - **Speaker styling only when >1 speaker:** distinct color per speaker, segments underlined in that
