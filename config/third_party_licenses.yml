@@ -30,27 +30,27 @@ groups:
     copyright: Copyright (c) 37signals, LLC
     url: https://github.com/basecamp/trix
   - name: actioncable
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) 37signals LLC
     url: https://rubyonrails.org
   - name: actionmailbox
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) 37signals LLC
     url: https://rubyonrails.org
   - name: actionmailer
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: actionpack
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: actiontext
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) 37signals LLC
     url: https://rubyonrails.org
   - name: actionview
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: active_storage_encryption
@@ -58,23 +58,23 @@ groups:
     copyright: Copyright Cheddar Payments BV, Julik Tarkhanov, Sebastian van Hesteren
     url: https://github.com/cheddar-me/active_storage_encryption
   - name: activejob
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: activemodel
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: activerecord
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: activestorage
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson, 37signals LLC
     url: https://rubyonrails.org
   - name: activesupport
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: afm
@@ -257,7 +257,7 @@ groups:
     copyright: Copyright (c) 2009 -- 2018 by Mike Dalessio, Bryan Helmkamp
     url: https://github.com/flavorjones/loofah
   - name: mail
-    version: 2.9.0
+    version: 2.9.1
     copyright: Copyright (c) 2009-2016 Mikel Lindsaar
     url: https://github.com/mikel/mail
   - name: marcel
@@ -423,7 +423,7 @@ groups:
       Tsutomu Kuroda, Uchio Kondo, Wyatt Pan, Yehuda Katz, Zachary Scott
     url: https://github.com/rack/rackup
   - name: rails
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: rails-dom-testing
@@ -436,7 +436,7 @@ groups:
       Mike Dalessio
     url: https://github.com/rails/rails-html-sanitizer
   - name: railties
-    version: 8.1.3
+    version: 8.1.3.1
     copyright: Copyright (c) David Heinemeier Hansson
     url: https://rubyonrails.org
   - name: rake
