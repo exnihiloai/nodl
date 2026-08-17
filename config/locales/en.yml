@@ -88,6 +88,7 @@ en:
     eyebrow: Guides
     heading: Articles & Guides
     intro: Voice journaling guides and app comparisons for anyone who would rather speak than type.
+    twin: Read in German
   footer:
     articles: Articles
     imprint: Imprint
@@ -96,6 +97,7 @@ en:
     ai_transparency: AI Transparency
     subprocessors: Subprocessors
     security: Security
+    dpa: DPA
   legal_pages:
     imprint:
       title: Imprint - Nodl
@@ -109,6 +111,8 @@ en:
       title: Subprocessor Register - Nodl
     security:
       title: Security Measures (TOMs) - Nodl
+    dpa:
+      title: Data Processing Agreement (DPA) - Nodl
     related:
       heading: Related documents
   errors:

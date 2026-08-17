@@ -208,6 +208,7 @@ de:
     eyebrow: Wissen
     heading: Artikel & Guides
     intro: Guides und App-Vergleiche rund ums Tagebuch-Diktieren, für alle, die lieber sprechen als tippen.
+    twin: Auf Englisch lesen
   footer:
     articles: Artikel
     imprint: Impressum
@@ -216,6 +217,7 @@ de:
     ai_transparency: KI-Transparenz
     subprocessors: Subprozessoren
     security: Sicherheit
+    dpa: AVV
   legal_pages:
     imprint:
       title: Impressum - Nodl
@@ -229,6 +231,8 @@ de:
       title: Subprozessorenregister - Nodl
     security:
       title: Sicherheitsmaßnahmen (TOMs) - Nodl
+    dpa:
+      title: Auftragsverarbeitungsvertrag (AVV) - Nodl
     related:
       heading: Verwandte Dokumente
   flash:

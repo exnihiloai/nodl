@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.0] - 2026-08-17
+
+### Added
+
+- **Data processing agreement published at `/avv`.** The Art. 28 GDPR agreement is now readable before signup, which is what data protection offices at universities, clinical practices and companies ask for first. The contract text and its descriptive annexes are served publicly; the form and dashboard implementation spec stays internal. Linked contextually from the privacy policy, terms, security and subprocessor pages.
+- **Language switching between translated articles.** Article pairs now declare `hreflang` in both directions instead of a bare self-canonical, so Google treats them as language variants rather than competing pages. The article hubs show a per-entry switch. Both only appear when both halves are actually deployed, so a partial rollout never links to a 404.
+
+### Changed
+
+- **Sitemap no longer lists `/login` and `/register`.** Google reported both as discovered-not-indexed across several crawls. `/help/integrity-proof` is listed instead, and the new `/avv` page joins the legal entries.
+
 ## [0.29.1] - 2026-08-01
 
 ### Security

@@ -23,6 +23,11 @@ class ContentPagesTest < ActionDispatch::IntegrationTest
       <h1>EN article</h1><p>locale=<%= I18n.locale %></p>
     ERB
     @private_views.join("content/de/ohne-meta.html.erb").write("<h1>Ohne Meta</h1>")
+
+    # A translated pair drawn from SeoHelper::CONTENT_PAGE_PAIRS, used for the
+    # hreflang assertions below.
+    @private_views.join("content/de/interview-transkribieren.html.erb").write("<h1>DE Zwilling</h1>")
+    @private_views.join("content/en/how-to-transcribe-an-interview.html.erb").write("<h1>EN twin</h1>")
   end
 
   teardown do
@@ -54,6 +59,67 @@ class ContentPagesTest < ActionDispatch::IntegrationTest
       get "/artikel/tagebuch-diktieren"
 
       assert_select "link[rel=canonical][href=?]", "https://nodl.now/artikel/tagebuch-diktieren"
+    end
+  end
+
+  test "translated articles cross-link via hreflang from both sides" do
+    with_private_view_root(@private_views) do
+      get "/artikel/interview-transkribieren"
+
+      assert_select "link[rel=canonical][href=?]", "https://nodl.now/artikel/interview-transkribieren"
+      assert_select "link[rel=alternate][hreflang=de][href=?]", "https://nodl.now/artikel/interview-transkribieren"
+      assert_select "link[rel=alternate][hreflang=en][href=?]", "https://nodl.now/articles/how-to-transcribe-an-interview"
+      assert_select "link[rel=alternate][hreflang=x-default][href=?]", "https://nodl.now/articles/how-to-transcribe-an-interview"
+
+      get "/articles/how-to-transcribe-an-interview"
+
+      assert_select "link[rel=canonical][href=?]", "https://nodl.now/articles/how-to-transcribe-an-interview"
+      assert_select "link[rel=alternate][hreflang=de][href=?]", "https://nodl.now/artikel/interview-transkribieren"
+      assert_select "link[rel=alternate][hreflang=en][href=?]", "https://nodl.now/articles/how-to-transcribe-an-interview"
+    end
+  end
+
+  test "untranslated articles keep a plain self-canonical without hreflang" do
+    with_private_view_root(@private_views) do
+      get "/artikel/tagebuch-diktieren"
+
+      assert_select "link[rel=canonical][href=?]", "https://nodl.now/artikel/tagebuch-diktieren"
+      assert_select "link[rel=alternate][hreflang]", false
+    end
+  end
+
+  test "hreflang is omitted when only one half of a pair is deployed" do
+    Dir.mktmpdir do |root|
+      views = Pathname.new(root).join("views")
+      views.join("content/de").mkpath
+      views.join("content/en").mkpath
+      views.join("content/de/interview-transkribieren.html.erb").write("<h1>DE only</h1>")
+
+      with_private_view_root(views) do
+        get "/artikel/interview-transkribieren"
+
+        assert_response :success
+        assert_select "link[rel=canonical][href=?]", "https://nodl.now/artikel/interview-transkribieren"
+        assert_select "link[rel=alternate][hreflang]", false
+      end
+    end
+  end
+
+  test "hub offers a language switch only for translated articles" do
+    with_private_view_root(@private_views) do
+      get "/artikel"
+
+      assert_select "a[href=?]", "/articles/how-to-transcribe-an-interview"
+      # tagebuch-diktieren has no twin, so no switch is rendered for it
+      assert_select "a[href=?]", "/articles/tagebuch-diktieren", false
+    end
+  end
+
+  test "hub language switch points back from the English side" do
+    with_private_view_root(@private_views) do
+      get "/articles"
+
+      assert_select "a[href=?]", "/artikel/interview-transkribieren"
     end
   end
 

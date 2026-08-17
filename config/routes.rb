@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   get "/ki-transparenz", to: "legal_pages#ai_transparency", as: :ai_transparency
   get "/subprozessoren", to: "legal_pages#subprocessors", as: :subprocessors
   get "/sicherheit", to: "legal_pages#security", as: :security
+  get "/avv", to: "legal_pages#dpa", as: :dpa
   get "/try-now", to: "pages#try_now"
   get "/healthz", to: "pages#healthz"
   get "/readyz", to: "pages#readyz"

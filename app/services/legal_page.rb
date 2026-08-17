@@ -13,7 +13,7 @@
 # supported per language: a `-DE`/`-EN` suffix (current authoring convention)
 # and a legacy `.de`/`.en` dotted infix (still used by the imprint).
 class LegalPage
-  SLUGS = %w[imprint privacy terms ai_transparency subprocessors security].freeze
+  SLUGS = %w[imprint privacy terms ai_transparency subprocessors security dpa].freeze
 
   # Core documents shown directly in the site footer. The remaining, more
   # detailed compliance documents are surfaced contextually from these pages via
@@ -25,11 +25,12 @@ class LegalPage
   # documents that actually exist.
   RELATED = {
     "imprint" => %w[privacy terms],
-    "privacy" => %w[terms ai_transparency security subprocessors],
-    "terms" => %w[privacy ai_transparency],
+    "privacy" => %w[terms ai_transparency security subprocessors dpa],
+    "terms" => %w[privacy ai_transparency dpa],
     "ai_transparency" => %w[privacy terms],
-    "security" => %w[privacy subprocessors],
-    "subprocessors" => %w[privacy security]
+    "security" => %w[privacy subprocessors dpa],
+    "subprocessors" => %w[privacy security dpa],
+    "dpa" => %w[privacy subprocessors security]
   }.freeze
 
   # Maps a slug to the canonical document basename used in private/legal/.

@@ -54,6 +54,14 @@ English:
 - [Best voice journaling apps compared (2026)](https://nodl.now/articles/best-voice-journaling-apps): Nodl, Day One, Rosebud, Lound, Speakwise, and free recorders — sorted by what an entry becomes.
 - [Encrypted voice journal: private by design](https://nodl.now/articles/encrypted-voice-journal): The four privacy questions to ask any voice journaling app.
 - [Voice journaling vs. dictation apps: which one do you need?](https://nodl.now/articles/voice-journaling-vs-dictation-apps): How voice journals differ from keyboard-replacement dictation tools like Superwhisper and Wispr Flow, and when to use both.
+- [How to transcribe an interview](https://nodl.now/articles/how-to-transcribe-an-interview): Transcription conventions, realistic time cost, accents and filler words, tools compared. German twin: https://nodl.now/artikel/interview-transkribieren
+- [Interview transcription and the GDPR](https://nodl.now/articles/interview-transcription-gdpr): Consent, processing agreements under Article 28, anonymisation versus pseudonymisation, retention. German twin: https://nodl.now/artikel/interview-transkription-datenschutz
+- [Interview consent form: template and explanation](https://nodl.now/articles/interview-consent-form): Full template with every clause explained, including the processor clause most templates omit. German twin: https://nodl.now/artikel/einwilligungserklaerung-interview
+- [Anonymising interview transcripts](https://nodl.now/articles/anonymising-interview-transcripts): Identifying feature combinations, a worked example, the expert-interview problem. German twin: https://nodl.now/artikel/interview-anonymisieren
+- [Interview transcription cost](https://nodl.now/articles/interview-transcription-cost): UK and international human transcription rates per audio minute against automated services, worked through on eight 60-minute interviews. German twin: https://nodl.now/artikel/interview-transkribieren-lassen-kosten
+- [Dictating clinical documentation](https://nodl.now/articles/clinical-documentation-dictation): Contemporaneous records, visible amendments, confidentiality and Article 9 data, tamper evidence. German twin: https://nodl.now/artikel/behandlungsdokumentation-diktieren
+- [Therapy session notes](https://nodl.now/articles/therapy-session-notes): Scope of a session note, clinical record versus personal process notes on access requests, risk documentation. German twin: https://nodl.now/artikel/psychotherapie-dokumentation
+- [Physiotherapy documentation](https://nodl.now/articles/physiotherapy-documentation): What records must contain, why clinical reasoning now sits with the therapist, fitting notes into the appointment slot. German twin: https://nodl.now/artikel/physiotherapie-dokumentation
 - [All articles and guides](https://nodl.now/articles): Index of all English guides. German index: https://nodl.now/artikel
 
 German:
