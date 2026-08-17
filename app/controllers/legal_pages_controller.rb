@@ -23,6 +23,10 @@ class LegalPagesController < ApplicationController
     show("security")
   end
 
+  def dpa
+    show("dpa")
+  end
+
   private
 
   def show(slug)

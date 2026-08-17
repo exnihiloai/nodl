@@ -20,8 +20,11 @@ class SitemapIntegrationTest < ActionDispatch::IntegrationTest
         assert_response :success
         assert_equal "application/xml; charset=utf-8", response.content_type
         assert_includes response.body, "<loc>http://www.example.com/</loc>"
-        assert_includes response.body, "<loc>http://www.example.com/register</loc>"
+        assert_includes response.body, "<loc>http://www.example.com/help/integrity-proof</loc>"
         assert_not_includes response.body, "<loc>http://www.example.com/about</loc>"
+        # Deliberately excluded: Google reported both as discovered-not-indexed.
+        assert_not_includes response.body, "<loc>http://www.example.com/login</loc>"
+        assert_not_includes response.body, "<loc>http://www.example.com/register</loc>"
       end
     end
   end

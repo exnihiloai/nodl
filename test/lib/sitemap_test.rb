@@ -25,8 +25,9 @@ class SitemapTest < ActiveSupport::TestCase
         assert_includes locs, "https://example.com/"
         assert_includes locs, "https://example.com/about"
         assert_includes locs, "https://example.com/try-now"
-        assert_includes locs, "https://example.com/login"
-        assert_includes locs, "https://example.com/register"
+        assert_includes locs, "https://example.com/help/integrity-proof"
+        assert_not_includes locs, "https://example.com/login"
+        assert_not_includes locs, "https://example.com/register"
       end
     end
   end
@@ -38,8 +39,7 @@ class SitemapTest < ActiveSupport::TestCase
 
         locs = entries.map(&:loc)
         assert_includes locs, "https://example.com/"
-        assert_includes locs, "https://example.com/login"
-        assert_includes locs, "https://example.com/register"
+        assert_includes locs, "https://example.com/help/integrity-proof"
         assert_not_includes locs, "https://example.com/about"
         assert_not_includes locs, "https://example.com/try-now"
       end

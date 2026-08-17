@@ -2,10 +2,12 @@
 class Sitemap
   Entry = Data.define(:loc, :changefreq, :priority)
 
+  # /login and /register are deliberately absent: Google reported both as
+  # "discovered, not indexed" across several crawls, so listing them only dilutes
+  # the sitemap without ever producing an indexed URL.
   PUBLIC_ENTRIES = [
     { path: :root_path, changefreq: "weekly", priority: "1.0" },
-    { path: :login_path, changefreq: "monthly", priority: "0.5" },
-    { path: :register_path, changefreq: "monthly", priority: "0.7" }
+    { path: :integrity_proof_help_path, changefreq: "monthly", priority: "0.5" }
   ].freeze
 
   MARKETING_ENTRIES = [
@@ -32,7 +34,8 @@ class Sitemap
   LEGAL_ENTRIES = {
     "imprint" => :imprint_path,
     "privacy" => :privacy_path,
-    "terms" => :terms_path
+    "terms" => :terms_path,
+    "dpa" => :dpa_path
   }.freeze
 
   class << self

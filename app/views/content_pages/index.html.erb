@@ -36,16 +36,30 @@
 
 <section class="py-10 bg-base-200/60 border-t border-base-300/60">
   <div class="container mx-auto px-4 max-w-3xl space-y-4" data-reveal>
+    <%# The card stays clickable as a whole via a stretched title link; the language
+        switch sits above that overlay so it stays separately clickable. Nesting a
+        second <a> inside the card link would be invalid HTML. %>
     <% @pages.each do |page| %>
-      <%= link_to I18n.locale == :de ? artikel_path(page.slug) : article_path(page.slug),
-                  class: "card bg-base-100 border border-base-300/60 transition-colors hover:border-primary/40" do %>
+      <% twin_path = content_page_twin_path(I18n.locale, page.slug) %>
+      <div class="relative card bg-base-100 border border-base-300/60 transition-colors hover:border-primary/40">
         <div class="card-body gap-2">
-          <h2 class="card-title text-xl leading-snug"><%= page.title %></h2>
+          <h2 class="card-title text-xl leading-snug">
+            <%= link_to page.title,
+                        I18n.locale == :de ? artikel_path(page.slug) : article_path(page.slug),
+                        class: "after:absolute after:inset-0 after:content-['']" %>
+          </h2>
           <% if page.description.present? %>
             <p class="text-base-content/70"><%= page.description %></p>
           <% end %>
+          <% if twin_path %>
+            <%= link_to twin_path,
+                        class: "relative z-10 mt-1 w-fit text-sm link link-hover text-base-content/60",
+                        hreflang: I18n.locale == :de ? "en" : "de" do %>
+              <%= t("content_index.twin") %>
+            <% end %>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     <% end %>
   </div>
 </section>
