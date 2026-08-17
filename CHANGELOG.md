@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.31.0] - 2026-08-17
+
+### Added
+
+- **IndexNow submission.** New URLs can be pushed to Bing and the other participating engines instead of waiting for a crawl, which matters because ChatGPT's web search reads the Bing index. `bin/rails indexnow:submit` sends every sitemap URL; `bin/rails 'indexnow:urls[…]'` sends a specific list. Authentication is a public key file in `public/`, discovered automatically — no credentials involved. Bing removed its bulk URL submission form, so this replaces submitting pages one at a time by hand.
+
 ## [0.30.1] - 2026-08-17
 
 ### Changed
