@@ -42,4 +42,17 @@ class LlmsIntegrationTest < ActionDispatch::IntegrationTest
     assert_not_nil response.headers["Link"]
     assert_includes response.headers["Link"], "describedby"
   end
+
+  test "llms.txt states the trial limits the billing catalog enforces" do
+    trial = BillingCatalog::LIMITS.fetch("trial")
+    words = { 1 => "one", 2 => "two", 3 => "three", 4 => "four", 5 => "five" }
+    recordings = words.fetch(trial.dig("recordings", "limit"))
+    exports = words.fetch(trial.dig("exports", "limit"))
+
+    get llms_path
+
+    assert_includes response.body, "includes #{recordings} recordings"
+    assert_includes response.body, "#{exports}\n  document export"
+    assert_not_includes response.body, "unlimited recording"
+  end
 end

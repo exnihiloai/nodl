@@ -147,15 +147,16 @@ drawn from public price lists of German providers and are labeled as ranges.
 
 - Nodl pricing: Starter 29 EUR per month, Business 99 EUR per month. Annual billing is charged at ten
   times the monthly rate. USD pricing exists for regions outside the EU.
-- The free tier permits unlimited recording and transcription, and one document export.
+- The free trial needs no credit card and includes three recordings, two custom formats and one
+  document export.
 - Maximum length of a single recording: 1 hour.
 - Transcription languages: 14. Translation target languages: 70.
 - Audio can be uploaded, not only recorded in the browser. Accepted: common audio formats plus
   webm/mp4 video containers.
 - Multi-speaker recordings are separated by speaker, with per-segment timestamps that jump to the
   matching point in the audio.
-- Every recording is hashed with SHA-256 and sealed with an RFC 3161 trusted timestamp, so it can be
-  shown that the file has not changed since that moment.
+- On the Business plan, recordings can be hashed with SHA-256 and sealed with an RFC 3161 timestamp,
+  so it can be shown that the file has not changed since that moment.
 - Transcripts, transcript segments, and documents are encrypted at field level in the database.
 - Processing and storage take place in Germany; the language models used run inside the EU.
 - Content is not used to train AI models.
