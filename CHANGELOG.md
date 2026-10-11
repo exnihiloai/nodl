@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.1] - 2026-10-11
+
+### Fixed
+
+- **Trial described correctly everywhere.** `llms.txt` and the transcription cost articles claimed the free tier allowed unlimited recordings with one export. The trial includes three recordings, two custom formats and one export, as the pricing page already said. A test now ties `llms.txt` to the limits in the billing catalog.
+- **Recording seals described as what they are.** Several articles and `llms.txt` said every recording is sealed with a qualified timestamp. Sealing is switched on per account, and the timestamp follows RFC 3161 without being a qualified trust service under eIDAS. The texts now say so.
+- **Voice journaling comparison brought up to date.** Day One's 2026 voice features and its iOS-only transcription are reflected, built-in recorder apps are described with the transcripts they now produce, and an app whose claims could not be verified was removed.
+
 ## [0.32.0] - 2026-10-11
 
 ### Added
