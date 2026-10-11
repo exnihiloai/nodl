@@ -12,6 +12,7 @@
 
     <%= yield :head %>
     <%= seo_link_tags %>
+    <%= open_graph_tags %>
     <% if controller_name == "pages" && action_name == "home" && !PrivateContent.marketing? %>
       <%# Private marketing home templates ship their own richer JSON-LD; only the OSS shell needs this fallback. %>
       <%= render "shared/homepage_structured_data" %>
@@ -71,6 +72,8 @@
         </div>
       </div>
     </footer>
+
+    <%= render "content_pages/sticky_cta" if content_page_show? && !user_signed_in? %>
 
     <%# Styled replacement for the browser's native confirm() dialog. Turbo is
         pointed at this modal for every `data-turbo-confirm` action. %>

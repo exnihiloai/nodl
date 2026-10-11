@@ -18,7 +18,7 @@ class TransformerProfilesController < ApplicationController
       return
     end
 
-    @transformer_profile = @workspace.transformer_profiles.new
+    @transformer_profile = @workspace.transformer_profiles.new(FormatPreset.find(params[:preset])&.attributes)
   end
 
   def create

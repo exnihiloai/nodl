@@ -17,20 +17,15 @@ class PasswordVisibilityJsTest < ApplicationJsSystemTestCase
     assert_equal "password", find_field("login_password")[:type]
   end
 
-  test "registration form toggles each password field independently" do
+  test "registration form toggles its single password field" do
     visit register_path
 
     fill_in "password", with: "Secret123"
-    fill_in "password_confirm", with: "Secret456"
 
     toggles = all("button[data-action='password-visibility#toggle']")
-    assert_equal 2, toggles.length
+    assert_equal 1, toggles.length
 
     toggles[0].click
     assert_equal "text", find_field("password")[:type]
-    assert_equal "password", find_field("password_confirm")[:type]
-
-    toggles[1].click
-    assert_equal "text", find_field("password_confirm")[:type]
   end
 end

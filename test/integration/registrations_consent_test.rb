@@ -80,9 +80,7 @@ class RegistrationsConsentTest < ActionDispatch::IntegrationTest
   def registration_params(accept:)
     {
       email: "consent@example.com",
-      email_confirm: "consent@example.com",
       password: "ValidPass123",
-      password_confirm: "ValidPass123",
       accept_legal: accept ? "1" : "0"
     }
   end

@@ -89,6 +89,61 @@ en:
     heading: Articles & Guides
     intro: Voice journaling guides and app comparisons for anyone who would rather speak than type.
     twin: Read in German
+  content_pages:
+    cta:
+      interview:
+        heading: Done with the interview? Nodl writes it up for you.
+        body: Upload the recording or record right in your browser. You get a transcript with separate speakers and timestamps that jump to the matching spot in the audio. Everything is stored in Germany.
+        button: Transcribe an interview for free
+        sticky: Upload an interview, get a transcript with speaker labels.
+      practice:
+        heading: Dictate the session note instead of typing it
+        body: After the appointment, talk into your phone for a few minutes. Nodl writes it down and shapes it into a document, and with a custom format it follows the structure you already use. Transcripts are stored encrypted in Germany.
+        button: Try it free
+        sticky: Speak your documentation instead of typing it, stored in Germany.
+      journal:
+        heading: Just say your next entry out loud
+        body: Record whatever is on your mind without worrying about wording. Nodl turns it into readable text, and your recordings stay private.
+        button: Speak your first entry
+        sticky: Speak your journal instead of writing it, your recordings stay private.
+      general:
+        heading: Talk instead of typing
+        body: Record in your browser or upload an audio file. Nodl turns what you said into a document you can keep working with.
+        button: Try it free
+        sticky: What you say becomes a document you can keep working with.
+      terms: Free, no credit card. Three recordings included.
+      dismiss: Close this note
+  format_presets:
+    session_note:
+      name: Session note
+      instructions: |
+        Turn the dictation into a session note with these sections:
+
+        - Reason for the session and main topic
+        - Content: what was discussed, in short bullet points
+        - Observations
+        - Interventions or methods used
+        - Agreements and tasks until the next appointment
+        - Next appointment
+
+        Only write down what is in the dictation. If a section is missing, write "not mentioned" instead of filling it in. Factual, present tense, no filler.
+    interview_summary:
+      name: Interview summary
+      instructions: |
+        Summarise the interview so it is ready for analysis:
+
+        - Short description: topic and role of the interviewee, without names
+        - Key statements, grouped by the topics of the conversation
+        - Verbatim key quotes, copied unchanged
+        - Open points and contradictions
+
+        Replace names of people, places and organisations with placeholders in square brackets. Do not invent statements and do not interpret beyond what was said.
+    journal_entry:
+      name: Journal entry
+      instructions: |
+        Turn the recording into a journal entry in the first person.
+
+        Keep my words and my tone, only remove filler words, repetitions and slips. Use short paragraphs. Do not add advice, judgements or summaries. If I set myself something for tomorrow at the end, put it on its own line at the end.
   footer:
     articles: Articles
     imprint: Imprint
@@ -173,8 +228,6 @@ en:
       limit_reached: This action is limited to %{limit} on your current plan.
   registrations:
     errors:
-      email_mismatch: Email and confirmation must match.
-      password_mismatch: Passwords must match.
       email_taken: This email is already registered.
       legal_not_accepted: You must accept the Terms and Conditions and Privacy Policy to create an account.
   auth:
@@ -308,18 +361,17 @@ en:
       title: Register - Nodl
       meta_description: Create your free Nodl account and turn voice into structured documents.
       aside:
-        badge: Welcome
-        heading: Create your account
-        body: Sign up free and start turning recordings into meeting notes, summaries, and polished documents.
-        item_1: Record in your browser or upload audio
-        item_2: 'Choose a format: meeting notes, task lists, and more'
-        item_3: Your workspace keeps recordings and documents private
-      lead: Sign in or register
+        badge: Try it free
+        heading: Try Nodl with your next recording
+        body: You talk, Nodl writes it down and turns it into a document you can keep working with.
+        item_1: Record in your browser or upload an audio file, up to one hour per recording
+        item_2: Transcript with speaker labels, session note, or journal entry
+        item_3: Stored in Germany, transcripts encrypted
+      lead: Sign up with Google or email
       email_placeholder: your@email.com
-      email_confirm_placeholder: Confirm your email
-      password_placeholder: Create a strong password
-      password_confirm_placeholder: Confirm your password
+      password_placeholder: Password (8 characters, upper and lower case, a number)
       create_account: Create account
+      trial_terms: Free, no credit card. Three recordings included.
       already_have_account: Already have an account?
       sign_in: Sign in
       legal:
@@ -445,6 +497,8 @@ en:
     privacy_note: Private to your workspace. Nothing is shared.
     formats: Formats
     new_format: "+ New format"
+    format_presets:
+      lead: "Start from a template:"
     default_badge: "★ Default"
     format_actions: Format actions
     edit: Edit

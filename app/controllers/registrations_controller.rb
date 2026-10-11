@@ -17,8 +17,9 @@ class RegistrationsController < ApplicationController
       user = User.create!(
         email: @form["email"],
         password: @form["password"],
-        password_confirmation: @form["password_confirm"],
-        preferred_language: current_locale.to_s
+        password_confirmation: @form["password"],
+        preferred_language: current_locale.to_s,
+        last_login_at: Time.current
       )
 
       workspace = Workspace.create!(
@@ -47,32 +48,26 @@ class RegistrationsController < ApplicationController
   def registration_defaults
     {
       "email" => "",
-      "email_confirm" => "",
       "password" => "",
-      "password_confirm" => "",
       "accept_legal" => "0"
     }
   end
 
   def registration_params
-    params.permit(:email, :email_confirm, :password, :password_confirm, :accept_legal)
+    params.permit(:email, :password, :accept_legal)
   end
 
   def validate_registration(form)
     errors = []
 
     email = form.fetch("email", "").to_s.strip.downcase
-    email_confirm = form.fetch("email_confirm", "").to_s.strip.downcase
     password = form.fetch("password", "").to_s
-    password_confirm = form.fetch("password_confirm", "").to_s
 
-    errors << t("registrations.errors.email_mismatch") if email != email_confirm
-    errors << t("registrations.errors.password_mismatch") if password != password_confirm
     errors << t("registrations.errors.email_taken") if User.exists?(email:)
     errors << t("registrations.errors.legal_not_accepted") if legal_consent_required? && form["accept_legal"] != "1"
 
     # Validate password complexity via central User model validations
-    temp_user = User.new(password: password, password_confirmation: password_confirm)
+    temp_user = User.new(password: password, password_confirmation: password)
     unless temp_user.valid?
       temp_user.errors.full_messages_for(:password).each do |msg|
         errors << msg

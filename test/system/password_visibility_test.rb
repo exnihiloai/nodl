@@ -8,9 +8,9 @@ class PasswordVisibilityTest < ApplicationSystemTestCase
     assert_selector "button[data-action='password-visibility#toggle']"
   end
 
-  test "register page renders password visibility toggles for both fields" do
+  test "register page renders a password visibility toggle" do
     visit register_path
 
-    assert_selector "button[data-action='password-visibility#toggle']", count: 2
+    assert_selector "button[data-action='password-visibility#toggle']", count: 1
   end
 end
