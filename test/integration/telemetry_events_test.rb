@@ -35,9 +35,7 @@ class TelemetryEventsTest < ActionDispatch::IntegrationTest
 
     post register_path, params: {
       email: "telemetry-new@example.com",
-      email_confirm: "telemetry-new@example.com",
       password: "ValidPassword123",
-      password_confirm: "ValidPassword123",
       accept_legal: "1"
     }
 

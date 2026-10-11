@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2026-10-11
+
+### Added
+
+- **Format templates for a quick start.** New workspaces see three ready-made formats on the dashboard: session note, interview summary and journal entry. Picking one fills in the new-format form, so nobody has to write format instructions from scratch before the first useful document. The saved format is an ordinary custom format and counts against the plan's format limit as before.
+- **Sign-up prompts inside articles.** Every article now carries a short prompt about a third of the way down, worded for its topic: interview readers are offered interview transcription, practice readers session documentation, journaling readers spoken entries. Signed-out readers also get a slim bar at the bottom of the screen once they have scrolled into the text; it can be dismissed and stays gone for the tab.
+- **Link previews.** Public pages declare Open Graph and Twitter card tags with a shared preview image, so links posted in forums, chats and social networks show a title, description and image instead of a bare URL.
+
+### Changed
+
+- **Shorter sign-up form.** Registration asks for email and password once instead of twice, states the password rules up front and says plainly what the free trial includes: no credit card, three recordings.
+- **Search snippets for German articles.** Titles and descriptions were shortened to fit Google's snippet length, with the main search term first. The psychotherapy article now targets "Sitzungsdokumentation". Article structured data includes publication and modification dates.
+
+### Fixed
+
+- **Last login for new accounts.** Accounts created with email and password showed "Never" as last login in the admin panel although the sign-up itself logs the user in. Registration now records the login time.
+
 ## [0.31.0] - 2026-08-17
 
 ### Added

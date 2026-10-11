@@ -209,6 +209,61 @@ de:
     heading: Artikel & Guides
     intro: Guides und App-Vergleiche rund ums Tagebuch-Diktieren, für alle, die lieber sprechen als tippen.
     twin: Auf Englisch lesen
+  content_pages:
+    cta:
+      interview:
+        heading: Interview geführt? Nodl schreibt es für dich ab.
+        body: Lade die Aufnahme hoch oder nimm direkt im Browser auf. Du bekommst ein Transkript mit getrennten Sprechern und Zeitmarken, die zur passenden Audiostelle springen. Gespeichert wird in Deutschland.
+        button: Interview kostenlos transkribieren
+        sticky: Interview hochladen, Transkript mit Sprechertrennung bekommen.
+      practice:
+        heading: Die Sitzung diktieren statt abtippen
+        body: Sprich nach dem Termin ein paar Minuten in dein Handy. Nodl schreibt mit und ordnet das Gesagte zu einem Dokument, mit einem eigenen Format auch in deinem gewohnten Aufbau. Transkripte liegen verschlüsselt in Deutschland.
+        button: Kostenlos ausprobieren
+        sticky: Dokumentation sprechen statt tippen, gespeichert in Deutschland.
+      journal:
+        heading: Sprich deinen nächsten Eintrag einfach aus
+        body: Nimm auf, was dir durch den Kopf geht, ohne auf Formulierungen zu achten. Nodl macht daraus einen lesbaren Text, und deine Aufnahmen bleiben privat.
+        button: Ersten Eintrag sprechen
+        sticky: Tagebuch sprechen statt schreiben, deine Aufnahmen bleiben privat.
+      general:
+        heading: Sprechen statt tippen
+        body: Nimm im Browser auf oder lade eine Audiodatei hoch. Nodl macht aus dem Gesagten ein Dokument, mit dem du weiterarbeiten kannst.
+        button: Kostenlos ausprobieren
+        sticky: Aus Gesprochenem wird ein Dokument, mit dem du weiterarbeiten kannst.
+      terms: Kostenlos und ohne Kreditkarte. Drei Aufnahmen sind inklusive.
+      dismiss: Hinweis schließen
+  format_presets:
+    session_note:
+      name: Sitzungsnotiz
+      instructions: |
+        Erstelle aus dem Diktat eine Sitzungsnotiz mit diesen Abschnitten:
+
+        - Anlass und Thema der Sitzung
+        - Inhalte: was besprochen wurde, in kurzen Stichpunkten
+        - Beobachtungen
+        - Interventionen oder Methoden
+        - Vereinbarungen und Aufgaben bis zum nächsten Termin
+        - Nächster Termin
+
+        Schreib nur auf, was im Diktat vorkommt. Fehlt ein Abschnitt, schreib "nicht erwähnt", statt etwas zu ergänzen. Sachlich, im Präsens, ohne Füllwörter.
+    interview_summary:
+      name: Interview-Zusammenfassung
+      instructions: |
+        Fasse das Interview so zusammen, dass es sich für die Auswertung eignet:
+
+        - Kurzbeschreibung: Thema und Rolle der befragten Person, ohne Namen
+        - Kernaussagen, gegliedert nach den Themen des Gesprächs
+        - Wörtliche Schlüsselzitate, unverändert übernommen
+        - Offene Punkte und Widersprüche
+
+        Ersetze Namen von Personen, Orten und Organisationen durch Platzhalter in eckigen Klammern. Erfinde keine Aussagen und interpretiere nicht über das Gesagte hinaus.
+    journal_entry:
+      name: Tagebucheintrag
+      instructions: |
+        Mach aus der Aufnahme einen Tagebucheintrag in der Ich-Form.
+
+        Behalte meine Worte und meinen Ton, entferne nur Füllwörter, Wiederholungen und Versprecher. Gliedere in kurze Absätze. Füge keine Ratschläge, Bewertungen oder Zusammenfassungen hinzu. Wenn ich mir am Ende etwas für morgen vornehme, setz es als eigene Zeile ans Ende.
   footer:
     articles: Artikel
     imprint: Impressum
@@ -279,8 +334,6 @@ de:
       limit_reached: Diese Aktion ist in deinem aktuellen Plan auf %{limit} begrenzt.
   registrations:
     errors:
-      email_mismatch: E-Mail und Bestätigung müssen übereinstimmen.
-      password_mismatch: Die Passwörter müssen übereinstimmen.
       email_taken: Diese E-Mail-Adresse ist bereits registriert.
       legal_not_accepted: Du musst den AGB und der Datenschutzerklärung zustimmen, um ein Konto zu erstellen.
   auth:
@@ -414,18 +467,17 @@ de:
       title: Registrieren - Nodl
       meta_description: Erstelle dein kostenloses Nodl-Konto und verwandle Sprache in strukturierte Dokumente.
       aside:
-        badge: Willkommen
-        heading: Erstelle dein Konto
-        body: Registriere dich kostenlos und verwandle Aufnahmen in Meeting Notes, Zusammenfassungen und saubere Dokumente.
-        item_1: Im Browser aufnehmen oder Audio hochladen
-        item_2: 'Format wählen: Meeting Notes, Task Lists und mehr'
-        item_3: Dein Workspace hält Recordings und Dokumente privat
-      lead: Anmelden oder Registrieren
+        badge: Kostenlos testen
+        heading: Probier Nodl mit deiner nächsten Aufnahme
+        body: Du sprichst, Nodl schreibt mit und macht daraus ein Dokument, mit dem du weiterarbeiten kannst.
+        item_1: Im Browser aufnehmen oder eine Audiodatei hochladen, bis zu einer Stunde je Aufnahme
+        item_2: Transkript mit Sprechertrennung, Sitzungsnotiz oder Tagebucheintrag
+        item_3: Gespeichert in Deutschland, Transkripte verschlüsselt
+      lead: Mit Google oder E-Mail registrieren
       email_placeholder: deine@email.com
-      email_confirm_placeholder: E-Mail bestätigen
-      password_placeholder: Erstelle ein starkes Passwort
-      password_confirm_placeholder: Passwort bestätigen
+      password_placeholder: Passwort (8 Zeichen, Groß- und Kleinbuchstaben, eine Zahl)
       create_account: Konto erstellen
+      trial_terms: Kostenlos und ohne Kreditkarte. Drei Aufnahmen sind inklusive.
       already_have_account: Hast du bereits ein Konto?
       sign_in: Anmelden
       legal:
@@ -551,6 +603,8 @@ de:
     privacy_note: Privat für deinen Workspace. Nichts wird geteilt.
     formats: Formate
     new_format: "+ Neues Format"
+    format_presets:
+      lead: "Schnell starten mit einer Vorlage:"
     default_badge: "★ Standard"
     format_actions: Format-Aktionen
     edit: Bearbeiten

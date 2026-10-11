@@ -63,7 +63,45 @@ module SeoHelper
     end
   end
 
+  # Link previews for shared pages (forums, chat apps, social). Title and
+  # description reuse what the page already declares, so the preview never
+  # drifts from the search snippet.
+  def open_graph_tags
+    return if user_signed_in?
+
+    title = content_for?(:title) ? content_for(:title).to_s : "Nodl"
+    description = page_meta_description
+    image = canonical_url("/og-image.png")
+    type = controller_name == "content_pages" && action_name == "show" ? "article" : "website"
+
+    tags = [
+      tag.meta(property: "og:site_name", content: "Nodl"),
+      tag.meta(property: "og:type", content: type),
+      tag.meta(property: "og:title", content: title),
+      tag.meta(property: "og:url", content: canonical_url(request.path)),
+      tag.meta(property: "og:image", content: image),
+      tag.meta(property: "og:image:width", content: "1200"),
+      tag.meta(property: "og:image:height", content: "630"),
+      tag.meta(property: "og:locale", content: I18n.locale == :de ? "de_DE" : "en_US"),
+      tag.meta(name: "twitter:card", content: "summary_large_image"),
+      tag.meta(name: "twitter:title", content: title),
+      tag.meta(name: "twitter:image", content: image)
+    ]
+    if description.present?
+      tags << tag.meta(property: "og:description", content: description)
+      tags << tag.meta(name: "twitter:description", content: description)
+    end
+
+    safe_join(tags, "\n")
+  end
+
   private
+
+  def page_meta_description
+    head = content_for(:head).to_s
+    match = head.match(/<meta\s+name="description"\s+content="([^"]*)"/)
+    match && CGI.unescapeHTML(match[1])
+  end
 
   def localized_page_link_tags(pair)
     de_url = canonical_url(public_send(pair.fetch(:de)))

@@ -87,6 +87,19 @@
               </li>
             <% end %>
           </ul>
+          <% if !@format_limit_reached && @transformer_profiles.all?(&:default?) %>
+            <div class="rounded-box border border-dashed border-base-300 bg-base-100/60 p-3" data-testid="format-presets">
+              <p class="text-xs text-base-content/60"><%= t("dashboard.format_presets.lead") %></p>
+              <ul class="mt-2 flex flex-wrap gap-2">
+                <% FormatPreset.all.each do |preset| %>
+                  <li>
+                    <%= link_to preset.name, new_transformer_profile_path(preset: preset.key),
+                                class: "btn btn-outline btn-xs", data: { testid: "format-preset-#{preset.key}" } %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
         </aside>
       </div>
     <% end %>

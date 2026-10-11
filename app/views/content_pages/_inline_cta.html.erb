@@ -1,0 +1,8 @@
+<aside class="not-prose my-10 rounded-box border border-primary/25 bg-gradient-to-br from-primary/10 via-base-100 to-accent/5 p-6 sm:p-8" data-testid="article-inline-cta">
+  <p class="text-xl font-semibold"><%= content_page_cta_text(:heading) %></p>
+  <p class="mt-2 text-base-content/70 leading-relaxed"><%= content_page_cta_text(:body) %></p>
+  <div class="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
+    <%= link_to content_page_cta_text(:button), register_path, class: "btn btn-primary" %>
+    <span class="text-sm text-base-content/60"><%= t("content_pages.cta.terms") %></span>
+  </div>
+</aside>
